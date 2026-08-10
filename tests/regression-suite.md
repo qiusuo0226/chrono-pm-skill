@@ -149,8 +149,8 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | BP-001 | 外部 AI 只读取 SKILL_BLUEPRINT.md | 能理解 Skill 目标、能力、边界和待补充项 | positive |
-| BP-002 | 对比 skill.json.version 与 Blueprint §1 版本 | 版本一致（均为 1.7.1） | positive |
-| BP-003 | 对比规则文件清单(00-16)与 Capability Map | 17 个规则文件对应的能力无遗漏 | positive |
+| BP-002 | 对比 skill.json.version 与 Blueprint §1 版本 | 版本一致（均为 1.10.0） | positive |
+| BP-003 | 对比规则文件清单(00-21)与 Capability Map | 22 个规则文件对应的能力无遗漏 | positive |
 | BP-004 | 模拟 Patch 级模板小修 | Blueprint 可不更新正文，CHANGELOG 标注 "Blueprint Impact: none" | positive |
 | BP-005 | 模拟 Minor 新增能力 | Blueprint 必须更新 Capability Map 和 Roadmap | positive |
 | BP-006 | 对比 SKILL.md 与 Blueprint 正文 | 不存在大段重复的目录树或规则全文 | regression |
@@ -212,7 +212,7 @@
 | SK-1B | 检查 §6 提示词路由表 | 场景条目与修改前一致（一条不删） | regression |
 | SK-1C | 检查 §7 安全底线 | 底线条目完整保留 | regression |
 | SK-1D | 检查 §8 ID 编码 | 编码体系完整保留 | regression |
-| SK-1E | 检查 §15 规则索引 | 00-20 共 21 条 + 版本控制文件完整 | regression |
+| SK-1E | 检查 §15 规则索引 | 00-21 共 22 条 + 版本控制文件完整 | regression |
 | SK-1F | 检查下沉落点 | 状态枚举(§5a)/输出规范(§5.4/5.5)/容忍度(§5c)/里程碑(§5b)均存在于 `00-pm-main-rules.md` | positive |
 | SK-1G | 模拟"查任务状态" | 通过 §6 路由表能定位到对应 rule（导航可用） | positive |
 
@@ -264,6 +264,32 @@
 
 ---
 
+## 25. Historical Plan Import & Change Tracking（R1-R4 历史计划全量同步与变更追溯）
+
+> 对应 CR-20260810-008（v1.10.0）。覆盖需求规格 R1（批量导入）、R2（计划变更追踪）、R3（延期计数）、R4（聚合查询路由）。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| HP-001 | 用户上传 .pod/Excel 存量计划要求批量导入 | 走 R1：生成 `snapshots/daily/imported-{date}.md`（source_type=external_import）+ 登记 history-index + 写 board(Source=import) | positive |
+| HP-002 | 批量导入前 | 先判定走 R1 还是 13 号（见 `13-continuity-rules.md` §2）；无独立历史工作区才走 R1 | positive |
+| HP-003 | 批量导入冻结 | imported-{date}.md 生成后冻结，不静默覆盖，修订追加 Revision Log | regression |
+| HP-004 | 导入命名 | 使用 `imported-{date}.md`，不与 AI 前向生成的 `{date}.md` 冲突 | regression |
+| HP-005 | 导入登记 | 在 `todo-history-index-template` 外部导入登记追加一行（IMP-*） | positive |
+| HP-006 | R1 查询路由 | "导入的那批计划"经 history-index → imported-{date}.md 定位，source_type=external_import | positive |
+| HP-007 | board 计数首版 | 导入任务 Plan Change Count / Delay Count 记 0 | positive |
+| HP-008 | 计划变更追踪 | 单任务 Due Date/Owner 调整 → board 递增 Plan Change Count，Delay 仅 Due Date 后移时 +1 | positive |
+| HP-009 | 概念域 | change-log 用概念域 B（plan_change）；board Change Log 用概念域 A，不混用 | regression |
+| HP-010 | 延期统计查询（A 类） | "延期了几次"只读 board.md 单文件，不扫描快照/日报；输出 delay-stats | positive |
+| HP-011 | board 缺计数字段 | 回退 Change Log 统计并标注"推断，未确认" | regression |
+| HP-012 | 超期查询（B 类） | "现在哪些任务超期"实时计算，读 board + 预建索引，不扫日报原文 | positive |
+| HP-013 | 确认窗口期判定 | v2 未确认按旧 Due Date 判延期；已确认按新 Due Date | positive |
+| HP-014 | 负责人变更归属 | 交接前超期归原 Owner，交接后归新 Owner | positive |
+| HP-015 | 超期触发时机 | 处理日报时 + PM 查询进度时都实时计算 | regression |
+| HP-016 | 索引过期警告 | 索引超 24h 未更新时给出过期警告 | positive |
+| HP-017 | source_type 统一 | snapshot source_type 取 personal_daily_reports/pm_todo/meeting/external_import 四值之一 | regression |
+
+---
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -292,4 +318,5 @@
 | Daily Report Rules | 4 | 3 | 1 |
 | Query/Requirement/Artifact Rules | 4 | 3 | 1 |
 | PM Profile | 10 | 7 | 3 |
-| **合计** | **132** | **80** | **52** |
+| Historical Plan Import & Change Tracking | 17 | 11 | 6 |
+| **合计** | **149** | **91** | **58** |

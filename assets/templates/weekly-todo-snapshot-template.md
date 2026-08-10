@@ -11,6 +11,7 @@ status: frozen
 # Weekly Todo Snapshot - {week}
 
 > 本快照记录 {week} 周计划。冻结后不可静默覆盖。
+> 若本周计划来自历史批量导入（R1），`source_type` 用 `external_import`，文件名用 `snapshots/weekly/imported-{week}.md`（见 `references/15-snapshot-rules.md` §8a）。
 
 ## 1. 各子项目本周重点计划
 

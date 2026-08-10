@@ -1,6 +1,6 @@
 # 任务看板约束规则
 
-本规则适用于任务看板的字段定义、状态流转和关联管理。
+本规则适用于任务看板的字段定义、状态流转、计划变更计数、延期统计与超期判定。
 
 ---
 
@@ -21,10 +21,68 @@
 | Risk Ref | 关联风险 | 否 | R-YYYYMMDD-NNN |
 | Issue Ref | 关联问题 | 否 | I-YYYYMMDD-NNN |
 | Due Date | 预计完成日期 | 是 | YYYY-MM-DD |
+| Original Due Date | 最初计划完成日期 | 否 | YYYY-MM-DD（设定后不可变，见 §1a） |
 | Actual Date | 实际完成日期 | 否 | YYYY-MM-DD |
-| Source | 来源 | 是 | meeting / daily / manual / requirement |
+| Plan Change Count | 计划变更累计次数 | 否 | 整数，默认 0（见 §1a） |
+| Delay Count | 延期累计次数 | 否 | 整数，默认 0（见 §1a） |
+| Source | 来源 | 是 | meeting / daily / manual / requirement / import |
 | Source Ref | 来源文件 | 是 | 文件路径或会议 ID |
 | Notes | 备注 | 否 | 自由文本 |
+
+### 1a. 计划变更与延期计数字段
+
+本组字段用于"历史计划全量同步与变更追溯"（R2/R3）：
+
+1. **Original Due Date**：任务的**最初计划完成日期**，在任务首次设定 Due Date 时记录，**一旦设定即不可变**（除非人工纠正录入错误，且必须在 Change Log 中记录并保留历史）。它是追溯"最初计划何时完成"的唯一可靠锚点。
+2. **Plan Change Count**：任务计划发生变更的累计次数（整数，默认 0）。因 Owner 更换、范围调整、Due Date 任意方向移动、进度重排等计划变化均计入。
+3. **Delay Count**：任务**延期**累计次数（整数，默认 0）。**仅当 Due Date 向后移动（比原计划更晚）时才 +1**。延期是计划变更的一个子集——不是每次计划变更都计延期。
+
+**判定规则**：
+- 概念域 A（记录操作）：board 底部 Change Log 使用 `add/update/remove/status/archive`，**不新增计划变更类型**；计划变更通过 `update` 操作 + Description 注明 `plan_change` 体现（见 §7）。
+- 概念域 B（变更影响分类）：计划变更的分类（`plan_change` 等）在需求变更审批中由 `references/08-change-control-rules.md` 管理，与 board 计数字段解耦。
+- `Plan Change Count` / `Delay Count` 由 AI 在确认的计划变更发生后更新，先输出"建议更新清单"，人工确认后落库。
+- 旧工作区兼容：新字段缺失时视为 0，回退到 Change Log 统计并标注"推断，未确认"。
+
+## 5a. 超期判定与追责归属规则（B 类）
+
+**定义区分**：
+- **A 类（计数器）**：`Delay Count` 仅统计 Due Date 后移次数，见 §1a。回答"延期了几次"。
+- **B 类（状态判定）**：给定某时刻，判断任务**当前是否超期**及归属，见本节。回答"现在哪些任务超期了"。**B 类判定不写入 Delay Count 计数器。**
+
+### 5a.1 触发时机
+
+B 类超期判定在**两个时机**触发：
+1. **日报处理时**：汇总项目日报时同步评估各任务超期状态。
+2. **PM 查询进度/状态时**：用户问"现在进度怎么样""哪些任务超期了""XX 延期/超期了吗"时，**实时计算**，确保每次查询都是最新结论。
+
+### 5a.2 数据源（索引优先，禁止扫描日报原文）
+
+判定数据来自 **board.md + 预建索引**，不得在查询时临时扫描日报原文或创建脚本遍历目录（对齐 `references/05-query-rules.md` 最小读取原则）：
+- board.md：当前 Due Date / Owner / Original Due Date / Status / 计划变更确认状态。
+- 索引：任务最近完成状态（读 `todos/daily-todo-index.md` / `personal-todo-index.md` 等预建索引，索引在日报处理后自动维护）。
+- 若索引 >24h 未更新，AI 先提示"索引过期，建议重建"，不拿过期数据当结论（对齐 `references/14-self-check-rules.md`）。
+
+### 5a.3 当前有效 Due Date（确认窗口期）
+
+延期/超期以**当前有效 Due Date** 为基准：
+- 新计划变更**已确认**：使用新 Due Date。
+- 新计划变更**未确认**（空窗期）：仍按旧版（未变前的）Due Date 判定，即一过旧截止日未完成即判超期（预警）。
+
+**场景判定**：
+| 场景 | 判定 |
+|---|---|
+| v1 8/10，v2 8/15 未确认，8/11 未完成 | 按 v1 判超期（预警）；不 +Delay（Delay 于 v2 确认后按 v2 计） |
+| v1 8/10，v2 8/15 未确认，8/11 已完成 | 不算延期；提醒核查"截止日期后移是否为误操作" |
+| v1 8/10，v2 8/15 已确认 | 按 8/15，8/16 起未完成才算超期；8/11-8/15 空窗未完成仅预警 |
+| v1 8/10，无 v2，8/11 未完成 | 直接超期（Due Date 过未完成） |
+| v1 8/10，v2 8/5（提前） | 不判延期；按最终确认的 8/5 判后续超期；可触发"计划收紧"提醒 |
+
+### 5a.4 换人归属
+
+同一任务在两版计划之间发生 Owner 变更时，超期归属按**交接时间点**切分：
+- 交接前（变更发生时任务状态为"未完成"）的延期/超期，归属**原负责人**。
+- 交接后的延期/超期，归属**新负责人**。
+- 变更发生时任务已完成，则不产生换人延期归属问题。
 
 ## 2. 任务状态流转
 
@@ -119,6 +177,9 @@ Backlog 中的任务字段简化：
 |---|---|---|---|---|
 | 2026-08-09 | add | 新增 T-20260809-001 | MTG-20260809-001 | 张三 |
 | 2026-08-09 | status | T-20260808-005: review → done | 日报 2026-08-09 | 李四 |
+| 2026-08-10 | update | T-20260809-001: plan_change，Due Date 8/10→8/15（Delay +1，Original 8/10 不可变） | PM 确认 | 张三 |
 ```
+
+**概念域说明**：board 底部 Change Log 的 Change Type 属**记录操作类型**（`add/update/remove/status/archive`），**不新增 `plan_change` 类型**。计划变更通过 `update` 操作 + Description 标注 `plan_change` 体现；其影响分类（requirement/scope/schedule/cost/resource/plan_change）由 `references/08-change-control-rules.md`（概念域 B）管理，两者解耦。
 
 Change Log 超过 100 行时，拆分为独立的 `tasks/task-change-log.md`。

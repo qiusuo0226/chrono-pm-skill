@@ -13,19 +13,18 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 `context/project-brief.md`（项目集模式为 `portfolio/context/project-brief.md`）是 AI 的**快速入口文件**。
 
 **规则：**
-
 1. AI 在处理任何用户输入（文本、文件、口述）前，**必须先读取 `project-brief.md`**，获取项目基本信息、子项目清单、团队成员、文件路由速查表。
-2. AI 通过 `project-brief.md` 中的信息判断输入内容与当前项目的关联度，确定项目归属和作用范围。
-3. `project-brief.md` 应保持精炼（建议 ≤ 100 行），只放 AI 快速判断所需的关键信息。详细背景见 `project-context.md`。
+2. AI 通过 `project-brief.md` 判断输入与当前项目的关联度，确定项目归属和作用范围。
+3. `project-brief.md` 应保持精炼（建议 ≤ 100 行），只放 AI 快速判断所需关键信息。详细背景见 `project-context.md`。
 4. `project-brief.md` 是事实源文件，更新需经用户确认。
 5. 项目初始化时由 `init_workspace.py` 自动生成空模板。
-6. **团队信息指针化（v1.6.1 新增）**：`project-brief.md` 中的团队信息不应复制 `resource-register.md` 的完整团队列表，而应使用指针指向 register。brief 中的团队部分应替换为：
+6. **团队信息指针化（v1.6.1 新增）**：`project-brief.md` 中的团队信息不应复制 `resource-register.md` 完整团队列表，而应使用指针。brief 团队部分替换为：
    ```markdown
    ## 3. 团队成员
    → 见 `portfolio/resources/resource-register.md`（人员当前状态主源）
    → 见 `portfolio/resources/transfer-log.md`（人员流转历史）
    ```
-   **迁移规则**：不自动删除 brief 中已有的团队列表，只新增主源指针说明并标记冗余信息待确认清理。下次 register 更新时，AI 提示用户"brief 中的团队列表已指针化，建议删除冗余的团队信息"，用户确认后删除冗余信息。
+   **迁移规则**：不自动删除 brief 已有团队列表，只新增主源指针并标记冗余待清理。下次 register 更新时提示用户"brief 团队列表已指针化，建议删除冗余信息"，确认后删除。
 
 | 目录 | 是否允许创建AI文件 | 说明 |
 |---|---|---|
@@ -82,19 +81,12 @@ ai/
 
 ### 1.3 单项目模式目录结构
 
+单项目模式结构与项目集模式的单个子项目相同，直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
-ai/
-├── tasks/
-├── risks/
-├── issues/
-├── plans/
-├── requirements/
-├── milestones/
-├── decisions/
-├── reports/
-├── meetings/
-└── logs/
+ai/ ├── tasks/ ├── risks/ ├── issues/ ├── plans/ ├── requirements/ ├── milestones/
+   ├── decisions/ ├── reports/ ├── meetings/ ├── todos/（索引+snapshots+actuals） └── logs/
 ```
+完整树见 `SKILL.md` §3.2。
 
 ### 1.4 更新权限分级
 
@@ -178,28 +170,26 @@ reviews/YYYYMM/YYYY-MM-DD-[event]-retrospective.md
 ```
 
 **个人进度汇总文件（新增）：**
-
 ```
 reports/daily/personal/summaries/[name]-progress.md
 ```
-
-每个团队成员维护一份个人进度汇总文件，记录该成员当前负责的任务、里程碑关联、风险点和历史进展概要。当该成员的日报更新时，自动同步更新此文件。
+每个团队成员维护一份个人进度汇总文件，记录当前负责任务、里程碑关联、风险点与历史进展概要。该成员日报更新时自动同步更新此文件。
 
 ### 2.4 月度文件数量阈值规则
 
-默认一个月内所有个人日报放在同一个 `YYYYMM/` 目录下。
-
-当单月个人日报文件数量超过 **800** 个时，AI 应建议启用按日期二级拆分：
-
+默认一个月的个人日报放在同一 `YYYYMM/` 目录。当单月个人日报数量超过 **800** 个时，AI 建议启用按日期二级拆分：
 ```
 reports/daily/personal/YYYYMM/YYYY-MM-DD/[name].md
 ```
-
-未超过阈值时不应主动拆分，以避免目录过深。
+未超过阈值不主动拆分，避免目录过深。
 
 ### 2.5 索引文件
 
 固定文件名：`index.md`，放在对应目录下。
+
+### 2.6 历史计划导入快照（external_import）
+
+历史计划批量导入（R1）生成的快照复用 `todos/snapshots/daily|weekly/` 目录，文件名以 `imported-` 前缀区分：`imported-{YYYYMMDD}.md`，frontmatter 标注 `source_type: external_import`。文件命名、元数据与冻结规范详见 `references/15-snapshot-rules.md`（本文件不重复）。
 
 ## 3. 文档元数据头
 每份正式文档头部必须包含：
@@ -237,7 +227,6 @@ author: AI辅助生成
 ### 6.1 拆分触发条件
 
 当单个 Markdown 文件满足以下任一条件时，AI 应建议拆分：
-
 1. 超过 300 行。
 2. 超过 30 条记录。
 3. 包含超过 3 个月的连续记录。
@@ -266,25 +255,20 @@ author: AI辅助生成
 索引文件必须包含相应的列定义，完整 markdown 模板见 `assets/templates/index-formats.md`。
 
 ### 7.1 日报索引
-
 必须包含列：`Date | Type | File | Owner | Summary | Task Sync | Risk Sync | Issue Sync | Weekly Sync`
-
 ### 7.2 会议索引
-
 必须包含列：`Date | Meeting ID | Title | Key Decisions | Action Items | File`
-
 ### 7.3 周报索引
-
 必须包含列：`Week | Date Range | File | Status | Key Highlights`
 
-### 7.4 复盘索引
-必须包含列：`Date | Event | Milestone | File | Key Lessons`
 ## 8. Change Log 规范
 事实源文件底部必须包含 Change Log，格式见 `assets/templates/index-formats.md`：
 
 - Change Type：`add` / `update` / `remove` / `status` / `archive`
 - Source：来源文件或会议 ID
 - Confirmed By：确认人姓名（AI 建议的记录为"待确认"）
+
+> 注：此处的 Change Type 是**记录操作类型**（对事实源记录执行的操作），与 `references/08-change-control-rules.md` 中需求变更**影响分类**（requirement/scope/schedule/cost/resource/plan_change）是两个不同概念域，不可混用。计划变更（plan_change）在 board 底部 Change Log 中以 `update` 操作 + Description 标注体现，不在本枚举中新增类型。
 
 ## 9. 归档规则
 
@@ -305,12 +289,4 @@ author: AI辅助生成
 | portfolio | `ai/portfolio/context/pm-profile.md` | 项目集级 PM 偏好档案 |
 | single | `ai/context/pm-profile.md` | 单项目 PM 偏好档案 |
 
-规则：
-
-1. 文件不存在时，不视为错误，降级跳过偏好加载。
-2. 初始化新工作区时自动创建（`init_workspace.py` 默认行为）。
-3. 旧工作区可通过 `migrate_workspace.py --create-profile` 补建。
-4. 已存在时不得覆盖。
-5. 不得将 pending 偏好当作 confirmed 偏好应用。
-6. 每条偏好记录必须保留 Source 或观察依据。
-7. 详见 `references/21-pm-profile-rules.md`。
+规则：文件不存在时降级跳过（不视为错误）；初始化时自动创建；旧工作区可 `migrate_workspace.py --create-profile` 补建；已存在不覆盖；pending 偏好不按 confirmed 应用；每条记录保留 Source。详见 `references/21-pm-profile-rules.md`。

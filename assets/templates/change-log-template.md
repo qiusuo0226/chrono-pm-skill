@@ -8,6 +8,8 @@ status: 草稿
 
 # 需求变更记录
 
+> 本文件为**概念域 B**（变更影响分类）：`requirement / scope / schedule / cost / resource / plan_change`。与概念域 A（记录操作 `add/update/remove/status/archive`，见各 fact Change Log）是不同维度，二者不合并。计划变更（plan_change）针对单任务 Due Date / 负责人。
+
 ## 变更清单
 
 | Change ID | 类型 | 描述 | 变更级别 | 提出人 | 提出日期 | 审批结果 | 审批人 | 执行状态 | Source |
@@ -18,7 +20,7 @@ status: 草稿
 
 ### CR-YYYYMMDD-001：[变更标题]
 
-**变更类型**：requirement / scope / schedule / cost / resource
+**变更类型**：requirement / scope / schedule / cost / resource / plan_change
 
 **描述**：
 
@@ -61,6 +63,8 @@ status: 草稿
 **关联决策**：[D-YYYYMMDD-NNN]
 
 **Source**：
+
+> plan_change 专用：请在「关联任务」填 T-*，并在「变更后内容」记录新的 Due Date / Owner。批准后需同步更新 tasks/board.md 对应字段并递增 `Plan Change Count`（见 `references/03-task-board-rules.md` §1a / §6.1）。
 
 ---
 

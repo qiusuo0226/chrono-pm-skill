@@ -11,6 +11,7 @@ status: 草稿
 # 任务看板（进度计划）
 
 > 本模板基于实际项目计划表结构设计，按迭代分组管理任务。
+> 字段兼容说明：本表采用"项目计划"风格列（一级/二级任务）。ChronoPM 标准 board 字段（Task ID / Owner / Due Date 等）见 `references/03-task-board-rules.md`。本表与标准字段的映射见文末「字段映射表」；导入到标准 board 时按映射转换。
 
 ## 迭代一
 
@@ -39,6 +40,24 @@ status: 草稿
 | 交付物 | 产出物 | 如：代码、《需求文档》、原型、《评审问题跟踪表》 |
 | 偏差说明/风险备注 | 偏差或风险 | 如：人员被抽调、开发质量返工。无偏差填 / |
 | 整改措施/完成情况 | 纠偏措施 | 如：已协调资源、已修复。无填 / |
+
+## 字段映射表（本表 ↔ 标准 board）
+
+转换规则见 `references/03-task-board-rules.md`。为保证 R2/R3 计数有效，导入标准 board 时补记：
+
+| 本表字段 | 标准 board 字段 | 转换说明 |
+|---|---|---|
+| 二级任务 | Task（标题） | 生成 Task ID `T-YYYYMMDD-NNN` |
+| 人员 | Owner | 逗号分隔展开为单人记录 |
+| 计划起始时间 | Start Date | 转 YYYY-MM-DD |
+| 计划截止时间 | Due Date（首版） | 转 YYYY-MM-DD；并写为 Original Due Date |
+| 完成百分比 | Progress | 0-100 |
+| 进度状态 | Status | 已完成→done / 进行中→in_progress / 未开始→todo / 已搁置→blocked |
+| 偏差说明/风险备注 | Notes / Risk Flag | 原样保留 |
+| — | Plan Change Count | 首版导入记 `0`；后续变更递增 |
+| — | Delay Count | 首版导入记 `0`；Due Date 后移时递增 |
+
+> 标准 board 的计数字段（Plan Change Count / Delay Count）为聚合查询专用（见 `references/05-query-rules.md` §6.5），本表不直接维护。
 
 ## 任务详情
 
@@ -74,7 +93,7 @@ status: 草稿
 
 **关联问题**：I-NNNN
 
-**Source**：
+**Source**：`personal_import`（若来自历史计划批量导入，见 `references/15-snapshot-rules.md` §8a）
 
 ---
 
@@ -83,3 +102,5 @@ status: 草稿
 | Date | Change Type | Description | Source | Confirmed By |
 |------|-------------|-------------|--------|--------------|
 | | | | | |
+
+> Change Type 取值（概念域 A）：`add` / `update` / `remove` / `status` / `archive`。计划变更（Due Date / Owner 调整）以 `update` + Description 体现，并在 board 递增 `Plan Change Count` / `Delay Count`（见 `references/03-task-board-rules.md` §1a / §7）。

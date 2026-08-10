@@ -15,6 +15,24 @@
 | 进度变更 | 里程碑或交付时间调整 | 工期压缩、延期、提前交付 |
 | 成本变更 | 预算调整 | 人力增减、外采变更 |
 | 资源变更 | 人员或设备调整 | 人员变动、资源冲突 |
+| 计划变更 | 单任务 Due Date / 负责人调整 | 任务延期、提前、换人（见 R2） |
+
+### 1.1 概念域说明（重要）
+
+本文件中的"变更类型"属于**概念域 B（变更影响分类）**，描述"变更影响了什么"。
+
+它与**概念域 A（记录操作）**是不同维度，不可合并：
+
+| 概念域 | 枚举 | 载体 | 语义 |
+|---|---|---|---|
+| A：记录操作 | `add / update / remove / status / archive` | 各事实源 Change Log、`04-risk-issue` 等 | 做了哪种写操作 |
+| B：变更影响分类 | `requirement / scope / schedule / cost / resource / plan_change` | change-log.md（本文件） | 变更影响了哪类内容 |
+
+- `plan_change` 只存在于**概念域 B**，表示"针对单任务进度/负责人的计划变更",以区别于"进度变更(schedule)"针对里程碑/整体进度。
+- 各事实源（board.md 等）的 Change Log 继续使用概念域 A，**不引入** `plan_change` 操作符——计划变更通过 `update` + 描述体现（见 `03-task-board-rules.md` §7）。
+- 追加 `plan_change` 不改变概念域 A 的任何枚举。
+
+---
 
 ## 2. 变更流程
 
@@ -44,7 +62,7 @@
 | 字段 | 说明 | 必填 |
 |------|------|------|
 | Change ID | CR-YYYYMMDD-NNN | 是 |
-| 变更类型 | requirement / scope / schedule / cost / resource | 是 |
+| 变更类型 | requirement / scope / schedule / cost / resource / plan_change | 是 |
 | 描述 | 变更内容描述 | 是 |
 | 变更前内容 | 原始状态 | 是 |
 | 变更后内容 | 目标状态 | 是 |
@@ -61,6 +79,8 @@
 | 关联任务 | T-YYYYMMDD-NNN | 否 |
 | 关联决策 | D-YYYYMMDD-NNN | 否 |
 | Source | 来源 | 是 |
+
+> `plan_change` 类型建议通过"关联任务"字段指向具体任务 T-*，并在"变更后内容"中记录新的 Due Date / Owner。
 
 ### 3.2 变更状态流转
 
@@ -106,7 +126,7 @@ submitted → assessing → approved → implemented
 - 预计进度偏差: [X]%
 
 ### 成本影响
-- 人力成本增量: [X] 万元
+- 人力成本增量: [X] 人天
 - 预算偏差: [X]%
 
 ### 质量影响
@@ -147,6 +167,8 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 7. 更新 `risks/risk-register.md`：新增变更引入的风险（如有）。
 8. 更新 `decisions/decision-log.md`：记录审批决策。
 9. 通知相关干系人。
+
+> 计划变更（`plan_change`）批准后，额外同步更新 `tasks/board.md` 的 `Due Date` / `Owner` 字段，并递增 `Plan Change Count`（若适用，见 `03-task-board-rules.md` §1a）。
 
 ### 6.2 执行输出
 

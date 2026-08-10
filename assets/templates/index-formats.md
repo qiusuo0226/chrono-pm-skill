@@ -40,3 +40,5 @@
 - Change Type：`add` / `update` / `remove` / `status` / `archive`
 - Source：来源文件或会议 ID
 - Confirmed By：确认人姓名（AI 建议的记录为"待确认"）
+
+> **概念域说明**：本条 Change Type 为**概念域 A（记录操作）**。它与 `references/08-change-control-rules.md` / change-log-template.md 的**概念域 B（变更影响分类）**（`requirement/scope/schedule/cost/resource/plan_change`）是不同维度，二者不合并。各事实源 Change Log 用概念域 A；需求/计划变更登记用概念域 B。

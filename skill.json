@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm",
   "displayName": "ChronoPM — Markdown 驱动的 AI 项目管理技能",
-  "version": "1.9.0",
+  "version": "1.10.1",
   "schemaVersion": "0.5.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -43,6 +43,18 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "1.10.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "修复 SKILL_BLUEPRINT §5.3 成熟度分布计数错误(CR-20260810-008 bugfix, Patch)：L3 由 19 修正为 18（与 §5.2 能力矩阵 24 项 CAP 分布 L4=5/L3=18/L2=1 对齐），占比 79%→75%、L2 0%→4%；无能力/契约/规则变更"
+    },
+    {
+      "version": "1.10.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "历史计划全量同步与变更追溯(CR-20260810-008, Minor/contract_change)：新增 CAP-024、R1-R4。R1 历史计划批量导入(.pod/Excel→external_import冻结快照+history登记)；R2 计划变更追踪(board新增Original Due Date/Plan Change Count/Delay Count字段+概念域B追加plan_change)；R3 延期计数与聚合(概念域A/B拆分、A类计数只读board单文件、B类超期实时计算+索引优先)；R4 聚合查询路由(05新增§6.5计数路由/§6.6状态路由)；13号新增R1边界判定表；00意图检测新增4路由；9模板+2新模板(plan-import/delay-stats)；回归套件新增第25模块"
+    },
     {
       "version": "1.9.0",
       "date": "2026-08-10",
@@ -215,7 +227,7 @@
   "blueprint": {
     "file": "SKILL_BLUEPRINT.md",
     "lastUpdated": "2026-08-10",
-    "lastVersion": "1.9.0",
+    "lastVersion": "1.10.1",
     "updateRequiredOn": [
       "major",
       "minor",

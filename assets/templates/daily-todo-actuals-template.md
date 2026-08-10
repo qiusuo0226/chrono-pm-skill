@@ -9,6 +9,7 @@ status: draft
 # Daily Todo Actuals - {actual_date}
 
 > 本文件记录 {actual_date} 当天实际完成情况，用于与计划快照对比。
+> `source_type` 统一值见 `references/15-snapshot-rules.md` §7.1：`personal_daily_reports` / `pm_todo` / `meeting` / `external_import`。本模板保留 `daily_reports` 作为兼容旧值，新写入建议用 `personal_daily_reports`。外部导入（R1）用 `external_import`。
 
 ## 1. Completion Summary
 
@@ -44,6 +45,8 @@ status: draft
 - 已完成：X 项（X%）
 - 未完成：X 项（阻塞 X / 延期 X / 取消 X）
 - 计划外完成：X 项
+
+> 延期统计（Delay Count）不回填到本表；改由 `tasks/board.md` 的 `Delay Count` 字段维护（见 `references/03-task-board-rules.md` §1a）。本表仅供当日核对。
 
 ## Revision Log
 

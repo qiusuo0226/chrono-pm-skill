@@ -1,13 +1,13 @@
 # 计划快照与实际执行规则
 
-本规则用于支持历史计划回查、计划 vs 实际偏差对比。当前待办查询用索引，历史计划回查用快照，执行结果用 actuals。
+本规则用于支持历史计划回查、计划 vs 实际偏差对比、历史计划批量导入。当前待办查询用索引，历史计划回查用快照，执行结果用 actuals。
 
 ---
 
 ## 1. 核心原则
 
 1. **当前待办用索引，历史计划用快照，执行结果用 actuals。**
-2. 快照在每日生成 PM 待办时自动创建，冻结不可静默覆盖。
+2. 快照在每日生成 PM 待办时自动创建，冻结不可静默覆盖；历史计划批量导入生成的快照同样冻结、与 AI 快照不互相覆盖。
 3. 实际执行摘要在处理目标日期日报后自动生成。
 4. 热数据（近 7 天 + 未来 14 天）在 `daily-todo-index.md`，冷数据在 `snapshots/` 和 `actuals/`。
 5. 历史计划查询不得默认全量扫描日报，必须优先读取快照和实际摘要。
@@ -24,7 +24,8 @@ ai/portfolio/todos/
 ├── history-index.md                # 历史快照索引（可变，追加）
 ├── snapshots/                      # 计划快照：当时计划做什么（冻结）
 │   ├── daily/
-│   │   └── {YYYYMMDD}.md
+│   │   ├── {YYYYMMDD}.md           # AI 前向生成
+│   │   └── imported-{YYYYMMDD}.md  # 历史计划批量导入（source_type=external_import）
 │   ├── weekly/
 │   │   └── {YYYY}-W{WW}.md
 │   └── monthly/
@@ -44,6 +45,7 @@ ai/portfolio/todos/
 |---|---|---|---|
 | `daily-todo-index.md` | 当前待办索引 | 可变 | 快速查询今天/明天/近期待办 |
 | `snapshots/daily/{date}.md` | 历史计划快照 | 原则冻结 | 回查某日形成的次日计划 |
+| `snapshots/daily/imported-{date}.md` | 导入计划快照 | 原则冻结 | 回查批量导入的历史计划（external_import） |
 | `actuals/daily/{date}.md` | 实际执行摘要 | 可追加 | 对比某日实际完成情况 |
 | `history-index.md` | 历史快照目录 | 可变（追加） | 快速定位历史计划/实际文件 |
 | `snapshots/weekly/{week}.md` | 周计划快照 | 原则冻结 | 回查某周原计划 |
@@ -72,6 +74,7 @@ history-index.md → snapshots/ + actuals/
 | 生成 PM 明日待办 | `snapshots/daily/{today}.md` + 更新 `history-index.md` |
 | 处理个人日报中的明日计划 | 更新 `personal-todo-index.md` + `daily-todo-index.md` |
 | 生成周计划 | `snapshots/weekly/{week}.md` + 更新 `history-index.md` |
+| 历史计划批量导入（R1） | `snapshots/daily/imported-{date}.md` + 更新 `history-index.md`（见 §8a） |
 
 ---
 
@@ -92,10 +95,16 @@ history-index.md → snapshots/ + actuals/
 | 字段 | 说明 |
 |---|---|
 | snapshot_date | 快照生成日期（当天） |
-| target_date | 计划目标日期（通常为次日） |
+| target_date | 计划目标日期（通常为次日；导入快照可为任意历史/未来日期） |
 | created_at | 生成时间 |
-| source_type | 来源类型（personal_daily_reports / pm_todo / meeting） |
+| source_type | 来源类型（personal_daily_reports / pm_todo / meeting / external_import） |
 | status | frozen（冻结） |
+
+**source_type 语义（统一）**：
+- `personal_daily_reports`：从**个人日报**明日计划提取生成。
+- `pm_todo`：生成 PM 待办时生成。
+- `meeting`：从会议纪要提取生成的计划。
+- `external_import`：从 `.pod`/Excel 等外部文件**批量导入**生成（见 §8a），`daily_reports` 已并入上述语义，历史文件中的 `daily_reports` 按 `personal_daily_reports` 兼容解读。
 
 ### 7.2 快照章节
 
@@ -117,7 +126,7 @@ history-index.md → snapshots/ + actuals/
 |---|---|
 | actual_date | 实际执行日期 |
 | created_at | 生成时间 |
-| source_type | 来源类型（daily_reports） |
+| source_type | 来源类型（personal_daily_reports；沿用历史 `daily_reports` 亦兼容） |
 | status | draft / final |
 
 ### 8.2 章节
@@ -140,11 +149,41 @@ history-index.md → snapshots/ + actuals/
 
 ---
 
+## 8a. 历史计划批量导入快照（external_import，R1）
+
+### 8a.1 触发与目的
+
+用户提供历史计划文件（`.pod` OmniPlan / Excel 计划表）并要"导入历史计划 / 同步进计划体系"时触发。目的是把**一次性回溯灌入**的历史计划落为快照，供回查与后续计划变更追踪，**而非逐日前向生成**。
+
+### 8a.2 数据源与确认
+
+1. 读取 `.pod`/Excel，解析计划字段（Task/Owner/Due Date，如文件含历史任务级别用 `一级/二级` 映射到 Task）。
+2. 生成**导入候选**（含 Original Due Date 映射），输出"建议导入清单"。
+3. **人工确认后**才落库（事实源确认原则）。
+4. 与 `references/13-continuity-rules.md` 划界：13 号管风险/问题/需求等过程记录的结转；R1（本小节）**只**管任务计划数据的批量导入为快照，二者并行不重叠。
+
+### 8a.3 生成文件与命名
+
+- 文件：`snapshots/daily/imported-{date}.md`（date 为计划目标日期）或按周 `snapshots/weekly/imported-{week}.md`。
+- 命名用 `imported-` 前缀，**与 AI 前向生成的 `{date}.md` 区分，不互相覆盖**。
+- frontmatter 字段：`source_type: external_import` + `import_source`（原始文件路径）+ `import_date`（导入动作日期）+ `status: frozen`。
+
+### 8a.4 冻结与修订
+
+- 导入快照同样**默认冻结**；修订通过追加 `Revision Log`（见 §11），不静默覆盖。
+- 导入后同步登记 `history-index.md`（标注 source_type=external_import）。
+
+### 8a.5 与 board 联动
+
+导入的计划若需进入任务看板追踪变更/延期（R2/R3），将解析结果回填 `tasks/board.md`（Original Due Date / Due Date / Plan Change Count / Delay Count），规则见 `references/03-task-board-rules.md`。
+
+---
+
 ## 9. 计划 vs 实际对比规则
 
 当用户查询计划完成情况或计划偏差时，AI 必须同时读取：
 
-1. 对应计划快照 `snapshots/daily/{snapshot_date}.md`
+1. 对应计划快照 `snapshots/daily/{snapshot_date}.md`（导入计划为 `imported-{date}.md`）
 2. 对应实际执行 `actuals/daily/{target_date}.md`
 
 输出对比表：
@@ -171,12 +210,12 @@ history-index.md → snapshots/ + actuals/
 
 ### 10.1 触发词
 
-往日计划、历史计划、过去某天、之前某天、某月某日原计划、某月某日实际完成、计划完成情况、计划偏差、计划有没有完成、上周计划对照、上周二大家原来要做什么、某人上周每天计划
+往日计划、历史计划、过去某天、之前某天、某月某日原计划、某月某日实际完成、计划完成情况、计划偏差、计划有没有完成、上周计划对照、上周二大家原来要做什么、某人上周每天计划、导入的历史计划、同步进来的计划
 
 ### 10.2 查询顺序
 
 1. 读取 `history-index.md`
-2. 定位 `snapshots/daily/{date}.md` 或 `snapshots/weekly/{week}.md`
+2. 定位 `snapshots/daily/{date}.md` 或 `snapshots/weekly/{week}.md`（导入计划定位 `imported-{date}.md`）
 3. 如查询实际完成，读取 `actuals/daily/{date}.md` 或 `actuals/weekly/{week}.md`
 4. 如快照/实际摘要不存在，读取对应月份日报索引
 5. 用户确认后才允许扫描具体日报明细
@@ -190,12 +229,13 @@ history-index.md → snapshots/ + actuals/
 | 8月10日计划完成了吗 | `snapshots/daily/20260809.md` + `actuals/daily/20260810.md` |
 | 上周计划偏差 | `snapshots/weekly/{week}.md` + `actuals/weekly/{week}.md` |
 | 某人过去一周每天计划 | `history-index.md` → 多个 daily snapshots |
+| 导入的那批计划 | `history-index.md` → `snapshots/daily/imported-{date}.md`（source_type=external_import） |
 
 ---
 
 ## 11. 快照冻结规则
 
-1. 快照生成后默认冻结，不得静默覆盖。
+1. 快照生成后默认冻结，不得静默覆盖（含 external_import 导入快照）。
 2. 如发现抽取错误，在快照末尾追加 `Revision Log`。
 3. 修订记录格式：
 
@@ -248,8 +288,10 @@ history-index.md → snapshots/ + actuals/
 
 | 规则 | 职责 |
 |---|---|
-| `05-query-rules.md` | 历史查询路由、热/冷数据分离 |
+| `05-query-rules.md` | 历史查询路由、热/冷数据分离、聚合计数秒答 |
 | `01-daily-report-rules.md` | 日报处理时生成 snapshot 和 actuals |
 | `10-update-trigger-rules.md` | 触发 snapshot/actuals 更新 |
-| `06-file-rules.md` | 快照冻结规则、热/冷数据边界 |
+| `06-file-rules.md` | 快照冻结规则、热/冷数据边界、external_import 命名 |
 | `14-self-check-rules.md` | 快照完整性校验 |
+| `03-task-board-rules.md` | 计划变更计数、延期计数、超期判定（B 类） |
+| `13-continuity-rules.md` | 与 R1 划界（13 管结转，R1 管计划数据导入） |

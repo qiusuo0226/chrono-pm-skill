@@ -10,6 +10,7 @@ status: frozen
 # Daily Todo Snapshot - {snapshot_date}
 
 > 本快照记录 {snapshot_date} 形成的 {target_date} 计划。冻结后不可静默覆盖，修订需追加 Revision Log。
+> `source_type` 取值：`personal_daily_reports` / `pm_todo` / `meeting` / `external_import`（历史计划批量导入，见 `references/15-snapshot-rules.md` §8a）。
 
 ## 1. PM Direct Todos
 

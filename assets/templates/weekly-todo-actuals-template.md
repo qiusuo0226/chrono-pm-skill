@@ -11,6 +11,7 @@ status: draft
 # Weekly Todo Actuals - {week}
 
 > 本文件记录 {week} 周实际完成情况，用于与周计划快照对比。
+> 延期计数（Delay Count）不回填本表，改由 `tasks/board.md` 维护（见 `references/03-task-board-rules.md` §1a）。
 
 ## 1. 计划完成汇总
 
