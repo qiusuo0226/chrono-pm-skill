@@ -6,13 +6,17 @@
 动态生成，替换方式与脚本内既有 datetime.now().strftime 用法一致。
 """
 
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # ============================================================
-# 版本常量
+# 版本常量（单一版本源：scripts/_version.py）
 # ============================================================
-SKILL_VERSION = "1.9.0"
-WORKSPACE_SCHEMA_VERSION = "0.5.0"
+# 从 scripts/_version.py 导入，避免在包内硬编码版本字符串造成失步。
+# 向上定位 scripts/ 目录后按模块名导入，逻辑与 template_renderer 的目录定位一致。
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from _version import SKILL_VERSION, WORKSPACE_SCHEMA_VERSION  # noqa: E402
 
 # 当前年月（用于当年当月目录，替代原硬编码 202608）
 CURRENT_YM = datetime.now().strftime("%Y%m")

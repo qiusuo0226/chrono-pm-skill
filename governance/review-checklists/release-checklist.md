@@ -35,6 +35,14 @@
 - [ ] skill.json blueprint.lastVersion 是否与 VERSION 一致？
 - [ ] CHANGELOG 是否标注 Blueprint Impact？
 
+## Script Version Consistency（脚本层版本一致性）
+
+- [ ] `scripts/_version.py` 的 `SKILL_VERSION` 是否为本次发布版本？
+- [ ] `scripts/chronopm_init/config.py` 是否从 `_version` 导入且不再含版本字面量？
+- [ ] `scripts/migrate_workspace.py` 是否从 `_version` 导入且不再含版本字面量？
+- [ ] `scripts/chronopm_init/file_registry.py` README 是否使用 `{SKILL_VERSION}`/`{WORKSPACE_SCHEMA_VERSION}` 插值（无硬编码版本）？
+- [ ] `VERSION` / `SKILL.md` / `skill.json` / `_version.py` 四处版本号是否一致？
+
 ## Baseline
 
 - [ ] 是否创建新版本基线？

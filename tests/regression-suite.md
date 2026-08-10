@@ -203,6 +203,11 @@
 | SC-1D | 运行生成 `.skill-version.json` | `initializedAt` 为运行当天；月份目录为运行当月 `%Y%m`（非固定值） | positive |
 | SC-1E | 重复运行 | 模板防覆盖逻辑仍生效（不覆盖已有文件） | regression |
 | SC-1F | portfolio 模式缺参 | 缺 --portfolio-name / --sub-projects 时打印对应错误并 exit(1) | negative |
+| SC-1G | `migrate_workspace.py --project-root <tmp> --target-version 1.9.0`（非 dry-run，工作区旧版本 1.0.0） | 读取 `<tmp>/ai/.skill-version.json` 断言 `skillVersion == "1.9.0"`（证明 --target-version 实际写入，而非单一版本源或旧硬编码值） | positive |
+| SC-1H | `python -c "from _version import SKILL_VERSION, WORKSPACE_SCHEMA_VERSION"`（sys.path 含 `scripts/`） | 输出 `SKILL_VERSION == 当前发布版本`（如 1.10.2）、`WORKSPACE_SCHEMA_VERSION == "0.5.0"`（单一版本源生效） | positive |
+| SC-1I | `init_workspace.py --mode single` 在临时目录运行后读取 `.skill-version.json` | 断言 `skillVersion` 等于单一版本源（如 1.10.2），且与 `_version.SKILL_VERSION` 一致（init 链路端到端） | positive |
+| SC-1J | 读取 `migrate_workspace.VERSION_CAPABILITIES` | 断言最大 `version` 字段 == 当前发布版本（如 1.10.1），且包含 1.9.0 条目（能力表补全） | regression |
+| SC-1K | 运行既有 SC-1A~1F | 全部通过（脚本 CLI 与行为不回归） | regression |
 
 ## 20. SKILL Navigation（SKILL.md 导航与下沉完整性）
 
@@ -312,11 +317,11 @@
 | Qoder Adaptation | 7 | 5 | 2 |
 | Initialization Wizard | 5 | 4 | 1 |
 | Information Completeness | 5 | 3 | 2 |
-| Script Contract | 6 | 3 | 3 |
+| Script Contract | 11 | 6 | 5 |
 | SKILL Navigation | 7 | 2 | 5 |
 | File Contract | 4 | 3 | 1 |
 | Daily Report Rules | 4 | 3 | 1 |
 | Query/Requirement/Artifact Rules | 4 | 3 | 1 |
 | PM Profile | 10 | 7 | 3 |
 | Historical Plan Import & Change Tracking | 17 | 11 | 6 |
-| **合计** | **149** | **91** | **58** |
+| **合计** | **154** | **94** | **60** |

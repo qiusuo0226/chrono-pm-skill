@@ -486,8 +486,8 @@ date: "{today}"
 
 ## 版本信息
 
-- Skill 版本：0.4.0
-- Workspace Schema 版本：0.2.0
+- Skill 版本：{SKILL_VERSION}
+- Workspace Schema 版本：{WORKSPACE_SCHEMA_VERSION}
 - 模式：single
 - 详细变更见 Skill 包 `CHANGELOG.md`
 - AI 进入工作区时先读取 `.skill-version.json` 检查版本兼容性
@@ -591,8 +591,8 @@ date: "{today}"
 
 ## 版本信息
 
-- Skill 版本：0.4.0
-- Workspace Schema 版本：0.2.0
+- Skill 版本：{SKILL_VERSION}
+- Workspace Schema 版本：{WORKSPACE_SCHEMA_VERSION}
 - 模式：portfolio
 - 详细变更见 Skill 包 `CHANGELOG.md`
 - AI 进入工作区时先读取 `.skill-version.json` 检查版本兼容性

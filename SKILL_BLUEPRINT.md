@@ -525,6 +525,7 @@ ChronoPM 建立在三层信任模型之上：
 
 | 版本 | 变更 | 影响 |
 |---|---|---|
+| 1.10.2 | 脚本层版本治理修复（CR-20260810-009）：新建 `scripts/_version.py` 单一版本源（SKILL_VERSION/WORKSPACE_SCHEMA_VERSION）；init/migrate 脚本与 config.py 统一从该源读取，消除 config.py(1.9.0)/migrate_workspace.py(1.6.0) 硬编码失步；修复 migrate `--target-version` 被忽略的写入 bug；补全 VERSION_CAPABILITIES(1.7.0~1.10.1)；README 生成改用版本源插值；release-checklist 新增脚本层版本一致性检查项 | 无能力/契约/规则变更（CAP-001~024 不变）；Workspace Schema 保持 0.5.0；回归由 149 增至 154 用例（新增 SC-1G~1K） |
 | 1.10.1 | 修复 CR-008 执行遗留计数错误（bugfix）：§5.3 成熟度分布 L3 由 19 修正为 18、占比 79%→75%、L2 0%→4%，与 §5.2 能力矩阵 24 项 CAP（L4=5/L3=18/L2=1）对齐 | 无能力/契约/规则变更；仅文档统计修正；回归 149 用例不变 |
 | 1.10.0 | 历史计划全量同步与变更追溯（CR-20260810-008）：新增 CAP-024；R1 external_import 批量导入、R2 board 计数字段+plan_change、R3 延期计数（A 类计数/B 类超期拆分）、R4 聚合查询路由（05 §6.5/§6.6）；13 号 R1 边界判定；00 意图检测 4 路由；9 模板 + 2 新模板 | 新增能力点 CAP-024；规则层 contract_change；Workspace Schema 保持 0.5.0（无迁移）；回归 149 用例 |
 | 1.9.0 | PM Profile 用户习惯学习（CR-20260810-007）：新增 CAP-023、`references/21-pm-profile-rules.md`、`assets/templates/pm-profile-template.md`；复用 domain-glossary 状态机；新增 Level 2.5 优先级；SKILL.md/00 核心契约增量修改 | 新增能力点 CAP-023；不影响现有能力；Workspace Schema 保持 0.5.0 |

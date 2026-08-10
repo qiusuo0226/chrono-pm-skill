@@ -19,10 +19,12 @@ from datetime import datetime
 from pathlib import Path
 
 # ============================================================
-# 版本常量（与 init_workspace.py 保持一致）
+# 版本常量（单一版本源：scripts/_version.py）
 # ============================================================
-CURRENT_SKILL_VERSION = "1.6.0"
-CURRENT_SCHEMA_VERSION = "0.5.0"
+# 从同一目录的 _version.py 导入（本脚本运行于 scripts/，scripts/ 天然在 sys.path[0]），
+# 避免在迁移脚本内硬编码版本字符串造成与 Skill 本体版本失步。
+from _version import SKILL_VERSION as CURRENT_SKILL_VERSION
+from _version import WORKSPACE_SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 
 # ============================================================
 # Schema 版本对应的目录结构定义
@@ -163,7 +165,53 @@ VERSION_CAPABILITIES = [
         "new_files": ["portfolio/context/domain-glossary.md", "context/domain-glossary.md"],
         "note": "词库文件按工作区模式创建：portfolio 模式创建 portfolio/context/domain-glossary.md，single 模式创建 context/domain-glossary.md。不自动抽取历史术语。",
     },
+    {
+        "version": "1.7.0",
+        "schema": "0.5.0",
+        "capabilities": ["init_wizard", "iteration_register"],
+        "new_dirs": [],
+        "new_files": ["plans/iteration-register.md"],
+        "note": "迭代登记（iteration-register）为 single 子项目 plans 下新增文件；portfolio 模式不生成。",
+    },
+    {
+        "version": "1.8.0",
+        "schema": "0.5.0",
+        "capabilities": ["skill_slimming"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.0 为 SKILL.md 瘦身，无工作区层变更。",
+    },
+    {
+        "version": "1.9.0",
+        "schema": "0.5.0",
+        "capabilities": ["pm_profile"],
+        "new_dirs": [],
+        "new_files": ["portfolio/context/pm-profile.md", "context/pm-profile.md"],
+        "note": "PM Profile 按工作区模式创建：portfolio 模式 portfolio/context/pm-profile.md，single 模式 context/pm-profile.md。",
+    },
+    {
+        "version": "1.10.0",
+        "schema": "0.5.0",
+        "capabilities": ["plan_import_change_tracking"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "R1-R4 历史计划导入追踪复用 v1.1.0 已建立的 portfolio/todos 目录与 history-index.md、snapshots/daily 等；imported-{date}.md 为运行时动态生成，非模板文件，故此处无新增目录/文件，避免与 v1.1.0 重复误报。",
+    },
+    {
+        "version": "1.10.1",
+        "schema": "0.5.0",
+        "capabilities": ["blueprint_stat_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.10.1 仅修复 SKILL_BLUEPRINT §5.3 成熟度统计，无工作区层变更。",
+    },
 ]
+
+# 已知结构性缺漏（历史遗留，不影响本次修复，供后续维护 CR 参考）：
+#   VERSION_CAPABILITIES 中缺少 0.2.0、0.6.0、1.3.0、1.4.0、1.5.0 的独立条目。
+#   若某工作区的 .skill-version.json 恰好等于上述缺漏版本号，get_capabilities_since()
+#   将因无法匹配 from_version 而返回空（既有行为）。此场景罕见，留待后续维护 CR 补全。
+
 
 
 def get_skill_version():
@@ -283,8 +331,14 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
             target.write_text(f"---\ndoc_type: auto-migrated\nmigrated_at: {datetime.now().strftime('%Y-%m-%d')}\n---\n", encoding="utf-8")
 
 
-def update_version_file(ai_dir: Path, mode: str):
-    """更新 .skill-version.json"""
+def update_version_file(ai_dir: Path, mode: str, skill_version: str = None):
+    """更新 .skill-version.json
+
+    写入的 skillVersion 优先使用传入的 skill_version（即迁移目标版本），
+    缺省时回落为单一版本源 CURRENT_SKILL_VERSION。
+    """
+    # 实际写入的目标版本：显式传入优先，否则用单一版本源（skill_version 即 --target-version 或当前版本）
+    target_ver = skill_version or CURRENT_SKILL_VERSION
     version_path = ai_dir / ".skill-version.json"
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
 
@@ -292,14 +346,14 @@ def update_version_file(ai_dir: Path, mode: str):
         with open(version_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         old_version = data.get("skillVersion", "unknown")
-        data["skillVersion"] = CURRENT_SKILL_VERSION
+        data["skillVersion"] = target_ver
         data["workspaceSchemaVersion"] = CURRENT_SCHEMA_VERSION
         data["lastMigratedAt"] = now
     else:
         old_version = "unknown"
         data = {
             "skill": "chrono-pm",
-            "skillVersion": CURRENT_SKILL_VERSION,
+            "skillVersion": target_ver,
             "workspaceSchemaVersion": CURRENT_SCHEMA_VERSION,
             "mode": mode,
             "initializedAt": now,
@@ -312,8 +366,13 @@ def update_version_file(ai_dir: Path, mode: str):
     return old_version
 
 
-def append_migration_log(ai_dir: Path, old_version: str, missing_dirs: list, missing_files: list):
-    """追加迁移日志"""
+def append_migration_log(ai_dir: Path, old_version: str, missing_dirs: list, missing_files: list, skill_version: str = None):
+    """追加迁移日志
+
+    记录的新版本号优先使用传入的 skill_version（即迁移目标版本），
+    缺省时回落为单一版本源 CURRENT_SKILL_VERSION。
+    """
+    target_ver = skill_version or CURRENT_SKILL_VERSION
     log_path = ai_dir / "logs" / "migration-log.md"
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -321,11 +380,11 @@ def append_migration_log(ai_dir: Path, old_version: str, missing_dirs: list, mis
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
 
     entry = f"""
-## {today} - 迁移 {old_version} → {CURRENT_SKILL_VERSION}
+## {today} - 迁移 {old_version} → {target_ver}
 
 ### 迁移信息
 - 旧版本：{old_version}
-- 新版本：{CURRENT_SKILL_VERSION}
+- 新版本：{target_ver}
 - Schema 版本：{CURRENT_SCHEMA_VERSION}
 - 迁移时间：{now}
 
@@ -536,8 +595,8 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
 
     if not missing_dirs and not missing_files:
         print(f"\n✅ 目录和文件已完整，仅更新版本号")
-        old_version = update_version_file(ai_dir, mode)
-        append_migration_log(ai_dir, old_version, [], [])
+        old_version = update_version_file(ai_dir, mode, skill_version)
+        append_migration_log(ai_dir, old_version, [], [], skill_version)
         print(f"\n✅ 版本已更新到 {skill_version}")
         return
 
@@ -570,12 +629,12 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
 
     # 更新版本号
     print(f"\n更新版本号...")
-    old_version = update_version_file(ai_dir, mode)
+    old_version = update_version_file(ai_dir, mode, skill_version)
     print(f"  ✓ {old_version} → {skill_version}")
 
     # 记录迁移日志
     print(f"\n记录迁移日志...")
-    append_migration_log(ai_dir, old_version, missing_dirs, missing_files)
+    append_migration_log(ai_dir, old_version, missing_dirs, missing_files, skill_version)
     print(f"  ✓ logs/migration-log.md 已追加")
 
     # 生成健康文件
