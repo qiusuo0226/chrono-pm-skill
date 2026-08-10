@@ -11,7 +11,7 @@ from datetime import datetime
 # ============================================================
 # 版本常量
 # ============================================================
-SKILL_VERSION = "1.7.0"
+SKILL_VERSION = "1.9.0"
 WORKSPACE_SCHEMA_VERSION = "0.5.0"
 
 # 当前年月（用于当年当月目录，替代原硬编码 202608）
@@ -235,4 +235,5 @@ ALL_TEMPLATE_FILES = [
     "todo-history-index-template.md",
     "domain-glossary-template.md",
     "iteration-register-template.md",
+    "pm-profile-template.md",
 ]

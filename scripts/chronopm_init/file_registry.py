@@ -439,6 +439,32 @@ def create_glossary(project_root: str, mode: str):
         print(f"  警告: 模板文件不存在: {src}")
 
 
+def create_pm_profile(project_root: str, mode: str):
+    """创建 PM 偏好档案模板，不自动抽取历史偏好"""
+    templates_dir = get_templates_dir()
+    template_name = "pm-profile-template.md"
+    src = templates_dir / template_name
+
+    if mode == "portfolio":
+        target_dir = Path(project_root) / "ai" / "portfolio" / "context"
+    else:
+        target_dir = Path(project_root) / "ai" / "context"
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target_path = target_dir / "pm-profile.md"
+
+    if target_path.exists():
+        print(f"  PM 偏好档案已存在，跳过: {target_path}")
+        return
+
+    if src.exists():
+        shutil.copy2(src, target_path)
+        print(f"  创建 PM 偏好档案: {target_path}")
+        print(f"  AI 将在交互中被动学习用户习惯，写入 pending 后经用户确认升为 confirmed")
+    else:
+        print(f"  警告: 模板文件不存在: {src}")
+
+
 def generate_single_readme(project_name: str) -> str:
     """生成单项目 README.md"""
     today = datetime.now().strftime("%Y-%m-%d")

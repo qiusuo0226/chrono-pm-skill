@@ -22,7 +22,7 @@ ChronoPM 项目工作区初始化脚本（入口壳）
 
 import argparse
 
-from chronopm_init.file_registry import create_glossary
+from chronopm_init.file_registry import create_glossary, create_pm_profile
 from chronopm_init.validators import validate_and_handle
 from chronopm_init.workspace_builder import create_portfolio, create_single_project
 
@@ -63,6 +63,13 @@ def main():
         help="初始化时创建领域词库模板（内置用户已确认初始词条），不自动抽取历史术语",
     )
 
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        default=False,
+        help="显式创建 PM 偏好档案（新工作区默认自动创建，此参数用于单独补建）",
+    )
+
     args = parser.parse_args()
 
     if args.mode == "portfolio":
@@ -72,10 +79,14 @@ def main():
         create_portfolio(args.project_root, args.portfolio_name, sub_projects)
         if args.glossary:
             create_glossary(args.project_root, "portfolio")
+        if args.profile:
+            create_pm_profile(args.project_root, "portfolio")
     else:
         create_single_project(args.project_root, args.project_name)
         if args.glossary:
             create_glossary(args.project_root, "single")
+        if args.profile:
+            create_pm_profile(args.project_root, "single")
 
 
 if __name__ == "__main__":

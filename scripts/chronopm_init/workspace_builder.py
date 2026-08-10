@@ -27,6 +27,7 @@ from .file_registry import (
     create_lessons_file,
     create_migration_log,
     create_outputs_dir,
+    create_pm_profile,
     create_project_rules,
     create_skill_version,
     generate_portfolio_readme,
@@ -98,6 +99,10 @@ def create_single_project(project_root: str, project_name: str = ""):
     # 9. 创建项目级规则文件
     print("\n创建项目级规则文件...")
     create_project_rules(ai_dir, project_name, is_portfolio=False)
+
+    # 9c. 创建 PM 偏好档案
+    print("\n创建 PM 偏好档案...")
+    create_pm_profile(project_root, "single")
 
     # 9b. 创建 continuity 目录
     print("\n创建阶段衔接目录...")
@@ -177,6 +182,10 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
     # === 5. 创建项目集级规则文件 ===
     print("\n创建项目集级规则文件...")
     create_project_rules(portfolio_dir, portfolio_name, is_portfolio=True)
+
+    # === 5b. 创建 PM 偏好档案 ===
+    print("\n创建 PM 偏好档案...")
+    create_pm_profile(project_root, "portfolio")
 
     # === 6. 创建项目集级 AI 操作日志 ===
     print("\n创建项目集级 AI 操作日志...")

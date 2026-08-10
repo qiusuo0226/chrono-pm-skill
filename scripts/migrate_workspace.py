@@ -672,6 +672,52 @@ def create_glossary_for_existing(project_root: str):
         print(f"未检测到旧术语文件。")
 
 
+def create_pm_profile_for_existing(project_root: str):
+    """为旧工作区创建 PM 偏好档案模板，不自动抽取历史偏好。"""
+    ai_dir = Path(project_root) / "ai"
+    if not ai_dir.exists():
+        print(f"错误: {ai_dir} 不存在")
+        return
+
+    # 检测模式：优先 portfolio，其次 single
+    portfolio_dir = ai_dir / "portfolio" / "context"
+    single_dir = ai_dir / "context"
+
+    if portfolio_dir.exists():
+        target_dir = portfolio_dir
+        mode_label = "项目集(portfolio)"
+    elif single_dir.exists():
+        target_dir = single_dir
+        mode_label = "单项目(single)"
+    else:
+        print(f"错误: 未找到 context 目录，无法确定工作区模式")
+        print(f"  尝试查找: {portfolio_dir}")
+        print(f"  尝试查找: {single_dir}")
+        return
+
+    print(f"检测到工作区模式: {mode_label}")
+    print(f"PM 偏好档案目标路径: {target_dir / 'pm-profile.md'}")
+
+    target_path = target_dir / "pm-profile.md"
+
+    if target_path.exists():
+        print(f"PM 偏好档案已存在，不覆盖: {target_path}")
+        return
+
+    # 创建 PM 偏好档案模板
+    templates_dir = get_templates_dir()
+    src = templates_dir / "pm-profile-template.md"
+
+    if src.exists():
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target_path)
+        print(f"PM 偏好档案已创建: {target_path}")
+        print(f"   AI 将在交互中被动学习用户习惯，写入 pending 后经用户确认升为 confirmed")
+    else:
+        print(f"错误: 模板文件不存在: {src}")
+        return
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="ChronoPM 工作区迁移脚本")
     parser.add_argument(
@@ -701,9 +747,17 @@ if __name__ == "__main__":
         default=False,
         help="为旧工作区创建领域词库模板（内置用户已确认初始词条），不自动抽取历史术语",
     )
+    parser.add_argument(
+        "--create-profile",
+        action="store_true",
+        default=False,
+        help="为旧工作区创建 PM 偏好档案模板，AI 将在交互中被动学习用户习惯",
+    )
 
     args = parser.parse_args()
     if args.create_glossary:
         create_glossary_for_existing(args.project_root)
+    elif args.create_profile:
+        create_pm_profile_for_existing(args.project_root)
     else:
         migrate_workspace(args.project_root, args.dry_run, args.target_version, args.index_mode)

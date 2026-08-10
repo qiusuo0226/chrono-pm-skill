@@ -247,6 +247,23 @@
 
 ---
 
+## 24. PM Profile（用户偏好学习）
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| PP-001 | pm-profile.md 存在且有 confirmed 偏好"回复长度=简洁" | AI 输出采用简洁格式 | positive |
+| PP-002 | pm-profile.md 不存在 | 跳过偏好加载，按默认格式输出，不报错 | regression |
+| PP-003 | 用户说"以后先给结论再分析" | 直接写入 confirmed，本轮生效 | positive |
+| PP-004 | 用户连续 3 次未纠正简洁格式 | 写入 pending，末尾输出偏好学习提示 | positive |
+| PP-005 | 用户说"确认 PF001" | pending → confirmed，更新 Change Log | positive |
+| PP-006 | 用户说"否定 PF001" | pending → rejected，不再自动建议 | positive |
+| PP-007 | 用户说"我的偏好" | 输出当前 Profile 全貌（confirmed + pending + rejected） | positive |
+| PP-008 | confirmed 偏好"回复长度=简洁" vs project-rules.md 指定"详细格式" | project-rules 优先，输出详细格式 | regression |
+| PP-009 | 处理日报时 PM Profile 加载 | confirmed 偏好应用于日报输出格式，pending 不直接应用 | positive |
+| PP-010 | pm-profile.md 中 pending 偏好 | pending 不直接改变 AI 输出行为，仅标注候选 | regression |
+
+---
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -274,4 +291,5 @@
 | File Contract | 4 | 3 | 1 |
 | Daily Report Rules | 4 | 3 | 1 |
 | Query/Requirement/Artifact Rules | 4 | 3 | 1 |
-| **合计** | **122** | **73** | **49** |
+| PM Profile | 10 | 7 | 3 |
+| **合计** | **132** | **80** | **52** |
