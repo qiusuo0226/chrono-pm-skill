@@ -1,0 +1,8 @@
+# Python compiled caches
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+Thumbs.db
+.DS_Store

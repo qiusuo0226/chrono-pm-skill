@@ -1,0 +1,64 @@
+# Skill Contract
+
+> 本文件是 ChronoPM Skill 的核心契约，AI 修改 Skill 时必须先读取本文件，不得违反以下硬约束。
+
+## Skill Purpose
+
+本 Skill 用于项目集/项目管理，支持日报、周报、任务、风险、问题、资源、输出物、历史衔接、待办查询、计划快照、自查校验等管理场景。
+
+## Hard Constraints
+
+1. `ai/` 是事实源目录，`outputs/` 是生成物目录，两者不得混用。
+2. 生成文件不得混入 `ai/`，事实源更新不得写入 `outputs/`。
+3. 历史项目内容不得直接覆盖当前事实源，必须走衔接流程。
+4. 查询类请求必须索引优先，禁止默认创建临时脚本。
+5. 事实源更新必须经过确认或明确触发。
+6. Skill 变更必须先生成变更工单。
+7. 未经用户确认，不得修改核心契约层。
+8. 任何目录结构变更必须提升 workspace schema 版本。
+9. 快照冻结后不可静默覆盖，修改需追加 Revision Log。
+10. 同一人同一天只允许一份日报文件，多次提交合并追加不覆盖。
+
+## Protected Capabilities
+
+以下能力必须长期保持可用，修改时必须跑对应回归用例：
+
+| Capability | ID | Description |
+|---|---|---|
+| daily_report | DAILY | 个人/项目日报管理（含合并幂等性） |
+| weekly_report | WEEKLY | 周报生成和项目集汇总 |
+| pm_daily_todo | PMTODO | PM 每日待办（9 章节全景视图） |
+| quick_query | QUERY | 快速查询（索引优先） |
+| output_artifact | OUTPUT | 输出物管理（批次目录+草稿确认） |
+| continuity | CONT | 历史阶段衔接（结转+不可覆盖） |
+| resource_management | RES | 资源管理（状态+历史分离） |
+| todo_snapshot | SNAP | 计划快照和实际对照 |
+| self_check | CHECK | 自查与完整性校验 |
+| versioning | VER | 版本管理和兼容性检查 |
+| excel_generation | EXCEL | Excel 生成规范 |
+| update_trigger | TRIG | 更新意图识别和触发 |
+| init_wizard | INIT | 项目初始化向导（六步引导建档） |
+| completeness_check | COMPLENESS | 信息完整性巡检与补全提醒（P0-P3分级） |
+
+## Rule Layer Classification
+
+| Layer | Files | Protection Level |
+|---|---|---|
+| 核心契约层 | SKILL.md, skill.json, governance/contracts/skill-contract.md, references/00-pm-main-rules.md | 强保护：变更工单 + contract_change + 全量回归 + 用户确认 |
+| 执行规则层 | references/01~15 | 受控迭代：变更工单 + 影响分析 + 相关回归 |
+| 模板与测试层 | assets/templates/, tests/ | 低风险迭代：记录 CHANGELOG |
+| 文档层 | SKILL_BLUEPRINT.md | 轻量治理：普通更新记录 CHANGELOG；结构性变更走 CR |
+| 脚本层 | scripts/ | 受控迭代：变更工单 + 语法检查 + 相关回归 |
+
+## Version Rules
+
+| 变更类型 | 版本提升 |
+|---|---|
+| 核心契约变化 | Major 或 Minor |
+| 新增能力或目录结构 | Minor + workspace schema |
+| 规则修复 | Patch |
+| 仅新增测试或模板 | Patch |
+
+## Baseline Rule
+
+每个稳定版本必须生成基线快照到 `governance/baselines/{version}/`，至少包含 SKILL.md、VERSION、skill.json、references/、tests/regression-suite.md。
