@@ -69,6 +69,16 @@ SUB_PROJECT_050_DIRS = [
     "continuity",
 ]
 
+# Schema 0.6.0 新增的 change-log 分层归档目录（single 模式在 ai/ 下）
+SCHEMA_060_DIRS = [
+    "change-log/archive",
+]
+
+# Schema 0.6.0 项目集模式新增目录（portfolio 模式下，change-log 在 portfolio 层）
+PORTFOLIO_060_DIRS = [
+    "change-log/archive",
+]
+
 # ============================================================
 # 每个版本新增的能力检测清单
 # ============================================================
@@ -205,6 +215,28 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v1.10.1 仅修复 SKILL_BLUEPRINT §5.3 成熟度统计，无工作区层变更。",
     },
+    {
+        "version": "1.11.0",
+        "schema": "0.6.0",
+        "capabilities": ["proactive_change", "pending_index", "change_log_archive"],
+        "new_dirs": ["change-log/archive"],
+        "portfolio_dirs": ["change-log/archive"],
+        "new_files": [
+            "pending-changes.md",
+            "change-log/index.md",
+            "portfolio/pending-changes.md",
+            "portfolio/change-log/index.md",
+        ],
+        "note": "v1.11.0 主动变更+人工确认（CR-20260811-002）：pending-changes.md 为 Change Log '待确认' 条目的子集视图索引（single 在 ai/pending-changes.md，portfolio 在 ai/portfolio/pending-changes.md）；change-log 分层归档（活跃区 50 行/30 天 → change-log/archive/YYYYMM-change-log.md + change-log/index.md 导航）。",
+    },
+    {
+        "version": "1.12.0",
+        "schema": "0.6.0",
+        "capabilities": ["workspace_cleanliness"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.12.0 工作空间清洁度治理（CR-20260811-003）：新增§18根目录白名单、§19交付物类型控制、§20引用完整性约束；§2流程10步→12步；release-checklist新增清洁度检查组；修复F-01~F-11历史污染；回归新增CL-001~CL-004。无工作区结构变更。",
+    },
 ]
 
 # 已知结构性缺漏（历史遗留，不影响本次修复，供后续维护 CR 参考）：
@@ -251,6 +283,14 @@ def check_missing_dirs(ai_dir: Path, capabilities: list, is_portfolio: bool = Fa
             if not full_path.exists():
                 missing.append(d)
 
+        # 0.6.0 portfolio 模式 change-log 归档目录位于 portfolio 层
+        p_dirs = cap.get("portfolio_dirs", [])
+        if is_portfolio:
+            for d in p_dirs:
+                fp = (ai_dir / "portfolio" / d)
+                if not fp.exists():
+                    missing.append(f"portfolio/{d}")
+
         # external_dirs（如 outputs/）
         ext_dirs = cap.get("external_dirs", [])
         for d in ext_dirs:
@@ -270,6 +310,15 @@ def check_missing_files(ai_dir: Path, capabilities: list, is_portfolio: bool = F
             if f == "portfolio/context/domain-glossary.md" and not is_portfolio:
                 continue
             if f == "context/domain-glossary.md" and is_portfolio:
+                continue
+            # 0.6.0 pending/change-log 索引按工作区模式过滤
+            if f == "portfolio/pending-changes.md" and not is_portfolio:
+                continue
+            if f == "pending-changes.md" and is_portfolio:
+                continue
+            if f == "portfolio/change-log/index.md" and not is_portfolio:
+                continue
+            if f == "change-log/index.md" and is_portfolio:
                 continue
             full_path = ai_dir / f
             if not full_path.exists():

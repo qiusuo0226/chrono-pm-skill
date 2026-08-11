@@ -1,0 +1,255 @@
+{
+  "name": "chrono-pm",
+  "displayName": "ChronoPM — Markdown 驱动的 AI 项目管理技能",
+  "version": "1.10.2",
+  "schemaVersion": "0.5.0",
+  "supportedWorkspaceSchema": {
+    "min": "0.1.0",
+    "current": "0.5.0"
+  },
+  "migrations": [
+    {
+      "from": "0.1.0",
+      "to": "0.2.0",
+      "description": "项目集模式+资源管理+业务目录不侵入"
+    },
+    {
+      "from": "0.2.0",
+      "to": "0.3.0",
+      "description": "输出物管理 outputs/ 目录"
+    },
+    {
+      "from": "0.3.0",
+      "to": "0.4.0",
+      "description": "阶段衔接 continuity/ 目录"
+    },
+    {
+      "from": "0.4.0",
+      "to": "0.5.0",
+      "description": "待办索引+计划快照 todos/snapshots/actuals 目录"
+    }
+  ],
+  "description": "以 Markdown 文件为事实源、AI 为辅助、人工确认为控制点的项目管理技能，覆盖需求管理、任务跟踪、进度管控、风险与问题、里程碑、成本与P&L、日报周报、会议纪要、决策记录、复盘、项目集统筹、人员资源协调与流转、更新意图识别、初始化向导、迭代管理、信息完整性巡检与补全提醒、PM 偏好学习与输出适配等全链路。",
+  "modes": [
+    "single",
+    "portfolio"
+  ],
+  "defaultMode": "portfolio",
+  "entry": "SKILL.md",
+  "referencesDir": "references",
+  "templatesDir": "assets/templates",
+  "scriptsDir": "scripts",
+  "requires": {
+    "python": ">=3.9"
+  },
+  "versionHistory": [
+    {
+      "version": "1.10.2",
+      "date": "2026-08-11",
+      "schemaVersion": "0.5.0",
+      "summary": "脚本层版本治理修复(CR-20260810-009, Patch)：新建 scripts/_version.py 作为 SKILL_VERSION/WORKSPACE_SCHEMA_VERSION 单一版本源，init/migrate 脚本与 config.py 统一从该源读取，消除 config.py(1.9.0)与 migrate_workspace.py(1.6.0)的硬编码版本失步；修复 migrate --target-version 被忽略的 bug（update_version_file/append_migration_log 现实际使用目标版本写入）；补全 VERSION_CAPABILITIES(1.7.0~1.10.1)；README 生成改用版本源插值；release-checklist 新增脚本层版本一致性检查项；新增回归用例 SC-1G~1K"
+    },
+    {
+      "version": "1.10.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "修复 SKILL_BLUEPRINT §5.3 成熟度分布计数错误(CR-20260810-008 bugfix, Patch)：L3 由 19 修正为 18（与 §5.2 能力矩阵 24 项 CAP 分布 L4=5/L3=18/L2=1 对齐），占比 79%→75%、L2 0%→4%；无能力/契约/规则变更"
+    },
+    {
+      "version": "1.10.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "历史计划全量同步与变更追溯(CR-20260810-008, Minor/contract_change)：新增 CAP-024、R1-R4。R1 历史计划批量导入(.pod/Excel→external_import冻结快照+history登记)；R2 计划变更追踪(board新增Original Due Date/Plan Change Count/Delay Count字段+概念域B追加plan_change)；R3 延期计数与聚合(概念域A/B拆分、A类计数只读board单文件、B类超期实时计算+索引优先)；R4 聚合查询路由(05新增§6.5计数路由/§6.6状态路由)；13号新增R1边界判定表；00意图检测新增4路由；9模板+2新模板(plan-import/delay-stats)；回归套件新增第25模块"
+    },
+    {
+      "version": "1.9.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "PM Profile 用户习惯学习(CR-20260810-007, Minor/contract_change)：新增 CAP-023、references/21-pm-profile-rules.md、assets/templates/pm-profile-template.md；复用 domain-glossary 的 pending→confirmed 状态机；AI 被动观察用户行为，3次一致后写入pending，确认后升为confirmed，影响输出格式/交互风格/信息侧重；新增Level 2.5规则优先级；SKILL.md/00核心契约增量修改；init/migrate脚本支持PM Profile创建"
+    },
+    {
+      "version": "1.8.4",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "升级路线收尾(CR-20260810-006, Patch)：C9 全量回归 23模块/122用例(73正向/49回归)全部通过，C10 版本治理收尾全触点同步至1.8.4，Blueprint 元数据校正(DEBT-05模板数35→38、TODO-05回归用例数70→122)，生成正式回归报告"
+    },
+    {
+      "version": "1.8.3",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "查询/需求/输出物规则表格化(CR-20260810-005, Patch)：05-query-rules.md 413→252行、11-output-artifact-rules.md 341→204行库内规范化(CAP-005/006)，07-requirement-rules.md 保持139行格式统一(CAP-008)，不删语义、不新增模板文件"
+    },
+    {
+      "version": "1.8.2",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "日报规则重构(CR-20260810-004, Patch)：01-daily-report-rules.md 瘦身 594→221行，6个文件模板外移为模板指针，删除§2.3重复块，术语归一化下沉至17号§4/§6，压缩AI输出片段为内联格式要点"
+    },
+    {
+      "version": "1.8.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "文件管理规则重构(CR-20260810-003, Patch)：06-file-rules.md 瘦身 587→299行，§0工作区版本外移至新建 20-workspace-version-rules.md，§0c词库文件规范并入17§17，§6索引格式代码块移至 assets/templates/index-formats.md，06章节编号修复为§1-§10"
+    },
+    {
+      "version": "1.8.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "SKILL.md 瘦身(CR-20260810-002, Minor/contract_change)：478行→297行，状态枚举/输出规范/容忍度/里程碑下沉至 00-pm-main-rules.md，目录树高层级化，工作流改引用"
+    },
+    {
+      "version": "1.7.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "脚本重构(CR-20260810-001)：init_workspace.py 拆分为 chronopm_init 包，9处硬编码202608改动态月份，CLI与产物结构不变"
+    },
+    {
+      "version": "1.7.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "初始化向导+迭代正式化+信息完整性巡检：18-init-wizard-rules.md(六步引导建档)、19-info-completeness-rules.md(7层P0-P3巡检)、iteration-register-template.md(ITR-NN迭代登记册)、6个模板增强(合同时间字段/迭代概览/所属迭代/迭代分配/迭代数列)、init脚本增强(生成迭代登记册+向导引导提示)、SKILL.md路由+编码+索引增强、00主规则意图检测增强、10更新触发+完整性检查机制"
+    },
+    {
+      "version": "1.6.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "资源事实源修复：人员查询优先级规则(05§5.4a)、候选资源变更规则(01)、register/context一致性检查(09§5.6)、project-brief指针化(06/模板)、Blueprint版本号修正及CAP-019补全、目录树缩进修正"
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.1.0",
+      "summary": "初始版本：9份提示词规则(00-08) + 11个模板 + init_workspace.py(单项目模式)"
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.1.0",
+      "summary": "根据实际云文档结构重写8个模板，新增lessons-learned和project-context模板，模板贴合实际管理习惯"
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.2.0",
+      "summary": "项目集模式：portfolio/projects分层、业务目录不侵入、人员资源管理(resource-register+transfer-log)、09-portfolio-rules.md、4个新模板、init脚本支持--mode portfolio"
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.2.0",
+      "summary": "更新触发机制：10-update-trigger-rules.md(四级触发+权限分级)、project-brief.md(AI首读入口)、00规则增加默认意图检测、06规则增加权限分级、版本控制体系"
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "输出物管理：11-output-artifact-rules.md(批次目录+草稿确认导出流程+格式询问+归档规则)、outputs/目录(与ai/同级)、outputs-index模板+manifest模板"
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "Excel生成规范：12-excel-generation-rules.md(8种文档sheet结构+列头+数据验证+公式+条件格式)、成本测算询问式细化、recalc+audit校验"
+    },
+    {
+      "version": "0.7.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "目录层级优化(YYYYMM单级)、个人进度自动联动(日报更新→任务/里程碑/风险/问题/工时自动同步)、月度索引规则、文件阈值规则"
+    },
+    {
+      "version": "0.7.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "日报合并幂等性约束：同一人同一天多提交合并追加不覆盖、6种字段合并策略、更新记录格式"
+    },
+    {
+      "version": "0.8.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "项目阶段衔接：13-continuity-rules.md(5种导入模式+内容路由+结转流程+冲突检测+不可覆盖)、continuity/目录、4个模板"
+    },
+    {
+      "version": "0.9.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "快速查询路由+待办索引体系：Quick Query路由表+查询性能规则+禁止默认临时脚本+portfolio/todos/目录+PM待办模板(全团队聚合)"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "正式版：自查与完整性校验(索引预建+D1-D10/M1-M7/R1-R6/T1-T7自查清单+多源交叉校验+遗漏补救+索引过期检测)"
+    },
+    {
+      "version": "1.0.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "PM待办查询输出规范：9章节全景视图+禁止只列PM个人任务"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "计划快照与实际执行：snapshots(冻结)+actuals(可追加)+history-index+热冷分离+计划vs实际偏差对比+Todo ID稳定"
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "变更治理与回归测试：16-skill-governance-rules(变更工单+核心契约保护+最小补丁+回滚)+governance/目录+tests/regression-suite(70用例14模块)"
+    },
+    {
+      "version": "1.3.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "工作区升级感知：健康检查+功能触发检查+兼容模式+迁移模式(structure-only/recent-7-days/full-rebuild)+提醒频率控制+migrate_workspace.py增强"
+    },
+    {
+      "version": "1.3.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "升级方案审查约束：16-skill-governance-rules新增AP审查文档(7章节)+禁止跳过审查"
+    },
+    {
+      "version": "1.4.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "Blueprint与外部审查：新增SKILL_BLUEPRINT.md(13章节架构蓝图)+skill.json blueprint元数据+治理规则§17+发布检查清单+文档层分类"
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "Qoder屏闪适配：新增QODER_RULES.md轻量入口(快捷路由+最小读取原则+数据来源声明+安全升级规则)、05-query-rules.md新增§6最小读取原则+§7数据来源声明"
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "领域术语词库：17-domain-glossary-rules.md(状态机+置信度+9步归一化+纠错+自动学习pending+确认式学习+索引+去重+扩容)、domain-glossary-template.md(内置外资/农专初始词条)、01/02/05/06/10规则增加术语归一化预处理、SKILL.md路由追加17、init/migrate脚本新增--glossary/--create-glossary参数"
+    }
+  ],
+  "blueprint": {
+    "file": "SKILL_BLUEPRINT.md",
+    "lastUpdated": "2026-08-11",
+    "lastVersion": "1.10.2",
+    "updateRequiredOn": [
+      "major",
+      "minor",
+      "capability-change",
+      "schema-change",
+      "architecture-change",
+      "governance-change",
+      "data-flow-change"
+    ],
+    "metadataUpdateRequiredOn": [
+      "patch"
+    ],
+    "optionalOn": [
+      "template-only",
+      "test-only",
+      "wording-only"
+    ]
+  }
+}
