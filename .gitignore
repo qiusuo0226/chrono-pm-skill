@@ -1,5 +1,7 @@
 # Python compiled caches
 __pycache__/
+.idea/
+.qoder-plugin/
 *.pyc
 *.pyo
 
