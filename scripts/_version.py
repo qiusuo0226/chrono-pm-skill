@@ -22,7 +22,7 @@ CHANGELOG）由发布流程统一同步，禁止遗漏。
 """
 
 # Skill 本体版本（发布时统一 bump）
-SKILL_VERSION = "1.13.1"
+SKILL_VERSION = "1.14.0"
 
 # 工作区目录结构 Schema 版本（主动变更+人工确认 CR-20260811-002 升级为 0.6.0）
 WORKSPACE_SCHEMA_VERSION = "0.6.0"

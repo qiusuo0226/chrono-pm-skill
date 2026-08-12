@@ -38,6 +38,7 @@
 | 今天谁没交日报 | `ai/projects/{子项目}/reports/daily/personal/{YYYYMM}/` 目录下文件列表 | references/, governance/ |
 | 当前风险 | `ai/portfolio/risks/risk-register.md` 或 `ai/projects/{子项目}/risks/risk-register.md` | SKILL.md, references/ |
 | 项目概况 | `ai/portfolio/context/project-brief.md` 或 `ai/projects/{子项目}/context/project-brief.md` | references/ |
+| 更新某人的待办/状态 | 按 WF-1 路径执行（完整加载见 SKILL.md §6 路由表 WF-1 行） | SKILL.md, references/（判断阶段按需加载） |
 
 注：以上路径为 ChronoPM 设计路径。若文件不存在，输出"未找到 {文件路径}，如该项目尚未初始化，可执行 init_workspace.py；否则请确认文件路径"。
 
@@ -95,8 +96,11 @@
 | Excel 生成 | `references/12-excel-generation-rules.md` |
 | 历史衔接 | `references/13-continuity-rules.md` |
 | 完整 Skill 说明 | `SKILL.md` |
+| 待办状态更新（WF-1） | 按 SKILL.md §6 路由表 WF-1 行加载（含 00+01+03+04+06+10） |
+| 日报处理（WF-2） | `references/01-daily-report-rules.md` |
+| 会议纪要处理（WF-3） | `references/02-meeting-rules.md` |
 
-加载规则：一次最多加载 2 个 references 文件，超出时先说明原因。
+加载规则：一次最多加载 2 个 references 文件，超出时先说明原因。工作流场景（WF-1~WF-6）按 SKILL.md §6 路由表的加载清单执行，不受此 2 文件上限约束。
 
 ---
 
