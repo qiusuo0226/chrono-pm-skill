@@ -41,7 +41,16 @@
 - [ ] `scripts/chronopm_init/config.py` 是否从 `_version` 导入且不再含版本字面量？
 - [ ] `scripts/migrate_workspace.py` 是否从 `_version` 导入且不再含版本字面量？
 - [ ] `scripts/chronopm_init/file_registry.py` README 是否使用 `{SKILL_VERSION}`/`{WORKSPACE_SCHEMA_VERSION}` 插值（无硬编码版本）？
+- [ ] 是否已运行 `python scripts/sync_version.py`（自 `_version.py` 同步 `VERSION`/`SKILL.md` frontmatter/`skill.json`）？
 - [ ] `VERSION` / `SKILL.md` / `skill.json` / `_version.py` 四处版本号是否一致？
+
+## v1.13.0 架构精简改造专项检查（CR-20260812-001）
+
+- [ ] 级联传播规则：确认 03/04/07/08/09/02 号文件的级联 §已添加且格式一致
+- [ ] 归档治理：确认 06 号 §9 通用归档表、02 号 decision-log 归档、09 号 transfer-log 归档已就位
+- [ ] 版本同步：确认 `_version.py` → VERSION/SKILL.md/skill.json 四触点一致
+- [ ] 新建文件：确认 `assets/templates/decision-log-template.md` 和 `scripts/sync_version.py` 存在且内容正确
+- [ ] 索引分级：确认 14 号 §2.4 三级分类（完全派生/增量维护/独立累积）已写入
 
 ## Project Cleanliness
 
