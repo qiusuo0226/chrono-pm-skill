@@ -1,4 +1,4 @@
-# ChronoPM v1.13.1
+# ChronoPM v1.15.0
 
 A Markdown-driven AI project management skill.
 
@@ -43,10 +43,13 @@ Core principle: **fact-source files (board, register, log) are the single source
 | CAP-024 | Historical Plan Import & Change/Delay Track | Batch plan import + change/delay counting & tracking | v1.10.0 |
 | CAP-025 | Proactive Change & Pending Window | Proactive changes + human-confirm model; pending not counted as overdue | v1.11.0 |
 | CAP-026 | Change Log Tiered Archive | Active/archive tiering with auto month navigation | v1.11.0 |
+| — (CAP extension) | Requirement Intelligence (RI) | Cross-source requirement extraction/merge/scope判定/three-level index retrieval | v1.15.0 |
 
 ## Key Mechanisms
 
-- **Entity Cascade Propagation** (v1.13.0): 6 entity rule files carry `§cascade rules` with AUTO / CHECK / SUGGEST actions; conflicts are flagged with ⚠ for PM decision.
+- **Entity Cascade Propagation** (v1.13.0): 6 entity rule files carry `§cascade rules` with AUTO / CHECK / SUGGEST actions; conflicts flagged ⚠ for PM decision.
+- **Standard Workflow Data Paths** (v1.14.0): 00 §9 predefines WF-1~WF-6 high-frequency read/write file sequences; §9.1 ensures predefinition doesn't weaken judgmental reasoning. 05 §2.5 Quick Update route table mirrors Quick Query.
+- **Requirement Intelligence (RI)** (v1.15.0): 07 §8 ATOM→Canonical→REQ three-layer model, dual-layer source classification (6 fixed source_category + project-extensible source_type), three-level index + graded loading + P1 semantic fallback, answers "is this requirement in contract/bidding/approval scope?" with evidence chain; PM notes project-notes dual-entry. Workspace schema 0.7.0.
 - **Update-Intent Recognition** (v1.10.0): SKILL.md as router auto-routes by intent; supports batch handling.
 - **Information-Completeness Inspection** (v1.8.0): proactively scans missing info, P0-P3 tiered reminders, silent-capable.
 - **PM Profile Learning** (v1.9.0): passive observe → pending → confirmed; adapts personal habits.
@@ -63,21 +66,21 @@ ChronoPM Skill/
 ├── CHANGELOG.md          # Change history
 ├── QODER_RULES.md        # Qoder env config entry
 ├── assets/               # Templates & resources
-├── governance/           # Governance contracts (contracts/skill-contract.md)
+├── governance/           # Governance contracts + change control (CR/IA/RR/baselines) + planning docs
 ├── references/           # Rule files (00~21, 22 rules)
 ├── scripts/              # Automation scripts (init/migrate/sync_version)
-└── tests/                # Regression suite (179 cases)
+└── tests/                # Regression suite (198 cases)
 ```
 
 ## Version Info
 
 | Item | Value |
 |---|---|
-| Skill version | 1.13.1 |
-| Workspace Schema | 0.6.0 |
+| Skill version | 1.15.0 |
+| Workspace Schema | 0.7.0 |
 | Default mode | portfolio |
 | Rule files | 22 (00~21) |
-| Regression cases | 179 |
+| Regression cases | 198 |
 | Capabilities | 26 (CAP-001~026) |
 
 ## Changelog

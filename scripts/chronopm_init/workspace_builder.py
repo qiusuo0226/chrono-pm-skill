@@ -29,6 +29,7 @@ from .file_registry import (
     create_outputs_dir,
     create_pm_profile,
     create_project_rules,
+    create_ri_skeleton,
     create_skill_version,
     generate_portfolio_readme,
     generate_single_readme,
@@ -95,6 +96,11 @@ def create_single_project(project_root: str, project_name: str = ""):
     print("\n创建迭代登记册...")
     create_iteration_register(ai_dir, project_name, is_portfolio=False)
     print("  create plans/iteration-register.md")
+
+    # 8c. 创建跨源需求归集（RI）骨架（schema 0.7.0）
+    print("\n创建 RI 骨架文件...")
+    create_ri_skeleton(ai_dir)
+    print("  create requirements/canonical + requirements/atoms (L1/L2/L3)")
 
     # 9. 创建项目级规则文件
     print("\n创建项目级规则文件...")
@@ -205,6 +211,9 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
 
         # 7b. 创建事实源文件
         create_fact_sources(sub_dir, SUB_PROJECT_FACT_SOURCE_FILES, templates_dir)
+
+        # 7b.1 创建跨源需求归集（RI）骨架（schema 0.7.0）
+        create_ri_skeleton(sub_dir)
 
         # 7c. 创建索引文件
         create_indexes(sub_dir, SUB_PROJECT_INDEX_TEMPLATES, sub_name)

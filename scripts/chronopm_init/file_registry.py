@@ -439,6 +439,45 @@ def create_glossary(project_root: str, mode: str):
         print(f"  警告: 模板文件不存在: {src}")
 
 
+RI_CATEGORY_FILES = [
+    "contractual", "procurement", "approval",
+    "compliance", "technical", "operational",
+]
+
+
+def create_ri_skeleton(ai_dir: Path):
+    """创建跨源需求归集（RI）骨架文件（CR-20260813-001）。
+
+    在工作区 ai/requirements/ 下创建 canonical/ 与 atoms/ 的 L1/L2/L3 骨架，
+    供 0.7.0 工作区初始化与迁移复用（内容由 AI/PM 后续填充，不预填数据）。
+    """
+    cats_dir = ai_dir / "requirements" / "atoms"
+    can_dir = ai_dir / "requirements" / "canonical"
+
+    headers = {
+        "atom-index.md": "---\ndoc_type: atom-index\nversion: v1.0\nlast_updated:\n---\n\n# ATOM 主索引（L1 路由）\n\n| source_category | ATOM 数 | L2 索引文件 | L3 全文文件 | last_source_version | last_updated |\n|---|---|---|---|---|---|\n",
+        "canonical-index.md": "---\ndoc_type: canonical-index\nversion: v1.0\nlast_updated:\n---\n\n# Canonical 索引\n\n| CAN_ID | norm_text 摘要 | scope_scope | evidence 数 | status | 文件 |\n|---|---|---|---|---|---|\n",
+    }
+    for cat in RI_CATEGORY_FILES:
+        headers[f"{cat}-index.md"] = (
+            "---\ndoc_type: category-index\ncategory: " + cat + "\nversion: v1.0\nlast_updated:\n---\n\n"
+            f"# {cat} 类别倒排索引（L2）\n\n| keyword | ATOM ID | norm_text 摘要 | source_type | authority |\n|---|---|---|---|---|\n"
+        )
+        headers[f"{cat}.md"] = (
+            "---\ndoc_type: atom-category\ndoc_type_category: " + cat + "\nversion: v1.0\nlast_updated:\n---\n\n"
+            f"# {cat} ATOM 全文（L3）\n"
+        )
+
+    for name, content in headers.items():
+        if "canonical" in name:
+            path = can_dir / name
+        else:
+            path = cats_dir / name
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+
+
 def create_pm_profile(project_root: str, mode: str):
     """创建 PM 偏好档案模板，不自动抽取历史偏好"""
     templates_dir = get_templates_dir()

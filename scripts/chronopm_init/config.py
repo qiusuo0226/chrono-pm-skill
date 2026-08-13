@@ -28,6 +28,8 @@ SINGLE_PROJECT_DIRS = [
     "context",
     "continuity",
     "requirements",
+    "requirements/canonical",
+    "requirements/atoms",
     "plans",
     "milestones",
     "tasks",
@@ -57,6 +59,7 @@ SINGLE_FACT_SOURCE_FILES = {
     "plans/budget.md": "project-status-template.md",
     "requirements/requirement-register.md": "requirement-register-template.md",
     "requirements/change-log.md": "change-log-template.md",
+    "requirements/source-type-registry.md": "source-type-registry-template.md",
 }
 
 # ============================================================

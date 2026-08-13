@@ -237,6 +237,33 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v1.12.0 工作空间清洁度治理（CR-20260811-003）：新增§18根目录白名单、§19交付物类型控制、§20引用完整性约束；§2流程10步→12步；release-checklist新增清洁度检查组；修复F-01~F-11历史污染；回归新增CL-001~CL-004。无工作区结构变更。",
     },
+    {
+        "version": "1.15.0",
+        "schema": "0.7.0",
+        "capabilities": ["requirement_intelligence", "project_notes"],
+        "new_dirs": [
+            "requirements/canonical",
+            "requirements/atoms",
+        ],
+        "new_files": [
+            "requirements/source-type-registry.md",
+            "requirements/canonical/canonical-index.md",
+            "requirements/atoms/atom-index.md",
+            "requirements/atoms/contractual-index.md",
+            "requirements/atoms/contractual.md",
+            "requirements/atoms/procurement-index.md",
+            "requirements/atoms/procurement.md",
+            "requirements/atoms/approval-index.md",
+            "requirements/atoms/approval.md",
+            "requirements/atoms/compliance-index.md",
+            "requirements/atoms/compliance.md",
+            "requirements/atoms/technical-index.md",
+            "requirements/atoms/technical.md",
+            "requirements/atoms/operational-index.md",
+            "requirements/atoms/operational.md",
+        ],
+        "note": "v1.15.0 跨源需求归集 RI（CR-20260813-001，schema 0.6.0→0.7.0）：在单一项目工作区 ai/requirements/ 下新增 canonical/ 与 atoms/（L1 主索引 atom-index + 6 类 L2 倒排索引 + 6 类 L3 全文 + source-type-registry.md）。project-notes 为 context 下追加式文件（项目集模式在 ai/portfolio/context/），新增目录由 0.7.0 初始化脚本创建。",
+    },
 ]
 
 # 已知结构性缺漏（历史遗留，不影响本次修复，供后续维护 CR 参考）：
@@ -358,6 +385,7 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         "portfolio/todos/history-index.md": "todo-history-index-template.md",
         "portfolio/context/domain-glossary.md": "domain-glossary-template.md",
         "context/domain-glossary.md": "domain-glossary-template.md",
+        "requirements/source-type-registry.md": "source-type-registry-template.md",
     }
 
     for f in files:

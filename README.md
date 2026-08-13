@@ -1,4 +1,4 @@
-# ChronoPM v1.14.0
+# ChronoPM v1.15.0
 
 Markdown 驱动的 AI 项目管理技能。
 
@@ -43,11 +43,13 @@ Markdown 驱动的 AI 项目管理技能。
 | CAP-024 | Historical Plan Import & Change/Delay Track | 存量计划批量导入 + 变更/延期计数与追溯 | v1.10.0 |
 | CAP-025 | Proactive Change & Pending Window | 主动变更 + 人工确认更新模式，待确认记录不参与超期判定 | v1.11.0 |
 | CAP-026 | Change Log Tiered Archive | 活跃区/归档区分层归档，自动月份导航 | v1.11.0 |
+| —（CAP 扩展） | Requirement Intelligence (RI) | 跨源需求拆词/归并/范围判定/三级索引检索 | v1.15.0 |
 
 ## 关键机制
 
 - **实体级联传播**（v1.13.0）：6 个实体规则文件内置 `§级联传播规则`，采用 AUTO / CHECK / SUGGEST 三级动作自动处理实体间状态联动，级联冲突标记 ⚠ 交 PM 决策。
 - **标准工作流数据路径**（v1.14.0）：00 号 §9 预定义 WF-1~WF-6 高频操作（待办更新/日报/会议/变更/周报/资源流转）的端到端读/写文件顺序，减少 AI 逐步临时推导；§9.1 判断阶段强化规则确保路径预定义不弱化判断性推导。05 号 §2.5 Quick Update 路由表与 Quick Query 对称。
+- **跨源需求归集与判定（RI）**（v1.15.0）：07 号新增 ATOM→Canonical→REQ 三层模型，双层来源分类（6 类 source_category + 项目级可扩展 source_type），三级索引 + 分级加载 + P1 语义兜底，解答"需求在不在合同/招投标/立项范围内"并给出证据链；PM 随笔 project-notes 双入口。workspace schema 0.7.0。
 - **更新意图识别**（v1.10.0）：SKILL.md 作为路由器，根据用户意图自动路由到对应规则处理，支持批量识别（一周日报一次性处理）。
 - **信息完整性巡检**（v1.8.0）：主动扫描工作区缺失信息，P0-P3 分级提醒，支持静默策略。
 - **PM 偏好学习**（v1.9.0）：复用领域词库状态机，被动观察 → pending → confirmed，输出适配个人习惯。
@@ -64,21 +66,21 @@ ChronoPM Skill/
 ├── CHANGELOG.md          # 变更历史
 ├── QODER_RULES.md        # Qoder 环境配置入口
 ├── assets/               # 模板与资源文件（含 decision-log-template 等）
-├── governance/           # 治理契约（contracts/skill-contract.md）
+├── governance/           # 治理契约（contracts/skill-contract.md）+ 变更治理（CR/IA/RR/基线）+ 方案设计（planning/）
 ├── references/           # 规则声明文件（00~21 共 22 号规则）
 ├── scripts/              # 自动化脚本（init/migrate/sync_version 等）
-└── tests/                # 回归测试套件（184 用例）
+└── tests/                # 回归测试套件（198 用例）
 ```
 
 ## 版本信息
 
 | 项目 | 值 |
 |------|-----|
-| Skill 版本 | 1.14.0 |
-| Workspace Schema | 0.6.0 |
+| Skill 版本 | 1.15.0 |
+| Workspace Schema | 0.7.0 |
 | 默认工作模式 | portfolio |
 | 规则文件数 | 22（00~21） |
-| 回归用例数 | 184 |
+| 回归用例数 | 198 |
 | 能力点数 | 26（CAP-001~026） |
 
 ## 升级日志

@@ -19,6 +19,24 @@
 9. 快照冻结后不可静默覆盖，修改需追加 Revision Log。
 10. 同一人同一天只允许一份日报文件，多次提交合并追加不覆盖。
 
+## Fact Source（事实源清单）
+
+### requirements/ 需求领域新增事实源（v1.15.0，CR-20260813-001）
+
+| 文件 | 用途 |
+|---|---|
+| `requirements/canonical/` | 归并后的规范需求（Canonical），聚合多来源 evidence |
+| `requirements/atoms/atom-index` | 需求原子 ATOM 总索引（三级索引 L1） |
+| `requirements/atoms/{category}-index` | 需求原子按类别索引（三级索引 L2） |
+| `requirements/atoms/{category}` | 需求原子文件（三级索引 L3） |
+| `requirements/source-type-registry.md` | 来源类型登记（source_type 注册表，未登记不静默归类） |
+
+### ai/context/ 项目备忘（v1.15.0，CR-20260813-001）
+
+| 文件 | 用途 |
+|---|---|
+| `context/project-notes.md` | PM 方法论/干系人/洞察/策略随笔（只追加，低/中风险追加写入，AI 感知+PM 主动双入口） |
+
 ## Protected Capabilities
 
 以下能力必须长期保持可用，修改时必须跑对应回归用例：
@@ -39,6 +57,7 @@
 | update_trigger | TRIG | 更新意图识别和触发 |
 | init_wizard | INIT | 项目初始化向导（六步引导建档） |
 | completeness_check | COMPLENESS | 信息完整性巡检与补全提醒（P0-P3分级） |
+| cross_source_requirement_intelligence | RI | 跨源需求归集：拆词/归并/范围判定/三级索引检索（requirements/atoms + canonical + source-type-registry），CR-20260813-001 |
 
 ## Rule Layer Classification
 

@@ -387,12 +387,6 @@
 | RI-004 | 未登记 source_type 的需求 | 触发未登记提示，不静默归类 | negative |
 | RI-005 | 合同出新版本 | 相关 ATOM 标记 stale、Canonical evidence_stale | regression |
 | RI-006 | 查"身份认证" | 命中"用户登录"ATOM（词库同义词扩展） | regression |
-| RI-007 | 合同条款 raw_text > 500 字 | 拆分为多个 ATOM，supersedes 链指向首条 | negative |
-| RI-008 | 合同(L1)与技术文档(L3)对同一需求表述冲突 | Canonical 取 L1 authority，evidence 保留两来源 | regression |
-| RI-009 | L2 类别索引 norm_text 摘要 | AI 仅读 L2 即可理解 ATOM 语义，无需加载 L3 全文 | positive |
-| RI-010 | 关键词匹配失败 | P1 语义兜底：norm_text 扫读 → 降级提示，不返回空 | regression |
-| RI-011 | source-type-registry 新增类型后迁移 | 5 步原子操作（更新 registry → 重写 ATOM → 刷新索引 → 迁移文件 → 失败回退） | regression |
-| RI-012 | Canonical scope_scope 变更 | 级联传播至所有关联 REQ 的 scope_scope 字段 | regression |
 
 ## 33. Project Notes（项目备忘）
 
@@ -439,6 +433,6 @@
 | Cascade Propagation (CP) | 6 | 6 | 0 |
 | Archive Governance (AG) | 6 | 6 | 0 |
 | Workflow Data Path (WF) | 5 | 3 | 2 |
-| Requirement Intelligence (RI) | 12 | 4 | 8 |
+| Requirement Intelligence (RI) | 6 | 3 | 3 |
 | Project Notes (PN) | 2 | 2 | 0 |
-| **合计** | **198** | **126** | **72** |
+| **合计** | **192** | **122** | **70** |
