@@ -43,7 +43,7 @@
 
 > **概念域说明**：本条 Change Type 为**概念域 A（记录操作）**。它与 `references/08-change-control-rules.md` / change-log-template.md 的**概念域 B（变更影响分类）**（`requirement/scope/schedule/cost/resource/plan_change`）是不同维度，二者不合并。各事实源 Change Log 用概念域 A；需求/变更登记用概念域 B。
 
-## 6. RI 三级索引（CR-20260813-001）
+## 6. RI 三级索引（CR-20260813-001 + CR-20260813-002 合同作用域）
 
 ### 6.1 L1 主索引 `requirements/atoms/atom-index.md`（路由表）
 
@@ -78,15 +78,23 @@
   hash: <sha256> | updated: 2026-08-13
 ```
 
-### 6.4 Canonical 索引 `requirements/canonical/canonical-index.md`
+### 6.4 Canonical 索引 `{层级}/requirements/canonical/canonical-index.md`
 
 ```
-| CAN_ID | norm_text 摘要 | scope_scope | evidence 数 | status | 文件 |
-|---|---|---|---|---|---|
-| CAN-001 | 满足等保三级 | in_contract | 2 | active | canonical/CAN-001.md |
+| CAN_ID | norm_text 摘要 | scope_scope | contract_refs | storage_level | evidence 数 | status | 文件 |
+|---|---|---|---|---|---|---|---|
+| CAN-001 | 满足等保三级 | in_contract | CON-001 | portfolio | 2 | active | canonical/CAN-001.md |
+| CAN-002 | 提供身份认证 | in_contract | CON-001, CON-002 | project | 3 | active | canonical/CAN-002.md |
 ```
 
 > 范围判定查询先读 canonical-index（含 scope_scope 摘要），命中后再打开 Canonical 全文，避免逐个打开文件（对齐覆盖索引理念）。
+> `contract_refs`（CR-20260813-002）：带合同维度的 scope 结论关联合同 ID 列表；多合同覆盖时逐合同列 `in_contract(CON-XXX)`。旧 Canonical 无该字段按"未关联合同"降级标注。
+> `storage_level`：evidence 同层归该层；跨层/跨子项目归 `portfolio`（D2）。
+> `{层级}` 为 `portfolio`（项目集）或 `projects/{子项目}`/单项目 ai 根（子项目级）。
+
+### 6.4a 合同登记册 `{模式}/requirements/contract-register.md`（CR-20260813-002）
+
+见 `assets/templates/contract-register-template.md`（scope_level: portfolio/project/supplement、parent_contract_id、coverage、文档簇关联、status/superseded_by）。RI 范围判定检索路由的第一步即读取该登记册。项目集模式唯一登记册在 `portfolio/requirements/`；单项目模式在 `requirements/`。
 
 ### 6.5 Source Type Registry `requirements/source-type-registry.md`
 

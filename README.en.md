@@ -1,4 +1,4 @@
-# ChronoPM v1.15.0
+# ChronoPM v1.16.0
 
 A Markdown-driven AI project management skill.
 
@@ -43,13 +43,14 @@ Core principle: **fact-source files (board, register, log) are the single source
 | CAP-024 | Historical Plan Import & Change/Delay Track | Batch plan import + change/delay counting & tracking | v1.10.0 |
 | CAP-025 | Proactive Change & Pending Window | Proactive changes + human-confirm model; pending not counted as overdue | v1.11.0 |
 | CAP-026 | Change Log Tiered Archive | Active/archive tiering with auto month navigation | v1.11.0 |
-| — (CAP extension) | Requirement Intelligence (RI) | Cross-source requirement extraction/merge/scope判定/three-level index retrieval | v1.15.0 |
+| — (CAP extension) | Requirement Intelligence (RI) | Cross-source requirement extraction/merge/scope判定/three-level index retrieval; v1.16.0 extends contract scope (portfolio/requirements tiered storage + contract-register + scope_level routing + contract_refs) | v1.15.0 |
 
 ## Key Mechanisms
 
 - **Entity Cascade Propagation** (v1.13.0): 6 entity rule files carry `§cascade rules` with AUTO / CHECK / SUGGEST actions; conflicts flagged ⚠ for PM decision.
 - **Standard Workflow Data Paths** (v1.14.0): 00 §9 predefines WF-1~WF-6 high-frequency read/write file sequences; §9.1 ensures predefinition doesn't weaken judgmental reasoning. 05 §2.5 Quick Update route table mirrors Quick Query.
 - **Requirement Intelligence (RI)** (v1.15.0): 07 §8 ATOM→Canonical→REQ three-layer model, dual-layer source classification (6 fixed source_category + project-extensible source_type), three-level index + graded loading + P1 semantic fallback, answers "is this requirement in contract/bidding/approval scope?" with evidence chain; PM notes project-notes dual-entry. Workspace schema 0.7.0.
+- **Contract Scope & Many-to-Many Mapping** (v1.16.0): closes the "contract↔sub-project many-to-many" gap — adds portfolio-level `portfolio/requirements/` cross-source storage and `contract-register.md` (scope_level: portfolio/project/supplement, parent_contract_id, coverage, document-cluster links); ATOM/Canonical storage follows contract scope_level (supplements follow parent contract); contract-dimensional scope判定 (Canonical adds companion field contract_refs; scope_scope 5-value enum unchanged); RI four-step retrieval routing (read register → resolve contract → target-tier three-level index → output contract_refs); contract-change three-level cascade (reuses 08 scope/cost/requirement, no enum change); fixes CR-20260813-001 legacy script gaps. Workspace schema 0.8.0.
 - **Update-Intent Recognition** (v1.10.0): SKILL.md as router auto-routes by intent; supports batch handling.
 - **Information-Completeness Inspection** (v1.8.0): proactively scans missing info, P0-P3 tiered reminders, silent-capable.
 - **PM Profile Learning** (v1.9.0): passive observe → pending → confirmed; adapts personal habits.
@@ -76,8 +77,8 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.15.0 |
-| Workspace Schema | 0.7.0 |
+| Skill version | 1.16.0 |
+| Workspace Schema | 0.8.0 |
 | Default mode | portfolio |
 | Rule files | 22 (00~21) |
 | Regression cases | 198 |

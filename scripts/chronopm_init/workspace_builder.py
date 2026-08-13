@@ -173,6 +173,11 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
     print("\n创建项目集级事实源文件...")
     create_fact_sources(portfolio_dir, PORTFOLIO_FACT_SOURCE_FILES, templates_dir)
 
+    # === 2b. 创建项目集级跨源需求归集（RI）骨架（schema 0.8.0，CR-20260813-002）===
+    print("\n创建项目集级 RI 骨架文件...")
+    create_ri_skeleton(portfolio_dir, base="requirements")
+    print("  create portfolio/requirements/canonical + atoms (L1/L2/L3)")
+
     # === 3. 创建项目集级索引文件 ===
     print("\n创建项目集级索引文件...")
     create_indexes(portfolio_dir, PORTFOLIO_INDEX_TEMPLATES, portfolio_name)

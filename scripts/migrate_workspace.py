@@ -14,6 +14,7 @@ ChronoPM 工作区迁移脚本
 import argparse
 import json
 import os
+import re
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -264,6 +265,42 @@ VERSION_CAPABILITIES = [
         ],
         "note": "v1.15.0 跨源需求归集 RI（CR-20260813-001，schema 0.6.0→0.7.0）：在单一项目工作区 ai/requirements/ 下新增 canonical/ 与 atoms/（L1 主索引 atom-index + 6 类 L2 倒排索引 + 6 类 L3 全文 + source-type-registry.md）。project-notes 为 context 下追加式文件（项目集模式在 ai/portfolio/context/），新增目录由 0.7.0 初始化脚本创建。",
     },
+    {
+        "version": "1.16.0",
+        "schema": "0.8.0",
+        "capabilities": ["contract_scope_ri"],
+        "new_dirs": [
+            "portfolio/requirements/canonical",
+            "portfolio/requirements/atoms",
+        ],
+        "new_files": [
+            "portfolio/requirements/contract-register.md",
+            "portfolio/requirements/source-type-registry.md",
+            "requirements/contract-register.md",
+            "portfolio/requirements/canonical/canonical-index.md",
+            "portfolio/requirements/atoms/atom-index.md",
+            "portfolio/requirements/atoms/contractual-index.md",
+            "portfolio/requirements/atoms/contractual.md",
+            "portfolio/requirements/atoms/procurement-index.md",
+            "portfolio/requirements/atoms/procurement.md",
+            "portfolio/requirements/atoms/approval-index.md",
+            "portfolio/requirements/atoms/approval.md",
+            "portfolio/requirements/atoms/compliance-index.md",
+            "portfolio/requirements/atoms/compliance.md",
+            "portfolio/requirements/atoms/technical-index.md",
+            "portfolio/requirements/atoms/technical.md",
+            "portfolio/requirements/atoms/operational-index.md",
+            "portfolio/requirements/atoms/operational.md",
+        ],
+        "sub_project_dirs": [
+            "requirements/canonical",
+            "requirements/atoms",
+        ],
+        "sub_project_files": [
+            "requirements/source-type-registry.md",
+        ],
+        "note": "v1.16.0 合同作用域（CR-20260813-002，schema 0.7.0→0.8.0）：项目集模式在 portfolio/requirements/ 新增 canonical/、atoms/、contract-register.md、source-type-registry.md（合同登记册为 RI 检索入口）；单项目模式在 ai/requirements/ 新增 contract-register.md。子项目级 on portfolio 模式补齐 RI 目录（requirements/canonical、requirements/atoms）与 source-type-registry.md（修复 CR-20260813-001 遗留缺口），仅对已含 requirements/ 的子项目执行（D10 守卫）。",
+    },
 ]
 
 # 已知结构性缺漏（历史遗留，不影响本次修复，供后续维护 CR 参考）：
@@ -300,6 +337,17 @@ def get_capabilities_since(from_version: str):
     return new_caps
 
 
+def _sub_projects(ai_dir: Path):
+    """遍历项目集模式下 ai/projects/*/，仅返回含 requirements/ 的子项目（D10 守卫，CR-20260813-002）。"""
+    projects_dir = ai_dir / "projects"
+    if not projects_dir.exists():
+        return []
+    return [
+        d for d in projects_dir.iterdir()
+        if d.is_dir() and (d / "requirements").is_dir()
+    ]
+
+
 def check_missing_dirs(ai_dir: Path, capabilities: list, is_portfolio: bool = False):
     """检查缺失的目录"""
     missing = []
@@ -317,6 +365,15 @@ def check_missing_dirs(ai_dir: Path, capabilities: list, is_portfolio: bool = Fa
                 fp = (ai_dir / "portfolio" / d)
                 if not fp.exists():
                     missing.append(f"portfolio/{d}")
+
+        # 0.8.0 子项目级 RI 目录（遍历 projects/*/，含 guard D10）
+        sub_dirs = cap.get("sub_project_dirs", [])
+        if is_portfolio:
+            for sub in _sub_projects(ai_dir):
+                for d in sub_dirs:
+                    fp = sub / d
+                    if not fp.exists():
+                        missing.append(f"projects/{sub.name}/{d}")
 
         # external_dirs（如 outputs/）
         ext_dirs = cap.get("external_dirs", [])
@@ -350,6 +407,15 @@ def check_missing_files(ai_dir: Path, capabilities: list, is_portfolio: bool = F
             full_path = ai_dir / f
             if not full_path.exists():
                 missing.append(f)
+
+        # 0.8.0 子项目级 RI 文件（遍历 projects/*/，仅 source-type-registry 需要模板，D10 守卫）
+        sub_files = cap.get("sub_project_files", [])
+        if is_portfolio:
+            for sub in _sub_projects(ai_dir):
+                for rel in sub_files:
+                    fp = sub / rel
+                    if not fp.exists():
+                        missing.append(f"projects/{sub.name}/{rel}")
     return missing
 
 
@@ -386,6 +452,8 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         "portfolio/context/domain-glossary.md": "domain-glossary-template.md",
         "context/domain-glossary.md": "domain-glossary-template.md",
         "requirements/source-type-registry.md": "source-type-registry-template.md",
+        "portfolio/requirements/contract-register.md": "contract-register-template.md",
+        "portfolio/requirements/source-type-registry.md": "source-type-registry-template.md",
     }
 
     for f in files:
@@ -393,7 +461,14 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         if target.exists():
             continue
 
-        template_name = template_map.get(f)
+        # H1：子项目文件路径剥前缀后查 template_map（CR-20260813-002）
+        #   projects/{sub}/requirements/source-type-registry.md → requirements/source-type-registry.md
+        template_key = f
+        m = re.match(r"^projects/[^/]+/(.+)$", f)
+        if m:
+            template_key = m.group(1)
+
+        template_name = template_map.get(template_key)
         if template_name:
             src = templates_dir / template_name
             if src.exists():

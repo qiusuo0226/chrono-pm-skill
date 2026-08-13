@@ -445,18 +445,20 @@ RI_CATEGORY_FILES = [
 ]
 
 
-def create_ri_skeleton(ai_dir: Path):
-    """创建跨源需求归集（RI）骨架文件（CR-20260813-001）。
+def create_ri_skeleton(ai_dir: Path, base: str = "requirements"):
+    """创建跨源需求归集（RI）骨架文件（CR-20260813-001 / CR-20260813-002）。
 
-    在工作区 ai/requirements/ 下创建 canonical/ 与 atoms/ 的 L1/L2/L3 骨架，
-    供 0.7.0 工作区初始化与迁移复用（内容由 AI/PM 后续填充，不预填数据）。
+    在指定基路径下创建 canonical/ 与 atoms/ 的 L1/L2/L3 骨架。
+    base 默认 "requirements"（单项目 ai/requirements、子项目 projects/{sub}/requirements）；
+    CR-20260813-002 起支持项目集级 "portfolio/requirements"。
+    内容由 AI/PM 后续填充，不预填数据。
     """
-    cats_dir = ai_dir / "requirements" / "atoms"
-    can_dir = ai_dir / "requirements" / "canonical"
+    cats_dir = ai_dir / base / "atoms"
+    can_dir = ai_dir / base / "canonical"
 
     headers = {
         "atom-index.md": "---\ndoc_type: atom-index\nversion: v1.0\nlast_updated:\n---\n\n# ATOM 主索引（L1 路由）\n\n| source_category | ATOM 数 | L2 索引文件 | L3 全文文件 | last_source_version | last_updated |\n|---|---|---|---|---|---|\n",
-        "canonical-index.md": "---\ndoc_type: canonical-index\nversion: v1.0\nlast_updated:\n---\n\n# Canonical 索引\n\n| CAN_ID | norm_text 摘要 | scope_scope | evidence 数 | status | 文件 |\n|---|---|---|---|---|---|\n",
+        "canonical-index.md": "---\ndoc_type: canonical-index\nversion: v1.0\nlast_updated:\n---\n\n# Canonical 索引\n\n| CAN_ID | norm_text 摘要 | scope_scope | contract_refs | storage_level | evidence 数 | status | 文件 |\n|---|---|---|---|---|---|---|---|\n",
     }
     for cat in RI_CATEGORY_FILES:
         headers[f"{cat}-index.md"] = (
@@ -540,9 +542,13 @@ ai/
 │   └── project-rules.md           # 项目特有规则
 ├── context/                       # 项目背景记忆
 │   └── project-context.md
-├── requirements/                  # 需求管理
+├── requirements/                  # 需求管理（含跨源需求归集 RI）
 │   ├── requirement-register.md
-│   └── change-log.md
+│   ├── change-log.md
+│   ├── contract-register.md       # 合同登记册（RI 检索入口，CR-20260813-002）
+│   ├── source-type-registry.md    # 源类型登记（RI）
+│   ├── canonical/                 # Canonical（跨源归并）
+│   └── atoms/                     # ATOM 三级索引（L1/L2/L3）
 ├── plans/                         # 计划类事实源
 │   ├── progress-plan.md
 │   └── budget.md
@@ -575,6 +581,10 @@ ai/
 - `plans/budget.md` - 预算与 P&L
 - `requirements/requirement-register.md` - 需求登记册
 - `requirements/change-log.md` - 需求变更记录
+- `requirements/contract-register.md` - 合同登记册（RI 合同作用域范围判定入口，CR-20260813-002）
+- `requirements/source-type-registry.md` - 源类型登记（RI）
+- `requirements/canonical/` - Canonical 跨源归并需求（RI）
+- `requirements/atoms/` - ATOM 需求原子三级索引（RI）
 
 ## 提示词路由
 
@@ -651,6 +661,11 @@ ai/
 │   │   └── board.md              # 跨项目风险看板
 │   ├── plans/
 │   │   └── budget-summary.md     # 整体 P&L
+│   ├── requirements/               # 项目集级跨源需求归集（RI）
+│   │   ├── contract-register.md  # 合同登记册（唯一，CR-20260813-002）
+│   │   ├── source-type-registry.md  # 源类型登记（RI）
+│   │   ├── canonical/             # Canonical 跨源归并
+│   │   └── atoms/                 # ATOM 三级索引（L1/L2/L3）
 │   ├── resources/
 │   │   ├── resource-register.md  # 人员资源当前状态
 │   │   └── transfer-log.md       # 人员流转历史
@@ -669,6 +684,8 @@ ai/
 - `portfolio/plans/budget-summary.md` - 整体 P&L
 - `portfolio/resources/resource-register.md` - 人员资源当前状态
 - `portfolio/resources/transfer-log.md` - 人员流转历史
+- `portfolio/requirements/contract-register.md` - 合同登记册（RI 合同作用域范围判定入口，CR-20260813-002）
+- `portfolio/requirements/source-type-registry.md` - 源类型登记（项目集级 RI）
 
 ### 子项目级（每个子项目）
 - `tasks/board.md` - 任务状态
@@ -678,6 +695,7 @@ ai/
 - `plans/budget.md` - 预算与 P&L
 - `requirements/requirement-register.md` - 需求登记册
 - `requirements/change-log.md` - 需求变更记录
+- `requirements/source-type-registry.md` - 源类型登记（子项目级 RI）
 
 ## 资源管理说明
 

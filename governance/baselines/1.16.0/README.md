@@ -1,4 +1,4 @@
-# ChronoPM v1.16.0
+# ChronoPM v1.15.0
 
 Markdown 驱动的 AI 项目管理技能。
 
@@ -43,14 +43,13 @@ Markdown 驱动的 AI 项目管理技能。
 | CAP-024 | Historical Plan Import & Change/Delay Track | 存量计划批量导入 + 变更/延期计数与追溯 | v1.10.0 |
 | CAP-025 | Proactive Change & Pending Window | 主动变更 + 人工确认更新模式，待确认记录不参与超期判定 | v1.11.0 |
 | CAP-026 | Change Log Tiered Archive | 活跃区/归档区分层归档，自动月份导航 | v1.11.0 |
-| —（CAP 扩展） | Requirement Intelligence (RI) | 跨源需求拆词/归并/范围判定/三级索引检索；v1.16.0 扩展合同作用域（portfolio/requirements 层级存储 + contract-register + scope_level 路由 + contract_refs 判定） | v1.15.0 |
+| —（CAP 扩展） | Requirement Intelligence (RI) | 跨源需求拆词/归并/范围判定/三级索引检索 | v1.15.0 |
 
 ## 关键机制
 
 - **实体级联传播**（v1.13.0）：6 个实体规则文件内置 `§级联传播规则`，采用 AUTO / CHECK / SUGGEST 三级动作自动处理实体间状态联动，级联冲突标记 ⚠ 交 PM 决策。
 - **标准工作流数据路径**（v1.14.0）：00 号 §9 预定义 WF-1~WF-6 高频操作（待办更新/日报/会议/变更/周报/资源流转）的端到端读/写文件顺序，减少 AI 逐步临时推导；§9.1 判断阶段强化规则确保路径预定义不弱化判断性推导。05 号 §2.5 Quick Update 路由表与 Quick Query 对称。
 - **跨源需求归集与判定（RI）**（v1.15.0）：07 号新增 ATOM→Canonical→REQ 三层模型，双层来源分类（6 类 source_category + 项目级可扩展 source_type），三级索引 + 分级加载 + P1 语义兜底，解答"需求在不在合同/招投标/立项范围内"并给出证据链；PM 随笔 project-notes 双入口。workspace schema 0.7.0。
-- **合同作用域与多对多映射**（v1.16.0）：补齐"合同与子项目多对多"缺口——新增项目集级 `portfolio/requirements/` 跨源归集存储与 `contract-register.md` 合同登记册（scope_level: portfolio/project/supplement、parent_contract_id、coverage、文档簇关联）；ATOM/Canonical 按 scope_level 存储归属（补充协议跟随父合同）；带合同维度的 scope 判定（Canonical 新增伴随字段 contract_refs，scope_scope 5 值枚举不变）；RI 四步检索路由（先读登记册→解析合同指向→目标层级三级索引→输出 contract_refs）；合同变更三级联动（复用 08 号 scope/cost/requirement，不改概念域枚举）；修复 CR-20260813-001 遗留脚本缺口。workspace schema 0.8.0。
 - **更新意图识别**（v1.10.0）：SKILL.md 作为路由器，根据用户意图自动路由到对应规则处理，支持批量识别（一周日报一次性处理）。
 - **信息完整性巡检**（v1.8.0）：主动扫描工作区缺失信息，P0-P3 分级提醒，支持静默策略。
 - **PM 偏好学习**（v1.9.0）：复用领域词库状态机，被动观察 → pending → confirmed，输出适配个人习惯。
@@ -77,8 +76,8 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |------|-----|
-| Skill 版本 | 1.16.0 |
-| Workspace Schema | 0.8.0 |
+| Skill 版本 | 1.15.0 |
+| Workspace Schema | 0.7.0 |
 | 默认工作模式 | portfolio |
 | 规则文件数 | 22（00~21） |
 | 回归用例数 | 198 |

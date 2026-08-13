@@ -60,6 +60,7 @@ SINGLE_FACT_SOURCE_FILES = {
     "requirements/requirement-register.md": "requirement-register-template.md",
     "requirements/change-log.md": "change-log-template.md",
     "requirements/source-type-registry.md": "source-type-registry-template.md",
+    "requirements/contract-register.md": "contract-register-template.md",
 }
 
 # ============================================================
@@ -76,6 +77,9 @@ PORTFOLIO_DIRS = [
     "risks",
     "plans",
     "resources",
+    "requirements",
+    "requirements/canonical",
+    "requirements/atoms",
     f"meetings/{CURRENT_YM}",
     "logs",
 ]
@@ -87,6 +91,8 @@ PORTFOLIO_FACT_SOURCE_FILES = {
     "plans/budget-summary.md": "project-status-template.md",
     "resources/resource-register.md": "resource-register-template.md",
     "resources/transfer-log.md": "transfer-log-template.md",
+    "requirements/contract-register.md": "contract-register-template.md",
+    "requirements/source-type-registry.md": "source-type-registry-template.md",
 }
 
 # 项目集级索引文件
@@ -120,6 +126,8 @@ SUB_PROJECT_DIRS = [
     "context",
     "continuity",
     "requirements",
+    "requirements/canonical",
+    "requirements/atoms",
     "plans",
     "milestones",
     "tasks",
@@ -148,6 +156,7 @@ SUB_PROJECT_FACT_SOURCE_FILES = {
     "plans/budget.md": "project-status-template.md",
     "requirements/requirement-register.md": "requirement-register-template.md",
     "requirements/change-log.md": "change-log-template.md",
+    "requirements/source-type-registry.md": "source-type-registry-template.md",
 }
 
 # 子项目级索引文件
@@ -243,4 +252,5 @@ ALL_TEMPLATE_FILES = [
     "domain-glossary-template.md",
     "iteration-register-template.md",
     "pm-profile-template.md",
+    "contract-register-template.md",
 ]

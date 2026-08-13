@@ -31,6 +31,17 @@
 | `requirements/atoms/{category}` | 需求原子文件（三级索引 L3） |
 | `requirements/source-type-registry.md` | 来源类型登记（source_type 注册表，未登记不静默归类） |
 
+### 合同作用域 RI 新增事实源（v1.16.0，CR-20260813-002）
+
+| 文件 | 用途 |
+|---|---|
+| `portfolio/requirements/` | 项目集级跨源需求归集目录（canonical/ + atoms/ + 索引） |
+| `portfolio/requirements/contract-register.md` | 合同登记册（项目集模式唯一）；scope_level / parent_contract_id / coverage / 文档簇关联 |
+| `portfolio/requirements/source-type-registry.md` | 项目集级来源类型登记 |
+| `requirements/contract-register.md`（单项目模式） | 合同登记册（单项目无 portfolio 分层） |
+
+> 项目集模式下合同登记册唯一在 `portfolio/requirements/`，子项目不复制（D4）；补充协议（supplement）登记在对应模式的登记册中，parent_contract_id 必填（D7）。
+
 ### ai/context/ 项目备忘（v1.15.0，CR-20260813-001）
 
 | 文件 | 用途 |
@@ -57,7 +68,7 @@
 | update_trigger | TRIG | 更新意图识别和触发 |
 | init_wizard | INIT | 项目初始化向导（六步引导建档） |
 | completeness_check | COMPLENESS | 信息完整性巡检与补全提醒（P0-P3分级） |
-| cross_source_requirement_intelligence | RI | 跨源需求归集：拆词/归并/范围判定/三级索引检索（requirements/atoms + canonical + source-type-registry），CR-20260813-001 |
+| cross_source_requirement_intelligence | RI | 跨源需求归集：拆词/归并/范围判定/三级索引检索（requirements/atoms + canonical + source-type-registry），CR-20260813-001；合同作用域扩展：portfolio/requirements 层级存储 + contract-register 合同登记册 + 按 scope_level 路由 + 带合同维度 scope 判定（contract_refs），CR-20260813-002 |
 
 ## Rule Layer Classification
 
