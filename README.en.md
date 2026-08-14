@@ -1,4 +1,4 @@
-# ChronoPM v1.16.3
+# ChronoPM v1.17.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -108,7 +108,7 @@ Daily reports, weekly reports, monthly reports, meeting minutes, decision logs, 
 **Requirement scope is traceable**
 From contracts to bidding documents to specific requirements — a three-layer model helps you answer "is this requirement within the contract scope?"
 
-## Capabilities at a glance (CAP-001 ~ CAP-026)
+## Capabilities at a glance (CAP-001 ~ CAP-031)
 
 | Capability | Name | Description |
 |---|---|---|
@@ -139,6 +139,11 @@ From contracts to bidding documents to specific requirements — a three-layer m
 | CAP-025 | Proactive Change | Proactive changes + human-confirm update model |
 | CAP-026 | Change Log Tiered Archive | Active/archive tiering with auto month navigation |
 | RI | Requirement Intelligence | Cross-source requirement merge/scope judgment/three-level index; contract scope many-to-many mapping |
+| CAP-027 | Daily Report Integrated Review & Proactive Querying | After report processing, compare plan-vs-done, risk/issue changes, and task progress deviations; proactively ask about blockers/risks/omissions/feasibility |
+| CAP-028 | Delegation Tracking Cascade | Auto-generate a follow-up todo for the delegator on task delegation; validate related requirement status consistency on task status change |
+| CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
+| CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
+| CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
 
 ## What's included
 
@@ -209,7 +214,7 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.16.3 |
+| Skill version | 1.17.0 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 48 |

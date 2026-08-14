@@ -216,6 +216,14 @@ Task 状态 → blocked →
 Task Owner 变更 →
   [AUTO] 更新 personal-todo-index 中该任务的 Owner 字段
 
+Task 状态变更 →
+  [CHECK] 若含 Requirement Ref → 验证关联需求当前状态是否与任务进展一致
+  [SUGGEST] 若不一致（如任务 done 但需求仍 in_progress）→ 建议同步更新需求状态
+
+Task Owner 委派（新建任务或 Owner 变更）→
+  [CHECK] 被委派人是否为非 PM 本人的团队成员
+  [SUGGEST] 若是 → 建议在委派方（PM）的 personal-todo-index 追加跟进条目："跟进 {被委派人姓名} - {任务 Title}（{Task ID}）"，Due Date = 任务 Due Date
+
 > 端到端工作流数据路径见 `00-pm-main-rules.md` §9（WF-1~WF-6）。本文件 §8 定义 Task 实体的级联规则，00号 §9 定义跨实体的完整工作流路径，两者互补不替代。
 
 ### 8.1 待办实体级联（待办 → board 反向链路）
