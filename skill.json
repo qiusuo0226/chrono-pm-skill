@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm",
   "displayName": "ChronoPM — Markdown 驱动的 AI 项目管理技能",
-  "version": "1.16.0",
+  "version": "1.16.2",
   "schemaVersion": "0.6.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -58,6 +58,16 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "1.16.2",
+      "date": "2026-08-14",
+      "summary": "分发包幽灵引用修复(Patch)：pack.ps1 governance 排除细化为例外放行 contracts/skill-contract.md（核心契约被 7 个运行时规则引用）+路径分隔符修复；SKILL.md 移除 16 号规则路由条目；排除 SKILL_BLUEPRINT.md（仅文档层引用，无运行时依赖）；skill.json blueprint.file 字段移除（BLUEPRINT 不在发行包内）；skill-contract.md L94 基线规则加注“仅开发者仓库”；release-checklist 新增幽灵引用检查项。无 workspace schema 变更，无规则/模板/能力变更，无需工作区迁移。"
+    },
+    {
+      "version": "1.16.1",
+      "date": "2026-08-14",
+      "summary": "分发包标准化(Patch)：新增通用打包 skill tools/pack-skill/(SKILL.md + scripts/pack.ps1)，支持任意 Qoder Skill 项目一键打包分发包 zip（包含全部、排除已知黑名单模式，默认排除 governance/tests/tools/.git/.idea/.qoder/__pycache__ 等）；支持 -DryRun 预览、-Exclude 自定义排除；release-checklist 新增 Distribution Packaging 段（打包命令+排除清单+升级路径验证）；.gitignore 补强 *.zip/*.tar.gz/.vscode/ 排除项；删除旧专用脚本 scripts/pack_dist.ps1。分发包体积从 ~4 MB 降至 ~270 KB。无 workspace schema 变更，无规则/模板/能力变更，无需工作区迁移。Blueprint Impact metadata-only。"
+    },
     {
       "version": "1.16.0",
       "date": "2026-08-13",
@@ -286,9 +296,8 @@
     }
   ],
   "blueprint": {
-    "file": "SKILL_BLUEPRINT.md",
-    "lastUpdated": "2026-08-13",
-    "lastVersion": "1.16.0",
+    "lastUpdated": "2026-08-14",
+    "lastVersion": "1.16.1",
     "updateRequiredOn": [
       "major",
       "minor",

@@ -77,7 +77,7 @@
 | 核心契约层 | SKILL.md, skill.json, governance/contracts/skill-contract.md, references/00-pm-main-rules.md | 强保护：变更工单 + contract_change + 全量回归 + 用户确认 |
 | 执行规则层 | references/01~15 | 受控迭代：变更工单 + 影响分析 + 相关回归 |
 | 模板与测试层 | assets/templates/, tests/ | 低风险迭代：记录 CHANGELOG |
-| 文档层 | SKILL_BLUEPRINT.md | 轻量治理：普通更新记录 CHANGELOG；结构性变更走 CR |
+| 文档层 | SKILL_BLUEPRINT.md（仅开发者完整仓库，分发包不含） | 轻量治理：普通更新记录 CHANGELOG；结构性变更走 CR |
 | 脚本层 | scripts/ | 受控迭代：变更工单 + 语法检查 + 相关回归 |
 
 ## Version Rules
@@ -90,5 +90,7 @@
 | 仅新增测试或模板 | Patch |
 
 ## Baseline Rule
+
+> 注：基线规则仅适用于 Skill 完整开发仓库。分发包不含 `governance/baselines/` 与 `tests/`，本条对发行包使用者不适用。
 
 每个稳定版本必须生成基线快照到 `governance/baselines/{version}/`，至少包含 SKILL.md、VERSION、skill.json、references/、tests/regression-suite.md。

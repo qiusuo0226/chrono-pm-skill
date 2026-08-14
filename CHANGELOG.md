@@ -4,7 +4,45 @@
 
 ---
 
-## 1.16.0 — 2026-08-13（本次发布 · released）
+## 1.16.2 — 2026-08-14（本次发布 · released）
+
+> 发布归档：Patch（分发包幽灵引用修复）。修复 v1.16.1 分发包中 governance/ 整目录排除导致的核心契约断链：例外放行 `governance/contracts/skill-contract.md`（被 7 个运行时规则引用第 5 条）；排除 `SKILL_BLUEPRINT.md`（仅文档层引用）；移除 SKILL.md 中 16 号规则路由；skill-contract.md 基线规则加注“仅开发者仓库”；skill.json 移除 `blueprint.file` 字段。无 workspace schema 变更，无规则/模板/能力变更。
+
+### Fixed
+- **pack.ps1**：governance 排除细化——例外放行 `governance/contracts/skill-contract.md`（核心契约）；修复 Windows 路径分隔符匹配（`\` → `/` 归一化后再比对例外清单）。
+- **幽灵引用消除**：排除 `SKILL_BLUEPRINT.md`（被 references/16 号和 BLUEPRINT 自身引用的 governance 路径不再进入发行包）；SKILL.md 移除 16 号规则路由条目。
+
+### Changed
+- **skill-contract.md**：L94 基线规则加注“仅适用于完整开发仓库，分发包不含 baselines/tests”。
+- **skill.json**：移除 `blueprint.file` 字段（BLUEPRINT 不在发行包内，保持元数据自洽）。
+- **release-checklist**：Distribution Packaging 段更新排除清单（标注例外放行）+ 新增幽灵引用检查项。
+- **pack-skill/SKILL.md**：排除清单说明同步更新。
+
+### Notes
+- 无 workspace schema 变更，无规则/模板/能力变更，无需工作区迁移。
+- 包体新增 `governance/contracts/skill-contract.md`（~5.5 KB），移除 `SKILL_BLUEPRINT.md`（~15 KB）和 `references/16-skill-governance-rules.md`（~8 KB），净体积略降。
+
+---
+
+## 1.16.1 — 2026-08-14（已发布 · released）
+
+> 发布归档：Patch（分发包标准化）。新增通用打包 skill（tools/pack-skill/），支持任意 Qoder Skill 项目一键打包分发包 zip；release-checklist 新增 Distribution Packaging 段；.gitignore 补强排除项；删除旧专用脚本 scripts/pack_dist.ps1。无 workspace schema 变更，无规则/模板/能力变更。
+
+### Added
+- **tools/pack-skill/**：通用 Skill 分发包打包 skill（SKILL.md + scripts/pack.ps1）。策略“包含全部，排除已知”（黑名单模式），不预设任何 Skill 特有目录结构。默认排除 governance/、tests/、tools/、.git/、.idea/、.qoder/、__pycache__/ 等开发者产物。支持 -DryRun 预览、-Exclude 自定义排除。
+- **release-checklist Distribution Packaging 段**：打包命令、排除清单、升级路径验证检查项。
+
+### Changed
+- **.gitignore**：补强 `*.zip`、`*.tar.gz`、`.vscode/` 排除项。
+- **scripts/pack_dist.ps1**：已删除，被通用版 tools/pack-skill/scripts/pack.ps1 取代。
+
+### Notes
+- 无 workspace schema 变更，无规则/模板/能力变更，无需工作区迁移。
+- 分发包体积从 ~4 MB（含 governance）降至 ~270 KB。
+
+---
+
+## 1.16.0 — 2026-08-13（已发布 · released）
 
 > 发布归档：Minor（合同作用域与多对多映射）。在 v1.15.0 跨源需求归集 RI 之上补齐"合同与子项目多对多"缺口（capability_change + schema_change + contract_change）。workspace schema 0.7.0→0.8.0（structure-only 迁移，新增 portfolio/requirements 与 contract-register）。
 

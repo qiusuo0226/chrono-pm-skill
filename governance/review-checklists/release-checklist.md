@@ -70,6 +70,49 @@
 
 - [ ] 是否复制到灵犀安装目录？
 
+## Distribution Packaging（分发包打包）
+
+> 分发包面向终端 PM 使用者，只含运行时必要文件。
+> 使用通用打包 skill `tools/pack-skill/scripts/pack.ps1` 自动打包。
+> 策略：**包含全部项目文件，排除已知开发者/构建产物**（黑名单模式）。
+
+**默认排除（脚本内置）：**
+
+| 路径 | 原因 |
+|---|---|
+| `governance/`（例外放行 `contracts/skill-contract.md`） | 开发者治理归档（baselines/CR/IA/RR）；核心契约被 7 个运行时规则引用，必须保留 |
+| `tests/` | 回归套件，开发者侧 |
+| `tools/` | 开发工具（打包脚本等） |
+| `.git/`、`.gitignore` | Git 元数据 |
+| `.idea/`、`.vscode/`、`.qoder/` | IDE/编辑器配置 |
+| `__pycache__/`、`*.pyc` | Python 构建缓存 |
+| `*.zip`、`*.tar.gz` | 历史分发包 |
+| `.DS_Store`、`Thumbs.db` | OS 元数据 |
+| `SKILL_BLUEPRINT.md` | 架构审查文档，仅开发者仓库使用 |
+| `references/16-skill-governance-rules.md` | Skill 自身变更治理规则，开发者侧流程 |
+
+**打包命令：**
+
+```powershell
+# 预览
+powershell -ExecutionPolicy Bypass -File tools/pack-skill/scripts/pack.ps1 -SkillRoot . -DryRun
+# 打包
+powershell -ExecutionPolicy Bypass -File tools/pack-skill/scripts/pack.ps1 -SkillRoot .
+```
+
+**体积 sanity check：** 分发包预期 < 800 KB（含 governance 的完整仓库约 4 MB）。若超出，检查是否误包含了排除项。
+
+**幽灵引用检查：**
+
+- [ ] 包内文件无指向已排除文件的引用（已排除 SKILL_BLUEPRINT.md、references/16 号；skill-contract.md 内部 baselines 引用已标注“仅开发者仓库”）？
+
+**升级路径验证：**
+
+- [ ] 分发包是否包含 `scripts/migrate_workspace.py`？
+- [ ] 分发包是否包含 `assets/templates/` 全量模板？
+- [ ] 从旧版本分发包升级的场景：覆盖 Skill 文件 → 运行 migrate → 新能力可用？
+- [ ] 包体大小是否在预期范围内？
+
 ---
 
 ## 已知污染类型附录

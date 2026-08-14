@@ -1,10 +1,17 @@
 # Python compiled caches
 __pycache__/
-.idea/
-.qoder-plugin/
 *.pyc
 *.pyo
+
+# IDE
+.idea/
+.vscode/
+.qoder-plugin/
 
 # OS files
 Thumbs.db
 .DS_Store
+
+# Distribution artifacts
+*.zip
+*.tar.gz

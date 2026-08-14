@@ -1,88 +1,105 @@
-# ChronoPM v1.16.0
+# ChronoPM v1.16.2
 
-A Markdown-driven AI project management skill.
+**Let AI manage your project — not just write documents for you.**
 
-## Description
+## What is this?
 
-A project management skill for project managers (especially in To G / To B digital-transformation fields). It treats Markdown files as the source of truth, uses AI as an assistant, and keeps human confirmation as the final control point. It covers full-scope project management: requirements, task tracking, schedule control, risk & issue, milestones, cost & P&L, daily/weekly reports, meeting minutes, decision logs, retrospectives, program (portfolio) coordination, resource allocation & transfer, update-intent detection, initialization wizard, iteration management, information-completeness inspection & reminders, historical-plan import & change/delay tracking, domain glossary, PM-profile preference learning & output adaptation, and the proactive-change + human-confirmation update model.
+ChronoPM is an AI skill for project managers. Once installed, your AI assistant understands your project and helps with daily management — writing daily reports, organizing meeting minutes, tracking tasks and risks, managing requirement changes, and generating weekly/monthly reports.
 
-Core principle: **fact-source files (board, register, log) are the single source of truth for project state; process records (daily reports, meeting minutes) are input and must not replace fact sources directly.**
+It's not another project management app. It works directly in your existing folders. All project data is plain Markdown — no database, no cloud service, no vendor lock-in.
 
-## Working Modes
+## What problem does it solve?
 
-- **Single mode**: for a standalone project; all management docs live under the project root `ai/`.
-- **Portfolio mode**: for a program manager coordinating multiple subprojects; layered under `portfolio/` (program level) and `projects/{subproject}/` (subproject level). Information flows bottom-up, decisions flow top-down; the program does not modify subproject fact sources directly.
+If you've managed a project, you've probably been through this:
 
-## Capabilities (CAP-001 ~ CAP-026)
+- **Information is scattered everywhere** — daily reports in chat groups, tasks in Excel, requirements in Word, decisions in someone's head. Finding anything takes forever.
+- **AI doesn't understand your project** — you ask AI to help write a report, but the output has nothing to do with your actual project because it doesn't know your team, your progress, or your context.
+- **Changes are out of control** — the client says "change this," and suddenly nobody remembers what was changed, what it affects, or who approved it.
+- **Knowledge walks out the door** — when someone leaves, the project history goes with them.
 
-| Capability | Name | Note | Origin version |
-|---|---|---|---|
-| CAP-001 | Workspace Initialization | Init workspace; `init_workspace.py` supports single/portfolio | base |
-| CAP-002 | Daily Report Management | Daily report handling with merge idempotency + personal progress | base |
-| CAP-003 | Weekly Report & Portfolio Rollup | Subproject weekly + program monthly rollup | base |
-| CAP-004 | PM Daily Todo (9-section panorama) | Whole-team aggregated todo view | base |
-| CAP-005 | Quick Query (index-first) | Index-first lookup, no full scans by default | base |
-| CAP-006 | Output Artifact Management | Batch-dir output + draft/confirm/export flow | base |
-| CAP-007 | Risk & Issue Management | Risk/issue registers with multi-source cross-check | base |
-| CAP-008 | Requirement Management | Requirement register + traceability matrix | base |
-| CAP-009 | Change Control | Change flow + impact analysis | base |
-| CAP-010 | Resource Management | Resource register; state separated from history | base |
-| CAP-011 | Historical Continuity | Handover across project phases | base |
-| CAP-012 | Todo Snapshot & Actuals | Snapshot freeze + plan vs actuals comparison | base |
-| CAP-013 | Self-Check & Completeness | D/M/R/T layered self-check lists | base |
-| CAP-014 | Excel Generation | 8 doc-sheet structures/columns/validation/formulas | base |
-| CAP-015 | Version & Compatibility | Workspace health check + compatibility mode + migration | base |
-| CAP-016 | Update Trigger & Intent Detection | Four-level trigger + permission tiers | base |
-| CAP-017 | Skill Governance | Change tickets (CR/IA/RR) + AP review + regression guard | base |
-| CAP-018 | Blueprint & External Review | Architecture decisions + capability matrix + review entry | base |
-| CAP-019 | Domain Glossary | Terminology normalization + confidence + correction + confirm-learning | v1.7.0 |
-| CAP-020 | Project Initialization Wizard | Six-step guided setup with progress memory & resume | v1.8.0 |
-| CAP-021 | Information Completeness Inspection | 7-layer missing-info check, P0-P3 tiered reminders | v1.8.0 |
-| CAP-022 | Entry Router & Knowledge Navigation | SKILL.md as entry router; rules moved to references | v1.8.0 |
-| CAP-023 | PM Profile & Preference Learning | Habit learning + preference-adapted output | v1.9.0 |
-| CAP-024 | Historical Plan Import & Change/Delay Track | Batch plan import + change/delay counting & tracking | v1.10.0 |
-| CAP-025 | Proactive Change & Pending Window | Proactive changes + human-confirm model; pending not counted as overdue | v1.11.0 |
-| CAP-026 | Change Log Tiered Archive | Active/archive tiering with auto month navigation | v1.11.0 |
-| — (CAP extension) | Requirement Intelligence (RI) | Cross-source requirement extraction/merge/scope判定/three-level index retrieval; v1.16.0 extends contract scope (portfolio/requirements tiered storage + contract-register + scope_level routing + contract_refs) | v1.15.0 |
+ChronoPM organizes all project information in a set of Markdown files. Once the AI reads these files, it understands your project and can actually help.
 
-## Key Mechanisms
+## How to use it?
 
-- **Entity Cascade Propagation** (v1.13.0): 6 entity rule files carry `§cascade rules` with AUTO / CHECK / SUGGEST actions; conflicts flagged ⚠ for PM decision.
-- **Standard Workflow Data Paths** (v1.14.0): 00 §9 predefines WF-1~WF-6 high-frequency read/write file sequences; §9.1 ensures predefinition doesn't weaken judgmental reasoning. 05 §2.5 Quick Update route table mirrors Quick Query.
-- **Requirement Intelligence (RI)** (v1.15.0): 07 §8 ATOM→Canonical→REQ three-layer model, dual-layer source classification (6 fixed source_category + project-extensible source_type), three-level index + graded loading + P1 semantic fallback, answers "is this requirement in contract/bidding/approval scope?" with evidence chain; PM notes project-notes dual-entry. Workspace schema 0.7.0.
-- **Contract Scope & Many-to-Many Mapping** (v1.16.0): closes the "contract↔sub-project many-to-many" gap — adds portfolio-level `portfolio/requirements/` cross-source storage and `contract-register.md` (scope_level: portfolio/project/supplement, parent_contract_id, coverage, document-cluster links); ATOM/Canonical storage follows contract scope_level (supplements follow parent contract); contract-dimensional scope判定 (Canonical adds companion field contract_refs; scope_scope 5-value enum unchanged); RI four-step retrieval routing (read register → resolve contract → target-tier three-level index → output contract_refs); contract-change three-level cascade (reuses 08 scope/cost/requirement, no enum change); fixes CR-20260813-001 legacy script gaps. Workspace schema 0.8.0.
-- **Update-Intent Recognition** (v1.10.0): SKILL.md as router auto-routes by intent; supports batch handling.
-- **Information-Completeness Inspection** (v1.8.0): proactively scans missing info, P0-P3 tiered reminders, silent-capable.
-- **PM Profile Learning** (v1.9.0): passive observe → pending → confirmed; adapts personal habits.
-- **Proactive Change + Human Confirmation** (v1.11.0): low/medium-risk changes written to fact source and registered as pending-changes until confirmed; major changes trigger full regression.
+**Step 1: Install the Skill**
 
-## Directory Layout
+Copy this directory into your AI tool's (e.g., Qoder) Skill directory.
+
+**Step 2: Initialize your workspace**
+
+Tell the AI: "Initialize my project workspace." It will guide you through setup — project name, team members, current phase, and which mode to use.
+
+**Step 3: Use it daily**
+
+Talk to the AI like you would to an assistant:
+
+| You say | AI does |
+|---|---|
+| "Today's daily report" | Summarizes all updates, generates the report, and syncs personal progress |
+| "We had a kickoff meeting, here are the notes…" | Organizes minutes, extracts action items, assigns owners |
+| "The client wants to add feature XX" | Registers the requirement, assesses impact, updates the traceability matrix |
+| "How's this week going?" | Pulls from all files and generates a weekly summary |
+| "Overall program status" | Aggregates all subproject statuses into a program-level monthly report |
+| "Check if anything's missing" | Scans all management files, lists gaps with priority levels |
+
+## Two working modes
+
+- **Single project mode**: One `ai/` folder manages one project. Good for standalone projects.
+- **Portfolio mode**: One program manager coordinates multiple subprojects. Information flows bottom-up, decisions flow top-down.
+
+## Key features
+
+**Markdown files are your database**
+All project info lives in `.md` files. No software, database, or cloud service required. You can open them with any text editor — and still read them ten years from now.
+
+**AI reads first, writes only with your approval**
+The AI reads existing files to understand context before every operation. It asks for your confirmation before writing important data — it won't change things behind your back.
+
+**Every change is traceable**
+Requirement registration, change control, impact analysis — every step is recorded. Who requested it, when, and what it affects, all traceable.
+
+**Project knowledge survives personnel changes**
+All project knowledge lives in files. When someone new joins, the AI reads the files and gets up to speed. When someone leaves, the project history stays.
+
+**End-to-end reporting**
+Daily reports, weekly reports, monthly reports, meeting minutes, decision logs, retrospectives — all have standard templates. The AI fills them in and rolls them up automatically.
+
+**Requirement scope is traceable**
+From contracts to bidding documents to specific requirements — a three-layer model helps you answer "is this requirement within the contract scope?"
+
+## What's included
+
+| Content | Count | Description |
+|---|---|---|
+| Rule files | 22 | Define how the AI should behave in various scenarios |
+| Document templates | 48 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
+| Regression tests | 185 cases | Ensure every update doesn't break existing functionality |
+
+## Directory layout
 
 ```
 ChronoPM Skill/
-├── SKILL.md              # Core contract (entry router)
-├── SKILL_BLUEPRINT.md    # Capability blueprint
-├── skill.json            # Skill metadata
-├── VERSION               # Version number
-├── CHANGELOG.md          # Change history
-├── QODER_RULES.md        # Qoder env config entry
-├── assets/               # Templates & resources
-├── governance/           # Governance contracts + change control (CR/IA/RR/baselines) + planning docs
-├── references/           # Rule files (00~21, 22 rules)
-├── scripts/              # Automation scripts (init/migrate/sync_version)
-└── tests/                # Regression suite (198 cases)
+├── SKILL.md           # AI entry point — the AI reads this to know how to help you
+├── skill.json         # Version and metadata
+├── VERSION            # Current version number
+├── CHANGELOG.md       # Change history
+├── references/        # 22 rule files (the AI's code of conduct)
+├── assets/templates/  # 48 document templates
+├── scripts/           # Automation scripts
+├── governance/        # Governance contracts and change management (for developers)
+└── tests/             # Regression test suite
 ```
 
-## Version Info
+## Version info
 
 | Item | Value |
 |---|---|
-| Skill version | 1.16.0 |
-| Workspace Schema | 0.8.0 |
-| Default mode | portfolio |
-| Rule files | 22 (00~21) |
-| Regression cases | 198 |
-| Capabilities | 26 (CAP-001~026) |
+| Skill version | 1.16.2 |
+| Workspace schema | 0.8.0 |
+| Rule files | 22 |
+| Document templates | 48 |
+| Regression cases | 185 |
 
 ## Changelog
 
