@@ -541,7 +541,8 @@ ai/
 ├── prompts/                       # 项目级提示词
 │   └── project-rules.md           # 项目特有规则
 ├── context/                       # 项目背景记忆
-│   └── project-context.md
+│   ├── project-context.md
+│   └── entity-registry.md         # 推导基线（可选，多模块/多阶段时创建）
 ├── requirements/                  # 需求管理（含跨源需求归集 RI）
 │   ├── requirement-register.md
 │   ├── change-log.md

@@ -253,4 +253,5 @@ ALL_TEMPLATE_FILES = [
     "iteration-register-template.md",
     "pm-profile-template.md",
     "contract-register-template.md",
+    "entity-registry-template.md",
 ]

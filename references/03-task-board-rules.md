@@ -241,3 +241,13 @@ Task Owner 委派（新建任务或 Owner 变更）→
   [SUGGEST] 若 board 任务未完成 → 建议同步更新 board 状态为 done/review
 
 > 本 §8.1 由 `00-pm-main-rules.md` WF-1 步骤 18.5 与 `10-update-trigger-rules.md` 待办信号共同触发。
+
+### 8.2 Task 生命周期推导触发（来自日报/纪要中的里程碑终态事件）
+
+> 本 §8.2 由 `00-pm-main-rules.md` §10 推导基线触发，复用 §8 级联传播机制。
+
+日报/纪要处理中检测到里程碑终态事件 →
+  [CHECK] 推导触发事件是否属于 `00-pm-main-rules.md` §10.3 推导链中的触发事件（或 entity-registry §2 项目级覆盖中的触发事件）
+  [SUGGEST] 若推导结论与当前 Task 状态不一致 → 建议同步 Task 状态，标注"推导状态（来源：{过程记录}）"
+  [SUGGEST] 输出矛盾标注（走 §8a 强制呈现）
+  [CHECK] 受影响任务集识别：按 `00-pm-main-rules.md` §10.5 四级降级定位目标任务

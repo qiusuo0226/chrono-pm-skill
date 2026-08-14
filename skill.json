@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm",
   "displayName": "ChronoPM — Markdown 驱动的 AI 项目管理技能",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "schemaVersion": "0.6.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -58,6 +58,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "1.18.0",
+      "date": "2026-08-15",
+      "summary": "推导基线(Minor)：引入推导基线(Reasoning Baseline)机制。00号新增§10推导规则（§10.1派生投影优先级+§10.2跨源矛盾处理+§10.3生命周期推导链6步+§10.4推导后动作规范SUGGEST+§8a+§10.5任务集4级降级关联）；05号新增§3(3)a终态事件豁免；01号§6.2新增里程碑事件维度+§3.3追加第5/6条实体枚举校验；03号新增§8.2推导触发级联；14号新增D14推导基线检查；19号新增§3.3a推导基线巡检维度；18号新增§7a可选步骤引导创建entity-registry；新增entity-registry-template.md数据模板；周报模板新增状态推导说明输出段；脚本层同步(config.py/migrate/file_registry)。无workspace schema变更，无需工作区迁移。"
+    },
     {
       "version": "1.17.1",
       "date": "2026-08-15",

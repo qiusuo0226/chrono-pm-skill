@@ -1,4 +1,4 @@
-# ChronoPM v1.17.1
+# ChronoPM v1.18.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -108,6 +108,9 @@ Daily reports, weekly reports, monthly reports, meeting minutes, decision logs, 
 **Requirement scope is traceable**
 From contracts to bidding documents to specific requirements — a three-layer model helps you answer "is this requirement within the contract scope?"
 
+**Reasoning Baseline — smarter status derivation**
+A built-in lifecycle derivation chain derives the actual completion status of modules/tasks from milestone terminal events such as "rehearsal passed," "review passed," and "acceptance passed," then cross-checks it against the task board. Combined with an entity registry and cross-source contradiction handling, weekly reports and queries no longer rely on a single board status — fewer missed counts and fewer misjudgments.
+
 ## Capabilities at a glance (CAP-001 ~ CAP-031)
 
 | Capability | Name | Description |
@@ -144,13 +147,14 @@ From contracts to bidding documents to specific requirements — a three-layer m
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
 | CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
 | CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
+| — (extension) | Reasoning Baseline | Lifecycle derivation chain + cross-source contradiction handling + entity registry + task-set association; derives actual completion status from milestone events |
 
 ## What's included
 
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 48 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Document templates | 49 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
 | Regression tests | 225 cases | Ensure every update doesn't break existing functionality |
 
@@ -184,7 +188,7 @@ ChronoPM Skill/
 │   └── ...
 │
 ├── assets/               # 📦 Resource files
-│   └── templates/        # Document templates (48). The AI fills these when generating files,
+│   └── templates/        # Document templates (49). The AI fills these when generating files,
 │                          # ensuring consistent formatting. Covers daily reports, weekly reports,
 │                          # meeting minutes, risk registers, decision logs, retrospectives, etc.
 │                          # Note: the workspace ai/ directory tree is created programmatically by
@@ -214,10 +218,10 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.17.1 |
+| Skill version | 1.18.0 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
-| Document templates | 48 |
+| Document templates | 49 |
 | Regression cases | 225 |
 
 ## Changelog

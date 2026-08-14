@@ -93,3 +93,9 @@ status: 草稿
 - 资源约束：
 
 ## 备注
+
+## 推导基线
+
+> 实体登记册（entity-registry）是推导基线的数据部分，独立存放于 `context/entity-registry.md`。
+> 通用推导规则见 `00-pm-main-rules.md` §10。
+> 如尚未创建，可通过初始化向导可选步骤或完整性巡检触发创建。

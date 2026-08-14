@@ -220,6 +220,7 @@ ChronoPM 建立在三层信任模型之上：
 | CAP-025 | Proactive Change & Pending Window | stable | L3 | `00,01,03,05,06,10,14,19`, `skill-contract` | pending-changes-index, change-log, change-log-index, change-log-archive | v1.11.0：主动变更+人工确认更新模式；待确认记录不参与延期/超期判定(确认窗口期)；权限模型 proactive/passive/progressive；skill-contract #5 与 SKILL.md §7 安全底线 #2 修改(三防线：审计/超时/回滚) |
 | CAP-026 | Change Log Tiered Archive | stable | L2 | `06-file-rules.md` | change-log-index, change-log-archive | v1.11.0：活跃区 50 行/30 天触发按月归档至 change-log/archive/，维护 change-log/index.md 月份导航 |
 | —（CAP 扩展） | Requirement Intelligence (RI) | stable | L3 | `07` + `05` + `17` + `06` | requirements/atoms/(L1/L2/L3)+canonical；合同作用域：portfolio/requirements + contract-register | v1.15.0：跨源需求拆词/归并/范围判定/三级索引检索；v1.16.0 扩展合同作用域（portfolio/requirements 层级存储 + contract-register + scope_level 路由 + contract_refs 判定，CR-20260813-002）；归属现有 CAP 扩展（非独立 CAP），CR-20260813-001/002 |
+| —（CAP 扩展） | Reasoning Baseline（推导基线） | stable | L3 | `00` §10 + `05` §3(3)a + `01` §6.2 + `03` §8.2 | entity-registry.md（项目级数据） | v1.18.0：生命周期推导链 + 跨源矛盾处理（终态事件豁免）+ 推导后动作规范（SUGGEST+§8a）+ 任务集 4 级降级关联；entity-registry 为事实源派生投影，非独立事实源；归属现有 CAP 扩展（非独立 CAP） |
 
 > **WF 标准工作流数据路径（v1.14.0 新增）**：WF-1~WF-6 不是独立 CAP，而是 CAP-002/003/004/005/009/010/017 的**执行效率优化层**，集中声明于 `00-pm-main-rules.md` §9。它将高频操作场景的读/写文件顺序预定义，判断性推导（状态判定、匹配逻辑、关闭条件）仍保留在判断阶段不弱化（§9.1）。Quick Update 路由表（`05-query-rules.md` §2.5）为 CAP-005 的对称扩展（查询→更新）。不新增独立能力 ID、规则文件、模板、ID 前缀或状态枚举。
 
@@ -545,6 +546,7 @@ ChronoPM 建立在三层信任模型之上：
 | 1.16.3 | 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现 + WF-2/5 补验证 + 14号去重引用 | Patch (级联强制) |
 | 1.17.0 | PM 偏好通用化升级：5 能力模块（日报集成审查+主动提问/跨实体联动/关闭佐证/委派跟踪/沟通质量）+ 查询默认过滤；CQ-1/2/3 回归 PM Profile 层 | 无独立 CR（偏好沉淀） |
 | 1.17.1 | 治理一致性修复：SKILL.md 路由表 16 号幽灵引用移除 + 版本失步全触点修正 + README×2 用例数/目录树修正 + Module 35 补档 + audit_release.py + 基线补档 | Patch (治理一致性) |
+| 1.18.0 | 推导基线（Reasoning Baseline）：00号 §10 推导规则（推导链+跨源矛盾+动作规范+任务集关联）+ 05号 §3(3)a 终态事件豁免 + entity-registry 数据模板 + 周报/日报推导增强 + 脚本层同步 | Minor (推导能力升级) |
 
 ---
 

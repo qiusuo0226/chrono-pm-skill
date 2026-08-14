@@ -127,6 +127,7 @@ AI 在每次更新索引后，必须执行一致性检查：
 | D11 | 待确认变更是否已登记 `pending-changes.md` 且与 Change Log `Confirmed By: 待确认` 条目一一对应、`total_pending` 一致 | pending 索引与实际不一致 | 核对本次新增/确认/驳回的待确认项是否已同步更新 pending-changes，不一致则以 Change Log 为准重建 |
 | D12 | Change Log 活跃区是否超 50 行或超 30 天未归档 | 活跃区膨胀、追溯困难 | 活跃区超 50 行或超 30 天触发按月归档到 `change-log/archive/YYYYMM-change-log.md` 并更新 `change-log/index.md` |
 | D13 | 级联传播是否完整执行 | 下游同步遗漏 | 确认对应实体规则文件 §级联传播规则 中所有 AUTO 动作已执行、CHECK 结果已输出、SUGGEST 动作已加入建议更新清单 |
+| D14 | 推导基线 entity-registry 完整性 | 实体枚举遗漏、推导状态与事实源不一致 | 检查 `context/entity-registry.md` 是否存在；存在时检查实体数量 vs board 任务中提及的实体数量是否一致；不一致则提示同步 |
 
 ### 3.2 会议纪要处理自查清单
 

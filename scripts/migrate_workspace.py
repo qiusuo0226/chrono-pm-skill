@@ -454,6 +454,8 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         "requirements/source-type-registry.md": "source-type-registry-template.md",
         "portfolio/requirements/contract-register.md": "contract-register-template.md",
         "portfolio/requirements/source-type-registry.md": "source-type-registry-template.md",
+        "context/entity-registry.md": "entity-registry-template.md",
+        "portfolio/context/entity-registry.md": "entity-registry-template.md",
     }
 
     for f in files:
