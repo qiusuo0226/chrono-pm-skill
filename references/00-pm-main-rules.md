@@ -279,6 +279,44 @@ Level 4: 用户提供的输入资料
 
 不自动解决冲突。所有级联 SUGGEST 仍遵循"事实源写入待人工确认"底线（见安全底线第 2 条与 `skill-contract.md` 第 5 条）。
 
+## 8a. 级联执行强制规则
+
+> **背景**：级联传播中的 [SUGGEST] 动作曾被 AI 理解为"可选建议"而跳过，导致待办↔看板↔风险↔问题之间数据不一致。本节明确：SUGGEST ≠ 可选，而是"必须呈现给 PM 确认"。
+
+### 8a.1 SUGGEST 的准确语义
+
+`[SUGGEST]` 表示"写事实源或影响其他实体的动作，**必须呈现给 PM 确认**"。AI **不得**：
+1. 静默跳过任何 SUGGEST 动作（不呈现、不记录）。
+2. 以"用户可能不需要"为由省略级联项。
+3. 只执行 AUTO 动作而忽略同流程内的 CHECK/SUGGEST。
+
+AI **必须**：
+1. 将所有 SUGGEST 动作汇总到"建议更新清单"或"已记录待确认变更"区块。
+2. 每条 SUGGEST 必须包含：目标文件、建议动作、触发原因（来自哪个实体的哪个变更）。
+3. 即使用户说"只更新待办"，也必须输出关联实体的级联建议（看板/风险/问题），由用户明确跳过。
+
+### 8a.2 级联完成验证（每个工作流末尾必执行）
+
+任何工作流（WF-1~WF-6）或实体级联传播执行完毕后，AI 必须在输出前执行以下验证：
+
+```
+级联完成验证：
+1. 列出本流程涉及的所有实体变更（触发实体 + 关联实体）
+2. 对每个实体，确认其级联规则中的 AUTO/CHECK/SUGGEST 是否全部处理
+3. 若有未处理的 SUGGEST → 补入建议清单
+4. 若有未执行的 AUTO → 立即补执行
+5. 输出"级联完整性：✅ 全部处理 / ⚠️ N 项待确认"
+```
+
+此验证与 `14-self-check-rules.md` 的 D13/M8 等事后自查互补：本节是"输出前强制验证"，14 号是"处理后质检"。
+
+### 8a.3 用户跳过级联的处理
+
+若用户明确表示"不更新看板""跳过风险同步"等：
+- AI 必须在输出中记录：`⚠️ 用户跳过：[具体级联项] — [原因]`
+- 该跳过记录写入 AI 操作日志
+- 下次同一链路触发时，仍正常输出该级联项（不因上次跳过而永久忽略）
+
 ## 9. 标准工作流数据路径
 
 高频操作场景的数据路径已预定义。AI 执行时按路径顺序读/写，不需要逐步推导。
@@ -308,8 +346,11 @@ Level 4: 用户提供的输入资料
 | 补全 | 16 | 创建/更新当日个人日报（PF006 场景） | AUTO |
 | 补全 | 17 | 更新日报索引 | AUTO |
 | 输出 | 18 | 变更摘要 + 建议后续操作（可关闭项） | — |
+| 级联 | 18.5 | 待办创建/更新时，执行 `03-task-board-rules.md` §8.1 待办→board 级联检查（含正式任务 vs 一次性提醒判断） | CHECK/SUGGEST |
+| 验证 | 19 | **级联完成验证**（§8a.2）：确认 board/issue/risk 的级联动作全部执行或呈现，输出"级联完整性"结论 | MANDATORY |
 
 > 判断阶段（步骤 6-9）必须结合上下文充分推导，不得因路径预定义而简化判断逻辑。
+> 步骤 19 为强制执行步骤，不得跳过。即使所有级联均无动作，也必须输出"级联完整性：✅ 无关联实体需同步"。
 
 ### WF-2 日报处理
 
@@ -326,6 +367,7 @@ Level 4: 用户提供的输入资料
 | 快照 | — | snapshots/daily, actuals/daily, history-index |
 | 资源检测 | resource-register | （仅建议，不自动写 register） |
 | 归档 | Change Log 活跃区 | change-log/archive（若触发） |
+| 验证 | — | **级联完成验证**（§8a.2）：确认 board/risk/issue/待办索引的级联动作全部执行或呈现 | MANDATORY |
 
 ### WF-3 会议纪要处理
 
@@ -341,6 +383,7 @@ Level 4: 用户提供的输入资料
 | 决策 | decision-log | decision-log（SUGGEST） |
 | 变更 | change-log | change-log（SUGGEST） |
 | 归档 | meetings/index | meetings/index, meetings/YYYYMM/ |
+| 验证 | — | **级联完成验证**（§8a.2）：确认所有级联动作全部执行或呈现 | MANDATORY |
 
 ### WF-4 需求变更处理
 
@@ -354,6 +397,7 @@ Level 4: 用户提供的输入资料
 | 影响分析 | board, milestone-board, risk-register, budget | — |
 | 决策 | — | change-log（approved/rejected）（SUGGEST） |
 | 同步 | — | requirement-register, board, milestone-board, risk-register（SUGGEST） |
+| 验证 | — | **级联完成验证**（§8a.2）：确认所有级联动作全部执行或呈现 | MANDATORY |
 
 ### WF-5 周报生成
 
@@ -367,6 +411,7 @@ Level 4: 用户提供的输入资料
 | 资源补充 | resource-register, transfer-log | — |
 | 项目集汇总 | 各子项目周报 + portfolio/risks + portfolio/resources | 项目集汇总周报 |
 | 成本汇总 | 各子项目 budget | portfolio/budget-summary |
+| 验证 | — | **级联完成验证**（§8a.2）：确认所有级联动作全部执行或呈现 | MANDATORY |
 
 ### WF-6 人员资源流转
 
@@ -382,6 +427,7 @@ Level 4: 用户提供的输入资料
 | 风险检查 | risk-register | risk-register（若触发 RR-01~08，SUGGEST） |
 | 任务联动 | board（该人名下任务） | board（建议重分配/blocked，SUGGEST） |
 | 待办联动 | personal-todo-index | personal-todo-index（AUTO） |
+| 验证 | — | **级联完成验证**（§8a.2）：确认所有级联动作全部执行或呈现 | MANDATORY |
 
 ### 9.1 判断阶段强化规则
 

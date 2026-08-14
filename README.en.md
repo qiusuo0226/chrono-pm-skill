@@ -1,4 +1,4 @@
-# ChronoPM v1.16.2
+# ChronoPM v1.16.3
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -209,7 +209,7 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.16.2 |
+| Skill version | 1.16.3 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 48 |

@@ -150,6 +150,8 @@ status: 草稿
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
 执行完毕后，14 号自查清单验证完整性。
 
+> **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
+
 Decision 创建 →
   [SUGGEST] 若决策产生新的 action item → 建议加入 board 或 backlog
   [SUGGEST] 若决策影响风险评估 → 建议更新 risk-register

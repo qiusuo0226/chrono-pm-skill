@@ -122,6 +122,7 @@
 明天做、下周做、安排、计划做、待办、todo、跟进、推动、确认、推进、督促、提醒、记得
 
 → 触发：`portfolio/todos/personal-todo-index.md`、`portfolio/todos/daily-todo-index.md`、`portfolio/todos/weekly-todo-index.md`
+→ 触发后除更新待办索引外，必须执行 `03-task-board-rules.md` §8.1 待办→board 级联检查。
 
 #### 资源信号
 请假、抽调、借调、支援、离场、进场、换人、顶替、B角、没人、共享、投入比例、暂停投入、转去、回到
@@ -319,8 +320,10 @@ AI 在处理任何用户输入前，必须先读取 `context/project-brief.md`�
 6. 判断是否需要追问（最小追问规则）
 7. 判断更新权限（低风险可主动 / 高风险需确认）
 7.5 写入低/中风险项时必须标记 `Confirmed By: 待确认` 并在 `pending-changes.md` 登记；高风险项仍须确认
-8. 输出更新计划或直接生成内容
-9. 输出 Suggested File Updates
+8. **级联传播执行**：对每个变更事项，执行其对应实体的级联传播规则（见各实体规则文件 §级联传播规则）。所有 AUTO 直接执行，所有 CHECK 执行并记录，所有 SUGGEST 汇总到建议清单——不得静默跳过任何级联动作（见 `00-pm-main-rules.md` §8a）
+9. 输出更新计划或直接生成内容
+10. 输出 Suggested File Updates（必须包含所有级联 SUGGEST 项）
+11. **级联完成验证**（`00-pm-main-rules.md` §8a.2）：输出"级联完整性"结论
 ```
 
 ---

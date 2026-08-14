@@ -20,10 +20,10 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 1.16.2（版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 1.16.3（版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
-| 最后更新 | 2026-08-14 (v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
+| 最后更新 | 2026-08-14 (v1.16.3 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现；v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
 | 维护方式 | 随 Skill 版本同步更新（详见 §13 Update Policy） |
 | 入口文件 | `SKILL.md` |
 | 元数据 | `skill.json` |
@@ -541,6 +541,7 @@ ChronoPM 建立在三层信任模型之上：
 | 1.15.0 | 跨源需求归集（RI）+ 三级索引（requirements/atoms、canonical、source-type-registry）；schema 0.7.0 | CR-20260813-001 |
 | 1.16.0 | 合同作用域（portfolio/requirements + contract-register + scope_level 路由 + contract_refs）；schema 0.8.0 | CR-20260813-002 |
 | 1.16.1 | 分发包标准化：通用打包 skill (tools/pack-skill/) + release-checklist Distribution Packaging + .gitignore 补强 | Patch (分发包治理) |
+| 1.16.3 | 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现 + WF-2/5 补验证 + 14号去重引用 | Patch (级联强制) |
 | 1.16.2 | 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由 + skill.json blueprint.file 移除 | Patch (幽灵引用修复) |
 
 ---

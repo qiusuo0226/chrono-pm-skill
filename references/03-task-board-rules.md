@@ -198,6 +198,8 @@ Change Log 活跃区上限 50 行或超过 30 天时，触发按月归档到 `ch
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
 执行完毕后，14 号自查清单验证完整性。
 
+> **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
+
 Task 创建 →
   [CHECK] 若含 Risk Ref → 验证关联风险存在且状态合理（§1 Ref 字段）
   [CHECK] 若含 Issue Ref → 验证关联问题存在且状态合理（§1 Ref 字段）
@@ -215,3 +217,19 @@ Task Owner 变更 →
   [AUTO] 更新 personal-todo-index 中该任务的 Owner 字段
 
 > 端到端工作流数据路径见 `00-pm-main-rules.md` §9（WF-1~WF-6）。本文件 §8 定义 Task 实体的级联规则，00号 §9 定义跨实体的完整工作流路径，两者互补不替代。
+
+### 8.1 待办实体级联（待办 → board 反向链路）
+
+> 背景：personal-todo-index 是完全派生索引（来源：board + 日报 + 会议纪要），但用户"新增待办"时直接写入待办索引，此时需要反向检查 board 是否需要同步。不是每条待办都该落 board——一次性提醒落 Task 会污染看板。
+
+待办创建（personal-todo-index 新增条目）→
+  [CHECK] 该待办是否已在 board/backlog 有对应正式任务（按 Owner + 语义匹配 Title）
+  [SUGGEST] 若无匹配且待办属正式任务（有 Owner、有明确 Deadline、可交付）→ 建议在 backlog 或 board 建立对应 Task，字段优先继承待办条目已有值（Owner/Priority/Due Date/Source），缺失字段由 PM 补充
+  [SUGGEST] 若无匹配但待办属一次性提醒（无 Owner、无 Deadline、无明确交付物）→ 不建议建 Task，但仍须在建议清单中呈现该判断及理由，由 PM 定夺
+  [AUTO] 写 personal-todo-index / daily-todo-index（派生视图，直接执行）
+
+待办状态 → done →
+  [CHECK] 关联的 board 任务是否也已完成
+  [SUGGEST] 若 board 任务未完成 → 建议同步更新 board 状态为 done/review
+
+> 本 §8.1 由 `00-pm-main-rules.md` WF-1 步骤 18.5 与 `10-update-trigger-rules.md` 待办信号共同触发。

@@ -240,6 +240,8 @@ AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
 执行完毕后，14 号自查清单验证完整性。
 
+> **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
+
 Resource 状态 → offboard/transferred →
   [SUGGEST] 其名下所有 open/in_progress task → 建议重新分配或 blocked
   [AUTO] 更新 personal-todo-index：移除或标记该人的待办
