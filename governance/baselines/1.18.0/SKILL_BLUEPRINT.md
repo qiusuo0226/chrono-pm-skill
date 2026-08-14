@@ -20,7 +20,7 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 1.18.1（版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 1.18.0（版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
 | 最后更新 | 2026-08-15 (v1.17.1 治理一致性修复：分发包幽灵引用根治 + 版本失步修正 + audit_release.py 自动断言 + 基线补档；v1.17.0 PM 偏好通用化升级：5 能力模块（日报集成审查/跨实体联动/关闭佐证/委派跟踪/沟通质量）；v1.16.3 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现；v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
@@ -547,7 +547,6 @@ ChronoPM 建立在三层信任模型之上：
 | 1.17.0 | PM 偏好通用化升级：5 能力模块（日报集成审查+主动提问/跨实体联动/关闭佐证/委派跟踪/沟通质量）+ 查询默认过滤；CQ-1/2/3 回归 PM Profile 层 | 无独立 CR（偏好沉淀） |
 | 1.17.1 | 治理一致性修复：SKILL.md 路由表 16 号幽灵引用移除 + 版本失步全触点修正 + README×2 用例数/目录树修正 + Module 35 补档 + audit_release.py + 基线补档 | Patch (治理一致性) |
 | 1.18.0 | 推导基线（Reasoning Baseline）：00号 §10 推导规则（推导链+跨源矛盾+动作规范+任务集关联）+ 05号 §3(3)a 终态事件豁免 + entity-registry 数据模板 + 周报/日报推导增强 + 脚本层同步 | Minor (推导能力升级) |
-| 1.18.1 | 打包分发包命名标准化：新增 pack.py 本机主打包入口（产物命名 {BrandName}-Skill-v{version}.zip），排除模型实读 pack.ps1 单一事实源；audit 新增命名漂移守门断言；版本失步修正 + baselines/1.18.1 基线补档 | Patch (打包命名标准化) |
 
 ---
 

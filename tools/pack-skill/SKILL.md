@@ -37,19 +37,28 @@ description: 将任意 Qoder Skill 项目打包为分发包 zip。自动检测�
 
 运行本 skill 目录下的打包脚本：
 
+**本机主路径（Python）：**
+
+```bash
+python tools/pack-skill/scripts/pack.py --skill-root <path>
+```
+
+**跨平台参考实现（PowerShell，执行策略受限时不可用）：**
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File ~/.qoder/skills/pack-skill/scripts/pack.ps1 -SkillRoot <path>
 ```
 
 脚本逻辑：
 1. 扫描 Skill 根目录下全部文件
-2. 排除下方黑名单中的路径/模式
+2. 排除下方黑名单中的路径/模式（排除模型实读自 pack.ps1，单一事实源）
 3. 其余全部打入 zip
+4. 产物命名：`{BrandName}-Skill-v{version}.zip`（BrandName 取自 skill.json displayName 品牌前缀）
 
 **建议先 DryRun 预览：**
 
-```powershell
-powershell -ExecutionPolicy Bypass -File ~/.qoder/skills/pack-skill/scripts/pack.ps1 -SkillRoot <path> -DryRun
+```bash
+python tools/pack-skill/scripts/pack.py --skill-root <path> --dry-run
 ```
 
 ### Step 4：验证产物
@@ -93,7 +102,7 @@ powershell -ExecutionPolicy Bypass -File ~/.qoder/skills/pack-skill/scripts/pack
 
 - 脚本不假设任何 Skill 特有的目录结构（如 references/、assets/ 等）
 - 新增的 Skill 标准目录不需要修改脚本——因为默认全部包含
-- 产物命名：`{name}-{version}.zip`
+- 产物命名：`{BrandName}-Skill-v{version}.zip`（BrandName 取自 skill.json displayName 品牌前缀，无 displayName 时脚本拒绝打包）
 
 ## 安装
 

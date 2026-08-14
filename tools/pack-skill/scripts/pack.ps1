@@ -8,6 +8,9 @@
     Includes ALL project files, excludes only known dev/build artifacts.
     Does NOT assume any skill-specific directory structure.
 
+    Cross-platform reference implementation.
+    Actual packaging on this machine uses pack.py (PowerShell execution policy restricted).
+
 .PARAMETER SkillRoot
     Path to the Skill project root (where SKILL.md lives). Required.
 
@@ -68,15 +71,24 @@ if (-not $version) {
     exit 1
 }
 
-# ── Read skill name ───────────────────────────────────────
+# ── Read skill name + brand name ──────────────────────────
 $skillName = "skill"
+$brandName = $null
 $skillJsonPath = Join-Path $SkillRoot "skill.json"
 if (Test-Path $skillJsonPath) {
     $json = Get-Content $skillJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json
     if ($json.name) { $skillName = $json.name }
+    # Extract brand name from displayName (text before first — or ()
+    if ($json.displayName) {
+        $brandName = ($json.displayName -split '[—\(]')[0].Trim()
+    }
+}
+if (-not $brandName) {
+    Write-Error "skill.json missing 'displayName' field. Cannot determine brand name — refusing to guess."
+    exit 1
 }
 
-Write-Host "Detected: $skillName v$version at $SkillRoot"
+Write-Host "Detected: $skillName ($brandName) v$version at $SkillRoot"
 
 # ── Exclusion rules ───────────────────────────────────────
 # Directory names to always exclude (matched anywhere in path)
@@ -151,7 +163,7 @@ function Test-Excluded {
 }
 
 # ── Stage files ───────────────────────────────────────────
-$stageName = "$skillName-$version"
+$stageName = "$brandName-Skill-v$version"
 $stagePath = Join-Path ([System.IO.Path]::GetTempPath()) $stageName
 
 if (Test-Path $stagePath) { Remove-Item $stagePath -Recurse -Force }

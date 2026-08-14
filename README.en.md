@@ -1,4 +1,4 @@
-# ChronoPM v1.18.0
+# ChronoPM v1.18.1
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -218,11 +218,20 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.18.0 |
+| Skill version | 1.18.1 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 49 |
 | Regression cases | 225 |
+
+## Distribution package naming
+
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.18.1.zip`):
+
+- **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
+- **version**: semantic version with `v` prefix
+
+On this machine, packaging uses the Python entry `tools/pack-skill/scripts/pack.py` (when PowerShell execution policy is restricted); its exclusion model reads `pack.ps1` as the **single source of truth**, while `pack.ps1` serves as the cross-platform reference implementation. Before release, `governance/scripts/audit_release.py` must pass, including a “naming drift guard” assertion that rejects legacy `{name}-{version}.zip` artifacts.
 
 ## Changelog
 

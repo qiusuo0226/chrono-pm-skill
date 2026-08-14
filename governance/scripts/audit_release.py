@@ -7,11 +7,11 @@
 对应 governance/review-checklists/release-checklist.md 中"机器可判"检查项的
 自动化兜底。任一断言失败 → 退出码非零 → 禁止发布。
 
-断言清单（11 条）：
+断言清单（12 条）：
     1. 版本六触点一致：_version.py / VERSION / skill.json version /
        SKILL.md frontmatter / README.md 标题+版本表 / README.en.md 标题+版本表
     2. skill.json blueprint.lastVersion == VERSION
-    3. SKILL.md 版本控制表"当前版本" + SKILL_BLUEPRINT.md §1 当前版本 == VERSION，
+    3. SKILL.md 版本控制表“当前版本” + SKILL_BLUEPRINT.md §1 当前版本 == VERSION，
        且 BLUEPRINT §11.3 演进表含当前版本行
     4. README.md + README.en.md 回归用例数（共 6 处）== regression-suite 统计表合计
     5. regression-suite 模块数 == 统计表行数，Case ID 去重数 == 合计
@@ -23,7 +23,8 @@
         + 例外放行 includeExceptions。与 pack.ps1 保持一致，改动须同步）
     9. 基线存在性：governance/baselines/<VERSION>/ 目录存在
    10. README 目录树不标注仓库中不存在的顶层目录（workspace-template 类问题）
-   11. 汇总：任一失败退出码非零
+   11. 命名漂移守门：仓库根目录无 chrono-pm-*.zip 类漂移命名产物
+   12. 汇总：任一失败退出码非零
 
 本脚本只读，不修改任何文件。
 """
@@ -256,10 +257,19 @@ def main() -> int:
                 tree_bad.append(f"{readme}:{m.group(1)}/")
     check("10. README 目录树顶层目录真实存在", not tree_bad, "; ".join(tree_bad) or "无")
 
-    # 11. 汇总
+    # 11. 命名漂移守门：仓库根无 chrono-pm-*.zip 类漂移命名产物
+    drift_zips = sorted(ROOT.glob("chrono-pm-*.zip"))
+    drift_names = [z.name for z in drift_zips]
+    check(
+        "11. 命名漂移守门（无 chrono-pm-*.zip）",
+        not drift_names,
+        "; ".join(drift_names) if drift_names else "无漂移产物",
+    )
+
+    # 12. 汇总
     print()
     if FAILURES:
-        print(f"== 审计失败：{len(FAILURES)}/10 类断言未通过，禁止发布 ==")
+        print(f"== 审计失败：{len(FAILURES)}/11 类断言未通过，禁止发布 ==")
         for f in FAILURES:
             print(f"  - {f}")
         return 1

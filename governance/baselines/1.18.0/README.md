@@ -1,4 +1,4 @@
-# ChronoPM v1.18.1
+# ChronoPM v1.18.0
 
 **让 AI 帮你管项目，而不是帮你写文档。**
 
@@ -218,20 +218,11 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 1.18.1 |
+| Skill 版本 | 1.18.0 |
 | 工作区 Schema | 0.8.0 |
 | 规则文件 | 22 份 |
 | 文档模板 | 49 个 |
 | 回归用例 | 225 个 |
-
-## 分发包命名规范
-
-发布产物按 `{BrandName}-Skill-v{version}.zip` 命名（如 `ChronoPM-Skill-v1.18.1.zip`）：
-
-- **BrandName**：取自 `skill.json` 的 `displayName` 品牌前缀（`—` 或 `(` 之前）
-- **version**：语义化版本号，加 `v` 前缀
-
-本机打包使用 Python 入口 `tools/pack-skill/scripts/pack.py`（PowerShell 执行策略受限时）；其排除模型实读 `pack.ps1`，以之为**唯一事实源**，`pack.ps1` 作为跨平台参考实现。发布前须通过 `governance/scripts/audit_release.py` 审计（含“命名漂移守门”断言，禁止 `{name}-{version}.zip` 类旧格式产物）。
 
 ## 升级日志
 

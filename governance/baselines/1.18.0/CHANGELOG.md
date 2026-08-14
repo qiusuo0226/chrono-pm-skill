@@ -4,27 +4,6 @@
 
 ---
 
-## 1.18.1 — 2026-08-15（本次发布 · released）
-
-> 发布归档：Patch（打包命名标准化）。双 Agent 审核收敛（A 命名漂移诊断 → B 审核发现改错对象 → V3 修正为 pack.py 主路径 + 排除模型单一事实源）。核心升级：新增 Python 打包入口 pack.py，产物统一为 `{BrandName}-Skill-v{version}.zip`；排除模型实读 pack.ps1（唯一事实源）；audit_release.py 新增“命名漂移守门”断言；修复 v1.18.0 版本失步（blueprint.lastVersion / SKILL_BLUEPRINT 当前版本）+ 补 baselines/1.18.1 基线。无规则/模板/能力变更，无 workspace schema 变更，无需工作区迁移。
-
-Blueprint Impact: metadata-only
-
-### Added
-- **pack.py 本机主打包入口**：`tools/pack-skill/scripts/pack.py`，产物命名 `{BrandName}-Skill-v{version}.zip`，排除模型实读 pack.ps1 四组数组（单一事实源），无 displayName 时拒绝打包。
-
-### Changed
-- **pack.ps1**：新增 displayName 品牌提取（按 `—`/`(` 切）+ 无 displayName 拒绝打包 + 头部标注“跨平台参考实现”。
-- **audit_release.py**：新增断言 11“命名漂移守门”（仓库根禁止 `{name}-{version}.zip` 类产物）。
-- **SKILL.md / tools/pack-skill/SKILL.md**：补充 Python 主路径与产物命名规范。
-- **README.md / README.en.md**：新增“分发包命名规范”说明，版本号同步 1.18.1。
-- **版本触点修正**：skill.json blueprint.lastVersion、SKILL_BLUEPRINT 当前版本与演进表同步 1.18.1。
-
-### Notes
-- 新增 `governance/baselines/1.18.1/` 基线快照。
-
----
-
 ## 1.18.0 — 2026-08-15（本次发布 · released）
 
 > 发布归档：Minor（推导能力升级）。双 Agent 四轮审核收敛（A V0.1→V1.0，B1+B2 独立审核）。核心升级：引入推导基线（Reasoning Baseline）机制，新增 00号 §10 推导规则（生命周期推导链 + 跨源矛盾处理 + 推导后动作规范 + 任务集 4 级降级关联），新增 entity-registry 数据模板，05号 §3(3)a 终态事件豁免，周报/日报推导增强，脚本层同步。无 workspace schema 变更，无需工作区迁移。
