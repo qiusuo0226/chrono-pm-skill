@@ -1,0 +1,329 @@
+﻿{
+  "name": "chrono-pm",
+  "displayName": "ChronoPM 鈥?Markdown 椹卞姩鐨?AI 椤圭洰绠＄悊鎶€鑳?,
+  "version": "1.17.0",
+  "schemaVersion": "0.6.0",
+  "supportedWorkspaceSchema": {
+    "min": "0.1.0",
+    "current": "0.8.0"
+  },
+  "migrations": [
+    {
+      "from": "0.7.0",
+      "to": "0.8.0",
+      "description": "鍚堝悓浣滅敤鍩?RI锛歱ortfolio/requirements/ 鏂板 canonical銆乤toms銆乧ontract-register銆乻ource-type-registry锛涘瓙椤圭洰绾цˉ榻?RI 鐩綍涓?source-type-registry锛圕R-20260813-002锛?
+    },
+    {
+      "from": "0.6.0",
+      "to": "0.7.0",
+      "description": "璺ㄦ簮闇€姹傚綊闆?RI锛歳equirements/ 鏂板 canonical/銆乤toms/(L1/L2/L3 绱㈠紩)銆乻ource-type-registry(CR-20260813-001)"
+    },
+    {
+      "from": "0.1.0",
+      "to": "0.2.0",
+      "description": "椤圭洰闆嗘ā寮?璧勬簮绠＄悊+涓氬姟鐩綍涓嶄镜鍏?
+    },
+    {
+      "from": "0.2.0",
+      "to": "0.3.0",
+      "description": "杈撳嚭鐗╃鐞?outputs/ 鐩綍"
+    },
+    {
+      "from": "0.3.0",
+      "to": "0.4.0",
+      "description": "闃舵琛旀帴 continuity/ 鐩綍"
+    },
+    {
+      "from": "0.4.0",
+      "to": "0.5.0",
+      "description": "寰呭姙绱㈠紩+璁″垝蹇収 todos/snapshots/actuals 鐩綍"
+    },
+    {
+      "from": "0.5.0",
+      "to": "0.6.0",
+      "description": "寰呯‘璁ゅ彉鏇寸储寮?pending-changes.md + change-log 鍒嗗眰褰掓。 (CR-20260811-002)"
+    }
+  ],
+  "description": "浠?Markdown 鏂囦欢涓轰簨瀹炴簮銆丄I 涓鸿緟鍔┿€佷汉宸ョ‘璁や负鎺у埗鐐圭殑椤圭洰绠＄悊鎶€鑳斤紝瑕嗙洊闇€姹傜鐞嗐€佷换鍔¤窡韪€佽繘搴︾鎺с€侀闄╀笌闂銆侀噷绋嬬銆佹垚鏈笌P&L銆佹棩鎶ュ懆鎶ャ€佷細璁邯瑕併€佸喅绛栬褰曘€佸鐩樸€侀」鐩泦缁熺銆佷汉鍛樿祫婧愬崗璋冧笌娴佽浆銆佹洿鏂版剰鍥捐瘑鍒€佸垵濮嬪寲鍚戝銆佽凯浠ｇ鐞嗐€佷俊鎭畬鏁存€у贰妫€涓庤ˉ鍏ㄦ彁閱掋€丳M 鍋忓ソ瀛︿範涓庤緭鍑洪€傞厤绛夊叏閾捐矾銆?,
+  "modes": [
+    "single",
+    "portfolio"
+  ],
+  "defaultMode": "portfolio",
+  "entry": "SKILL.md",
+  "referencesDir": "references",
+  "templatesDir": "assets/templates",
+  "scriptsDir": "scripts",
+  "requires": {
+    "python": ">=3.9"
+  },
+  "versionHistory": [
+      {
+        "version": "1.17.0",
+        "date": "2026-08-14",
+        "summary": "PM鍋忓ソ閫氱敤鍖栧崌绾?Minor)锛氬皢12鏉M鍋忓ソ涓?0鏉￠珮閫氱敤鎬у亸濂藉崌绾т负Skill閫氱敤鑳藉姏锛屽綊骞朵负5涓兘鍔涙ā鍧?1鍙€夊寮恒€?A)鏃ユ姤闆嗘垚瀹℃煡涓庝富鍔ㄦ彁闂細01鍙锋柊澧灺?闆嗘垚瀹℃煡妯″紡锛堣鍒抳s瀹屾垚/椋庨櫓闂鍙樺寲/浠诲姟杩涘害鍋忓樊涓夌淮搴﹀姣旓級+搂7涓诲姩鎻愰棶瑙勫垯锛堥樆濉炶В闄?椋庨櫓搴斿/鍏抽敭浠诲姟閬楁紡/鏄庢棩璁″垝鍙鎬у洓瑙掑害锛夛紱(B)璺ㄥ疄浣撹仈鍔ㄥ悓姝ワ細01鍙仿?.3鑱斿姩琛ㄦ柊澧為渶姹傜櫥璁板唽鍚屾琛岋紝03鍙仿?鏂板Task鐘舵€佸彉鏇粹啋CHECK闇€姹傜姸鎬佷竴鑷存€?SUGGEST鍚屾锛?0鍙稺F-1鏂板姝ラ4.5锛堥渶姹傛鏌ワ級锛?C)鍏抽棴纭浣愯瘉澧炲己锛?4鍙锋柊澧灺?.1鍏抽棴寤鸿蹇呴』鍒楁槑缂栧彿+浣愯瘉+鍏宠仈褰卞搷锛?D)濮旀淳璺熻釜鑱斿姩锛?3鍙仿?鏂板Task Owner濮旀淳鈫扖HECK琚娲炬柟韬唤+SUGGEST涓哄娲炬柟鐢熸垚璺熻繘寰呭姙锛?0鍙稺F-1鏂板姝ラ18.6锛?E)娌熼€氳川閲忚鍒欙細00鍙锋柊澧灺?.1a锛圕Q-4寰呯‘璁や簨椤圭紪鍙?CQ-5瀹炶绂佺紦瀛橈級锛?F鍙€?鏌ヨ榛樿杩囨护锛?5鍙锋柊澧灺?.0a浠诲姟/寰呭姙鏌ヨ榛樿浠呰緭鍑烘湭瀹屾垚椤广€傛矡閫氶鏍肩被鍋忓ソ(CQ-1閫氫織琛ㄨ揪/CQ-2瀹屾暣寮曠敤/CQ-3鎿嶄綔寤鸿涓夎绱?鍥炲綊PM Profile涓€у寲灞傘€傛棤workspace schema鍙樻洿锛屾棤妯℃澘/鑴氭湰鍙樻洿锛屾棤闇€宸ヤ綔鍖鸿縼绉汇€?
+    },
+    {
+      "version": "1.16.3",
+      "date": "2026-08-14",
+      "summary": "绾ц仈寮哄埗鎵ц淇(Patch)锛氫慨澶嶇骇鑱斾紶鎾鍒欒 AI 閫夋嫨鎬ф墽琛屽鑷村緟鍔炩啍鐪嬫澘鈫旈闄┾啍闂鏁版嵁涓嶄竴鑷淬€傛牴鍥犱竴锛歋UGGEST 璇箟琚急鍖栦负鍙€夊缓璁紝00鍙锋柊澧灺?a鏄庣‘ SUGGEST=蹇呴』鍛堢幇缁橮M纭骞跺畾涔夎緭鍑哄墠绾ц仈瀹屾垚楠岃瘉(搂8a.2)+鐢ㄦ埛璺宠繃鐣欑棔(搂8a.3)锛涙牴鍥犱簩锛氫綋绯荤己澶卞緟鍔炩啋board 鍙嶅悜閾捐矾锛坧ersonal-todo-index 涓哄畬鍏ㄦ淳鐢熺储寮曪級锛?3鍙锋柊澧灺?.1 寰呭姙鍒涘缓绾ц仈锛圕HECK 宸叉湁浠诲姟 + SUGGEST 鍖哄垎姝ｅ紡浠诲姟/涓€娆℃€ф彁閱掑弻鍒嗘敮 + 瀛楁缁ф壙锛夛紝00鍙?WF-1 鏂板姝ラ18.5 寮曞锛?0鍙峰緟鍔炰俊鍙疯拷鍔犵骇鑱旀鏌ュ紩鐢ㄣ€傝ˉ鍏?WF-2/WF-5 缂哄け鐨勭骇鑱斿畬鎴愰獙璇佽锛涘悇瀹炰綋瑙勫垯鏂囦欢(02/03/04/07/08/09)绾ц仈澶勬柊澧炲己鍒舵墽琛岃姹傛敞閲婏紱10鍙锋洿鏂版祦绋嬫柊澧炴楠?/10/11锛?4鍙仿?.5 鏀逛负寮曠敤寮忓苟闄愬畾浠呭啓鍏ュ満鏅Е鍙戯紙绾煡璇笉瑙﹀彂锛夈€傛棤 workspace schema 鍙樻洿锛屾棤妯℃澘/鑴氭湰鍙樻洿锛屾棤闇€宸ヤ綔鍖鸿縼绉汇€?
+    },
+    {
+      "version": "1.16.2",
+      "date": "2026-08-14",
+      "summary": "鍒嗗彂鍖呭菇鐏靛紩鐢ㄤ慨澶?Patch)锛歱ack.ps1 governance 鎺掗櫎缁嗗寲涓轰緥澶栨斁琛?contracts/skill-contract.md锛堟牳蹇冨绾﹁ 7 涓繍琛屾椂瑙勫垯寮曠敤锛?璺緞鍒嗛殧绗︿慨澶嶏紱SKILL.md 绉婚櫎 16 鍙疯鍒欒矾鐢辨潯鐩紱鎺掗櫎 SKILL_BLUEPRINT.md锛堜粎鏂囨。灞傚紩鐢紝鏃犺繍琛屾椂渚濊禆锛夛紱skill.json blueprint.file 瀛楁绉婚櫎锛圔LUEPRINT 涓嶅湪鍙戣鍖呭唴锛夛紱skill-contract.md L94 鍩虹嚎瑙勫垯鍔犳敞鈥滀粎寮€鍙戣€呬粨搴撯€濓紱release-checklist 鏂板骞界伒寮曠敤妫€鏌ラ」銆傛棤 workspace schema 鍙樻洿锛屾棤瑙勫垯/妯℃澘/鑳藉姏鍙樻洿锛屾棤闇€宸ヤ綔鍖鸿縼绉汇€?
+    },
+    {
+      "version": "1.16.1",
+      "date": "2026-08-14",
+      "summary": "鍒嗗彂鍖呮爣鍑嗗寲(Patch)锛氭柊澧為€氱敤鎵撳寘 skill tools/pack-skill/(SKILL.md + scripts/pack.ps1)锛屾敮鎸佷换鎰?Qoder Skill 椤圭洰涓€閿墦鍖呭垎鍙戝寘 zip锛堝寘鍚叏閮ㄣ€佹帓闄ゅ凡鐭ラ粦鍚嶅崟妯″紡锛岄粯璁ゆ帓闄?governance/tests/tools/.git/.idea/.qoder/__pycache__ 绛夛級锛涙敮鎸?-DryRun 棰勮銆?Exclude 鑷畾涔夋帓闄わ紱release-checklist 鏂板 Distribution Packaging 娈碉紙鎵撳寘鍛戒护+鎺掗櫎娓呭崟+鍗囩骇璺緞楠岃瘉锛夛紱.gitignore 琛ュ己 *.zip/*.tar.gz/.vscode/ 鎺掗櫎椤癸紱鍒犻櫎鏃т笓鐢ㄨ剼鏈?scripts/pack_dist.ps1銆傚垎鍙戝寘浣撶Н浠?~4 MB 闄嶈嚦 ~270 KB銆傛棤 workspace schema 鍙樻洿锛屾棤瑙勫垯/妯℃澘/鑳藉姏鍙樻洿锛屾棤闇€宸ヤ綔鍖鸿縼绉汇€侭lueprint Impact metadata-only銆?
+    },
+    {
+      "version": "1.16.0",
+      "date": "2026-08-13",
+      "schemaVersion": "0.8.0",
+      "summary": "鍚堝悓浣滅敤鍩熶笌澶氬澶氭槧灏?CR-20260813-002, Minor/capability_change + schema_change + contract_change)锛氭柊澧為」鐩泦绾?portfolio/requirements/ 璺ㄦ簮闇€姹傚綊闆嗕笌鍚堝悓鐧昏鍐?contract-register锛坰cope_level: portfolio/project/supplement銆乸arent_contract_id銆乧overage銆佹枃妗ｇ皣鍏宠仈锛夛紱ATOM/Canonical 鎸?scope_level 瀛樺偍褰掑睘锛坰upplement 璺熼殢鐖跺悎鍚岋級锛涘甫鍚堝悓缁村害 scope 鍒ゅ畾锛圕anonical 鏂板浼撮殢瀛楁 contract_refs锛宻cope_scope 5 鍊兼灇涓句笉鍙橈級锛汻I 鍥涙妫€绱㈣矾鐢憋紙Step0 璇荤櫥璁板唽鈫扴tep1 鍚堝悓鎸囧悜鈫扴tep2 鐩爣灞傜骇涓夌骇绱㈠紩鈫扴tep3 杈撳嚭 contract_refs锛夛紱鍚堝悓鍙樻洿涓夌骇鑱斿姩锛堝鐢?08 鍙?scope/cost/requirement锛屼笉鏀规蹇靛煙鏋氫妇锛夛紱07鍙锋柊澧灺?.9銆?5鍙疯矾鐢辨墿灞曘€?6/09/00/18/14 鑱斿姩锛涙柊澧炴ā鏉?contract-register-template锛涜剼鏈ˉ榻?config(P1-P3 淇)/workspace_builder/file_registry/migrate(鏂板 sub_project_dirs/sub_project_files + 瀛愰」鐩亶鍘嗭紝淇 CR-001 閬楃暀椤圭洰闆?RI 缂哄彛)锛汼KILL.md 搂4/搂6/搂8 涓?description 鏇存柊锛泈orkspace schema 0.7.0鈫?.8.0(structure-only, island: portfolio/requirements)锛涘洖褰掑浠舵柊澧?Module 34 Contract Scope(CS-001~017)+RI-012 澶嶆牳銆侭lueprint Impact full銆?
+    },
+    {
+      "version": "1.15.0",
+      "date": "2026-08-13",
+      "schemaVersion": "0.7.0",
+      "summary": "璺ㄦ簮闇€姹傚綊闆嗕笌鍒ゅ畾 RI(CR-20260813-001, Minor/capability_change + schema_change)锛?7鍙锋柊澧炶法婧愯瘉鎹摼/ATOM鈫扖anonical鈫扲EQ涓夊眰妯″瀷/scope_scope鑼冨洿鍒ゅ畾/鍙屽眰鏉ユ簮鍒嗙被(source_category 6绫诲浐瀹?source_type椤圭洰绾у彲鎵╁睍source-type-registry)/kind鍥涚被鍨?闇€姹?瑕佹眰/绾﹀畾/绾︽潫)鍏ㄩ摼璺媶瑙ｏ紱鏂板涓夌骇绱㈠紩(L1璺敱/L2绫诲埆鍊掓帓鍚玭orm_text瑕嗙洊绱㈠紩/L3鍏ㄦ枃)+鍒嗙骇鍔犺浇+P1璇箟鍏滃簳(璇嶅簱鍚屼箟璇嶆墿灞?norm_text鎵/闄嶇骇鎻愮ず)锛汸M闅忕瑪project-notes鍙屽叆鍙?AI涓诲姩鎰熺煡+PM涓诲姩)锛泈orkspace schema 0.6.0鈫?.7.0(requirements/canonical銆乤toms銆乻ource-type-registry)+杩佺Щ鑴氭湰锛涙柊澧炴ā鏉?source-type-registry/project-notes锛宺egister鏂板Canonical ID/scope_scope鍒楋紝milestone-board鏂板鍚堣闂ㄧ鍒楋紱鍥炲綊濂椾欢鏂板Module 32(RI-001~006)/Module 33(PN-001~002)銆備笉鏂板鐙珛瑙勫垯鏂囦欢/CAP/鐘舵€佹満銆?
+    },
+    {
+      "version": "1.14.0",
+      "date": "2026-08-12",
+      "schemaVersion": "0.6.0",
+      "summary": "鏍囧噯宸ヤ綔娴佹暟鎹矾寰勬€ц兘浼樺寲(Minor)锛?0鍙仿?鏂板WF-1~WF-6鏍囧噯宸ヤ綔娴佹暟鎹矾寰?棰勫畾涔夐珮棰戞搷浣滆/鍐欐枃浠堕『搴?+搂9.1鍒ゆ柇闃舵寮哄寲瑙勫垯(5鏉★紝纭繚璺緞棰勫畾涔変笉寮卞寲鍒ゆ柇)锛?5鍙仿?.5鏂板Quick Update璺敱琛?涓嶲uick Query瀵圭О锛屽惈SKILL.md搂7搴曠嚎#2瀹夊叏澹版槑)锛汼KILL.md搂6璺敱琛↙136'寰呭姙绱㈠紩鍚屾'鏇挎崲涓?寰呭姙鐘舵€佹洿鏂?WF-1)'+鍒嗗伐杈圭晫璇存槑+L243杩囨湡鐗堟湰鍙蜂慨澶?1.12.0鈫?.14.0)锛?1/02/03/04/09鍙峰悇杩藉姞浜ゅ弶寮曠敤鎸囧悜00鍙仿?(浜掕ˉ涓嶆浛浠?锛決ODER_RULES搂3/搂6鏂板WF蹇嵎璺敱+鍔犺浇鎸囧紩+搂6鍔犺浇瑙勫垯WF渚嬪璇存槑锛汼KILL_BLUEPRINT搂5.2鑳藉姏鐭╅樀WF娉ㄩ噴+搂11.3杩藉姞1.14.0琛岋紱鍥炲綊濂椾欢鏂板Module 31 Workflow Data Path(WF-001~005锛?鐢ㄤ緥锛屾€昏184鐢ㄤ緥)銆備笉鏂板鐙珛CAP/瑙勫垯鏂囦欢/妯℃澘/ID鍓嶇紑/鐘舵€佹灇涓撅紝WF涓篊AP-002/003/004/005/009/010/017鎵ц鏁堢巼浼樺寲灞傘€傛棤workspace schema鍙樻洿銆?
+    },
+    {
+      "version": "1.13.1",
+      "date": "2026-08-12"
+    },
+    {
+      "version": "1.13.0",
+      "date": "2026-08-12",
+      "schemaVersion": "0.6.0",
+      "summary": "鏋舵瀯绮剧畝鏀归€?CR-20260812-001, Minor)锛欰 绾垮疄浣撶骇鑱斿祵鍏?6 瀹炰綋瑙勫垯鏂囦欢鏂板搂绾ц仈浼犳挱瑙勫垯 AUTO/CHECK/SUGGEST + 00 鍙仿? 绾ц仈鍐茬獊澶勭悊)锛汢 绾挎枃浠惰啫鑳€娌荤悊(06 鍙仿? 閫氱敤褰掓。琛ㄦ搷浣滃寲 + decision-log/transfer-log/issue-register 鎷嗗垎琛?+ 02/09 鍙峰綊妗ｈ鍒?+ 15 鍙仿?5 涓?11 鍙仿?6 瀛樺偍鐢熷懡鍛ㄦ湡 + 01 鍙仿?.8 閫氱敤褰掓。妫€鏌?锛汣 绾跨储寮曟淳鐢熷垎绾?14 鍙仿?.4 瀹屽叏娲剧敓/澧為噺缁存姢/鐙珛绱Н + D13/M8/R7)锛汥 绾跨増鏈悓姝ユ敹鍙?鏂板 scripts/sync_version.py 鑷?_version.py 鍚屾鍥涜Е鐐?锛汦 绾?Blueprint 鐦﹁韩(搂5.3/搂9.1/搂11.3 鎸囬拡鍖?1.13.0 琛?锛涙柊澧?assets/templates/decision-log-template.md锛涘洖褰掑浠舵柊澧?Module 29(CP-001~006)/Module 30(AG-001~006)锛屾€昏 179 鐢ㄤ緥"
+    },
+    {
+      "version": "1.12.0",
+      "date": "2026-08-11",
+      "schemaVersion": "0.6.0",
+      "summary": "宸ヤ綔绌洪棿娓呮磥搴︽不鐞?Minor)锛氭柊澧灺?8鏍圭洰褰曠櫧鍚嶅崟(15椤?AP-4椹卞姩缁存姢)銆伮?9浜や粯鐗╃被鍨嬫帶鍒?CR/AP/IA/RR/鍩虹嚎)銆伮?0寮曠敤瀹屾暣鎬х害鏉燂紱搂2娴佺▼10姝モ啋12姝?娓呯悊鈫掗獙璇佲啋鍩虹嚎蹇収)锛況elease-checklist鏂板Project Cleanliness妫€鏌ョ粍+宸茬煡姹℃煋绫诲瀷闄勫綍(P-01~P-06)锛涗慨澶岶-01~F-11鍘嗗彶姹℃煋(骞界伒寮曠敤+闄堟棫鐗堟湰鍙?鏋勫缓缂撳瓨)锛涘洖褰掑浠舵柊澧濵odule 28 Workspace Cleanliness(CL-001~CL-004)锛屾€昏167鐢ㄤ緥"
+    },
+    {
+      "version": "1.11.0",
+      "date": "2026-08-11",
+      "schemaVersion": "0.6.0",
+      "summary": "涓诲姩鍙樻洿+浜哄伐纭鏇存柊妯″紡(CR-20260811-002, Minor/contract_change)锛氫簨瀹炴簮鏇存柊浠庢偛瑙傜‘璁ゆ敼涓轰富鍔ㄥ啓鍏?鏍囪寰呯‘璁?鐧昏pending-changes锛岀‘璁ゅ悗鎸佷箙鍖栵紱鏉冮檺妯″瀷鏀瑰悕(auto_write_low_risk鈫抪roactive榛樿/suggest_only鈫抪assive/绉婚櫎confirm_before_write鏄犲皠proactive/auto_write_all_except_critical鈫抪rogressive)锛涙柊澧炶繍琛屾椂绱㈠紩 pending-changes.md(single/portfolio)锛汣hange Log 鍒嗗眰褰掓。(50琛?30澶┾啋archive/YYYYMM-change-log.md+index.md)锛涘緟纭 Due Date 涓嶅弬涓庡欢鏈?瓒呮湡鍒ゅ畾(搂5a.3绌虹獥鏈燂紝涓嶆柊澧炲瓧娈靛垪)锛泂kill-contract #5 涓?SKILL.md 搂7 瀹夊叏搴曠嚎 #2 淇敼(涓夐槻绾匡細瀹¤/瓒呮椂/鍥炴粴)锛汼KILL_BLUEPRINT Impact=full锛泈orkspace schema 0.5.0鈫?.6.0锛涘洖褰掑浠舵柊澧?PW/CLA 鐢ㄤ緥"
+    },
+    {
+      "version": "1.10.2",
+      "date": "2026-08-11",
+      "schemaVersion": "0.5.0",
+      "summary": "鑴氭湰灞傜増鏈不鐞嗕慨澶?CR-20260810-009, Patch)锛氭柊寤?scripts/_version.py 浣滀负 SKILL_VERSION/WORKSPACE_SCHEMA_VERSION 鍗曚竴鐗堟湰婧愶紝init/migrate 鑴氭湰涓?config.py 缁熶竴浠庤婧愯鍙栵紝娑堥櫎 config.py(1.9.0)涓?migrate_workspace.py(1.6.0)鐨勭‖缂栫爜鐗堟湰澶辨锛涗慨澶?migrate --target-version 琚拷鐣ョ殑 bug锛坲pdate_version_file/append_migration_log 鐜板疄闄呬娇鐢ㄧ洰鏍囩増鏈啓鍏ワ級锛涜ˉ鍏?VERSION_CAPABILITIES(1.7.0~1.10.1)锛汻EADME 鐢熸垚鏀圭敤鐗堟湰婧愭彃鍊硷紱release-checklist 鏂板鑴氭湰灞傜増鏈竴鑷存€ф鏌ラ」锛涙柊澧炲洖褰掔敤渚?SC-1G~1K"
+    },
+    {
+      "version": "1.10.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "淇 SKILL_BLUEPRINT 搂5.3 鎴愮啛搴﹀垎甯冭鏁伴敊璇?CR-20260810-008 bugfix, Patch)锛歀3 鐢?19 淇涓?18锛堜笌 搂5.2 鑳藉姏鐭╅樀 24 椤?CAP 鍒嗗竷 L4=5/L3=18/L2=1 瀵归綈锛夛紝鍗犳瘮 79%鈫?5%銆丩2 0%鈫?%锛涙棤鑳藉姏/濂戠害/瑙勫垯鍙樻洿"
+    },
+    {
+      "version": "1.10.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鍘嗗彶璁″垝鍏ㄩ噺鍚屾涓庡彉鏇磋拷婧?CR-20260810-008, Minor/contract_change)锛氭柊澧?CAP-024銆丷1-R4銆俁1 鍘嗗彶璁″垝鎵归噺瀵煎叆(.pod/Excel鈫抏xternal_import鍐荤粨蹇収+history鐧昏)锛汻2 璁″垝鍙樻洿杩借釜(board鏂板Original Due Date/Plan Change Count/Delay Count瀛楁+姒傚康鍩烞杩藉姞plan_change)锛汻3 寤舵湡璁℃暟涓庤仛鍚?姒傚康鍩烝/B鎷嗗垎銆丄绫昏鏁板彧璇籦oard鍗曟枃浠躲€丅绫昏秴鏈熷疄鏃惰绠?绱㈠紩浼樺厛)锛汻4 鑱氬悎鏌ヨ璺敱(05鏂板搂6.5璁℃暟璺敱/搂6.6鐘舵€佽矾鐢?锛?3鍙锋柊澧濺1杈圭晫鍒ゅ畾琛紱00鎰忓浘妫€娴嬫柊澧?璺敱锛?妯℃澘+2鏂版ā鏉?plan-import/delay-stats)锛涘洖褰掑浠舵柊澧炵25妯″潡"
+    },
+    {
+      "version": "1.9.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "PM Profile 鐢ㄦ埛涔犳儻瀛︿範(CR-20260810-007, Minor/contract_change)锛氭柊澧?CAP-023銆乺eferences/21-pm-profile-rules.md銆乤ssets/templates/pm-profile-template.md锛涘鐢?domain-glossary 鐨?pending鈫抍onfirmed 鐘舵€佹満锛汚I 琚姩瑙傚療鐢ㄦ埛琛屼负锛?娆′竴鑷村悗鍐欏叆pending锛岀‘璁ゅ悗鍗囦负confirmed锛屽奖鍝嶈緭鍑烘牸寮?浜や簰椋庢牸/淇℃伅渚ч噸锛涙柊澧濴evel 2.5瑙勫垯浼樺厛绾э紱SKILL.md/00鏍稿績濂戠害澧為噺淇敼锛沬nit/migrate鑴氭湰鏀寔PM Profile鍒涘缓"
+    },
+    {
+      "version": "1.8.4",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鍗囩骇璺嚎鏀跺熬(CR-20260810-006, Patch)锛欳9 鍏ㄩ噺鍥炲綊 23妯″潡/122鐢ㄤ緥(73姝ｅ悜/49鍥炲綊)鍏ㄩ儴閫氳繃锛孋10 鐗堟湰娌荤悊鏀跺熬鍏ㄨЕ鐐瑰悓姝ヨ嚦1.8.4锛孊lueprint 鍏冩暟鎹牎姝?DEBT-05妯℃澘鏁?5鈫?8銆乀ODO-05鍥炲綊鐢ㄤ緥鏁?0鈫?22)锛岀敓鎴愭寮忓洖褰掓姤鍛?
+    },
+    {
+      "version": "1.8.3",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鏌ヨ/闇€姹?杈撳嚭鐗╄鍒欒〃鏍煎寲(CR-20260810-005, Patch)锛?5-query-rules.md 413鈫?52琛屻€?1-output-artifact-rules.md 341鈫?04琛屽簱鍐呰鑼冨寲(CAP-005/006)锛?7-requirement-rules.md 淇濇寔139琛屾牸寮忕粺涓€(CAP-008)锛屼笉鍒犺涔夈€佷笉鏂板妯℃澘鏂囦欢"
+    },
+    {
+      "version": "1.8.2",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鏃ユ姤瑙勫垯閲嶆瀯(CR-20260810-004, Patch)锛?1-daily-report-rules.md 鐦﹁韩 594鈫?21琛岋紝6涓枃浠舵ā鏉垮绉讳负妯℃澘鎸囬拡锛屽垹闄ぢ?.3閲嶅鍧楋紝鏈褰掍竴鍖栦笅娌夎嚦17鍙仿?/搂6锛屽帇缂〢I杈撳嚭鐗囨涓哄唴鑱旀牸寮忚鐐?
+    },
+    {
+      "version": "1.8.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鏂囦欢绠＄悊瑙勫垯閲嶆瀯(CR-20260810-003, Patch)锛?6-file-rules.md 鐦﹁韩 587鈫?99琛岋紝搂0宸ヤ綔鍖虹増鏈绉昏嚦鏂板缓 20-workspace-version-rules.md锛屄?c璇嶅簱鏂囦欢瑙勮寖骞跺叆17搂17锛屄?绱㈠紩鏍煎紡浠ｇ爜鍧楃Щ鑷?assets/templates/index-formats.md锛?6绔犺妭缂栧彿淇涓郝?-搂10"
+    },
+    {
+      "version": "1.8.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "SKILL.md 鐦﹁韩(CR-20260810-002, Minor/contract_change)锛?78琛屸啋297琛岋紝鐘舵€佹灇涓?杈撳嚭瑙勮寖/瀹瑰繊搴?閲岀▼纰戜笅娌夎嚦 00-pm-main-rules.md锛岀洰褰曟爲楂樺眰绾у寲锛屽伐浣滄祦鏀瑰紩鐢?
+    },
+    {
+      "version": "1.7.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鑴氭湰閲嶆瀯(CR-20260810-001)锛歩nit_workspace.py 鎷嗗垎涓?chronopm_init 鍖咃紝9澶勭‖缂栫爜202608鏀瑰姩鎬佹湀浠斤紝CLI涓庝骇鐗╃粨鏋勪笉鍙?
+    },
+    {
+      "version": "1.7.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "鍒濆鍖栧悜瀵?杩唬姝ｅ紡鍖?淇℃伅瀹屾暣鎬у贰妫€锛?8-init-wizard-rules.md(鍏寮曞寤烘。)銆?9-info-completeness-rules.md(7灞侾0-P3宸℃)銆乮teration-register-template.md(ITR-NN杩唬鐧昏鍐?銆?涓ā鏉垮寮?鍚堝悓鏃堕棿瀛楁/杩唬姒傝/鎵€灞炶凯浠?杩唬鍒嗛厤/杩唬鏁板垪)銆乮nit鑴氭湰澧炲己(鐢熸垚杩唬鐧昏鍐?鍚戝寮曞鎻愮ず)銆丼KILL.md璺敱+缂栫爜+绱㈠紩澧炲己銆?0涓昏鍒欐剰鍥炬娴嬪寮恒€?0鏇存柊瑙﹀彂+瀹屾暣鎬ф鏌ユ満鍒?
+    },
+    {
+      "version": "1.6.1",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "璧勬簮浜嬪疄婧愪慨澶嶏細浜哄憳鏌ヨ浼樺厛绾ц鍒?05搂5.4a)銆佸€欓€夎祫婧愬彉鏇磋鍒?01)銆乺egister/context涓€鑷存€ф鏌?09搂5.6)銆乸roject-brief鎸囬拡鍖?06/妯℃澘)銆丅lueprint鐗堟湰鍙蜂慨姝ｅ強CAP-019琛ュ叏銆佺洰褰曟爲缂╄繘淇"
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-08-10",
+      "schemaVersion": "0.5.0",
+      "summary": "棰嗗煙鏈璇嶅簱锛?7-domain-glossary-rules.md(鐘舵€佹満+缃俊搴?9姝ュ綊涓€鍖?绾犻敊+鑷姩瀛︿範pending+纭寮忓涔?绱㈠紩+鍘婚噸+鎵╁)銆乨omain-glossary-template.md(鍐呯疆澶栬祫/鍐滀笓鍒濆璇嶆潯)銆?1/02/05/06/10瑙勫垯澧炲姞鏈褰掍竴鍖栭澶勭悊銆丼KILL.md璺敱杩藉姞17銆乮nit/migrate鑴氭湰鏂板--glossary/--create-glossary鍙傛暟"
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "Qoder灞忛棯閫傞厤锛氭柊澧濹ODER_RULES.md杞婚噺鍏ュ彛(蹇嵎璺敱+鏈€灏忚鍙栧師鍒?鏁版嵁鏉ユ簮澹版槑+瀹夊叏鍗囩骇瑙勫垯)銆?5-query-rules.md鏂板搂6鏈€灏忚鍙栧師鍒?搂7鏁版嵁鏉ユ簮澹版槑"
+    },
+    {
+      "version": "1.4.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "Blueprint涓庡閮ㄥ鏌ワ細鏂板SKILL_BLUEPRINT.md(13绔犺妭鏋舵瀯钃濆浘)+skill.json blueprint鍏冩暟鎹?娌荤悊瑙勫垯搂17+鍙戝竷妫€鏌ユ竻鍗?鏂囨。灞傚垎绫?
+    },
+    {
+      "version": "1.3.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "鍗囩骇鏂规瀹℃煡绾︽潫锛?6-skill-governance-rules鏂板AP瀹℃煡鏂囨。(7绔犺妭)+绂佹璺宠繃瀹℃煡"
+    },
+    {
+      "version": "1.3.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "宸ヤ綔鍖哄崌绾ф劅鐭ワ細鍋ュ悍妫€鏌?鍔熻兘瑙﹀彂妫€鏌?鍏煎妯″紡+杩佺Щ妯″紡(structure-only/recent-7-days/full-rebuild)+鎻愰啋棰戠巼鎺у埗+migrate_workspace.py澧炲己"
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "鍙樻洿娌荤悊涓庡洖褰掓祴璇曪細16-skill-governance-rules(鍙樻洿宸ュ崟+鏍稿績濂戠害淇濇姢+鏈€灏忚ˉ涓?鍥炴粴)+governance/鐩綍+tests/regression-suite(70鐢ㄤ緥14妯″潡)"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.5.0",
+      "summary": "璁″垝蹇収涓庡疄闄呮墽琛岋細snapshots(鍐荤粨)+actuals(鍙拷鍔?+history-index+鐑喎鍒嗙+璁″垝vs瀹為檯鍋忓樊瀵规瘮+Todo ID绋冲畾"
+    },
+    {
+      "version": "1.0.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "PM寰呭姙鏌ヨ杈撳嚭瑙勮寖锛?绔犺妭鍏ㄦ櫙瑙嗗浘+绂佹鍙垪PM涓汉浠诲姟"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "姝ｅ紡鐗堬細鑷煡涓庡畬鏁存€ф牎楠?绱㈠紩棰勫缓+D1-D10/M1-M7/R1-R6/T1-T7鑷煡娓呭崟+澶氭簮浜ゅ弶鏍￠獙+閬楁紡琛ユ晳+绱㈠紩杩囨湡妫€娴?"
+    },
+    {
+      "version": "0.9.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "蹇€熸煡璇㈣矾鐢?寰呭姙绱㈠紩浣撶郴锛歈uick Query璺敱琛?鏌ヨ鎬ц兘瑙勫垯+绂佹榛樿涓存椂鑴氭湰+portfolio/todos/鐩綍+PM寰呭姙妯℃澘(鍏ㄥ洟闃熻仛鍚?"
+    },
+    {
+      "version": "0.8.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.4.0",
+      "summary": "椤圭洰闃舵琛旀帴锛?3-continuity-rules.md(5绉嶅鍏ユā寮?鍐呭璺敱+缁撹浆娴佺▼+鍐茬獊妫€娴?涓嶅彲瑕嗙洊)銆乧ontinuity/鐩綍銆?涓ā鏉?
+    },
+    {
+      "version": "0.7.1",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "鏃ユ姤鍚堝苟骞傜瓑鎬х害鏉燂細鍚屼竴浜哄悓涓€澶╁鎻愪氦鍚堝苟杩藉姞涓嶈鐩栥€?绉嶅瓧娈靛悎骞剁瓥鐣ャ€佹洿鏂拌褰曟牸寮?
+    },
+    {
+      "version": "0.7.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "鐩綍灞傜骇浼樺寲(YYYYMM鍗曠骇)銆佷釜浜鸿繘搴﹁嚜鍔ㄨ仈鍔?鏃ユ姤鏇存柊鈫掍换鍔?閲岀▼纰?椋庨櫓/闂/宸ユ椂鑷姩鍚屾)銆佹湀搴︾储寮曡鍒欍€佹枃浠堕槇鍊艰鍒?
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "Excel鐢熸垚瑙勮寖锛?2-excel-generation-rules.md(8绉嶆枃妗heet缁撴瀯+鍒楀ご+鏁版嵁楠岃瘉+鍏紡+鏉′欢鏍煎紡)銆佹垚鏈祴绠楄闂紡缁嗗寲銆乺ecalc+audit鏍￠獙"
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.3.0",
+      "summary": "杈撳嚭鐗╃鐞嗭細11-output-artifact-rules.md(鎵规鐩綍+鑽夌纭瀵煎嚭娴佺▼+鏍煎紡璇㈤棶+褰掓。瑙勫垯)銆乷utputs/鐩綍(涓巃i/鍚岀骇)銆乷utputs-index妯℃澘+manifest妯℃澘"
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.2.0",
+      "summary": "鏇存柊瑙﹀彂鏈哄埗锛?0-update-trigger-rules.md(鍥涚骇瑙﹀彂+鏉冮檺鍒嗙骇)銆乸roject-brief.md(AI棣栬鍏ュ彛)銆?0瑙勫垯澧炲姞榛樿鎰忓浘妫€娴嬨€?6瑙勫垯澧炲姞鏉冮檺鍒嗙骇銆佺増鏈帶鍒朵綋绯?
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.2.0",
+      "summary": "椤圭洰闆嗘ā寮忥細portfolio/projects鍒嗗眰銆佷笟鍔＄洰褰曚笉渚靛叆銆佷汉鍛樿祫婧愮鐞?resource-register+transfer-log)銆?9-portfolio-rules.md銆?涓柊妯℃澘銆乮nit鑴氭湰鏀寔--mode portfolio"
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.1.0",
+      "summary": "鏍规嵁瀹為檯浜戞枃妗ｇ粨鏋勯噸鍐?涓ā鏉匡紝鏂板lessons-learned鍜宲roject-context妯℃澘锛屾ā鏉胯创鍚堝疄闄呯鐞嗕範鎯?
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-08-09",
+      "schemaVersion": "0.1.0",
+      "summary": "鍒濆鐗堟湰锛?浠芥彁绀鸿瘝瑙勫垯(00-08) + 11涓ā鏉?+ init_workspace.py(鍗曢」鐩ā寮?"
+    }
+  ],
+  "blueprint": {
+    "lastUpdated": "2026-08-14",
+    "lastVersion": "1.16.1",
+    "updateRequiredOn": [
+      "major",
+      "minor",
+      "capability-change",
+      "schema-change",
+      "architecture-change",
+      "governance-change",
+      "data-flow-change"
+    ],
+    "metadataUpdateRequiredOn": [
+      "patch"
+    ],
+    "optionalOn": [
+      "template-only",
+      "test-only",
+      "wording-only"
+    ]
+  }
+}

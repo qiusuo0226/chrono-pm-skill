@@ -44,6 +44,12 @@
 - [ ] 是否已运行 `python scripts/sync_version.py`（自 `_version.py` 同步 `VERSION`/`SKILL.md` frontmatter/`skill.json`）？
 - [ ] `VERSION` / `SKILL.md` / `skill.json` / `_version.py` 四处版本号是否一致？
 
+## Automated Release Audit（发布前自动断言，v1.17.1 起强制）
+
+- [ ] 是否已运行 `python governance/scripts/audit_release.py` 且退出码为 0？（未通过禁止发布）
+- [ ] 若修改了 `tools/pack-skill/scripts/pack.ps1` 的排除规则，是否确认 audit 脚本的排除模型实读仍与之匹配（四类机制：excludeDirs/excludeFiles/excludeFilePaths/includeExceptions）？
+- [ ] 新增版本是否已建立 `governance/baselines/<版本号>/` 基线目录（audit 断言 9 会拦截）？
+
 ## v1.13.0 架构精简改造专项检查（CR-20260812-001）
 
 - [ ] 级联传播规则：确认 03/04/07/08/09/02 号文件的级联 §已添加且格式一致

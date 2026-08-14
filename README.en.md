@@ -1,4 +1,4 @@
-# ChronoPM v1.17.0
+# ChronoPM v1.17.1
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -152,7 +152,7 @@ From contracts to bidding documents to specific requirements — a three-layer m
 | Rule files | 22 | Define how the AI should behave in various scenarios |
 | Document templates | 48 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 185 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 225 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
@@ -184,11 +184,11 @@ ChronoPM Skill/
 │   └── ...
 │
 ├── assets/               # 📦 Resource files
-│   ├── templates/        # Document templates (48). The AI fills these when generating files,
-│   │                      # ensuring consistent formatting. Covers daily reports, weekly reports,
-│   │                      # meeting minutes, risk registers, decision logs, retrospectives, etc.
-│   └── workspace-template/ # Workspace directory template. When initializing, the full ai/
-│                              # directory tree is created from this template (logs/meetings/risks/tasks/etc).
+│   └── templates/        # Document templates (48). The AI fills these when generating files,
+│                          # ensuring consistent formatting. Covers daily reports, weekly reports,
+│                          # meeting minutes, risk registers, decision logs, retrospectives, etc.
+│                          # Note: the workspace ai/ directory tree is created programmatically by
+│                          # the init script; it does not rely on a separate directory template.
 │
 ├── scripts/              # ⚙️ Automation scripts
 │   ├── init_workspace.py      # Workspace initialization: creates directory structure in single/portfolio mode
@@ -206,7 +206,7 @@ ChronoPM Skill/
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
 │   └── planning/              # Design documents: design docs for major features
 │
-└── tests/                # 🧪 Regression test suite (185 cases)
+└── tests/                # 🧪 Regression test suite (225 cases)
                               # Run after every Skill update to ensure nothing breaks.
 ```
 
@@ -214,11 +214,11 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.17.0 |
+| Skill version | 1.17.1 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 48 |
-| Regression cases | 185 |
+| Regression cases | 225 |
 
 ## Changelog
 
