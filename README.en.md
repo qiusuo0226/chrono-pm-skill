@@ -1,4 +1,4 @@
-# ChronoPM v1.18.1
+# ChronoPM v1.19.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -156,7 +156,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Rule files | 22 | Define how the AI should behave in various scenarios |
 | Document templates | 49 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 225 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 249 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
@@ -210,7 +210,7 @@ ChronoPM Skill/
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
 │   └── planning/              # Design documents: design docs for major features
 │
-└── tests/                # 🧪 Regression test suite (225 cases)
+└── tests/                # 🧪 Regression test suite (249 cases)
                               # Run after every Skill update to ensure nothing breaks.
 ```
 
@@ -218,15 +218,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.18.1 |
+| Skill version | 1.19.0 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 49 |
-| Regression cases | 225 |
+| Regression cases | 249 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.18.1.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.19.0.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix
