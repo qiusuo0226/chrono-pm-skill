@@ -1,4 +1,4 @@
-# ChronoPM v1.19.1
+# ChronoPM v1.20.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -108,6 +108,9 @@ Daily reports, weekly reports, monthly reports, meeting minutes, decision logs, 
 **Requirement scope is traceable**
 From contracts to bidding documents to specific requirements — a three-layer model helps you answer "is this requirement within the contract scope?"
 
+**Dual-view requirements: business ⇄ implementation**
+The same requirement looks like "what to build" to the client (business view) and "how to build it" to developers (implementation view). Dev-side docs (PRD/design/API specs/prototypes) are ingested into the requirement library, with each register entry carrying an "implementation view" and "prototype/doc links." When processing developers' daily reports, the AI can match against the business context — so it truly understands what a report is about.
+
 **Reasoning Baseline — smarter status derivation**
 A built-in lifecycle derivation chain derives the actual completion status of modules/tasks from milestone terminal events such as "rehearsal passed," "review passed," and "acceptance passed," then cross-checks it against the task board. Combined with an entity registry and cross-source contradiction handling, weekly reports and queries no longer rely on a single board status — fewer missed counts and fewer misjudgments.
 
@@ -141,7 +144,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | CAP-024 | Historical Plan Import | Batch plan import + change/delay tracking |
 | CAP-025 | Proactive Change | Proactive changes + human-confirm update model |
 | CAP-026 | Change Log Tiered Archive | Active/archive tiering with auto month navigation |
-| RI | Requirement Intelligence | Cross-source requirement merge/scope judgment/three-level index; contract scope many-to-many mapping |
+| RI | Requirement Intelligence | Cross-source requirement merge/scope judgment/three-level index; contract scope many-to-many mapping; business⇄implementation dual-view (implementation view / prototype links) |
 | CAP-027 | Daily Report Integrated Review & Proactive Querying | After report processing, compare plan-vs-done, risk/issue changes, and task progress deviations; proactively ask about blockers/risks/omissions/feasibility |
 | CAP-028 | Delegation Tracking Cascade | Auto-generate a follow-up todo for the delegator on task delegation; validate related requirement status consistency on task status change |
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
@@ -156,7 +159,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Rule files | 22 | Define how the AI should behave in various scenarios |
 | Document templates | 49 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 249 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 259 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
@@ -179,7 +182,7 @@ ChronoPM Skill/
 │   ├── 04-risk-issue-rules.md     # Risk & issue: registration, assessment, multi-source cross-check
 │   ├── 05-query-rules.md          # Query rules: index-first, no full scans
 │   ├── 06-file-rules.md           # File rules: naming conventions, archive paths, read/write constraints
-│   ├── 07-requirement-rules.md    # Requirement management: registration, traceability, RI three-layer model
+│   ├── 07-requirement-rules.md    # Requirement management: registration, traceability, RI three-layer model, business⇄implementation dual-view
 │   ├── 08-change-control-rules.md # Change control: flow, impact analysis, cascade rules
 │   ├── 09-portfolio-rules.md      # Portfolio coordination: multi-subproject coordination, resource transfer
 │   ├── 10~21                      # Other rules (update triggers, output artifacts, Excel generation,
@@ -210,7 +213,7 @@ ChronoPM Skill/
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
 │   └── planning/              # Design documents: design docs for major features
 │
-└── tests/                # 🧪 Regression test suite (249 cases)
+└── tests/                # 🧪 Regression test suite (259 cases)
                               # Run after every Skill update to ensure nothing breaks.
 ```
 
@@ -218,15 +221,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.19.1 |
+| Skill version | 1.20.0 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 49 |
-| Regression cases | 249 |
+| Regression cases | 259 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.19.1.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.20.0.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix

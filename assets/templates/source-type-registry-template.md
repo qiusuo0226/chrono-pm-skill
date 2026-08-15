@@ -26,7 +26,12 @@
 | initiation | approval | 立项批复 | L3 | 否 | 可研/建议书 |
 | security_req | compliance | 密评/等保 | L4 | 否 | 强制门禁 |
 | expert_review | technical | 专家评审意见 | L3 | 否 | - |
-| design_spec | technical | 需求规格说明书 | L3 | 否 | - |
+| design_spec | technical | 需求规格说明书 | L3 | 否 | 甲方侧需求规格；与开发侧 design_doc 语义不同（07 号 §8.10.2） |
+| dev_prd | technical | 开发需求文档/PRD | L3 | 否 | 开发侧，不参与 scope_scope（07 号 §8.5） |
+| design_doc | technical | 概要/详细设计文档 | L3 | 否 | 开发侧"怎么做"，区别于甲方侧 design_spec |
+| api_spec | technical | 接口文档/API 说明 | L3 | 否 | 开发侧 |
+| prototype | technical | 交互原型/线框图 | L3 | 否 | 非文本载体，存指针（07 号 §8.10.3） |
+| ui_spec | technical | UI 标注稿/视觉规范 | L3 | 否 | 开发侧 |
 | meeting_directive | operational | 甲方指令性纪要 | L3 | 是（→L2） | 甲方高层签发 |
 | milestone_clause | operational | 工期/里程碑条款 | L5 | 否 | 权威 L5 |
 
@@ -35,7 +40,8 @@
 1. 新源文档类型：向本表追加一行（source_type→source_category→authority），并同步受影响 ATOM 与索引。
 2. 未知 source_type：输入时触发"未登记"提示（给出候选类别），不静默归类。
 3. source_type 必须归入一个固定 source_category，继承默认 authority；`覆盖默认？` 为显式覆盖。
-4. Change Log：本表变更记录于底部（追加/修改/删除）。
+4. **technical 类开发侧文档**（dev_prd/design_doc/api_spec/prototype/ui_spec）：其 ATOM 不参与 scope_scope 范围判定聚合，仅用于填充对应 REQ 的"实现视图"与"原型/文档链接"字段（07 号 §8.5 硬约束 + §8.10 双视图）。
+5. Change Log：本表变更记录于底部（追加/修改/删除）。
 
 ## Change Log
 
