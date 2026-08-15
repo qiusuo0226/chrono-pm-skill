@@ -1,4 +1,4 @@
-# ChronoPM v1.20.0
+# ChronoPM v1.21.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -150,7 +150,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
 | CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
 | CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
-| — (extension) | Backward Planning & WP Work Packages | Reverse-plan iteration work packages around a target deadline (WF-7: backward planning = a way to arrange iteration plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone task / one-time reminder, formal tasks must land on the board); iteration-register WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown |
+| — (extension) | Backward Planning & WP Work Packages | Reverse-plan iteration work packages around a target deadline (WF-7: backward planning = a way to arrange iteration plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone task / one-time reminder, formal tasks must land on the board); iteration-register WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown; **Backward Daily Matrix** (person × date, supports portfolio multi-board traversal and legacy degradation) |
 | — (extension) | Reasoning Baseline | Lifecycle derivation chain + cross-source contradiction handling + entity registry + task-set association; derives actual completion status from milestone events |
 
 ## What's included
@@ -160,7 +160,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Rule files | 22 | Define how the AI should behave in various scenarios |
 | Document templates | 49 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 259 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 269 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
@@ -214,7 +214,7 @@ ChronoPM Skill/
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
 │   └── planning/              # Design documents: design docs for major features
 │
-└── tests/                # 🧪 Regression test suite (259 cases)
+└── tests/                # 🧪 Regression test suite (269 cases)
                               # Run after every Skill update to ensure nothing breaks.
 ```
 
@@ -222,15 +222,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.20.0 |
+| Skill version | 1.21.0 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 49 |
-| Regression cases | 259 |
+| Regression cases | 269 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.20.0.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.21.0.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix
