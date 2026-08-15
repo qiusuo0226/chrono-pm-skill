@@ -79,6 +79,8 @@ AI 在每次会话**首次进入工作区**时（而非每次请求），必须�
 | 1.1.0+ | `portfolio/todos/history-index.md` 是否存在 |
 | 1.9.0+ | `portfolio/context/pm-profile.md`（项目集模式）或 `context/pm-profile.md`（单项目模式）是否存在 |
 
+3b. 检查 `ai/templates/` 参考模板库完整性：对比工作区 `ai/templates/` 下的文件与 Skill 包 `assets/templates/` 目录中的模板清单（`ALL_TEMPLATE_FILES`），如有缺失模板，在健康报告的“缺失能力”表中列出并建议执行迁移补齐。同时检查 `outputs/.templates/manifest-template.md` 是否存在。
+
 4. 如发现缺失，输出工作区健康报告。
 
 **健康检查输出格式：**

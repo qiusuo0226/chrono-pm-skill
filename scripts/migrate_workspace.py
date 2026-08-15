@@ -26,6 +26,8 @@ from pathlib import Path
 # 避免在迁移脚本内硬编码版本字符串造成与 Skill 本体版本失步。
 from _version import SKILL_VERSION as CURRENT_SKILL_VERSION
 from _version import WORKSPACE_SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+from chronopm_init.config import ALL_TEMPLATE_FILES
+from chronopm_init.file_registry import create_outputs_dir
 
 # ============================================================
 # Schema 版本对应的目录结构定义
@@ -675,6 +677,71 @@ def rebuild_index_recent(ai_dir: Path, days: int = 7):
         dti.write_text("---\ndoc_type: daily-todo-index\nversion: v1.0\nlast_updated: " + datetime.now().strftime("%Y-%m-%d %H:%M") + "\n---\n\n# 每日待办索引\n\n## 日期索引\n", encoding="utf-8")
 
 
+def detect_project_name(workspace_root: Path) -> str:
+    """从工作区读取项目名称。
+
+    优先解析 ai/context/project-brief.md 前置元数据中的
+    project / portfolio 字段；读取失败时回退为工作区目录名。
+    """
+    brief = workspace_root / "ai" / "context" / "project-brief.md"
+    if brief.exists():
+        try:
+            for line in brief.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                for key in ("project:", "portfolio:"):
+                    if stripped.startswith(key):
+                        name = stripped[len(key):].strip().strip('"')
+                        if name:
+                            return name
+        except OSError:
+            pass
+    return workspace_root.name
+
+
+def sync_templates(ai_dir: Path, dry_run: bool = False):
+    """同步 Skill 包模板到工作区（只补不覆盖）。
+
+    与 init 的差异：init 面对全新目录（无需 dst 存在性守卫），
+    migrate 面对已有工作区，使用 if not dst.exists() 守卫保护用户自定义内容。
+    复用 ALL_TEMPLATE_FILES 单一事实源（chronopm_init/config.py），
+    未来新增模板只需更新 config.py，migrate 自动覆盖，无需双重维护。
+    """
+    templates_dir = get_templates_dir()
+    missing = []
+    synced = 0
+
+    # --- 1. 同步 ai/templates/ 参考模板库 ---
+    target_dir = ai_dir / "templates"
+    if not dry_run:
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+    for name in ALL_TEMPLATE_FILES:
+        src = templates_dir / name
+        dst = target_dir / name
+        if not dst.exists():
+            if src.exists():
+                if dry_run:
+                    missing.append(f"templates/{name}")
+                else:
+                    shutil.copy2(src, dst)
+                    synced += 1
+            else:
+                print(f"  ⚠️ Skill 包模板不存在，跳过: {name}")
+
+    # --- 2. 补齐 outputs/.templates/manifest-template.md ---
+    # 与 init 的 create_outputs_dir 行为一致（写死内容生成，非复制模板文件）
+    outputs_dir = ai_dir.parent / "outputs"
+    manifest_path = outputs_dir / ".templates" / "manifest-template.md"
+    if not manifest_path.exists():
+        if dry_run:
+            missing.append("outputs/.templates/manifest-template.md")
+        else:
+            create_outputs_dir(str(ai_dir.parent), detect_project_name(ai_dir.parent))
+            synced += 1
+
+    return missing, synced
+
+
 def migrate_workspace(project_root: str, dry_run: bool = False, target_version: str = None, index_mode: str = "structure-only"):
     """执行工作区迁移"""
     ai_dir = Path(project_root) / "ai"
@@ -686,6 +753,20 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
     print(f"{'='*60}")
     print(f"ChronoPM 工作区迁移")
     print(f"{'='*60}")
+
+    # ★ 无条件模板同步（置于版本检查之前，确保版本已匹配但模板缺失的场景也能触发）
+    print(f"\n📋 检查模板完整性...")
+    missing_templates, synced_templates = sync_templates(ai_dir, dry_run)
+    if missing_templates:
+        print(f"  缺失模板 ({len(missing_templates)} 个):")
+        for t in missing_templates:
+            print(f"    ✗ {t}")
+        if not dry_run:
+            print(f"  ⚠️ 上述模板将在正式迁移时补齐")
+    elif synced_templates > 0:
+        print(f"  ✓ 已补齐 {synced_templates} 个模板")
+    else:
+        print(f"  ✓ 模板完整")
 
     # 1. 读取当前版本
     ws_version = read_workspace_version(ai_dir)

@@ -254,4 +254,9 @@ ALL_TEMPLATE_FILES = [
     "pm-profile-template.md",
     "contract-register-template.md",
     "entity-registry-template.md",
+    # AI 运行时格式参考副本（非 FACT_SOURCE 实例化模板）
+    "decision-log-template.md",
+    "project-notes-template.md",
+    # 已通过 *_FACT_SOURCE_FILES 实例化，按全量副本库口径纳入
+    "source-type-registry-template.md",
 ]
