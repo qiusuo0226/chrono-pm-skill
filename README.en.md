@@ -1,4 +1,4 @@
-# ChronoPM v1.19.0
+# ChronoPM v1.19.1
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -218,7 +218,7 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.19.0 |
+| Skill version | 1.19.1 |
 | Workspace schema | 0.8.0 |
 | Rule files | 22 |
 | Document templates | 49 |
@@ -226,7 +226,7 @@ ChronoPM Skill/
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.19.0.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.19.1.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix

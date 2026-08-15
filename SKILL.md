@@ -258,7 +258,7 @@ Level 4: 用户提供的输入资料
 ### 版本控制文件
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | Skill 包版本号（当前 1.19.0） |
+| `VERSION` | Skill 包版本号（当前 1.19.1） |
 | `skill.json` | Skill 元数据（版本、模式、依赖） |
 | `CHANGELOG.md` | 版本变更历史和升级说明 |
 | `SKILL.md` front matter | AI 可读的版本字段 |

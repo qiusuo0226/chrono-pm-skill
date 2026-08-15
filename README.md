@@ -1,4 +1,4 @@
-# ChronoPM v1.19.0
+# ChronoPM v1.19.1
 
 **让 AI 帮你管项目，而不是帮你写文档。**
 
@@ -218,7 +218,7 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 1.19.0 |
+| Skill 版本 | 1.19.1 |
 | 工作区 Schema | 0.8.0 |
 | 规则文件 | 22 份 |
 | 文档模板 | 49 个 |
@@ -226,7 +226,7 @@ ChronoPM Skill/
 
 ## 分发包命名规范
 
-发布产物按 `{BrandName}-Skill-v{version}.zip` 命名（如 `ChronoPM-Skill-v1.19.0.zip`）：
+发布产物按 `{BrandName}-Skill-v{version}.zip` 命名（如 `ChronoPM-Skill-v1.19.1.zip`）：
 
 - **BrandName**：取自 `skill.json` 的 `displayName` 品牌前缀（`—` 或 `(` 之前）
 - **version**：语义化版本号，加 `v` 前缀

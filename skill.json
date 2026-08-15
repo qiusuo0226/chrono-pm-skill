@@ -331,7 +331,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-15",
-    "lastVersion": "1.19.0",
+    "lastVersion": "1.19.1",
     "updateRequiredOn": [
       "major",
       "minor",
