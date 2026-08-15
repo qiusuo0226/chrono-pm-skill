@@ -150,6 +150,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
 | CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
 | CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
+| — (extension) | Backward Planning & WP Work Packages | Reverse-plan iteration work packages around a target deadline (WF-7: backward planning = a way to arrange iteration plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone task / one-time reminder, formal tasks must land on the board); iteration-register WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown |
 | — (extension) | Reasoning Baseline | Lifecycle derivation chain + cross-source contradiction handling + entity registry + task-set association; derives actual completion status from milestone events |
 
 ## What's included
