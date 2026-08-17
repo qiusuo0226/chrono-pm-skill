@@ -48,23 +48,23 @@ status: 草稿
 
 **变更级别**：micro / normal / major
 
-**审批结果**：approved / rejected / deferred
+**审批结果**：批准 / 驳回 / 暂缓
 
 **审批人**：
 
 **审批日期**：
 
-**执行状态**：pending / implemented / cancelled
+**执行状态**：待实施 / 已实施 / 已取消
 
 **关联需求**：[REQ-XXX-NNN]
 
-**关联任务**：[T-YYYYMMDD-NNN]
+**关联任务**：[TD-xxx（待办编号）]
 
 **关联决策**：[D-YYYYMMDD-NNN]
 
 **Source**：
 
-> plan_change 专用：请在「关联任务」填 T-*，并在「变更后内容」记录新的 Due Date / Owner。批准后需同步更新 tasks/board.md 对应字段并递增 `Plan Change Count`（见 `references/03-task-board-rules.md` §1a / §6.1）。
+> plan_change 专用：请在「关联任务」填 TD-*，并在「变更后内容」记录新的 Due Date / Owner。批准后需同步更新待办文件对应字段并递增 `计划变更次数`。
 
 ---
 

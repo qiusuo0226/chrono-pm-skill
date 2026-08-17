@@ -26,11 +26,11 @@
 | 判定条件 | 处理规则 | 说明 |
 |---|---|---|
 | 材料是历史 `ai/` 目录 / 上一阶段的工作区 | **13 号**（本文件） | 按 legacy source 流程衔接 |
-| 材料是当前项目的存量计划（.pod / Excel / 遗留 board 导出），无独立历史工作区 | **15 号 + 03 号**（R1） | 走 external_import 批量导入快照（见 `15-snapshot-rules.md` §8a） |
-| 材料含"计划 + 已完成记录"，需回溯灌入快照 | **R1** | 生成 imported-{date}.md 冻结快照 + 登记 board |
+| 材料是当前项目的存量计划（.pod / Excel / 遗留导出），无独立历史工作区 | **15 号**（R1） | 走 external_import 批量导入快照（见 `15-snapshot-rules.md` §5） |
+| 材料含“计划 + 已完成记录”，需回溯灌入快照 | **R1** | 生成 imported-{date}.md 冻结快照 + 登记待办文件 |
 | 材料是跨阶段衔接（沿用需求/风险/进度） | **13 号** | carryover 流程 |
 | 用户表达"上一阶段""一期""承接"等 | **13 号** | 触发历史衔接（见 §3） |
-| 用户表达"批量导入历史计划""灌入快照""把现有计划同步进来" | **R1** | 触发批量导入（见 `15-snapshot-rules.md` §8a） |
+| 用户表达"批量导入历史计划""灌入快照""把现有计划同步进来" | **R1** | 触发批量导入（见 `15-snapshot-rules.md` §5） |
 
 **关键区别：**
 - 13 号：存在"历史阶段"这个独立主体，需 legacy-sources / carryover / 确认后写入当前阶段。
@@ -50,8 +50,7 @@ ai/continuity/
 ├── legacy-sources.md         # 历史来源登记
 ├── import-plan.md            # 导入计划
 ├── continuity-map.md         # 历史到当前的映射关系
-├── carryover-register.md     # 结转事项登记册
-├── delta-analysis.md         # 差异分析
+├── delta-analysis.md         # 差异分析（含结转候选清单）
 └── import-log.md             # 导入日志
 ```
 
@@ -101,7 +100,7 @@ ai/continuity/
 | `selective_import` | AI 提取候选项，用户确认后导入（默认模式） | 需求/决策/资源/预算/里程碑 |
 | `full_migration_plan` | 生成完整迁移计划但不执行 | 全量迁移场景 |
 
-> 注：R1（计划批量导入）不使用本表模式，其导入方式见 `15-snapshot-rules.md` §8a。
+> 注：R1（计划批量导入）不使用本表模式，其导入方式见 `15-snapshot-rules.md` §5。
 
 ---
 
@@ -112,14 +111,14 @@ ai/continuity/
 | 项目背景 | `summarize_merge` | `context/project-context.md` |
 | 已确认需求 | `selective_import` | `requirements/requirement-register.md` |
 | 需求变更记录 | `reference_only` | `requirements/change-log.md` |
-| 未完成任务 | `carryover_open_only` | `tasks/backlog.md` |
+| 未完成任务 | `carryover_open_only` | 确认后落待办文件 `todos/{date}/{owner}.md`（来源=历史阶段结转，`是否结转`=是） |
 | 未关闭风险 | `carryover_open_only` | `risks/risk-register.md` |
 | 未关闭问题 | `carryover_open_only` | `issues/issue-register.md` |
 | 历史决策 | `summarize_reference` | `decisions/decision-log.md` |
-| 里程碑 | `selective_import` | `milestones/milestone-board.md` |
+| 里程碑 | `selective_import` | `plans/progress-plan.md` |
 | 预算/P&L | `selective_import` | `plans/budget.md` |
-| 人员资源 | `selective_import` | `portfolio/resources/resource-register.md` |
-| 人员流转 | `reference_only` | `portfolio/resources/transfer-log.md` |
+| 人员资源 | `selective_import` | `projects/{子项目}/resources/resource-register.md`（按人员所属子项目分落，v2.0.0 零数据源） |
+| 人员流转 | `reference_only` | `projects/{子项目}/resources/transfer-log.md`（同上；跨项目流转参照 portfolio/resources/transfer-index.md） |
 | 经验教训 | `summarize_merge` | `reviews/lessons-learned.md` |
 | 周报/月报 | `reference_only` + 摘要 | `continuity/delta-analysis.md` |
 | 日报 | `reference_only` | 一般不导入 |
@@ -135,7 +134,7 @@ ai/continuity/
   → 读取历史内容，识别类型
   → 生成 import-plan.md（导入范围）
   → 生成 continuity-map.md（映射关系）
-  → 提取结转候选 → carryover-register.md
+  → 提取结转候选 → delta-analysis.md 结转候选段
   → 生成 delta-analysis.md（差异分析）
   → 用户确认结转事项
   → 确认后写入当前阶段事实源
@@ -148,11 +147,11 @@ ai/continuity/
 
 ---
 
-## 9. 结转事项登记册
+## 9. 结转候选清单
 
-`carryover-register.md` 是衔接流程的核心文件。所有可能影响当前阶段的历史事项必须先进入此文件，经用户确认后才能写入当前阶段事实源。
+v2.0.0 起不再维护独立 `carryover-register.md`（结转字段化）。衔接流程的结转候选记录在 `continuity/delta-analysis.md` 的**结转候选段**：所有可能影响当前阶段的历史事项必须先登记为候选，经用户确认后才能写入当前阶段事实源。
 
-### 字段
+### 候选段表头
 
 | Carryover ID | Type | Source Stage | Source Ref | Title | Summary | Target Project | Target File | Carryover Status | Confirmation Status | Owner | Due Date | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|

@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm",
   "displayName": "ChronoPM — Markdown 驱动的 AI 项目管理技能",
-  "version": "1.21.0",
+  "version": "2.0.0",
   "schemaVersion": "0.6.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -58,6 +58,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "2.0.0",
+      "date": "2026-08-17",
+      "summary": "待办查询体系重构(Major/architecture_change)：删除任务看板(board)体系，全面转向待办文件体系。删除 03-task-board-rules.md；精简 15-snapshot-rules.md 为仅保留 external_import + 快照读取；待办文件 todos/{date}/{owner}.md 成为执行状态唯一事实源；PLAN 文件成为计划编排唯一事实源；项目集层零数据源原则（仅保留指针索引 + 只读聚合视图）；倒排计划拆分为子项目级别；共享人力软兖底（T1 排期冲突提示 + T3 属性变更提示）；统一门禁达成度聚合（实时聚合不落盘）；M01-M12 作为参考框架不设独立检查项；entity-registry 保留现状。双 Agent 十轮审核收敛，累计 68 项问题修复。workspace schema 保持 0.8.0。"
+    },
     {
       "version": "1.21.0",
       "date": "2026-08-16",
@@ -341,7 +346,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-16",
-    "lastVersion": "1.21.0",
+    "lastVersion": "2.0.0",
     "updateRequiredOn": [
       "major",
       "minor",

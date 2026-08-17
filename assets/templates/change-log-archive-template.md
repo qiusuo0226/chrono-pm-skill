@@ -16,7 +16,7 @@
 
 | 序号 | Change ID | 变更日期 | 对象 | 变更摘要 | 原值 | 新值 | 变更原因 | 确认状态（Confirmed By） |
 |----|----|----|----|----|----|----|----|----|
-| 1 | T-YYYYMMDD-NNN | YYYY-MM-DD | tasks/board.md | (摘要) | (原值) | (新值) | (原因) | PM 姓名 / 待确认 |
+| 1 | TD-XXX-YYYYMMDD-NNN | YYYY-MM-DD | todos/{date}/{owner}.md | (摘要) | (原值) | (新值) | (原因) | PM 姓名 / 待确认 |
 | 2 | - | - | - | - | - | - | - | - |
 
 ## 追溯说明

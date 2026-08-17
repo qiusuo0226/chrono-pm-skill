@@ -24,7 +24,7 @@ author: AI辅助生成
 ### 2.1 [子项目1名称]
 
 **本周完成：**
-- [事项1]（关联任务：T-YYYYMMDD-NNN）
+- [事项1]（关联任务：TD-xxx）
 
 **本周新增风险：**
 - [风险描述]（关联风险：R-YYYYMMDD-NNN，等级：[高/中/低]）
@@ -33,7 +33,7 @@ author: AI辅助生成
 - [问题描述]（关联问题：I-YYYYMMDD-NNN，状态：[状态]）
 
 **延期任务：**
-| Task ID | 标题 | 原计划 | 当前预计 | 延期天数 | 原因 |
+| 待办编号 | 标题 | 原计划 | 当前预计 | 延期天数 | 原因 |
 |---|---|---|---|---|---|
 
 **里程碑状态：**
@@ -119,10 +119,10 @@ author: AI辅助生成
 
 ## 状态推导说明
 
-> 以下状态基于过程记录推导（非任务板直接读取），已标注推导链路。
+> 以下状态基于过程记录推导（非待办文件直接读取），已标注推导链路。
 > 推导依据：`00-pm-main-rules.md` §10.3 推导链 + 项目级覆盖（entity-registry §2）
 
-| 子项目 | 实体/模块 | 触发事件 | 来源 | 推导结论 | 任务板状态 | 差异 |
+| 子项目 | 实体/模块 | 触发事件 | 来源 | 推导结论 | 待办文件状态 | 差异 |
 |---|---|---|---|---|---|---|
 | （无推导状态差异时填"无"） | | | | | | |
 
@@ -131,9 +131,10 @@ author: AI辅助生成
   - ai/projects/{子项目1}/reports/weekly/YYYY/YYYY-Wxx.md
   - ai/projects/{子项目2}/reports/weekly/YYYY/YYYY-Wxx.md
   - ai/projects/{子项目3}/reports/weekly/YYYY/YYYY-Wxx.md
-- 资源文件：
-  - ai/portfolio/resources/resource-register.md
-  - ai/portfolio/resources/transfer-log.md
+- 资源文件（v2.0.0 零数据源：事实源在各子项目）：
+  - ai/projects/{子项目}/resources/resource-register.md
+  - ai/projects/{子项目}/resources/transfer-log.md
+  - ai/portfolio/resources/shared-resource-index.md（跨项目共享人员索引，只读）
 - 成本文件：
   - ai/projects/{子项目}/plans/budget.md
 

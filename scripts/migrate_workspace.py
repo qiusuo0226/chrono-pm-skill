@@ -303,6 +303,15 @@ VERSION_CAPABILITIES = [
         ],
         "note": "v1.16.0 合同作用域（CR-20260813-002，schema 0.7.0→0.8.0）：项目集模式在 portfolio/requirements/ 新增 canonical/、atoms/、contract-register.md、source-type-registry.md（合同登记册为 RI 检索入口）；单项目模式在 ai/requirements/ 新增 contract-register.md。子项目级 on portfolio 模式补齐 RI 目录（requirements/canonical、requirements/atoms）与 source-type-registry.md（修复 CR-20260813-001 遗留缺口），仅对已含 requirements/ 的子项目执行（D10 守卫）。",
     },
+    {
+        "version": "2.0.0",
+        "schema": "0.8.0",
+        "capabilities": ["todo_workspace_v2"],
+        "new_dirs": ["todos"],
+        "new_files": [],
+        "sub_project_dirs": ["todos"],
+        "note": "v2.0.0 待办查询体系重构（schema 保持 0.8.0）：执行状态唯一事实源切换到 todos/{date}/{owner}.md 每人每日待办文件 + todos/{date}/_index.md 绑定文件；PLAN 计划文件替代迭代登记册（AI 按需创建，不预建）；board/backlog/里程碑板/旧待办索引/快照/actuals/个人日报等旧体系文件不再创建，存量旧文件按升级方案归档保留只读；子项目级 on portfolio 模式补齐 todos/ 目录（D10 守卫）。",
+    },
 ]
 
 # 已知结构性缺漏（历史遗留，不影响本次修复，供后续维护 CR 参考）：
@@ -442,15 +451,16 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
     """从模板创建缺失的文件"""
     # 模板名映射
     template_map = {
-        "portfolio/resources/resource-register.md": "resource-register-template.md",
-        "portfolio/resources/transfer-log.md": "transfer-log-template.md",
+        # v2.0.0 零数据源：人员资源事实源下放子项目（projects/{子项目}/resources/），
+        # portfolio 级 resource-register/transfer-log 不再预建模板；存量旧文件保留只读，
+        # 数据迁移由 AI/PM 按 09 号 §5 完成，项目集层只维护 shared-resource-index/transfer-index 索引。
         "context/project-brief.md": "project-brief-template.md",
         "portfolio/context/project-brief.md": "project-brief-template.md",
         "continuity/project-lineage.md": "project-lineage-template.md",
         "continuity/legacy-sources.md": "legacy-sources-template.md",
-        "continuity/carryover-register.md": "carryover-register-template.md",
+        # v2.0.0：carryover-register / todo-history-index 模板已删除（结转字段化、历史索引砍掉），
+        # 旧版本迁移条目若命中将走 auto-migrated 空文件兜底，不影响迁移流程。
         "continuity/import-log.md": "import-log-template.md",
-        "portfolio/todos/history-index.md": "todo-history-index-template.md",
         "portfolio/context/domain-glossary.md": "domain-glossary-template.md",
         "context/domain-glossary.md": "domain-glossary-template.md",
         "requirements/source-type-registry.md": "source-type-registry-template.md",
@@ -586,11 +596,10 @@ def create_workspace_health(ai_dir: Path, ws_version: dict, missing_dirs: list, 
         return "ok"
 
     capabilities = [
-        ("daily_report", cap_status(["tasks/board.md"]) if mode == "single" else cap_status(["projects/"])),
-        ("quick_query", cap_status(["portfolio/todos/personal-todo-index.md"])),
-        ("todo_snapshot", cap_status(["portfolio/todos/snapshots/daily"])),
+        # v2.0.0：旧体系探针（tasks/board.md、旧待办索引、快照目录、carryover-register）已删除，
+        # 改为新体系探针（todos/ 目录 + outputs/）
+        ("todo_workspace_v2", cap_status(["todos"])),
         ("output_artifact", "ok" if (ai_dir.parent / "outputs").exists() else "missing"),
-        ("continuity", cap_status(["continuity/carryover-register.md"])),
         ("self_check", "ok"),  # 规则层能力，不依赖目录
     ]
 
@@ -627,10 +636,8 @@ ignored_until:
     content += f"""
 ## 索引状态
 
-| Index File | Exists | Status |
-|---|---|---|
-| portfolio/todos/personal-todo-index.md | {'yes' if (ai_dir / 'portfolio/todos/personal-todo-index.md').exists() else 'no'} | {'ok' if (ai_dir / 'portfolio/todos/personal-todo-index.md').exists() else 'missing'} |
-| portfolio/todos/history-index.md | {'yes' if (ai_dir / 'portfolio/todos/history-index.md').exists() else 'no'} | {'ok' if (ai_dir / 'portfolio/todos/history-index.md').exists() else 'missing'} |
+> v2.0.0 起旧待办索引（personal-todo-index/history-index）已删除，
+> 待办事实源为 todos/{{YYYY-MM-DD}}/{{执行人}}.md，绑定文件为 todos/{{YYYY-MM-DD}}/_index.md。
 
 ## 推荐动作
 """
@@ -639,7 +646,7 @@ ignored_until:
     else:
         content += f"1. 执行迁移：python scripts/migrate_workspace.py --project-root .\n"
         content += "2. 检查新增文件并填写内容\n"
-        content += "3. 可选：重建最近 7 天待办索引\n"
+        content += "3. 可选：对 AI 说“初始化今天的待办”创建当日待办文件与绑定文件\n"
 
     content += f"""
 ## 升级提醒控制
@@ -660,21 +667,14 @@ ignored_until:
 
 
 def rebuild_index_recent(ai_dir: Path, days: int = 7):
-    """从最近 N 天日报索引重建待办索引（简化版）"""
-    # 这个函数在实际执行时需要扫描最近日报索引
-    # 这里只创建空索引文件作为占位
-    todos_dir = ai_dir / "portfolio" / "todos"
-    todos_dir.mkdir(parents=True, exist_ok=True)
+    """索引重建占位（v2.0.0 起已废弃）。
 
-    # 创建空 personal-todo-index.md
-    pti = todos_dir / "personal-todo-index.md"
-    if not pti.exists():
-        pti.write_text("---\ndoc_type: personal-todo-index\nversion: v1.0\nlast_updated: " + datetime.now().strftime("%Y-%m-%d %H:%M") + "\n---\n\n# 个人待办索引\n\n| Todo ID | Owner | Project | Task | Due Date | Priority | Status | Source Ref | Updated At |\n|---|---|---|---|---|---|---|---|---|\n", encoding="utf-8")
-
-    # 创建空 daily-todo-index.md
-    dti = todos_dir / "daily-todo-index.md"
-    if not dti.exists():
-        dti.write_text("---\ndoc_type: daily-todo-index\nversion: v1.0\nlast_updated: " + datetime.now().strftime("%Y-%m-%d %H:%M") + "\n---\n\n# 每日待办索引\n\n## 日期索引\n", encoding="utf-8")
+    旧实现会创建 portfolio/todos/personal-todo-index.md 等旧体系索引文件，
+    这些文件在 v2.0.0 待办体系重构中已全部删除；待办事实源改为
+    todos/{date}/{owner}.md，绑定文件 _index.md 由 AI 按日按需创建，
+    无需脚本预建。此函数保留仅为兼容 --index-mode 参数，不再创建任何文件。
+    """
+    print(f"  ℹ️ v2.0.0 起待办索引由 AI 按需创建，脚本不再预建旧索引文件")
 
 
 def detect_project_name(workspace_root: Path) -> str:

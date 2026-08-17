@@ -83,13 +83,13 @@ outputs/{YYYYMMDDHHMMSS}/
 
 | 状态 | 说明 |
 |---|---|
-| `draft` | 已生成初稿 |
-| `pending_confirmation` | 等待用户确认 |
-| `revising` | 用户正在修改 |
-| `final` | 内容已确认 |
-| `exported` | 已导出文件 |
-| `archived` | 已归档到 ai/ 事实源 |
-| `cancelled` | 用户取消 |
+| `初稿` | 已生成初稿 |
+| `待确认` | 等待用户确认 |
+| `修改中` | 用户正在修改 |
+| `已定稿` | 内容已确认 |
+| `已导出` | 已导出文件 |
+| `已归档` | 已归档到 ai/ 事实源 |
+| `已取消` | 用户取消 |
 
 ---
 
@@ -156,7 +156,7 @@ outputs/{YYYYMMDDHHMMSS}/
 
 ## 12. 未确认处理
 
-用户长期未确认时，输出批次保持 `pending_confirmation` 状态，不自动删除。AI 可在后续查询中提示存在未确认批次（列出 Batch ID/类型/创建时间/状态）并询问"是否继续处理或取消？"。
+用户长期未确认时，输出批次保持 `待确认` 状态，不自动删除。AI 可在后续查询中提示存在未确认批次（列出 Batch ID/类型/创建时间/状态）并询问"是否继续处理或取消？"。
 
 ---
 
@@ -207,8 +207,8 @@ outputs/{YYYYMMDDHHMMSS}/
 
 `outputs/` 目录瘦身：
 - 触发：`outputs/index.md` >100 行 或 目录 >50 个批次
-- 动作：将 >90 天且状态为 `confirmed`/`exported` 的批次移动到 `outputs/archive/YYYY/`
-- 状态为 `pending_confirmation` 的批次不自动归档（保留现有规则）
+- 动作：将 >90 天且状态为 `已定稿`/`已导出` 的批次移动到 `outputs/archive/YYYY/`
+- 状态为 `待确认` 的批次不自动归档（保留现有规则）
 - 归档后更新 `outputs/index.md`：归档条目标记为 `[已归档→路径]`
 
 `outputs/index.md` 自身瘦身：

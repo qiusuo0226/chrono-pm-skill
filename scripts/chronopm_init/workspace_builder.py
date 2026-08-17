@@ -23,7 +23,6 @@ from .file_registry import (
     create_ai_log,
     create_brief_file,
     create_context_file,
-    create_iteration_register,
     create_lessons_file,
     create_migration_log,
     create_outputs_dir,
@@ -92,12 +91,8 @@ def create_single_project(project_root: str, project_name: str = ""):
     print("\n创建项目上下文文件...")
     create_context_file(ai_dir, project_name, is_portfolio=False)
 
-    # 8b. 创建迭代登记册
-    print("\n创建迭代登记册...")
-    create_iteration_register(ai_dir, project_name, is_portfolio=False)
-    print("  create plans/iteration-register.md")
-
-    # 8c. 创建跨源需求归集（RI）骨架（schema 0.7.0）
+    # 8b. 创建跨源需求归集（RI）骨架（schema 0.7.0）
+    # v2.0.0：迭代登记册已删除，PLAN 计划文件由 AI 按需创建
     print("\n创建 RI 骨架文件...")
     create_ri_skeleton(ai_dir)
     print("  create requirements/canonical + requirements/atoms (L1/L2/L3)")
@@ -115,7 +110,6 @@ def create_single_project(project_root: str, project_name: str = ""):
     create_continuity_files(ai_dir, project_name)
     print("  create continuity/project-lineage.md")
     print("  create continuity/legacy-sources.md")
-    print("  create continuity/carryover-register.md")
     print("  create continuity/import-log.md")
 
     # 10. 创建 outputs 目录
@@ -144,11 +138,11 @@ def create_single_project(project_root: str, project_name: str = ""):
     print(f"工作区路径: {ai_dir}")
     print(f"\n下一步:")
     print(f"  1. 对 AI 说：初始化项目")
-    print(f"  2. AI 将引导你录入合同、项目、迭代、需求、资源和里程碑信息")
+    print(f"  2. AI 将引导你录入合同、项目、计划、需求、资源信息")
     print(f"  3. 录入完成后，AI 会自动填充 project-context、project-brief、")
-    print(f"     project-index、iteration-register 等文件")
+    print(f"     project-index、PLAN 计划文件等")
     print(f"  4. 也可手动填写 context/project-context.md、plans/budget.md、")
-    print(f"     milestones/milestone-board.md、prompts/project-rules.md")
+    print(f"     prompts/project-rules.md")
 
 
 def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list):
@@ -232,11 +226,7 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
         # 7f. 创建子项目上下文文件
         create_context_file(sub_dir, sub_name, is_portfolio=False)
 
-        # 7g. 创建子项目迭代登记册
-        create_iteration_register(sub_dir, sub_name, is_portfolio=False)
-        print(f"    create plans/iteration-register.md")
-
-        # 7h. 创建子项目级规则文件
+        # 7g. 创建子项目级规则文件（v2.0.0：迭代登记册已删除，PLAN 文件由 AI 按需创建）
         create_project_rules(sub_dir, sub_name, is_portfolio=False)
 
         print(f"    完成: ai/projects/{sub_name}/")
@@ -256,7 +246,6 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
     create_continuity_files(ai_dir, portfolio_name)
     print("  create continuity/project-lineage.md")
     print("  create continuity/legacy-sources.md")
-    print("  create continuity/carryover-register.md")
     print("  create continuity/import-log.md")
 
     # === 9. 创建输出物目录 ===
@@ -291,9 +280,9 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
     print(f"\n工作区路径: {ai_dir}")
     print(f"\n下一步:")
     print(f"  1. 对 AI 说：初始化项目")
-    print(f"  2. AI 将引导你录入合同、项目、迭代、需求、资源和里程碑信息")
+    print(f"  2. AI 将引导你录入合同、项目、计划、需求、资源信息")
     print(f"  3. 录入完成后，AI 会自动填充 project-context、project-brief、")
-    print(f"     project-index、iteration-register、resource-register 等文件")
+    print(f"     project-index、PLAN 计划文件、各子项目 resources/ 资源文件等")
     print(f"  4. 也可手动填写 portfolio/context/project-index.md、")
     print(f"     portfolio/context/project-context.md、")
-    print(f"     portfolio/resources/resource-register.md")
+    print(f"     projects/{{子项目}}/resources/resource-register.md")

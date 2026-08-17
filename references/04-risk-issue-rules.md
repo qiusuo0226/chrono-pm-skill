@@ -19,7 +19,7 @@
 2. 如果某事项尚未发生但存在可能性，不得登记为 Issue，应登记为 Risk。
 3. 如果无法判断，标记为"待确认"，不得擅自归类。
 4. 风险实际发生时，必须从 Risk 转为 Issue：
-   - 风险状态改为 `converted_to_issue`。
+   - 风险状态改为 `转为问题`。
    - 在 Issue 登记册中新增对应记录。
    - 两个记录通过 ID 互相关联。
 
@@ -114,7 +114,7 @@
 | 应对策略 | 规避/转移/减轻/接受 |
 | 应对措施 | 具体措施 |
 | 负责人 | 责任人 |
-| 状态 | open / monitoring / mitigated / closed / converted_to_issue |
+| 状态 | 开放 / 监控中 / 已缓解 / 已关闭 / 转为问题 |
 | 识别日期 | YYYY-MM-DD |
 | 关闭日期 | YYYY-MM-DD |
 | Source | 来源 |
@@ -138,7 +138,7 @@
 | 影响范围 | 受影响的任务/里程碑/模块 |
 | 严重程度 | P0 / P1 / P2 / P3 |
 | 负责人 | 责任人 |
-| 状态 | open / in_progress / blocked / resolved / closed |
+| 状态 | 开放 / 处理中 / 已阻塞 / 已解决 / 已关闭 |
 | 提出日期 | YYYY-MM-DD |
 | 解决日期 | YYYY-MM-DD |
 | 解决方案 | 处理方式和结果 |
@@ -147,19 +147,19 @@
 ### 7.2 问题与任务的关联
 
 - 每个问题应关联到受影响的任务（Issue Ref 字段）。
-- 任务因问题阻塞时，任务状态改为 `blocked`，并填写 Issue Ref。
-- 问题解决后，阻塞任务应恢复为 `in_progress`。
+- 任务因问题阻塞时，任务状态改为 `已阻塞`，并填写 Issue Ref。
+- 问题解决后，阻塞任务应恢复为 `进行中`。
 
 ## 8. Change Log
 
-风险登记册和问题登记册底部各自维护 Change Log，格式同任务看板。Change Log 活跃区上限 50 行或超过 30 天时触发按月归档到 `change-log/archive/YYYYMM-change-log.md`，并维护 `change-log/index.md` 月份导航（与 06/03 号归档规则一致）。
+风险登记册和问题登记册底部各自维护 Change Log，格式同待办文件变更段。Change Log 活跃区上限 50 行或超过 30 天时触发按月归档到 `change-log/archive/YYYYMM-change-log.md`，并维护 `change-log/index.md` 月份导航（与 06 号归档规则一致）。
 
 ### 8.1 Issue 主体拆分规则
 
 issue-register 主体拆分（与 risk-register 对齐）：
 - 触发：>30 条记录
-- 策略：`resolved`/`closed` 状态的 issue 归档到 `issues/archive/YYYY-issue-register.md`
-- 主体仅保留 `open`/`in_progress`/`blocked` 状态的 issue
+- 策略：`已解决`/`已关闭` 状态的 issue 归档到 `issues/archive/YYYY-issue-register.md`
+- 主体仅保留 `开放`/`处理中`/`已阻塞` 状态的 issue
 - 归档后维护 `issues/index.md`
 - 归档操作记录在 Change Log 中
 
@@ -180,13 +180,13 @@ issue-register 主体拆分（与 risk-register 对齐）：
 
 Risk 创建 →
   [AUTO] 更新 risk-register 衍生索引（若已拆分）
-  [SUGGEST] 若 risk.owner 存在 → 建议在 personal-todo-index 追加跟进条目
+  [SUGGEST] 若 risk.owner 存在 → 建议在其待办文件 todos/{date}/{owner}.md 追加跟进待办
 
-Risk 状态 → closed →
-  [AUTO] 更新 personal-todo-index 中关联条目状态
+Risk 状态 → 已关闭 →
+  [AUTO] 更新待办文件中关联待办（Risk Ref 指向本风险）的状态
   [CHECK] 检查是否有 task 的 Risk Ref 指向本风险
 
-Risk 状态 → converted_to_issue →
+Risk 状态 → 转为问题 →
   [SUGGEST] 必须在 issue-register 新增对应 issue，双向 ID 关联（§1 规则 4）
   [AUTO] 更新 risk-register 和 issue-register 的衍生索引
   [SUGGEST] 检查是否有 task 引用本风险 → 建议更新为引用新 issue
@@ -194,32 +194,32 @@ Risk 状态 → converted_to_issue →
 Issue 创建 →
   [AUTO] 更新 issue-register 衍生索引（若已拆分）
   [CHECK] 若含 Risk Ref → 验证关联风险存在且状态合理
-  [SUGGEST] 若 issue.owner 存在 → 建议在 personal-todo-index 追加处理条目
-  [SUGGEST] 若关联 task-id → 建议将对应 task 状态设为 blocked
+  [SUGGEST] 若 issue.owner 存在 → 建议在其待办文件 todos/{date}/{owner}.md 追加处理待办
+  [SUGGEST] 若关联 task-id → 建议将对应 task 状态设为已阻塞
 
-Issue 状态 → resolved/closed →
-  [AUTO] 更新 personal-todo-index 中关联条目状态
-  [SUGGEST] 检查被阻塞的 task → 建议恢复为 in_progress
+Issue 状态 → 已解决/已关闭 →
+  [AUTO] 更新待办文件中关联待办（问题 Ref 指向本问题）的状态
+  [SUGGEST] 检查被阻塞的 task → 建议恢复为进行中
   [CHECK] 若由 Risk 转化而来 → 检查原 Risk 状态是否需要同步
 
 Issue Owner 变更 →
-  [AUTO] 更新 personal-todo-index 中该 issue 的 Owner 字段
+  [AUTO] 更新待办文件中该 issue 关联待办的 Owner 字段
 
 ### 9.1 关闭确认佐证强制要求
 
 > 本约束适用于 AI 在 WF-1/WF-2 等流程中建议关闭 Risk 或 Issue 实体时。§9 主体定义关闭后的级联动作，本节定义关闭建议本身的输出质量要求，两者互补。
 
-当级联传播涉及 Risk 或 Issue 的关闭建议（状态 → closed / mitigated / resolved）时，AI 必须在 SUGGEST 动作中显式列出：
+当级联传播涉及 Risk 或 Issue 的关闭建议（状态 → 已关闭 / 已缓解 / 已解决）时，AI 必须在 SUGGEST 动作中显式列出：
 
 1. **候选关闭项编号**：Risk ID 或 Issue ID
-2. **关闭佐证**：具体说明为什么可以关闭（哪个关联 Task 已 done / 哪个触发条件已消除 / 用户明确确认已解决）
-3. **关联影响**：关闭后是否影响其他 open 实体
+2. **关闭佐证**：具体说明为什么可以关闭（哪个关联 Task 已完成 / 哪个触发条件已消除 / 用户明确确认已解决）
+3. **关联影响**：关闭后是否影响其他开放实体
 
 格式：
 
 ```
 建议关闭：
-1. R-20260810-001（佐证：关联任务 T-20260810-003 已 done，触发条件已消除）
+1. R-20260810-001（佐证：关联待办 TD-CJJ-20260810-003 已完成，触发条件已消除）
 2. I-20260811-002（佐证：用户确认问题已解决，日报 2026-08-14 提及）
 ```
 

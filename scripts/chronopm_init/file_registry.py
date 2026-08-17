@@ -2,9 +2,11 @@
 """ChronoPM 项目文件生成注册。
 
 职责：生成工作区内各类标准文件（版本文件、迁移日志、项目简报、
-上下文、迭代登记册、AI 日志、经验库、项目级规则、输出物目录、
+上下文、AI 日志、经验库、项目级规则、输出物目录、
 领域词库、README）。函数体在 CR-20260810-001 中由
 scripts/init_workspace.py 原样迁移，保证行为零变化。
+v2.0.0 待办体系重构：迭代登记册函数删除（PLAN 文件由 AI 按需创建），
+内嵌文案中的 board/里程碑板/旧索引路径全部替换为新体系路径。
 """
 
 import json
@@ -192,11 +194,11 @@ author: AI辅助生成
 |---|---|---|---|---|---|
 {sub_table}
 
-## 3. 迭代概览
+## 3. 计划概览
 
-> 仅放一行摘要，明细见各子项目 `plans/iteration-register.md`。
+> 仅放一行摘要，明细见各子项目 `plans/PLAN-NNN-{{name}}.md` 计划文件。
 
-{sub_table if is_portfolio else "- [项目名称]：0 个迭代 / 0 个需求 / 0 名资源"}
+{sub_table if is_portfolio else "- [项目名称]：0 个计划 / 0 个需求 / 0 名资源"}
 
 ## 4. 团队核心成员
 
@@ -223,13 +225,13 @@ author: AI辅助生成
 
 | 内容类型 | 目标文件 |
 |---|---|
-| 人员变动 / 请假 / 借调 | `portfolio/resources/transfer-log.md` + `resource-register.md` |
+| 人员变动 / 请假 / 借调 | `projects/{{子项目}}/resources/transfer-log.md` + `resource-register.md`（跨项目时同步 portfolio/resources/ 只读索引指针） |
 | 新需求 / 需求变更 | `projects/{{子项目}}/requirements/requirement-register.md` 或 `change-log.md` |
-| 任务进展 / 任务完成 | `projects/{{子项目}}/tasks/board.md` |
-| 风险识别 | `projects/{{子项目}}/risks/risk-register.md`（项目集级 → `portfolio/risks/`）|
+| 任务进展 / 任务完成 | `projects/{{子项目}}/todos/{{日期}}/{{执行人}}.md` |
+| 风险识别 | `projects/{{子项目}}/risks/risk-register.md`（项目集级 → `portfolio/risks/risk-register.md`）|
 | 问题 / 阻塞 | `projects/{{子项目}}/issues/issue-register.md` |
 | 决策 / 结论 | `projects/{{子项目}}/decisions/decision-log.md` |
-| 里程碑变更 | `projects/{{子项目}}/milestones/milestone-board.md` |
+| 里程碑变更 | `projects/{{子项目}}/plans/PLAN-NNN-{{name}}.md`（里程碑 = WP，is_milestone=true）|
 | 成本 / 预算变动 | `projects/{{子项目}}/plans/budget.md`（项目集级 → `portfolio/plans/budget.md`）|
 | 日报归档 | `projects/{{子项目}}/reports/daily/` |
 | 会议纪要 | `projects/{{子项目}}/meetings/`（跨项目 → `portfolio/meetings/`）|
@@ -328,16 +330,6 @@ status: 草稿
 ## 备注
 """
     context_path.write_text(context_content, encoding="utf-8")
-
-
-def create_iteration_register(base_dir: Path, project_name: str, is_portfolio: bool = False):
-    """创建迭代登记册文件"""
-    register_path = base_dir / "plans" / "iteration-register.md"
-    if register_path.exists():
-        return
-
-    templates_dir = get_templates_dir()
-    copy_template(templates_dir, register_path, "iteration-register-template.md")
 
 
 def create_ai_log(base_dir: Path, name: str, scope: str = "project"):
@@ -551,13 +543,13 @@ ai/
 │   ├── canonical/                 # Canonical（跨源归并）
 │   └── atoms/                     # ATOM 三级索引（L1/L2/L3）
 ├── plans/                         # 计划类事实源
+│   ├── PLAN-NNN-{{name}}.md      # PLAN 计划文件（含 WP 粗规划表，AI 按需创建）
 │   ├── progress-plan.md
 │   └── budget.md
-├── milestones/                    # 里程碑
-│   └── milestone-board.md
-├── tasks/                         # 任务管理
-│   ├── board.md
-│   └── backlog.md
+├── todos/                         # 待办（执行状态唯一事实源）
+│   └── {{YYYY-MM-DD}}/            # 每日一目录
+│       ├── _index.md              # 绑定文件（当日参与人员索引）
+│       └── {{执行人}}.md          # 每人每日待办文件
 ├── meetings/                      # 会议纪要
 ├── reports/                       # 报告
 │   ├── daily/                     # 日报
@@ -573,11 +565,11 @@ ai/
 
 ## 事实源文件
 
-- `tasks/board.md` - 任务状态
+- `todos/{{YYYY-MM-DD}}/{{执行人}}.md` - 待办文件（执行状态唯一事实源）
+- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（WP 粗规划表，唯一计划编排事实源）
 - `risks/risk-register.md` - 风险登记册
 - `issues/issue-register.md` - 问题登记册
 - `decisions/decision-log.md` - 决策记录
-- `milestones/milestone-board.md` - 里程碑状态
 - `plans/progress-plan.md` - 进度计划
 - `plans/budget.md` - 预算与 P&L
 - `requirements/requirement-register.md` - 需求登记册
@@ -591,10 +583,10 @@ ai/
 
 | 场景 | 必须加载 | 可选加载 |
 |------|----------|----------|
-| 日报处理 | 00 + 01 + 06 | 03、04、07 |
-| 会议纪要处理 | 00 + 02 + 06 | 03、04、07、08 |
-| 需求评审/变更 | 00 + 07 + 08 + 06 | 03 |
-| 任务看板更新 | 00 + 03 + 06 | - |
+| 日报处理 | 00 + 01 + 06 | 04、07 |
+| 会议纪要处理 | 00 + 02 + 06 | 04、07、08 |
+| 需求评审/变更 | 00 + 07 + 08 + 06 | - |
+| 待办更新 | 00 + 06 | - |
 | 风险评估 | 00 + 04 | - |
 | 项目状态查询 | 00 + 05 | 按问题类型按需加载 |
 
@@ -659,7 +651,7 @@ ai/
 │   ├── reports/
 │   │   └── weekly/               # 项目集汇总周报
 │   ├── risks/
-│   │   └── board.md              # 跨项目风险看板
+│   │   └── risk-register.md       # 跨项目风险登记册
 │   ├── plans/
 │   │   └── budget-summary.md     # 整体 P&L
 │   ├── requirements/               # 项目集级跨源需求归集（RI）
@@ -667,9 +659,9 @@ ai/
 │   │   ├── source-type-registry.md  # 源类型登记（RI）
 │   │   ├── canonical/             # Canonical 跨源归并
 │   │   └── atoms/                 # ATOM 三级索引（L1/L2/L3）
-│   ├── resources/
-│   │   ├── resource-register.md  # 人员资源当前状态
-│   │   └── transfer-log.md       # 人员流转历史
+│   ├── resources/               # v2.0.0 零数据源：项目集层只留只读索引
+│   │   ├── shared-resource-index.md  # 跨项目共享资源索引（指针，非事实源）
+│   │   └── transfer-index.md    # 跨项目人员流转索引（指针，非事实源）
 │   ├── meetings/                 # 跨项目会议纪要
 │   └── logs/
 ├── projects/                      # 各子项目管理文件
@@ -681,31 +673,35 @@ ai/
 
 ### 项目集级
 - `portfolio/context/project-index.md` - 子项目索引
-- `portfolio/risks/board.md` - 跨项目风险看板
+- `portfolio/risks/risk-register.md` - 跨项目风险登记册
 - `portfolio/plans/budget-summary.md` - 整体 P&L
-- `portfolio/resources/resource-register.md` - 人员资源当前状态
-- `portfolio/resources/transfer-log.md` - 人员流转历史
+- `portfolio/resources/shared-resource-index.md` - 跨项目共享资源索引（只读指针，非事实源）
+- `portfolio/resources/transfer-index.md` - 跨项目人员流转索引（只读指针，非事实源）
 - `portfolio/requirements/contract-register.md` - 合同登记册（RI 合同作用域范围判定入口，CR-20260813-002）
 - `portfolio/requirements/source-type-registry.md` - 源类型登记（项目集级 RI）
 
 ### 子项目级（每个子项目）
-- `tasks/board.md` - 任务状态
+- `todos/{{YYYY-MM-DD}}/{{执行人}}.md` - 待办文件（执行状态唯一事实源）
+- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（里程碑 = WP，is_milestone=true）
 - `risks/risk-register.md` - 风险登记册
 - `issues/issue-register.md` - 问题登记册
-- `milestones/milestone-board.md` - 里程碑状态
 - `plans/budget.md` - 预算与 P&L
 - `requirements/requirement-register.md` - 需求登记册
 - `requirements/change-log.md` - 需求变更记录
 - `requirements/source-type-registry.md` - 源类型登记（子项目级 RI）
+- `resources/resource-register.md` - 人员资源当前状态（v2.0.0 事实源）
+- `resources/transfer-log.md` - 人员流转历史（v2.0.0 事实源）
 
 ## 资源管理说明
 
-人员资源采用**状态与历史分离**模式：
+v2.0.0 项目集层零数据源：人员资源事实源一律下放到子项目，项目集层只留只读指针索引（见 09 号 §5）：
 
 | 文件 | 定位 | 更新方式 |
 |------|------|----------|
-| `portfolio/resources/resource-register.md` | 当前状态 | 覆盖更新 |
-| `portfolio/resources/transfer-log.md` | 流转历史 | 只追加 |
+| `projects/{{子项目}}/resources/resource-register.md` | 当前状态（事实源） | 覆盖更新 |
+| `projects/{{子项目}}/resources/transfer-log.md` | 流转历史（事实源） | 只追加 |
+| `portfolio/resources/shared-resource-index.md` | 跨项目共享人员指针索引 | 同步维护 |
+| `portfolio/resources/transfer-index.md` | 跨项目流转指针索引 | 同步维护 |
 
 资源 ID：`RES-NNN`（资源）、`RTF-YYYYMMDD-NNN`（流转记录）
 
@@ -719,12 +715,12 @@ ai/
 
 | 场景 | 必须加载 | 可选加载 |
 |------|----------|----------|
-| 日报处理 | 00 + 01 + 06 | 03、04、07、09 |
+| 日报处理 | 00 + 01 + 06 | 04、07、09 |
 | 项目集周报 | 00 + 01 + 09 + 06 | 04 |
-| 会议纪要处理 | 00 + 02 + 06 | 03、04、07、08 |
-| 需求评审/变更 | 00 + 07 + 08 + 06 | 03 |
-| 任务看板更新 | 00 + 03 + 06 | - |
-| 风险评估 | 00 + 04 | 09（跨项目风险） |
+| 会议纪要处理 | 00 + 02 + 06 | 04、07、08 |
+| 需求评审/变更 | 00 + 07 + 08 + 06 | - |
+| 待办更新 | 00 + 06 | - |
+| 风险评估 | 00 + 04 | 09（跨项目风险）|
 | 项目状态查询 | 00 + 05 | 09（跨项目查询） |
 | 资源管理 | 00 + 09 + 06 | 05（资源查询） |
 
@@ -747,7 +743,9 @@ AI 生成的所有管理文件统一存放在 `ai/` 目录下，**严禁在业�
 
 | 前缀 | 含义 | 格式 |
 |------|------|------|
-| T- | 任务 | T-YYYYMMDD-NNN |
+| TD- | 待办 | TD-{{人名缩写}}-YYYYMMDD-NNN |
+| PLAN- | 计划文件 | PLAN-NNN-{{name}} |
+| WP- | 工作包 | WP-NNN |
 | R- | 风险 | R-YYYYMMDD-NNN |
 | I- | 问题 | I-YYYYMMDD-NNN |
 | MTG- | 会议 | MTG-YYYYMMDD-NNN |

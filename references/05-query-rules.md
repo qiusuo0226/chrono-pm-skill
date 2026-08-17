@@ -31,25 +31,25 @@
 
 | 问题类型 | 示例 | 需读取的事实源 |
 |----------|------|----------------|
-| 进度查询 | "项目进展怎么样？" | tasks/board.md, milestones/milestone-board.md, plans/progress-plan.md |
+| 进度查询 | “项目进展怎么样？” | todos/{date}/ 待办文件, plans/progress-plan.md |
 | 风险查询 | "当前有哪些高风险？" | risks/risk-register.md |
-| 问题查询 | "有什么阻塞？" | issues/issue-register.md, tasks/board.md（blocked状态） |
-| 任务查询 | "张三在做什么？" | tasks/board.md（按 Owner 筛选） |
+| 问题查询 | “有什么阻塞？” | issues/issue-register.md, todos/{date}/ 待办文件（已阻塞状态） |
+| 任务查询 | “张三在做什么？” | todos/{date}/ 待办文件（按 Owner 筛选） |
 | 需求查询 | "需求完成多少了？" | requirements/requirement-register.md |
 | 成本查询 | "预算执行情况？" | plans/budget.md |
 | 决策查询 | "上次为什么决定用A方案？" | decisions/decision-log.md |
-| 里程碑查询 | "M02什么时候能过？" | milestones/milestone-board.md, tasks/board.md（按 Milestone Ref 筛选） |
+| 里程碑查询 | “M02什么时候能过？” | PLAN 文件（WP 所属阶段）, todos/{date}/ 待办文件 |
 | 周报查询 | "本周周报呢？" | reports/weekly/ 当前周文件 |
-| 资源查询 | "团队有几个人？""张三现在在哪个项目？" | portfolio/resources/resource-register.md, transfer-log.md |
-| 资源流转查询 | "张三什么时候调走的？""本周人员变动" | transfer-log.md（按日期筛选） |
-| 跨项目查询 | "三个项目整体进度如何？""哪个项目风险最高？" | ai/portfolio/ 下各子项目汇总 + portfolio/resources/ |
-| 计划变更计数 | "XX 变更了几次？" | tasks/board.md（Plan Change Count，单文件） |
-| 延期计数 | "XX 延期了几次？" | tasks/board.md（Delay Count，单文件） |
-| 超期状态 | "现在哪些任务超期了？""还有什么没做完的？" | tasks/board.md + 预建索引（见 §6.5/§6.6） |
+| 资源查询 | "团队有几个人？""张三现在在哪个项目？" | 子项目 resources/resource-register.md, transfer-log.md（跨项目共享人员参照 portfolio/resources/shared-resource-index.md） |
+| 资源流转查询 | "张三什么时候调走的？""本周人员变动" | 子项目 transfer-log.md（按日期筛选） |
+| 跨项目查询 | "三个项目整体进度如何？""哪个项目风险最高？" | ai/projects/ 下各子项目汇总 + portfolio/resources/ 只读索引 |
+| 计划变更计数 | “XX 变更了几次？” | todos/{date}/ 待办文件（计划变更次数） |
+| 延期计数 | “XX 延期了几次？” | todos/{date}/ 待办文件（延期次数） |
+| 超期状态 | “现在哪些任务超期了？”“还有什么没做完的？” | todos/{date}/ 待办文件（见 §6.5/§6.6） |
 
 ### 2.0a 查询默认过滤行为
 
-任务/待办类查询（"XX 在做什么""还有什么没做完""任务列表"）默认仅输出**未完成项**（Status ≠ done / cancelled）。用户明确说"全部""含已完成""所有任务"时输出全部。
+任务/待办类查询（"XX 在做什么""还有什么没做完""任务列表"）默认仅输出**未完成项**（Status ≠ 已完成 / 已取消）。用户明确说"全部""含已完成""所有任务"时输出全部。
 
 ### 2.1 项目集模式查询路由
 
@@ -59,7 +59,7 @@
 |---|---|---|
 | 提到具体子项目名（「全链通」「企业通」） | 单子项目 | 读 `ai/projects/{子项目}/` 对应事实源 |
 | 提到「整体」「所有项目」「全局」「项目集」 | 项目集级 | 读 `ai/portfolio/` 汇总 + 各子项目关键事实源 |
-| 提到「人员」「资源」「人手」「团队」 | 资源级 | 读 `portfolio/resources/resource-register.md` + `transfer-log.md` |
+| 提到「人员」「资源」「人手」「团队」 | 资源级 | 读各子项目 `projects/{子项目}/resources/resource-register.md` + `transfer-log.md`（跨项目共享人员先查 `portfolio/resources/shared-resource-index.md` 定位所属子项目） |
 | 提到「成本」「预算」「P&L」且未限定子项目 | 项目集成本 | 读各子项目 `plans/budget.md` + `portfolio/plans/budget-summary.md` |
 | 未限定且无法判断 | 项目集级（默认） | 提示确认范围，或默认返回项目集整体概要 |
 
@@ -87,26 +87,26 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 | 8 | 待协调事项 | 跨项目/需管理层协调的事项 |
 | 9 | 无计划项提醒 | 明确标注哪些子项目/人员无直接计划项 |
 
-输出模板见 `assets/templates/pm-daily-todo-template.md`。
+输出结构按上表 9 章节组织（v2.0.0 起无独立输出模板，章节规格即本表）。
 
-**数据读取路径（按优先级）：** ①`personal-todo-index.md`（PM 待办）→ ②`daily-todo-index.md`（全团队）→ ③各子项目 `tasks/board.md`（进度）→ ④`risks/risk-register.md`（open 风险）→ ⑤`issues/issue-register.md`（未关闭问题）→ ⑥`milestones/milestone-board.md`（里程碑）→ ⑦`portfolio/resources/resource-register.md`（资源变动）→ ⑧各子项目最近日报索引 → ⑨各子项目最近会议纪要。
+**数据读取路径（按优先级）：** ①PM 当日待办文件 `todos/{date}/{PM姓名}.md`（PM 待办）→ ②当日绑定文件 `todos/{date}/_index.md`（全团队入口）→ ③各子项目 `todos/{date}/{owner}.md` 待办文件（进度）→ ④`risks/risk-register.md`（open 风险）→ ⑤`issues/issue-register.md`（未关闭问题）→ ⑥PLAN 文件（WP 所属阶段）→ ⑦各子项目 resource 相关文件（资源变动）→ ⑧各子项目最近日报缓存 → ⑨各子项目最近会议纪要。
 
-**禁止行为：** 只列 PM 个人任务就结束；不读任务看板就答"没有相关任务"；不展示团队成员明日计划。
+**禁止行为：** 只列 PM 个人任务就结束；不读待办文件就答"没有相关任务"；不展示团队成员明日计划。
 
 ### Quick Query 路由表
 
 | 用户问题 | 优先读取 | 兜底读取 | 禁止 |
 |---|---|---|---|
-| 我明天/今天的待办 | `personal-todo-index.md` + `daily-todo-index.md` | 相关项目 `tasks/board.md` + 最近日报索引 | 全量扫描所有日报/会议 |
-| 明天大家做什么 | `daily-todo-index.md` | `projects/*/tasks/board.md` | 创建临时脚本扫描 |
-| 本周重点是什么 | `weekly-todo-index.md` | 最近周报 + 任务看板 | 全量扫描历史周报 |
-| 某人的任务 | `personal-todo-index.md`（按 Owner 筛选） | `projects/*/tasks/board.md` | 逐日扫描该人日报 |
-| 项目进展如何 | `tasks/board.md` + `milestones/milestone-board.md` | 最近日报索引 | 全量扫描所有过程记录 |
-| 当前风险 | `risks/risk-register.md`（open） | 最近周报 | 全量扫描历史周报 |
-| 当前问题 | `issues/issue-register.md`（未关闭） | `tasks/board.md`（blocked） | 全量扫描历史日报 |
-| 资源情况 | `portfolio/resources/resource-register.md` | `transfer-log.md` | - |
-| 变更了几次/延期了几次 | `tasks/board.md`（Plan/Delay Count，单文件） | Change Log（计数缺失时） | 扫描快照/日报 |
-| 现在哪些任务超期 | `tasks/board.md` + 预建索引（daily-todo-index） | 最近日报索引 | 扫描日报原文 |
+| 我明天/今天的待办 | PM 当日待办文件 `todos/{date}/{PM姓名}.md` + 绑定文件 `todos/{date}/_index.md` | 相关子项目 `todos/{date}/` 待办文件 | 全量扫描所有日报/会议 |
+| 明天大家做什么 | 绑定文件 `todos/{date}/_index.md` → 各人待办文件 | `projects/*/todos/{date}/` 待办文件 | 创建临时脚本扫描 |
+| 本周重点是什么 | `todos/{date}/` 待办文件（按本周 Due Date 过滤） | 最近周报 + PLAN 文件 | 全量扫描历史周报 |
+| 某人的任务 | `projects/*/todos/{date}/{owner}.md` 待办文件（按 Owner） | 绑定文件 `_index.md` 定位参与日期 | 逐日扫描该人日报 |
+| 项目进展如何 | `todos/{date}/` 待办文件 + PLAN 文件 | 最近日报索引 | 全量扫描所有过程记录 |
+| 当前风险 | `risks/risk-register.md`（开放/监控中） | 最近周报 | 全量扫描历史周报 |
+| 当前问题 | `issues/issue-register.md`（未关闭） | `todos/{date}/` 待办文件（已阻塞） | 全量扫描历史日报 |
+| 资源情况 | 子项目 resource 相关文件 | `transfer-log.md` | - |
+| 变更了几次/延期了几次 | `todos/{date}/` 待办文件（计划变更次数/延期次数） | Change Log（计数缺失时） | 扫描快照/日报 |
+| 现在哪些任务超期 | `todos/{date}/` 待办文件 | 最近日报索引 | 扫描日报原文 |
 | 某需求在不在合同/招投标/立项范围内（范围判定） | `contract-register.md`（Step0 前置路由）→ `requirements/atoms/atom-index.md`(L1) → 目标 `{category}-index.md`(L2) → 命中 ATOM 全文(L3) → `requirements/canonical/canonical-index.md` | 命中 ATOM 全文(L3) → `canonical-index.md` | 全量扫描所有 ATOM/category 文件 |
 | 某需求在不在合同 N 范围内（指定合同） | `contract-register.md` 定位合同 scope_level → 对应层级（portfolio 或子项目）`canonical/` + 三级索引 | 直接进子项目 atoms/canonical | 全量扫描所有 ATOM/category 文件 |
 | 需求详情/双视图（"某需求具体做什么/怎么实现/原型在哪"） | `requirements/requirement-register.md`（REQ 条目：功能描述 + 实现视图 + 原型/文档链接）→ 有 Canonical ID 时读 canonical 派生业务视图 | 关联 ATOM 全文（L3） | 与范围判定路由（上一行）区分：本行查需求实体详情，不走 contract-register |
@@ -131,12 +131,12 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 
 ### 需求上下文加载规范（双视图，CR-20260815-001）
 
-WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX-NNN）时，按 07 号 §8.10.4 链路加载需求上下文：
+WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX-NNN）时，按 07 号 §8.10.4 链路加载需求上下文：
 
 1. 读取 REQ 条目：标题 + 功能描述（业务上下文，≤2 行）+ 实现视图（≤1 行）+ 原型/文档链接（≤1 行）。
 2. REQ 有 Canonical ID 时，可补充派生业务视图（business 类 ATOM norm_text 聚合，见 07 号 §8.10.1）。
-3. **性能控制**：单次最多加载 10 条 REQ；超出时只加载当轮直接涉及的 Task 对应 REQ；字段缺失降级输出已有字段，不阻塞。
-4. 输出示例：`📋 需求上下文：T-XXX「完成订单列表筛选接口」→ REQ-ORD-012｜业务：支持按状态筛选查询｜实现：OrderService.queryByStatus()｜原型：路径/链接`。
+3. **性能控制**：单次最多加载 10 条 REQ；超出时只加载当轮直接涉及的待办对应 REQ；字段缺失降级输出已有字段，不阻塞。
+4. 输出示例：`📋 需求上下文：TD-XXX「完成订单列表筛选接口」→ REQ-ORD-012｜业务：支持按状态筛选查询｜实现：OrderService.queryByStatus()｜原型：路径/链接`。
 
 ### Quick Update 路由表
 
@@ -145,12 +145,12 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 | 用户指令 | WF 路径 | 核心读文件 | 核心写文件 | 禁止 |
 |---|---|---|---|---|
-| 更新某人的待办/状态 | WF-1 | personal-todo-index + board + issue/risk-register | todo-index + board + register + pending-changes | 不加载 01/06/10 规则文件 |
-| 提交日报/个人进展 | WF-2 | project-context + board + requirement-register（仅 Task 带 Requirement Ref 时，按 §2.5 需求上下文加载规范） | 日报 + todo-index + 快照 | 不跳过待办索引同步 |
-| 提交会议纪要 | WF-3 | 纪要原文 + board + register | 纪要归档 + 事实源建议清单 | 不跳过行动项提取 |
-| 需求变更 | WF-4 | requirement-register + board | change-log + 影响分析 | 不跳过影响分析 |
+| 更新某人的待办/状态 | WF-1 | 待办文件 + issue/risk-register | 待办文件 + register + pending-changes | 不加载 01/06/10 规则文件 |
+| 提交日报/个人进展 | WF-2 | project-context + 待办文件 + requirement-register（仅待办带 Requirement Ref 时，按 §2.5 需求上下文加载规范） | 待办文件（工作日志段） | 不跳过待办状态同步 |
+| 提交会议纪要 | WF-3 | 纪要原文 + 待办文件 + register | 纪要归档 + 事实源建议清单 | 不跳过行动项提取 |
+| 需求变更 | WF-4 | requirement-register + 待办文件 | change-log + 影响分析 | 不跳过影响分析 |
 | 写周报/生成周报 | WF-5 | project-index + 各子项目事实源 | 周报 + 项目集汇总周报 | 不遗漏子项目 |
-| 人员变动/资源流转 | WF-6 | resource-register + board | transfer-log + register + todo-index | 不自动改 register（须确认） |
+| 人员变动/资源流转 | WF-6 | resource 相关文件 + 待办文件 | transfer-log + register + 待办文件（结转/转出） | 不自动改 register（须确认） |
 
 ### 查询性能规则
 
@@ -167,22 +167,22 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 **触发词：** 往日计划、历史计划、过去某天、之前某天、某月某日原计划、实际完成、计划完成情况、计划偏差、计划有没有完成、上周计划对照、某人上周每天计划。
 
-**查询顺序：** ①读 `ai/portfolio/todos/history-index.md` → ②定位 `snapshots/daily/{date}.md` 或 `snapshots/weekly/{week}.md` → ③查实际完成读 `actuals/` 对应文件 → ④快照/摘要不存在则读对应月日报索引 → ⑤用户确认后才允许扫描日报明细。
+**查询顺序：** ①读对应日期待办文件 `todos/{date}/`（升级后日期）→ ②计划快照 `snapshots/daily/{date}.md` 或 `snapshots/weekly/{week}.md`（导入计划为 `imported-{date}.md`）→ ③查实际完成读 `actuals/` 对应文件 → ④快照/摘要不存在则读对应月日报缓存 → ⑤用户确认后才允许扫描日报明细。
 
 | 用户问题 | 读取路径 |
 |---|---|
-| 8月10日大家原计划做什么 | `history-index.md` → `snapshots/daily/20260809.md` |
-| 8月10日实际做了什么 | `actuals/daily/20260810.md` |
+| 8月10日大家原计划做什么 | `snapshots/daily/20260809.md`（导入计划为 `imported-{date}.md`）|
+| 8月10日实际做了什么 | `actuals/daily/20260810.md`（升级后日期 → `todos/2026-08-10/` 工作日志段）|
 | 8月10日计划完成了吗 | `snapshots/daily/20260809.md` + `actuals/daily/20260810.md` |
 | 上周计划偏差 | `snapshots/weekly/{week}.md` + `actuals/weekly/{week}.md` |
-| 某人过去一周每天计划 | `history-index.md` → 多个 daily snapshots |
-| 导入的那批计划 | `history-index.md` → `snapshots/daily/imported-{date}.md` |
+| 某人过去一周每天计划 | 多个 `snapshots/daily/{date}.md`（升级后日期 → 对应日待办文件）|
+| 导入的那批计划 | `snapshots/daily/imported-{date}.md` |
 
-**热/冷数据分离：** `daily-todo-index.md` 只存近期热数据（过去 7 天 + 未来 14 天），更早历史转向 `history-index.md` + `snapshots/` + `actuals/`。详见 `15-snapshot-rules.md`。
+**热/冷数据分离：** 当前/近期待办直接读 `todos/{date}/` 待办文件（活数据），更早历史转向 `snapshots/` + `actuals/`（冻结数据）。归档日报读取协议（升级前后日期拼接）见 `15-snapshot-rules.md` §3.2。
 
-### 索引缺失时的处理
+### 待办文件缺失时的处理
 
-发现快速待办索引缺失时，提示"我建议先重建待办索引"，可扫描范围：当前任务看板、最近 7 天日报索引、最近 5 次会议纪要、本周计划/周报，并询问是否现在重建。
+发现当日待办文件/绑定文件缺失时，提示"当日待办文件尚未创建，是否现在初始化"，可参考信息：PLAN 文件 WP 表、最近 7 天待办文件（结转候选）、最近 5 次会议纪要行动项、本周计划/周报，并询问是否现在创建。
 
 ### 禁止默认临时脚本规则
 
@@ -192,20 +192,20 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 ## 3. 信息检索优先级
 
-1. 优先读事实源文件（board/register/log）——当前状态真实来源。
+1. 优先读事实源文件（待办文件/register/log）——当前状态真实来源。
 2. 事实源无信息再查过程记录（日报、会议纪要）。
 3. 过程记录与事实源矛盾时以事实源为准，但须标注矛盾并提示项目经理确认。
 4. 记忆有而事实源无的信息须标注"记忆中有但事实源中未记录"。
 
 ### (3)a 里程碑终态事件豁免
 
-当过程记录（日报、会议纪要、评审记录）中包含**里程碑级终态事件**（如"评审通过""验收通过""测试通过""上线完成""联调通过""集成验证通过"等，完整列表见 `00-pm-main-rules.md` §10.2）且该事件结论与事实源（任务板）状态矛盾时：
+当过程记录（日报、会议纪要、评审记录）中包含**里程碑级终态事件**（如"评审通过""验收通过""测试通过""上线完成""联调通过""集成验证通过"等，完整列表见 `00-pm-main-rules.md` §10.2）且该事件结论与事实源（待办文件）状态矛盾时：
 
 1. **不适用**本条 (3)"以事实源为准"规则。
 2. AI 应：
    - 基于过程记录中的终态事件推导结论（推导链见 `00-pm-main-rules.md` §10.3）；
-   - 在输出中标注矛盾："⚠️ 任务板显示 {状态A}，但 {过程记录} 记录 {终态事件}，推导为 {结论}"；
-   - 输出 SUGGEST 建议同步任务板状态（走 `00-pm-main-rules.md` §8a 强制呈现）。
+   - 在输出中标注矛盾："⚠️ 待办文件显示 {状态A}，但 {过程记录} 记录 {终态事件}，推导为 {结论}"；
+   - 输出 SUGGEST 建议同步待办状态（走 `00-pm-main-rules.md` §8a 强制呈现）。
 3. 推导结论**不直接修改**事实源，仅通过 SUGGEST 建议同步。
 4. 项目可在 `context/entity-registry.md` §3 扩展终态事件列表。
 
@@ -224,7 +224,7 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 ### 4.2 回答原则
 
-先结论后展开；状态/进度/成本用表格呈现；每个关键数据点标注来源；信息矛盾不可隐藏须显式标注；信息不足直接说明"当前事实源中无此信息"不推测填充；**查询类回答不输出"建议更新清单"**（除非用户明确要求"帮我更新"）。聚合计数/超期查询除遵循本节外，另见 §6.5/§6.6 及输出模板 `delay-stats-template.md`。
+先结论后展开；状态/进度/成本用表格呈现；每个关键数据点标注来源；信息矛盾不可隐藏须显式标注；信息不足直接说明"当前事实源中无此信息"不推测填充；**查询类回答不输出"建议更新清单"**（除非用户明确要求"帮我更新"）。聚合计数/超期查询除遵循本节外，另见 §6.5/§6.6（输出为计数表/超期清单，字段见该两节）。
 
 ---
 
@@ -236,7 +236,7 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 | 维度 | 评估指标 | 数据来源 |
 |------|----------|----------|
-| 进度健康 | 里程碑偏差、任务延期率 | milestones/, tasks/ |
+| 进度健康 | 里程碑型 WP 偏差、待办延期率 | PLAN 文件（WP is_milestone）, todos/{date}/ 待办文件 |
 | 成本健康 | CPI、预算执行率 | plans/budget.md |
 | 风险健康 | 高/极高风险数量 | risks/risk-register.md |
 | 质量健康 | 未解决问题数、P0/P1问题数 | issues/issue-register.md |
@@ -258,9 +258,9 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 | 查询意图 | 读取文件 | 输出格式 |
 |---|---|---|
-| 当前团队全貌 | `portfolio/resources/resource-register.md` | 按子项目分组的资源表格（姓名/角色/状态/分配方式） |
-| 某人当前状态 | `resource-register.md`（按姓名） | 单人信息卡（角色/所属项目/分配方式/B角/风险等级） |
-| 某人流转历史 | `transfer-log.md`（按姓名） | 时间线（流转日期/类型/来源项目/目标项目/原因） |
+| 当前团队全貌 | 各子项目 `resources/resource-register.md`（跨项目共享人员参照 `portfolio/resources/shared-resource-index.md`） | 按子项目分组的资源表格（姓名/角色/状态/分配方式） |
+| 某人当前状态 | 先查 `shared-resource-index.md` 定位所属子项目，再读该子项目 `resource-register.md`（按姓名） | 单人信息卡（角色/所属项目/分配方式/B角/风险等级） |
+| 某人流转历史 | 所属子项目 `transfer-log.md`（按姓名；跨项目流转参照 `portfolio/resources/transfer-index.md`） | 时间线（流转日期/类型/来源项目/目标项目/原因） |
 | 本周人员变动 | `transfer-log.md`（按日期本周） | 流转记录表 + 影响分析 |
 | 项目人手是否足够 | `resource-register.md`（按项目）+ 09 容忍度规则 | 人力配置表 + 容忍度评估 + 风险提示 |
 
@@ -272,12 +272,12 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 | 优先级 | 数据来源 | 用途 | 说明 |
 |---|---|---|---|
-| 1（主源） | `portfolio/resources/resource-register.md` | 人员当前状态 | 查询状态默认只读此文件 |
-| 2（历史） | `portfolio/resources/transfer-log.md` | 流转历史追溯 | 仅查历史变动时读取 |
+| 1（主源） | `projects/{子项目}/resources/resource-register.md` | 人员当前状态 | v2.0.0 零数据源：事实源在子项目，查询状态默认读该人所属子项目的此文件 |
+| 2（历史） | `projects/{子项目}/resources/transfer-log.md` | 流转历史追溯 | 仅查历史变动时读取；跨项目流转参照 `portfolio/resources/transfer-index.md` |
 | 3（投影） | `projects/{子项目}/context/project-context.md` | 项目背景团队列表 | 是 register 投影，非独立事实源 |
-| 4（候选） | `reports/daily/personal/` 日报目录 | 参与信号/候选证据 | 只能产生候选变更，不能自动认定为正式成员 |
+| 4（候选） | `todos/{date}/` 待办文件（工作日志段） | 参与信号/候选证据 | 只能产生候选变更，不能自动认定为正式成员 |
 
-**查询规则：** ①"某项目有哪些人/某人在哪/团队几人"默认只读 `resource-register.md`，不主动扫日报/transfer-log/project-context；②"参与子项目"字段存在且包含目标项目则直接返回；③字段为空/不存在（旧工作区）可从 `transfer-log.md` 推断但**标注"推断，未确认"**；④register 不存在则读 `project-context.md`，标注来源与可能不准确；⑤register 和 context 均不存在才扫日报目录，标注"候选名单，未经确认"；⑥全无数据则输出"无法确定人员信息，建议初始化 resource-register.md"，不编造；⑦**禁止**：不得将日报出现过的人员自动认定为正式成员，不得未经确认自动修改 register。
+**查询规则：** ①"某项目有哪些人/某人在哪/团队几人"默认只读 `resource-register.md`，不主动扫待办文件/transfer-log/project-context；②"参与子项目"字段存在且包含目标项目则直接返回；③字段为空/不存在（旧工作区）可从 `transfer-log.md` 推断但**标注"推断，未确认"**；④register 不存在则读 `project-context.md`，标注来源与可能不准确；⑤register 和 context 均不存在才扫待办文件（按 Owner 出现），标注"候选名单，未经确认"；⑥全无数据则输出"无法确定人员信息，建议初始化 resource-register.md"，不编造；⑦**禁止**：不得将待办文件出现过的人员自动认定为正式成员，不得未经确认自动修改 register。
 
 ### 5.5 项目集健康度查询
 
@@ -303,65 +303,65 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 | 查询意图 | 直接读取文件 | 跳过的环节 |
 |---|---|---|
 | 版本查询 | ai/.skill-version.json | 不读 SKILL.md、不读 06-file-rules |
-| 待办查询 | 优先 `personal-todo-index.md`；可辅读 `daily-todo-index.md` | 不读 SKILL.md、不读 01-daily-report-rules |
+| 待办查询 | `todos/{date}/` 待办文件；可辅读绑定文件 `_index.md` | 不读 SKILL.md、不读 01-daily-report-rules |
 | 风险列表 | `portfolio/risks/risk-register.md` 或 `projects/{子项目}/risks/` | 不读 SKILL.md、不读 04-risk-issue-rules |
 | 项目概况 | `portfolio/context/project-brief.md` 或 `projects/{子项目}/context/` | 不读 SKILL.md、不读 06-file-rules |
-| 人员状态 | `portfolio/resources/resource-register.md` | 不读 SKILL.md、不读 09-portfolio-rules |
-| 变更/延期计数 | `tasks/board.md`（单文件） | 不读 SKILL.md、不扫快照/日报 |
+| 人员状态 | 各子项目 `resources/resource-register.md`（先查 `shared-resource-index.md` 定位所属子项目） | 不读 SKILL.md、不读 09-portfolio-rules |
+| 变更/延期计数 | `todos/{date}/` 待办文件 | 不读 SKILL.md、不扫快照/日报 |
 
 **最小读取补充（B-17）：** 简单查询**不加载** `pending-changes.md`；仅当执行待确认项的确认/驳回/管理，或查询结果受待确认变更直接影响（需标注 `(待确认)`）时才加载该索引文件。
 
 ### 6.5 聚合计数路由（A 类：计划变更/延期计数）
 
 用户问"XX 变更了几次""XX 延期了几次""谁延期最多"等**聚合计数**问题时：
-1. 只读 `tasks/board.md` **单文件**，按字段聚合：`Plan Change Count`（按人/任务）、`Delay Count`（按人）。
+1. 只读 `todos/{date}/` 待办文件，按字段聚合：`计划变更次数`（按人/任务）、`延期次数`（按人）。
 2. **不扫描** `snapshots/`、`actuals/`、日报或创建临时脚本（对齐 §6.1 最小读取 + 禁止临时脚本规则）。
-3. 若 board 计数字段缺失/为 0（旧工作区），回退到 board 底部 Change Log 统计并在输出标注"推断，未确认"。
-4. 输出按人/按任务的计数表，标注数据来源为 `tasks/board.md`（采用 `assets/templates/delay-stats-template.md` 结构）。
+3. 若待办文件计数字段缺失/为 0（旧工作区），回退到待办文件底部 Change Log 统计并在输出标注“推断，未确认”。
+4. 输出按人/按任务的计数表，标注数据来源为待办文件（字段：人员/待办编号/标题/计数/最近变更时间）。
 
 **待确认口径（B-18）：** `Confirmed By: 待确认` 的记录**不参与**"已确认的计划变更次数 / 延期次数"聚合统计；聚合正文数据后，与该类记录直接相关的条目标注 `(待确认)`，使其与已确认计数区分。
 
 ### 6.6 状态查询路由（B 类：超期判定）
 
 用户问"现在哪些任务超期了""项目进度怎么样了""还有什么没做完/超期"等**状态判定**问题时，**实时计算**（非仅日报处理时）：
-1. 读取 `tasks/board.md`（当前 Due Date / Owner / Status / 计划变更确认状态）。
-2. 读取预建索引（`daily-todo-index.md` / `personal-todo-index.md`）取最近完成状态——**不得临时扫描日报原文**。
-3. 当前有效 Due Date 与今天对比：确认窗口期内（新变更未确认）按旧版 Due Date 判定；换人场景交接前归原 Owner（判定规则见 `references/03-task-board-rules.md` §5a）。
-4. 若索引 >24h 未更新，先提示"索引过期，建议重建"，不拿过期数据当结论。
-5. 输出超期清单 + 归属 + 预警项；**不写入 Delay Count 计数器**（计数与状态判定分离）。
+1. 读取 `todos/{date}/` 待办文件（当前 Due Date / Owner / Status / 计划变更确认状态）。
+2. 当日待办文件不存在时，经绑定文件 `_index.md` 定位最近一日待办文件取最近完成状态——**不得临时扫描日报原文**。
+3. 当前有效 Due Date 与今天对比：确认窗口期内（新变更未确认）按旧版 Due Date 判定；换人场景交接前归原 Owner。
+4. 若待办文件 >24h 未更新，先提示“待办文件过期，建议先更新”，不拿过期数据当结论。
+5. 输出超期清单 + 归属 + 预警项；**不写入延期次数计数器**（计数与状态判定分离）。
 
-**待确认口径（B-18）：** `Confirmed By: 待确认` 的 Due Date 视为**未确认计划**，**不参与**"已确认计划延期/超期"判定与已完成统计；在状态判定正文数据后标注 `(待确认)` 逐条提示（含原值 vs 新值）。存量 board 无 `Confirmed By` 的行按"已确认"处理。
+**待确认口径（B-18）：** `Confirmed By: 待确认` 的 Due Date 视为**未确认计划**，**不参与**“已确认计划延期/超期”判定与已完成统计；在状态判定正文数据后标注 `(待确认)` 逐条提示（含原值 vs 新值）。存量待办文件无 `Confirmed By` 的行按“已确认”处理。
 
 ### 6.7 WP 分层查询与倒排倒计时路由
 
-用户问"ITR-01 进度怎么样""本周计划做什么""今天做什么""WP-ITR01-01 做了没""倒排还剩几天""倒排每日矩阵""每个人每天干什么"等**计划分层/倒计时/倒排矩阵**问题时：
+用户问"PLAN-001 进度怎么样""本周计划做什么""今天做什么""WP-012 做了没""倒排还剩几天""倒排每日矩阵""每个人每天干什么"等**计划分层/倒计时/倒排矩阵**问题时：
 
 | 查询场景 | 数据访问 | 输出 |
 |---|---|---|
-| 迭代整体进度（ITR-NN） | 读 `plans/iteration-register.md` 对应迭代 WP 表 + board 按 WP Ref 聚合 | WP 列表 + 各 WP 进度 + 迭代总进度 |
-| 某 WP 进度（WP-ITRNN-NN） | board 单文件按 WP Ref 过滤（实时聚合，不读迭代详情） | Task 列表 + 完成比例 |
-| 今天做什么 | 优先读 `daily-todo-index.md` 热索引；溯源时按 Due Date = 今天过滤 board | 当日 Task 列表（含 WP 归属） |
-| 本周计划 | 优先读 `weekly-todo-index.md` 热索引；溯源时按本周 Due Date 过滤 board 按 WP 归集 | 按 WP 分组的 Task 列表 |
-| 倒排倒计时 | 读 `plans/iteration-register.md` 倒排元数据（锚点日期/关键路径）+ board 未完成 Task | 距截止日剩余天数 + 未完成 WP + 关键路径预警 |
+| 计划整体进度（PLAN-NNN） | 读 PLAN 文件 WP 表 + 待办文件按 WP Ref 聚合 | WP 列表 + 各 WP 进度 + 计划总进度 |
+| 某 WP 进度（WP-NNN） | 待办文件按 WP Ref 过滤（实时聚合，不读计划其他段） | 待办列表 + 完成比例 |
+| 今天做什么 | 当日待办文件 `todos/{date}/`（入口为绑定文件 `_index.md`）；溯源时按 Due Date = 今天过滤待办文件 | 当日待办列表（含 WP 归属） |
+| 本周计划 | `todos/{date}/` 待办文件按本周 Due Date 过滤，按 WP 归集 | 按 WP 分组的待办列表 |
+| 倒排倒计时 | 读 PLAN 文件倒排元数据（锚点日期/关键路径）+ 待办文件未完成待办 | 距截止日剩余天数 + 未完成 WP + 关键路径预警 |
 | 哪些任务超期 | 复用 §6.6 B 类判定（含 WP Ref 归属标注） | 超期清单 |
-| 倒排每日矩阵 | portfolio 模式：读 `portfolio/context/project-index.md` 圈定倒排涉及的子项目范围 → 遍历各子项目 `tasks/board.md`；读 `plans/iteration-register.md`（识别倒排迭代 WP 范围，若存在）；如需角色标注辅读 `resource-register.md`。single 模式：读单文件 board + iteration-register（若存在） | 人员×日期矩阵（行=Owner，列=工作日，格=Task 简述） |
+| 倒排每日矩阵 | portfolio 模式：读 `portfolio/context/project-index.md` 圈定倒排涉及的子项目范围 → 遍历各子项目 `todos/{date}/` 待办文件；读 PLAN 文件（识别倒排 WP 范围，若存在）；如需角色标注辅读 resource 相关文件。single 模式：读待办文件 + PLAN 文件（若存在） | 人员×日期矩阵（行=Owner，列=工作日，格=待办简述） |
 
 **倒排每日矩阵视图规格**：
 
-1. **行** = 倒排范围内所有 Task 的 Owner（去重），按姓名列出；如需角色信息，从 resource-register 查并括注（标注来源）
+1. **行** = 倒排范围内所有待办的 Owner（去重），按姓名列出；如需角色信息，从 resource-register 查并括注（标注来源）
 2. **列** = 从今日起至锚点日期（截止日）的每个工作日
-3. **交叉格** = Due Date 落在该列、Owner 为该行的 Task Title 简述；PM 希望在矩阵中呈现的非 Task 事项（如里程碑门禁、控制点），由 AI 在与 PM 确认后以独立行或标注列呈现，不作为默认 Task 格
-4. 无 Task 的格子标 "—"
+3. **交叉格** = Due Date 落在该列、Owner 为该行的待办标题简述；PM 希望在矩阵中呈现的非待办事项（如里程碑门禁、控制点），由 AI 在与 PM 确认后以独立行或标注列呈现，不作为默认待办格
+4. 无待办的格子标 "—"
 5. 数据必须从第 1 步圈定的数据源集合实时读取，禁止缓存或复用旧版
-6. 同一人同天 Task >5 条时，格内只列前 3 条 + "等 N 项"
+6. 同一人同天待办 >5 条时，格内只列前 3 条 + "等 N 项"
 
 **降级策略（存量工作区兼容）**：
 
-- 若 `iteration-register.md` 不存在或无倒排迭代 → 范围圈定改为"日期窗口（今日→锚点日期）+ board 中 Due Date 过滤"
-- 若 board 无 WP Ref 列 → 行按 Owner、格按 Task Title，WP 列标注"（未关联 WP）"
+- 若 PLAN 文件不存在或无倒排 WP → 范围圈定改为“日期窗口（今日→锚点日期）+ 待办文件中 Due Date 过滤”
+- 若待办文件无 WP Ref 列 → 行按 Owner、格按待办 Title，WP 列标注“（未关联 WP）”
 - 降级场景下矩阵仍可生成，仅缺少 WP 归属信息
 
-**性能约束**：WP 进度一律为 board 单文件实时聚合（不建进度索引文件）；日/周查询优先走既有热索引（索引优先原则，见 §6）；迭代登记册只读 WP 粗规划表，不扫描其他段。
+**性能约束**：WP 进度一律为待办文件实时聚合（不建进度索引文件）；日/周查询直接读待办文件（绑定文件 `_index.md` 为当日入口，索引优先原则见 §6）；PLAN 文件只读 WP 粗规划表，不扫描其他段。
 
 ---
 
@@ -369,7 +369,7 @@ WF-1/WF-2 等涉及 Task 的流程，当 Task 存在 `Requirement Ref`（REQ-XXX
 
 ### 7.1 适用范围
 
-版本/任务/风险/项目概况/日报提交状态 5 类查询的回答末尾必须标注数据来源。复杂报告类（周报、分析报告等）按原输出规范，不额外增加数据来源声明。聚合计数与超期查询标注来源 `tasks/board.md`（及所用索引）。
+版本/任务/风险/项目概况/日报提交状态 5 类查询的回答末尾必须标注数据来源。复杂报告类（周报、分析报告等）按原输出规范，不额外增加数据来源声明。聚合计数与超期查询标注来源为待办文件（及所用索引）。
 
 ### 7.2 统一格式
 

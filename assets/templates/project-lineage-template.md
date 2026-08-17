@@ -26,7 +26,7 @@ status: 草稿
 | Time Range | 时间范围 | YYYY-MM ~ YYYY-MM |
 | AI Workspace | ai 目录路径 | 绝对路径或相对路径 |
 | Relation | 与当前阶段的关系 | previous / current / next / parallel |
-| Status | 阶段状态 | planned / active / completed / suspended / cancelled |
+| Status | 阶段状态 | 已规划 / 进行中 / 已完成 / 已暂停 / 已取消 |
 | Notes | 备注 | 补充信息 |
 
 ## 阶段间衔接记录

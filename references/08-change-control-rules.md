@@ -29,7 +29,7 @@
 | B：变更影响分类 | `requirement / scope / schedule / cost / resource / plan_change` | change-log.md（本文件） | 变更影响了哪类内容 |
 
 - `plan_change` 只存在于**概念域 B**，表示"针对单任务进度/负责人的计划变更",以区别于"进度变更(schedule)"针对里程碑/整体进度。
-- 各事实源（board.md 等）的 Change Log 继续使用概念域 A，**不引入** `plan_change` 操作符——计划变更通过 `update` + 描述体现（见 `03-task-board-rules.md` §7）。
+- 各事实源（待办文件等）的 Change Log 继续使用概念域 A，**不引入** `plan_change` 操作符——计划变更通过 `update` + 描述体现。
 - 追加 `plan_change` 不改变概念域 A 的任何枚举。
 - **主动变更（proactive）不构成新概念域**：主动变更描述的是"写入确认时机"（先写后确认 vs 先确认后写），而非"变更影响了哪类内容"，故概念域 B 枚举**不新增** `proactive_change`，本枚举维持 `requirement / scope / schedule / cost / resource / plan_change` 不变。（提示性说明，见方案 3.5.6、B-10）
 
@@ -40,8 +40,8 @@
 所有变更必须走以下流程，不可跳过任何环节：
 
 ```
-变更请求提出 → 登记到 change-log.md（submitted）
-  → 影响分析（assessing）
+变更请求提出 → 登记到 change-log.md（已提交）
+  → 影响分析（评估中）
   → CCB/项目经理评审
   → 决策：批准 / 拒绝 / 延期
   → 若批准：执行变更 → 更新事实源
@@ -52,9 +52,9 @@
 ### 2.1 关键规则
 
 1. 任何疑似变更，不得直接更新事实源文件。
-2. 必须先进入 `requirements/change-log.md`，状态为 `submitted`。
+2. 必须先进入 `requirements/change-log.md`，状态为 `已提交`。
 3. 变更未经审批前，相关事实源文件保持不变。
-4. 客户口头需求不得直接进入需求登记册，只能进入 change-log 的 submitted 状态。
+4. 客户口头需求不得直接进入需求登记册，只能进入 change-log 的已提交状态。
 
 ## 3. 变更登记
 
@@ -70,27 +70,27 @@
 | 提出人 | 提出者 | 是 |
 | 提出日期 | YYYY-MM-DD | 是 |
 | 变更原因 | 为什么变更 | 是 |
-| 影响分析 | 见第 4 节 | 是（assessing 阶段） |
+| 影响分析 | 见第 4 节 | 是（评估中阶段） |
 | 变更级别 | micro / normal / major | 是 |
-| 审批结果 | approved / rejected / deferred | 否（审批后填） |
+| 审批结果 | 批准 / 驳回 / 暂缓 | 否（审批后填） |
 | 审批人 | 决策者 | 否 |
 | 审批日期 | YYYY-MM-DD | 否 |
-| 执行状态 | pending / implemented / cancelled | 否 |
+| 执行状态 | 待实施 / 已实施 / 已取消 | 否 |
 | 关联需求 | REQ-XXX-NNN | 否 |
-| 关联任务 | T-YYYYMMDD-NNN | 否 |
+| 关联任务 | TD-xxx（待办编号） | 否 |
 | 关联决策 | D-YYYYMMDD-NNN | 否 |
 | Source | 来源 | 是 |
 
-> `plan_change` 类型建议通过"关联任务"字段指向具体任务 T-*，并在"变更后内容"中记录新的 Due Date / Owner。
+> `plan_change` 类型建议通过"关联任务"字段指向具体待办 TD-xxx，并在"变更后内容"中记录新的 Due Date / Owner。
 
 ### 3.2 变更状态流转
 
 ```
-submitted → assessing → approved → implemented
-                     → rejected（关闭）
-                     → deferred（暂缓，后续可重新评估）
+已提交 → 评估中 → 已批准 → 已实施
+                → 已驳回（关闭）
+                → 暂缓（后续可重新评估）
 
-任何状态 → cancelled
+任何状态 → 已取消
 ```
 
 ## 4. 影响分析
@@ -123,7 +123,7 @@ submitted → assessing → approved → implemented
 
 ### 进度影响
 - 工作量增量: [X] 人天
-- 里程碑影响: [M-NN 是否延期]
+- 里程碑影响: [里程碑型 WP（WP-NNN）是否延期]
 - 预计进度偏差: [X]%
 
 ### 成本影响
@@ -159,17 +159,17 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 
 ### 6.1 批准后执行步骤
 
-1. 更新 `requirements/change-log.md`：状态改为 `implemented`。
+1. 更新 `requirements/change-log.md`：状态改为 `已实施`。
 2. 更新 `requirements/requirement-register.md`：新增/修改/标记对应需求。
-3. 更新 `tasks/board.md` 或 `tasks/backlog.md`：新增/调整对应任务。新增任务必须执行 `00-pm-main-rules.md` WF-8 归属判定填 WP Ref（需求已映射迭代 WP → 继承；Requirement Ref 与 WP Ref 并存不冲突）；调整任务时若 Due Date/Owner 变更，同步执行 `03-task-board-rules.md` §8 的 WP 关联检查。
+3. 更新 `todos/{date}/{owner}.md` 待办文件：新增/调整对应待办。新增待办必须执行 `00-pm-main-rules.md` WF-8 归属判定填 WP Ref（需求已映射 PLAN WP → 继承；Requirement Ref 与 WP Ref 并存不冲突）；调整待办时若 Due Date/Owner 变更，同步执行 WP 关联检查。
 4. 更新 `plans/progress-plan.md`：调整进度计划（如需）。
 5. 更新 `plans/budget.md`：调整预算（如需）。
-6. 更新 `milestones/milestone-board.md`：调整里程碑（如需）。
+6. 更新 `plans/progress-plan.md`：调整里程碑（如需）。
 7. 更新 `risks/risk-register.md`：新增变更引入的风险（如有）。
 8. 更新 `decisions/decision-log.md`：记录审批决策。
 9. 通知相关干系人。
 
-> 计划变更（`plan_change`）批准后，额外同步更新 `tasks/board.md` 的 `Due Date` / `Owner` 字段，并递增 `Plan Change Count`（若适用，见 `03-task-board-rules.md` §1a）。
+> 计划变更（`plan_change`）批准后，额外同步更新待办文件的 `Due Date` / `Owner` 字段，并递增 `计划变更次数`（若适用）。
 
 ### 6.2 执行输出
 
@@ -179,7 +179,7 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 | Target File | Update Type | Suggested Change | Confirmed |
 |---|---|---|---|
 | requirements/requirement-register.md | update | REQ-XXX-001 状态改为 changed | 待确认 |
-| tasks/board.md | add | 新增 T-YYYYMMDD-NNN | 待确认 |
+| todos/{date}/{owner}.md | add | 新增 TD-XXX-YYYYMMDD-NNN | 待确认 |
 | ... | | | |
 ```
 
@@ -189,7 +189,7 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 
 1. `requirements/change-log.md` 是独立文件，不可将变更记录长期追加到 `requirement-register.md` 中。
 2. 变更记录按时间顺序排列，最新的在最上面。
-3. 已关闭的变更（rejected、cancelled、implemented）保留记录，不可删除。
+3. 已关闭的变更（已驳回、已取消、已实施）保留记录，不可删除。
 4. 变更记录超过 100 条时，触发归档（纯条数触发，取消季度粒度）。归档目标 `requirements/archive/YYYY-change-log-archive.md`，归档后维护 `requirements/archive/index.md`。
 
 ## 8. Change Log
@@ -217,4 +217,4 @@ change-log.md 本身不需要底部 Change Log（它本身就是变更记录）�
   [AUTO] 更新 pending-changes.md（移除已确认条目）
 
 变更拒绝 →
-  [AUTO] 更新 pending-changes.md（标记为 rejected）
+  [AUTO] 更新 pending-changes.md（标记为已驳回）

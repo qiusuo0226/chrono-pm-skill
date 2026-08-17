@@ -76,9 +76,9 @@ Excel 文件生成到 `outputs/{batch_id}/files/` 目录下（遵循 `11-output-
 | O | Req ID | 需求编号 REQ-XXX-NNN |
 | P | 优先级 | 下拉：Must/Should/Could/Wont |
 | Q | 来源 | 下拉：contract/document/meeting/implied |
-| R | 状态 | 下拉：proposed/confirmed/in_progress/delivered/accepted/changed/cancelled |
-| S | 关联任务 | T-YYYYMMDD-NNN |
-| T | 关联里程碑 | M-NN |
+| R | 状态 | 下拉：已提议/已确认/进行中/已交付/已验收/已变更/已取消 |
+| S | 关联任务 | TD-xxx（待办编号） |
+| T | 关联里程碑 | 里程碑型 WP（WP-NNN） |
 | U | 实现视图 | 面向开发的实现摘要（可选，07 号 §8.10 双视图）；导出时与 Markdown 模板"实现视图"列对应 |
 | V | 原型/文档链接 | 原型图/设计稿/接口文档指针（可选）；导出时与 Markdown 模板"原型/文档链接"列对应 |
 
@@ -190,10 +190,10 @@ Excel 文件生成到 `outputs/{batch_id}/files/` 目录下（遵循 `11-output-
 
 | Sheet 名 | 内容 |
 |---|---|
-| 迭代一 | 第一迭代任务 |
-| 迭代二 | 第二迭代任务 |
-| 迭代三 | 第三迭代任务 |
-| 迭代四 | 第四迭代任务 |
+| WP-001 | 该 WP 下的待办 |
+| WP-002 | 该 WP 下的待办 |
+| WP-003 | 该 WP 下的待办 |
+| 未关联 WP | WP Ref 为 none 的独立待办 |
 
 ### 4.2 列定义（11列，每个 Sheet 相同）
 
@@ -443,10 +443,10 @@ Excel 文件生成后必须：
 | 需求跟踪矩阵 | requirements/requirement-register.md | 列结构完全对应，Excel 额外有数据验证和筛选 |
 | 风险登记册 | risks/risk-register.md | Excel 额外有条件格式 |
 | 问题跟踪表 | issues/issue-register.md | Excel 额外有延期公式和条件格式 |
-| 计划表 | tasks/board.md | Excel 按迭代分 Sheet |
+| 计划表 | todos/{date}/ 待办文件 | Excel 按 WP 分 Sheet |
 | 成本测算表 | plans/budget.md | Excel 有人力成本明细 Sheet 和公式 |
 | 周报 | reports/weekly/当前周.md | Excel 用 key-value 格式 |
 | 经验教训记录单 | reviews/lessons-learned.md | 列结构完全对应 |
 | 项目基本信息 | context/project-context.md | Excel 用 key-value 格式 |
 | 项目集汇总周报 | portfolio/reports/weekly/当前周.md | Excel 用表格格式 |
-| 人员资源登记表 | portfolio/resources/resource-register.md | Excel 有容忍度公式和条件格式 |
+| 人员资源登记表 | 各子项目 resources/resource-register.md（项目集模式按子项目分 Sheet 汇总，跨项目共享人员参照 portfolio/resources/shared-resource-index.md） | Excel 有容忍度公式和条件格式 |

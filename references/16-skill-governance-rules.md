@@ -335,7 +335,7 @@ AI 不得跳过升级方案审查文档直接修改文件。即使用户说"直�
 - 版本号更新
 - Roadmap 补充
 - Known Limitations 补充
-- 状态从 planned 改为 partial / implemented
+- 状态从已规划改为部分落地 / 已落地
 - 审查指南措辞优化
 
 ### 17.4 Blueprint 层级归属

@@ -18,7 +18,7 @@
 
 | 序号 | Change Log 指针（文件+Change ID） | Change Summary | 原值 | 新值 | Risk Level | Created At | 逾期状态 |
 |----|----|----|----|----|----|----|----|
-| 1 | `ai/.../tasks/board.md` T-YYYYMMDD-NNN | 任务 Due Date 调整 | 2026-08-11 | 2026-08-18 | low | 2026-08-11 | 正常 |
+| 1 | `ai/.../todos/{date}/{owner}.md` TD-XXX-YYYYMMDD-NNN | 待办 Due Date 调整 | 2026-08-11 | 2026-08-18 | low | 2026-08-11 | 正常 |
 | 2 | - | - | - | - | - | - | - |
 
 ## 已确认条目（最近，供追溯参考）
@@ -27,7 +27,7 @@
 
 | 序号 | Change Log 指针 | Change Summary | 最终值 | 确认人 | Confirmed At |
 |----|----|----|----|----|----|
-| 1 | `ai/.../tasks/backlog.md` T-YYYYMMDD-NNN | 任务新增 | (值) | (PM 姓名) | YYYY-MM-DD |
+| 1 | `ai/.../todos/{date}/{owner}.md` TD-XXX-YYYYMMDD-NNN | 待办新增 | (值) | (PM 姓名) | YYYY-MM-DD |
 | 2 | - | - | - | - | - |
 
 ## 驳回记录（审计，不删除）

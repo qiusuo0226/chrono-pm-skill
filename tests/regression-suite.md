@@ -8,29 +8,29 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| QQ-001 | 我明天的待办是什么 | 优先读 `portfolio/todos/personal-todo-index.md`，输出 9 章节全景视图，不得只列 PM 个人任务 | positive |
-| QQ-002 | 明天大家做什么 | 优先读 `daily-todo-index.md` | positive |
-| QQ-003 | 本周重点是什么 | 优先读 `weekly-todo-index.md` | positive |
-| QQ-004 | 张三现在在做什么 | 优先读 `summaries/张三-progress.md` | positive |
+| QQ-001 | 我明天的待办是什么 | 优先读 PM 当日待办文件 `todos/{date}/{PM姓名}.md` + 绑定文件 `_index.md`，输出 9 章节全景视图，不得只列 PM 个人任务 | positive |
+| QQ-002 | 明天大家做什么 | 优先读绑定文件 `todos/{date}/_index.md` → 各人待办文件 | positive |
+| QQ-003 | 本周重点是什么 | 优先读 `todos/{date}/` 待办文件（按本周 Due Date 过滤） | positive |
+| QQ-004 | 张三现在在做什么 | 优先读张三近期待办文件 `projects/*/todos/{date}/张三.md` | positive |
 | QQ-005 | 当前有哪些风险 | 优先读 `risks/risk-register.md`（open），不扫描历史周报 | positive |
-| QQ-006 | 8月10日大家原计划做什么 | 优先读 `history-index.md` → `snapshots/daily/` | positive |
-| QQ-007 | 8月10日计划完成了吗 | 同时读 `snapshots/` + `actuals/`，输出对比表 | positive |
-| QQ-008 | 上周计划偏差 | 同时读 `snapshots/weekly/` + `actuals/weekly/` | positive |
-| QQ-009 | 项目进展如何 | 优先读 `tasks/board.md` + `milestones/`，不扫描所有过程记录 | positive |
+| QQ-006 | 8月10日大家原计划做什么 | 优先读 `snapshots/daily/{date}.md`（导入计划为 `imported-{date}.md`） | positive |
+| QQ-007 | 8月10日计划完成了吗 | 读快照/实际摘要（若有）+ 当日待办文件，输出对比表 | positive |
+| QQ-008 | 上周计划偏差 | 读 `snapshots/weekly/` + `actuals/weekly/`（若有）+ 上周待办文件 | positive |
+| QQ-009 | 项目进展如何 | 优先读 `todos/{date}/` 待办文件 + PLAN 文件，不扫描所有过程记录 | positive |
 | QQ-010 | 简单查询（明天待办） | 不得创建临时 JS/Python 脚本扫描目录 | regression |
-| QQ-011 | 索引不存在时 | 提示用户重建索引，不自行全量扫描 | regression |
+| QQ-011 | 待办目录/绑定文件不存在时 | 提示工作区可能未升级（见 20 号），不自行全量扫描 | regression |
 
 ## 2. Daily Report（日报处理）
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| DR-001 | 处理今天个人日报 | 写入 `reports/daily/personal/{YYYYMM}/YYYY-MM-DD-{name}.md` | positive |
+| DR-001 | 处理今天个人工作汇报 | 写入该成员当日待办文件 `todos/{date}/{姓名}.md` 工作日志段（不再创建独立个人日报文件） | positive |
 | DR-002 | 生成项目日报 | 写入 `reports/daily/project/{YYYYMM}/` | positive |
-| DR-003 | 同人同天第二次提交日报 | 合并追加，不覆盖，追加更新记录 | regression |
-| DR-004 | 日报中包含"担心接口延期" | 识别为风险候选，输出在自查清单中 | positive |
-| DR-005 | 日报中包含"请假" | 触发资源变动检测，提示更新 resource-register | positive |
-| DR-006 | 日报中包含明日计划 | 提取为 TODO，更新 todos index + 生成 snapshot | positive |
-| DR-007 | 处理日报后 | 执行 D1-D10 自查清单并输出结果 | regression |
+| DR-003 | 同人同天第二次提交汇报 | 合并追加到同一待办文件工作日志段，不覆盖，追加合并记录 | regression |
+| DR-004 | 汇报中包含"担心接口延期" | 识别为风险候选，输出在自查清单中 | positive |
+| DR-005 | 汇报中包含"请假" | 触发资源变动检测，提示更新 resource-register | positive |
+| DR-006 | 汇报中包含明日计划 | 提取为待办，经 WF-8 归属判定落待办文件 + 更新绑定文件 | positive |
+| DR-007 | 处理日报后 | 执行 D1-D16 自查清单并输出结果 | regression |
 | DR-008 | 日报文件路径 | 使用 `YYYYMM` 单级目录，不使用 `YYYY/MM` | regression |
 
 ## 3. Weekly Report（周报生成）
@@ -41,7 +41,7 @@
 | WR-002 | 项目集模式下生成周报 | 同时生成子项目周报和项目集汇总周报 | positive |
 | WR-003 | 生成周报 Excel | 写入 `outputs/{timestamp}/files/`，不写入 `ai/` | regression |
 | WR-004 | 修改刚才的周报 | 复用同一 batch 目录，不新建时间戳 | regression |
-| WR-005 | 周报生成后 | 自动生成 `actuals/weekly/` 实际执行摘要 | positive |
+| WR-005 | 周报生成后 | 周报由待办文件工作日志逐日累积生成；v2.0.0 起无前向快照，不生成前向 snapshot | positive |
 
 ## 4. PM Daily Todo（PM 待办）
 
@@ -67,18 +67,18 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | CT-001 | 这是上一阶段 ai 目录 | 进入衔接流程，登记 legacy-sources，不直接覆盖当前 | positive |
-| CT-002 | 把一期遗留风险带过来 | 先进入 carryover-register，等待确认 | positive |
+| CT-002 | 把一期遗留风险带过来 | 先进入 delta-analysis.md 结转候选段，等待确认 | positive |
 | CT-003 | 历史导入 | 不得覆盖当前阶段已有文件 | regression |
 | CT-004 | 冲突检测 | 历史事项与当前相似时提示冲突，5种处理选项 | positive |
 
-## 7. Todo Snapshot（计划快照）
+## 7. Todo Snapshot（历史导入快照与历史回查）
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| TS-001 | 处理日报后 | 自动生成 `snapshots/daily/{date}.md` + 更新 `history-index.md` | positive |
-| TS-002 | 处理日报后 | 自动生成 `actuals/daily/{date}.md` | positive |
-| TS-003 | 快照生成后 | 冻结，不静默覆盖，修改追加 Revision Log | regression |
-| TS-004 | 计划 vs 实际查询 | 同时读 snapshot + actuals，输出 7 种完成状态 | positive |
+| TS-001 | 处理日报后 | v2.0.0 起不再生成前向快照；待办文件本身即历史（待办文件+工作日志段可回查当日计划与执行） | regression |
+| TS-002 | 查询某日实际做了什么 | 优先读当日待办文件工作日志段；旧日期有 actuals 时读 `actuals/daily/` | positive |
+| TS-003 | 导入快照生成后 | 冻结，不静默覆盖，修改追加 Revision Log | regression |
+| TS-004 | 计划 vs 实际查询 | 读快照（若有）+ 待办文件/实际摘要，输出对比 | positive |
 
 ## 8. File Rules（文件管理）
 
@@ -95,10 +95,10 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| SC-001 | 处理日报后 | 输出 D1-D10 自查清单 | regression |
+| SC-001 | 处理日报后 | 输出 D1-D16 自查清单 | regression |
 | SC-002 | 处理会议纪要后 | 输出 M1-M7 自查清单 | regression |
 | SC-003 | 用户追问"有没有漏的" | 重新执行完整自查 + 扩大扫描范围 | positive |
-| SC-004 | 风险追溯 | 多源交叉校验（登记册 vs 日报 vs 会议 vs 周报 vs 问题 vs 看板） | positive |
+| SC-004 | 风险追溯 | 多源交叉校验（登记册 vs 日报 vs 会议 vs 周报 vs 问题 vs 待办文件） | positive |
 
 ## 10. Versioning（版本管理）
 
@@ -166,7 +166,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | QA-001 | 用户问"skill 版本是多少" | 只读 ai/.skill-version.json，不读 SKILL.md | positive |
-| QA-002 | 用户问"我明天的任务" | 只读 todo-index，不读 SKILL.md 和 references/ | positive |
+| QA-002 | 用户问"我明天的任务" | 只读待办文件 + 绑定文件 `_index.md`，不读 SKILL.md 和 references/ | positive |
 | QA-003 | 简单查询超过 3 个文件 | 先说明原因再继续 | positive |
 | QA-004 | 版本查询回答末尾 | 包含"数据来源："标注 | positive |
 | QA-005 | 文件修改时间无法获取 | 显示"当前环境未提供，无法确认"，不编造时间 | regression |
@@ -235,7 +235,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | DR-1A | 读取 `01-daily-report-rules.md` | 无重复 §2.3 块；章节编号连续无重复；≤300 行 | positive |
-| DR-1B | 检查 01 模板引用 | 6 处模板指针均指向 `assets/templates/` 下已存在文件（personal-daily / project-daily / weekly-report / personal-progress / portfolio-weekly / index-formats），无悬空引用 | positive |
+| DR-1B | 检查 01 模板引用 | 模板指针均指向 `assets/templates/` 下已存在文件（personal-daily-todo / project-daily / weekly-report / daily-todo-binding / portfolio-weekly / index-formats），无悬空引用；不再引用已删除的 personal-daily/personal-progress 模板 | positive |
 | DR-1C | 读取 01 §1.2b 术语归一化 | 仅保留入口要点，指向 `17-domain-glossary-rules.md` §4/§6，未重复完整九步流程 | positive |
 | DR-1D | 读取 01 §1.5 资源变动输出 | 候选资源变更与建议更新清单为内联格式（来源/当前状态/一致性判断/建议操作），未引用不存在模板 | regression |
 
@@ -247,7 +247,7 @@
 |---|---|---|---|
 | QR-1A | 读取 `05-query-rules.md` | 无重复章节编号；问题类型路由表（12 类）与 Quick Query 路由表完整；≤300 行（基线 v1.15.0 为 320 行时已超限，行数断言为软约束：不因无证据的重复堆叠膨胀，语义完整性为准） | positive |
 | QR-1B | 读取 `11-output-artifact-rules.md` | ≤300 行；批次目录结构、输出状态机、来源追溯、确认规则语义完整 | positive |
-| QR-1C | 读取 `07-requirement-rules.md` | 字段定义与状态机（proposed→confirmed→in_progress→delivered→accepted→changed→cancelled）及验收标准未变；行数随 RI/合同作用域扩展增长（基线 v1.15.0 为 267 行），不以固定行数为硬断言 | positive |
+| QR-1C | 读取 `07-requirement-rules.md` | 字段定义与状态机（已提议→已确认→进行中→已交付→已验收，可已变更/已取消，v2.0.0 中文枚举）及验收标准语义未变；行数随 RI/合同作用域扩展增长（基线 v1.15.0 为 267 行），不以固定行数为硬断言 | positive |
 | QR-1D | 模拟一次进度查询 + 一次需求登记 | 查询按 05 §2/§2.5 路由表正确路由读取索引；需求按 07 字段定义与状态机正确登记，规范化后语义完整保留 | regression |
 
 ---
@@ -275,23 +275,23 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| HP-001 | 用户上传 .pod/Excel 存量计划要求批量导入 | 走 R1：生成 `snapshots/daily/imported-{date}.md`（source_type=external_import）+ 登记 history-index + 写 board(Source=import) | positive |
+| HP-001 | 用户上传 .pod/Excel 存量计划要求批量导入 | 走 R1：生成 `snapshots/daily/imported-{date}.md`（source_type=external_import）+ 写入待办文件 `todos/{date}/{owner}.md`（来源=import）+ 在 `continuity/import-log.md` 登记导入批次 | positive |
 | HP-002 | 批量导入前 | 先判定走 R1 还是 13 号（见 `13-continuity-rules.md` §2）；无独立历史工作区才走 R1 | positive |
 | HP-003 | 批量导入冻结 | imported-{date}.md 生成后冻结，不静默覆盖，修订追加 Revision Log | regression |
 | HP-004 | 导入命名 | 使用 `imported-{date}.md`，不与 AI 前向生成的 `{date}.md` 冲突 | regression |
-| HP-005 | 导入登记 | 在 `todo-history-index-template` 外部导入登记追加一行（IMP-*） | positive |
-| HP-006 | R1 查询路由 | "导入的那批计划"经 history-index → imported-{date}.md 定位，source_type=external_import | positive |
-| HP-007 | board 计数首版 | 导入任务 Plan Change Count / Delay Count 记 0 | positive |
-| HP-008 | 计划变更追踪 | 单任务 Due Date/Owner 调整 → board 递增 Plan Change Count，Delay 仅 Due Date 后移时 +1 | positive |
-| HP-009 | 概念域 | change-log 用概念域 B（plan_change）；board Change Log 用概念域 A，不混用 | regression |
-| HP-010 | 延期统计查询（A 类） | "延期了几次"只读 board.md 单文件，不扫描快照/日报；输出 delay-stats | positive |
-| HP-011 | board 缺计数字段 | 回退 Change Log 统计并标注"推断，未确认" | regression |
-| HP-012 | 超期查询（B 类） | "现在哪些任务超期"实时计算，读 board + 预建索引，不扫日报原文 | positive |
+| HP-005 | 导入登记 | 在 `continuity/import-log.md` 登记导入批次（IMP-YYYYMMDD-NNN） | positive |
+| HP-006 | R1 查询路由 | "导入的那批计划"直接定位 `snapshots/daily/imported-{date}.md`，source_type=external_import | positive |
+| HP-007 | 待办文件计数首版 | 导入任务计划变更次数/延期次数记 0 | positive |
+| HP-008 | 计划变更追踪 | 单任务 Due Date/Owner 调整 → 待办文件递增计划变更次数，延期次数仅 Due Date 后移时 +1 | positive |
+| HP-009 | 概念域 | change-log 用概念域 B（plan_change）；待办文件变更段用概念域 A，不混用 | regression |
+| HP-010 | 延期统计查询（A 类） | "延期了几次"只聚合待办文件延期次数字段，不扫描快照/日报；输出聚合结果 | positive |
+| HP-011 | 待办文件缺延期次数字段 | 回退变更段统计并标注"推断，未确认" | regression |
+| HP-012 | 超期查询（B 类） | "现在哪些任务超期"实时计算，读待办文件 + 绑定文件，不扫日报原文 | positive |
 | HP-013 | 确认窗口期判定 | v2 未确认按旧 Due Date 判延期；已确认按新 Due Date | positive |
 | HP-014 | 负责人变更归属 | 交接前超期归原 Owner，交接后归新 Owner | positive |
 | HP-015 | 超期触发时机 | 处理日报时 + PM 查询进度时都实时计算 | regression |
-| HP-016 | 索引过期警告 | 索引超 24h 未更新时给出过期警告 | positive |
-| HP-017 | source_type 统一 | snapshot source_type 取 personal_daily_reports/pm_todo/meeting/external_import 四值之一 | regression |
+| HP-016 | 绑定文件过期警告 | 绑定文件 `_index.md` 超 24h 未更新时给出过期警告 | positive |
+| HP-017 | source_type 统一 | v2.0.0 起前向快照已取消，快照 source_type 仅保留 external_import（历史计划批量导入） | regression |
 
 ---
 
@@ -337,14 +337,14 @@
 
 ## 29. Cascade Propagation（级联传播）
 
-> 对应 CR-20260812-001（v1.13.0）。覆盖 6 个实体规则文件新增的 `§级联传播规则`（03 §8、04 §9、07 §7、08 §9、09 §8、02 §6）、00 号 §8 级联冲突处理、AUTO 作用域限定（写派生视图）、14 号 §2.4 索引派生分级与 D13/M8/R7 级联完整性自查项。
+> 对应 CR-20260812-001（v1.13.0）。覆盖实体规则文件的 `§级联传播规则`（04 §9、07 §7、08 §9、09 §8、02 §6；v2.0.0 起 03 号已删，任务层级联规则迁入 00 号 WF）、00 号 §8 级联冲突处理、AUTO 作用域限定（写派生视图）、14 号 §2.4 索引派生分级与 D13/M8/R7 级联完整性自查项。
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| CP-001 | Task→done + Risk Ref | CHECK 验证风险存在；AUTO 更新 todo 索引 | positive |
-| CP-002 | Risk→converted_to_issue | SUGGEST 新增 issue + AUTO 更新索引 | positive |
-| CP-003 | Issue→resolved + blocked task | SUGGEST 恢复 task | positive |
-| CP-004 | Resource→offboard | SUGGEST 重分配 + AUTO 更新 todo | positive |
+| CP-001 | 待办→已完成 + Risk Ref | CHECK 验证风险存在；AUTO 更新待办文件/绑定文件 | positive |
+| CP-002 | Risk→转为问题 | SUGGEST 新增 issue + AUTO 更新绑定文件 | positive |
+| CP-003 | Issue→已解决 + 已阻塞待办 | SUGGEST 恢复待办为进行中 | positive |
+| CP-004 | Resource→已离场 | SUGGEST 重分配 + AUTO 更新待办 | positive |
 | CP-005 | 多 SUGGEST 指向同一目标 | 合并为同一批建议清单 | positive |
 | CP-006 | 级联冲突场景 | 标记 ⚠ 级联异常，交 PM 决策 | negative |
 
@@ -368,7 +368,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| WF-001 | "更新于文聪的待办" + 事实依据 | 按 WF-1 步骤 1-18 执行：定位(读 todo-index/board/issue/risk)→判断(待办匹配/状态判定/问题关闭/风险关闭)→写入(含 pending-changes 登记)→补全(日报索引)→输出变更摘要 | positive |
+| WF-001 | "更新于文聪的待办" + 事实依据 | 按 WF-1 步骤 1-18 执行：定位(读绑定文件/待办文件/issue/risk)→判断(待办匹配/状态判定/问题关闭/风险关闭)→写入(含 pending-changes 登记)→补全(日报索引)→输出变更摘要 | positive |
 | WF-002 | WF-1 步骤 6 待办匹配：用户用别名/缩写描述 | §9.1 规则1 生效：语义匹配考虑别名缩写，不因路径预定义简化判断 | positive |
 | WF-003 | WF-1 步骤 8/9 关联问题/风险仅"部分缓解" | §9.1 规则3/4 生效：不自动关闭，列入建议清单待 PM 确认 | regression |
 | WF-004 | WF-1 步骤 16：单纯状态更新指令（无工作进展描述） | §9.1 规则5 生效：不触发 PF006 日报补全，仅更新待办状态 | regression |
@@ -430,16 +430,16 @@
 
 ## 35. PM Preference Generalization（PM 偏好通用化能力）
 
-> 对应 v1.17.0。覆盖五个能力模块：(A) 日报集成审查（01 号 §6）+ 主动提问（01 号 §7）；(B) 跨实体联动同步（01 号 §5.3 + 03 号 §8 + 00 号 WF-1 步骤 4.5）；(C) 关闭确认佐证（04 号 §9.1）；(D) 委派跟踪级联（03 号 §8 + WF-1 步骤 18.6）；(E) 沟通质量规则（00 号 §5.1a CQ-4/CQ-5）+ 可选查询默认过滤（05 号 §2.0a）。沟通风格类偏好（CQ-1/2/3）留在 PM Profile 层，不属于本模块验证范围。
+> 对应 v1.17.0。覆盖五个能力模块：(A) 日报集成审查（01 号 §6）+ 主动提问（01 号 §7）；(B) 跨实体联动同步（01 号 §5.3 + 00 号 WF 级联 + 00 号 WF-1 步骤 4.5）；(C) 关闭确认佐证（04 号 §9.1）；(D) 委派跟踪级联（00 号 WF 级联 + WF-1 步骤 18.6）；(E) 沟通质量规则（00 号 §5.1a CQ-4/CQ-5）+ 可选查询默认过滤（05 号 §2.0a）。沟通风格类偏好（CQ-1/2/3）留在 PM Profile 层，不属于本模块验证范围。
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | IR-001 | 提交日报并要求处理 | 日报写入后触发 01 号 §6 集成审查：计划 vs 完成、风险/问题变化、任务进度偏差三维度对比表输出 | positive |
 | IR-002 | 集成审查发现任务延期 + 新增风险 | 01 号 §7 主动提问生效：从阻塞解除/风险应对/关键任务遗漏/明日计划可行性四角度至少提出针对性问题 | positive |
 | IR-003 | 日报与计划完全一致（无偏差） | 集成审查仍执行但输出简明“无偏差”结论，不省略审查步骤也不虚构偏差 | regression |
-| IR-004 | 日报进展描述与关联 Requirement 状态矛盾（如日报称已完成但 REQ 仍 in_progress） | 01 号 §5.3 联动表生效：SUGGEST 同步需求登记册状态，不静默修改 | positive |
-| IR-005 | Task 状态变更为 done（关联需求仍 open） | 03 号 §8 生效：[CHECK] 验证关联需求状态一致性 + [SUGGEST] 不一致时建议同步；WF-1 步骤 4.5 需求检查不跳过 | positive |
-| IR-006 | Task Owner 从张三改为李四（委派） | 03 号 §8 委派级联生效：[CHECK] 被委派方身份 + [SUGGEST] 为委派方生成跟进待办；WF-1 步骤 18.6 引导不遗漏 | regression |
+| IR-004 | 日报进展描述与关联 Requirement 状态矛盾（如日报称已完成但 REQ 仍进行中） | 01 号 §5.3 联动表生效：SUGGEST 同步需求登记册状态，不静默修改 | positive |
+| IR-005 | 待办状态变更为已完成（关联需求仍开放） | 00 号 WF 级联生效：[CHECK] 验证关联需求状态一致性 + [SUGGEST] 不一致时建议同步；WF-1 步骤 4.5 需求检查不跳过 | positive |
+| IR-006 | Task Owner 从张三改为李四（委派） | 00 号 WF 委派级联生效：[CHECK] 被委派方身份 + [SUGGEST] 为委派方生成跟进待办；WF-1 步骤 18.6 引导不遗漏 | regression |
 | IR-007 | 要求关闭某风险/问题 | 04 号 §9.1 生效：关闭建议显式列明候选编号 + 佐证 + 关联影响三要素 | positive |
 | IR-008 | 要求关闭风险但未提供任何佐证 | 04 号 §9.1 禁止规则生效：不输出无佐证关闭建议，改为提示补充佐证 | regression |
 | IR-009 | 处理类任务输出含多个待确认事项 | CQ-4 生效：待确认事项编号罗列；CQ-5 生效：查询结论基于本轮实读文件，不引用缓存/记忆数据 | positive |
@@ -452,27 +452,27 @@
 |---|---|---|---|
 | BS-001 | 用户说"根据 8/28 做倒排计划" | AI 识别为倒排意图（00号 §2.7），进入 WF-7，不误判为普通任务记录 | positive |
 | BS-002 | 倒排流程执行 | 澄清目标/截止日/资源 → 查重 → 反向 WBS + 关键路径 + 缓冲 → 输出草案待 PM 确认 | positive |
-| BS-003 | 倒排草案确认后 | iteration-register 写入 WP 粗规划表 + 倒排元数据；board 写入 Task（WP Ref + Due Date）；同一建议清单原子呈现 | positive |
+| BS-003 | 倒排草案确认后 | PLAN 文件 `plans/PLAN-NNN-{name}.md` 写入 WP 粗规划表 + 倒排元数据；待办落待办文件（WP Ref + Due Date）；同一建议清单原子呈现 | positive |
 | BS-004 | 倒排 Task 与既有 Task 重复 | 查重阶段检测（Owner+时间+语义）→ SUGGEST 提示 PM 确认，不重复建任务 | positive |
-| BS-005 | 某 WP 下所有 Task done | 03号 §8 级联：聚合 WP 进度 100% → SUGGEST WP 状态 completed；不另存进度值 | positive |
-| BS-006 | 查询"ITR-01 进度" | 05号 §6.7：读迭代 WP 表 + board 按 WP Ref 聚合，输出分层进度 | positive |
-| BS-007 | 查询"今天做什么" | 优先读 daily-todo-index 热索引；溯源按 Due Date = 今天过滤 board，含 WP 归属 | positive |
-| BS-008 | 查询"本周计划" | board 按本周切片按 WP 归集；PM 微调仅走 WP 日期变更链路 | positive |
+| BS-005 | 某 WP 下所有待办已完成 | 00号级联规则：聚合 WP 进度 100% → SUGGEST WP 状态改为已完成；不另存进度值 | positive |
+| BS-006 | 查询"PLAN-001 进度" | 05号 §6.7：读 PLAN 文件 WP 表 + 待办文件按 WP Ref 聚合，输出分层进度 | positive |
+| BS-007 | 查询"今天做什么" | 优先读待办文件 + 绑定文件；按 Due Date = 今天过滤待办文件，含 WP 归属 | positive |
+| BS-008 | 查询"本周计划" | 待办文件按本周切片按 WP 归集；PM 微调仅走 WP 日期变更链路 | positive |
 | BS-009 | 倒排目标日期已过 | 提示 PM 确认是否调整为正向排，不静默建无效计划 | positive |
 | BS-010 | 同一人被分配多个时间重叠 WP | CHECK 资源冲突 → SUGGEST 调整或登记风险 | positive |
 | BS-011 | WP 日期调整 | 级联 SUGGEST 关联 Task Due Date + Change Log（plan_change） | positive |
 | BS-012 | 旧工作区无 WP 段/Task 无 WP Ref | WP Ref 视为可选字段，不影响既有功能；D15 自查不报存量误报 | regression |
-| BS-013 | 所有 WP completed | SUGGEST 迭代状态 completed + CHECK 关联里程碑可达性 | positive |
+| BS-013 | 所有 WP completed | SUGGEST PLAN 状态 completed + CHECK 关联里程碑可达性 | positive |
 | BS-014 | 倒排 WP 引用需求/里程碑 | CHECK 验证 REQ/M 关联存在，缺失时提示 | positive |
-| BS-015 | 查询"倒排还剩几天" | 读倒排元数据（锚点日期）+ board 未完成 Task，输出倒计时 + 关键路径预警 | positive |
-| BS-016 | "给张三加个待办：8/19 完成接口文档确认"（命中 WP 时间窗口与语义） | WF-8 归属判定 → board Task（WP Ref + Due 8/19）+ todo 索引派生，原子清单一次呈现 | positive |
-| BS-017 | "给李四加个待办：提醒周五交周报"（无交付物） | 判定一次性提醒 → 只落 todo 索引不建 board Task，且输出判定理由 | positive |
-| BS-018 | "给王五加个待办：调研竞品"（有 Owner+Deadline 但无 WP 命中） | 判定独立任务 → board Task（WP Ref: none）；禁止只写索引 | positive |
+| BS-015 | 查询"倒排还剩几天" | 读倒排元数据（锚点日期）+ 待办文件未完成待办，输出倒计时 + 关键路径预警 | positive |
+| BS-016 | "给张三加个待办：8/19 完成接口文档确认"（命中 WP 时间窗口与语义） | WF-8 归属判定 → 落待办文件（WP Ref + Due 8/19）+ 更新绑定文件，原子清单一次呈现 | positive |
+| BS-017 | "给李四加个待办：提醒周五交周报"（无交付物） | 判定一次性提醒 → 仅在输出中呈现提示不落待办文件，且输出判定理由 | positive |
+| BS-018 | "给王五加个待办：调研竞品"（有 Owner+Deadline 但无 WP 命中） | 判定独立任务 → 落待办文件（WP Ref: none）；禁止只写绑定文件 | positive |
 | BS-019 | 归属证据不足（两个 WP 均语义近似命中） | 置信度阈值生效：必须追问 PM 确认归属，不得静默落库或自行拍板 | negative |
-| BS-020 | 14号自查执行 | D15 检出 todo 索引正式条目在 board 无对应 Task → 报不一致并走 WF-8 补落 | regression |
-| BS-021 | 日报"明日计划"含正式任务 | 01号 §5.6b：走 WF-8 归属后落 board + 索引派生；§5.6c 快照照常生成不受影响 | positive |
-| BS-022 | 会议纪要行动项"李四 8/20 前完成环境部署" | 02号 §2/§3：MANDATORY 落 board + WF-8 归属填 WP Ref，不再是建议级 | positive |
-| BS-023 | 纪要行动项缺负责人/截止日 | 入 backlog 标"待确认"（02号 §2.2 既有规则保持），不强制落 board | regression |
+| BS-020 | 14号自查执行 | D15 检出待办文件 WP Ref 完整性异常（指向不存在/缺失的 WP）→ 报不一致并走 WF-8 补落 | regression |
+| BS-021 | 日报"明日计划"含正式任务 | 01号 §5.6：走 WF-8 归属后落待办文件 + 更新绑定文件；v2.0.0 起不生成前向快照 | positive |
+| BS-022 | 会议纪要行动项"李四 8/20 前完成环境部署" | 02号 §2/§3：MANDATORY 落待办文件 + WF-8 归属填 WP Ref，不再是建议级 | positive |
+| BS-023 | 纪要行动项缺负责人/截止日 | 入 pending-changes 未排期待办区块标"待确认"（02号 §2.2 既有规则保持），不强制落待办文件 | regression |
 | BS-024 | 待办状态更新（WF-1 场景） | 走 §8.1 状态级联，不误入 WF-8 创建流程；触发源拆分语义自洽 | regression |
 
 
@@ -486,7 +486,7 @@
 | DV-002 | PM 提供开发 PRD 要求提取（07号 §8.6 触发 D） | 按模块/接口/页面维度原子化切块，norm_text 保留技术术语原样，登记 source_type=dev_prd（technical/L3） | positive |
 | DV-003 | REQ 填写实现视图 + 原型/文档链接 | 登记册 2 新可选列正常写入（摘要级≤100字）；Excel 导出 U/V 列对应（12号 §1.3，与 O-T 连续） | positive |
 | DV-004 | WF-2 日报，Task 带 Requirement Ref | 按 05号 §2.5 链路加载 REQ 功能描述+实现视图+原型链接，输出需求上下文（业务+实现双语言对照） | positive |
-| DV-005 | WF-2 日报，Task 无 Requirement Ref | 不加载需求上下文、不报错、不强制补录（03号可选字段不变相强制） | regression |
+| DV-005 | WF-2 日报，Task 无 Requirement Ref | 不加载需求上下文、不报错、不强制补录（可选字段原则不变相强制） | regression |
 | DV-006 | 单次 WF-2 涉及 12 条 REQ | 性能控制生效：最多加载 10 条或仅加载当轮直接涉及 REQ；字段缺失降级输出不阻塞 | regression |
 | DV-007 | 查"REQ-XXX-NNN 具体做什么/怎么实现/原型在哪" | 走 05号需求详情/双视图路由（requirement-register），与范围判定路由（contract-register）不混淆 | positive |
 | DV-008 | 开发侧设计文档输入 | 登记为 design_doc（technical），不与甲方侧 design_spec 合并；prototype 仅存指针不入库文件 | negative |
@@ -500,13 +500,13 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| BDM-001 | PM 查询"倒排每日矩阵"，board 含完整 WP Ref + Due Date + Owner | 生成人员×日期矩阵：行=Owner 去重，列=今日→锚点日工作日，格=Task 简述；数据从 board 实时读取 | positive |
-| BDM-002 | PM 查询"每个人每天干什么"（portfolio 模式，3 个子项目各有 board） | 读 project-index 圈定范围 → 遍历 3 个 board 聚合；矩阵包含全部子项目人员 | positive |
-| BDM-003 | 存量 board 无 WP Ref 列（降级场景） | 矩阵仍可生成：行按 Owner、格按 Task Title，WP 列标注"（未关联 WP）"；不报错不阻塞 | positive |
-| BDM-004 | 工作区无 iteration-register.md（降级场景） | 范围圈定改为"日期窗口（今日→锚点日期）+ board 中 Due Date 过滤"；矩阵可生成 | positive |
-| BDM-005 | PM 口述"王涛周二要做XX"后查询倒排矩阵 | 先执行 WF-8 落 board，再从 board 生成矩阵；矩阵中包含王涛周二的新任务 | positive |
-| BDM-006 | WF-7 初始草案阶段（Task 尚未落 board） | 矩阵数据源为 WF-7 本次反向 WBS 产出的拟建 WP/Task 列表（非 board）；草案输出含完整矩阵 | positive |
-| BDM-007 | PM 查询倒排相关，board 自上次生成草案后有变更 | AI 在输出中附带提示："board 自上次生成草案后有 N 条变更，建议刷新倒排矩阵"（10号查询提示） | positive |
+| BDM-001 | PM 查询"倒排每日矩阵"，待办文件含完整 WP Ref + Due Date + Owner | 生成人员×日期矩阵：行=Owner 去重，列=今日→锚点日工作日，格=待办简述；数据从待办文件实时读取 | positive |
+| BDM-002 | PM 查询"每个人每天干什么"（portfolio 模式，3 个子项目各有待办文件） | 读 project-index 圈定范围 → 遍历 3 个子项目待办文件聚合；矩阵包含全部子项目人员 | positive |
+| BDM-003 | 存量待办文件无 WP Ref 列（降级场景） | 矩阵仍可生成：行按 Owner、格按待办标题，WP 列标注"（未关联 WP）"；不报错不阻塞 | positive |
+| BDM-004 | 工作区无 PLAN 文件（降级场景） | 范围圈定改为"日期窗口（今日→锚点日期）+ 待办文件 Due Date 过滤"；矩阵可生成 | positive |
+| BDM-005 | PM 口述"王涛周二要做XX"后查询倒排矩阵 | 先执行 WF-8 落待办文件，再从待办文件生成矩阵；矩阵中包含王涛周二的新任务 | positive |
+| BDM-006 | WF-7 初始草案阶段（待办尚未落待办文件） | 矩阵数据源为 WF-7 本次反向 WBS 产出的拟建 WP/待办列表（非待办文件）；草案输出含完整矩阵 | positive |
+| BDM-007 | PM 查询倒排相关，待办文件自上次生成草案后有变更 | AI 在输出中附带提示："待办文件自上次生成草案后有 N 条变更，建议刷新倒排矩阵"（10号查询提示） | positive |
 | BDM-008 | 同一人同天 Task >5 条 | 格内只列前 3 条 + "等 N 项"（视图规格第 6 条） | regression |
 | BDM-009 | PM 希望在矩阵中呈现里程碑门禁等非 Task 事项 | AI 与 PM 确认后以独立行或标注列呈现，不作为默认 Task 格 | positive |
 | BDM-010 | 既有 §6.7 查询（"今天做什么""本周计划""倒排倒计时"等） | 既有 6 种查询路由不受影响，输出与 v1.20.0 一致 | regression |

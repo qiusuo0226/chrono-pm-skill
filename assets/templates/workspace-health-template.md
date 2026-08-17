@@ -39,14 +39,13 @@ ignored_until:
 
 ## 索引状态
 
+> v2.0.0 起旧待办索引（personal/daily/weekly-todo-index、history-index）与个人进度汇总已删除；待办事实源为 `todos/{date}/{执行人}.md`，绑定文件为 `todos/{date}/_index.md`。
+
 | Index File | Exists | Last Updated | Records | Status |
 |---|---|---|---|---|
-| personal-todo-index.md | yes/no | | | fresh / stale / empty / missing |
-| daily-todo-index.md | yes/no | | | |
-| weekly-todo-index.md | yes/no | | | |
-| history-index.md | yes/no | | | |
+| todos/{date}/_index.md（当日绑定文件） | yes/no | | | fresh / stale / empty / missing |
 | YYYYMM/index.md | yes/no | | | |
-| summaries/{name}-progress.md | yes/no | | | |
+| change-log/index.md | yes/no | | | |
 
 ## 推荐动作
 

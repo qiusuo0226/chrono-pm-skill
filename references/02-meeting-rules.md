@@ -61,7 +61,7 @@ status: 草稿
 ## 4. 行动项
 | Action ID | 描述 | 负责人 | 截止日期 | 关联任务 | 关联需求 | 状态 |
 |---|---|---|---|---|---|---|
-| A-001 | [行动项描述] | [姓名] | YYYY-MM-DD | T-YYYYMMDD-NNN | REQ-XXX-NNN | todo |
+| A-001 | [行动项描述] | [姓名] | YYYY-MM-DD | TD-xxx | REQ-XXX-NNN | 待处理 |
 
 ## 5. 决策
 | Decision ID | 描述 | 决策人 | 关联事项 |
@@ -97,10 +97,10 @@ status: 草稿
 ## 2. 行动项提取规则
 
 1. 会议纪要中的行动项必须提取为任务候选。
-2. 如果缺少负责人、截止时间或完成标准，进入 `tasks/backlog.md` 或标记为"待确认"，不得直接进入正式进行中任务。
-3. 行动项必须有 Action ID（格式：`A-NNN`），后续同步到任务看板时分配 Task ID。
+2. 如果缺少负责人、截止时间或完成标准，记入 `pending-changes.md` 未排期待办区块或标记为"待确认"，不得直接进入正式进行中任务。
+3. 行动项必须有 Action ID（格式：`A-NNN`），后续落待办文件时分配待办编号（TD-{人名缩写}-{YYYYMMDD}-{NNN}）。
 4. 行动项必须标注来源会议 ID。
-5. **正式行动项（有负责人 + 截止时间 + 完成标准）落 board 前必须执行 `00-pm-main-rules.md` WF-8 归属判定**：命中迭代 WP → Task 带 WP Ref；未命中 → 独立任务（WP Ref: none）；证据不足必须追问，不得静默默认。
+5. **正式行动项（有负责人 + 截止时间 + 完成标准）落待办文件前必须执行 `00-pm-main-rules.md` WF-8 归属判定**：命中 PLAN WP → 待办带 WP Ref；未命中 → 独立任务（WP Ref: none）；证据不足必须追问，不得静默默认。
 
 ## 3. 事实源同步规则
 
@@ -108,13 +108,13 @@ status: 草稿
 
 | 会议内容类型 | 目标文件 | 处理方式 |
 |---|---|---|
-| 明确行动项 | `tasks/board.md` 或 `tasks/backlog.md` | **MANDATORY** 新增任务（正式行动项强制落 board，走 WF-8 归属判定填 WP Ref；禁止只写待办索引不落 board） |
-| 暂未排期事项 | `tasks/backlog.md` | 建议新增到 backlog |
+| 明确行动项 | `todos/{date}/{owner}.md` 待办文件 | **MANDATORY** 新增待办（正式行动项强制落待办文件，走 WF-8 归属判定填 WP Ref；禁止只写待办索引不落待办文件） |
+| 暂未排期事项 | `pending-changes.md` 未排期待办区块 | 建议新增为未排期待办 |
 | 潜在风险 | `risks/risk-register.md` | 建议新增风险 |
 | 已发生问题 | `issues/issue-register.md` | 建议新增问题 |
 | 关键决策 | `decisions/decision-log.md` | 建议新增决策记录 |
 | 需求变更 | `requirements/change-log.md` | 建议新增变更请求（submitted 状态） |
-| 里程碑调整 | `milestones/milestone-board.md` | 建议更新里程碑状态 |
+| 里程碑调整 | `plans/progress-plan.md` | 建议更新里程碑状态 |
 
 所有同步项必须通过"建议更新清单"输出，人工确认后执行。
 
@@ -154,7 +154,7 @@ status: 草稿
 > **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
 
 Decision 创建 →
-  [SUGGEST] 若决策产生新的 action item → 建议加入 board 或 backlog
+  [SUGGEST] 若决策产生新的 action item → 建议加入待办文件
   [SUGGEST] 若决策影响风险评估 → 建议更新 risk-register
   [AUTO] 更新 decision-log 衍生索引（若已拆分）
 

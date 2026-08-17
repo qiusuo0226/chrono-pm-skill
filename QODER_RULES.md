@@ -34,9 +34,9 @@
 | 用户问题 | 只读文件 | 不读文件 |
 |---|---|---|
 | Skill 版本是多少 | `ai/.skill-version.json` | SKILL.md, references/, project-brief |
-| 我明天/今天的任务 | 优先读 `ai/portfolio/todos/personal-todo-index.md`；如 `daily-todo-index.md` 存在则可辅助读取 | SKILL.md, references/ |
-| 今天谁没交日报 | `ai/projects/{子项目}/reports/daily/personal/{YYYYMM}/` 目录下文件列表 | references/, governance/ |
-| 当前风险 | `ai/portfolio/risks/risk-register.md` 或 `ai/projects/{子项目}/risks/risk-register.md` | SKILL.md, references/ |
+| 我明天/今天的任务 | 优先读绑定文件 `ai/.../todos/{date}/_index.md` → 各人待办文件 `todos/{date}/{姓名}.md` | SKILL.md, references/ |
+| 今天谁没交日报 | `ai/.../todos/{date}/` 目录（比对绑定文件参与人员与工作日志段覆盖情况） | references/, governance/ |
+| 当前风险 | `ai/projects/{子项目}/risks/risk-register.md`（跨项目风险记在主归属子项目；项目集层只留索引） | SKILL.md, references/ |
 | 项目概况 | `ai/portfolio/context/project-brief.md` 或 `ai/projects/{子项目}/context/project-brief.md` | references/ |
 | 更新某人的待办/状态 | 按 WF-1 路径执行（完整加载见 SKILL.md §6 路由表 WF-1 行） | SKILL.md, references/（判断阶段按需加载） |
 
@@ -96,7 +96,7 @@
 | Excel 生成 | `references/12-excel-generation-rules.md` |
 | 历史衔接 | `references/13-continuity-rules.md` |
 | 完整 Skill 说明 | `SKILL.md` |
-| 待办状态更新（WF-1） | 按 SKILL.md §6 路由表 WF-1 行加载（含 00+01+03+04+06+10） |
+| 待办状态更新（WF-1） | 按 SKILL.md §6 路由表 WF-1 行加载（含 00+01+04+06+10） |
 | 日报处理（WF-2） | `references/01-daily-report-rules.md` |
 | 会议纪要处理（WF-3） | `references/02-meeting-rules.md` |
 
@@ -125,7 +125,7 @@
 
 当用户请求涉及以下操作时，**必须加载完整安全规则（SKILL.md §7）后再执行**：
 
-- 写入或修改事实源文件（board.md / risk-register.md / requirement-register.md 等）
+- 写入或修改事实源文件（待办文件 `todos/{date}/{执行人}.md` / risk-register.md / requirement-register.md 等）
 - 变更管理（change-log.md / requirement-register.md）
 - 人员资源调配（resource-register.md / transfer-log.md）
 - 里程碑调整

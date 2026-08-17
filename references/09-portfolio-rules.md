@@ -2,6 +2,8 @@
 
 本规则适用于项目集（Portfolio）模式下的跨项目管理，包括汇总周报、跨项目风险、整体P&L、里程碑总览、人员资源协调与流转。使用本约束时，必须同时遵守主约束。
 
+> **项目集层零数据源（v2.0.0 架构决策，最高优先级）**：项目集层（`portfolio/`）不直接存储任何数据源，所有进度/内容均从子项目实时收集，项目集层只保留指针索引 + 只读聚合视图。人员/风险/问题/决策/成本等实体一律下放到子项目维护；项目集层任何聚合视图必须实时从子项目读取，禁止落盘聚合结果作为数据源（性能缓存必须带 `generated_from:` + `updated:` + stale 失效规则）。例外：`portfolio/requirements/`（RI 归集层）、`portfolio/context/`（元数据/索引）、`portfolio/reports/`（派生产物）本质是指针/缓存，不是进度数据源，保留。
+
 ---
 
 ## 1. 项目集模式总则
@@ -14,12 +16,12 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 
 | 层级 | 管什么 | 不管什么 |
 |------|--------|----------|
-| 项目集级 `portfolio/` | 跨项目风险、整体P&L、汇总周报、人员资源、项目集决策、里程碑总览、**跨子项目合同/招投标/立项/密评范围登记（`requirements/contract-register.md`，CR-20260813-002）** | 不复制子项目明细 |
-| 子项目级 `projects/{name}/` | 需求、任务、日报、周报、项目内风险、项目内里程碑、子项目级合同范围 | 不管跨项目事项 |
+| 项目集级 `portfolio/` | 指针索引（子项目索引/共享资源索引/跨项目流转索引/跨项目里程碑索引/合同额汇总索引）、只读聚合视图（汇总周报）、RI 归集层（`requirements/contract-register.md`，CR-20260813-002）、项目集决策索引 | 不存储任何数据源，不复制子项目明细 |
+| 子项目级 `projects/{name}/` | 需求、待办、日报、周报、风险/问题、人员资源（resource-register/transfer-log）、成本（budget）、子项目级合同范围 | 不管跨项目事项 |
 
 ### 1.3 数据流方向
 
-信息从子项目流向项目集（向上汇总），项目集决策通知子项目执行（向下通知），但项目集不直接修改子项目事实源——只能通过"建议更新清单"提出。
+信息从子项目流向项目集（向上汇总），项目集决策通知子项目执行（向下通知），但项目集不直接修改子项目事实源——只能通过"建议更新清单"提出。实体变更一律在子项目发生；项目集层索引不得手动改实体数据。
 
 ## 2. 项目集汇总周报
 
@@ -28,12 +30,12 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 ```
 1. 读取 portfolio/context/project-index.md 获取子项目清单
 2. 遍历每个子项目的当前周报或当周日报
-3. 汇总各子项目本周完成、风险、问题、里程碑
+3. 汇总各子项目本周完成、风险、问题、里程碑（里程碑引用各子项目 WP 编码）
 4. 合并跨项目事项（资源冲突、共性问题、需协调事项）
-5. 读取 portfolio/resources/resource-register.md 补充人员变动
-6. 读取 portfolio/todos/ 下的待办索引，汇总个人待办
-6. 读取 portfolio/risks/risk-register.md 补充跨项目风险
-7. 生成汇总周报
+5. 读取各子项目 projects/{子项目}/resources/resource-register.md 汇总人员变动；跨项目共享人员参照 portfolio/resources/shared-resource-index.md 定位
+6. 遍历各子项目 todos/ 目录（绑定文件 + 待办文件），汇总个人待办；项目集层不存待办实体
+7. 读取跨项目风险索引（各主归属子项目 risk-register 中跨项目标记的风险），补充跨项目风险
+8. 生成汇总周报（缓存文件须带 generated_from 源文件清单 + updated 时间戳）
 ```
 
 ### 2.2 汇总原则
@@ -45,9 +47,11 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 
 ## 3. 跨项目风险管理
 
-### 3.1 什么风险应登记在项目集级
+> v2.0.0 零数据源：跨项目风险的完整实体记录在**主归属子项目**的 `projects/{子项目}/risks/risk-register.md`，其他受影响子项目加关联指针；项目集层不存风险数据源，只维护跨项目风险索引（实时从各子项目读取聚合，不落盘）。
 
-以下风险应登记在 `portfolio/risks/risk-register.md` 而非子项目级：
+### 3.1 什么风险属于跨项目风险
+
+以下风险应在主归属子项目登记完整实体，并标注影响的其他子项目：
 
 | 场景 | 示例 |
 |------|------|
@@ -59,11 +63,13 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 
 ### 3.2 风险与子项目的关联
 
-项目集级风险必须标注影响哪些子项目（PRJ-NNN），并与子项目级风险通过 ID 互相关联。
+跨项目风险必须标注影响哪些子项目（PRJ-NNN），主归属子项目记完整实体，其他子项目登记册中加关联指针（风险 ID 互相引用）。项目集层查询跨项目风险时，遍历各子项目 risk-register 中"影响子项目 ≥ 2"的条目实时聚合。
 
 ## 4. 整体P&L管理
 
-`portfolio/plans/budget.md` 汇总所有子项目的成本数据：
+> v2.0.0 零数据源：各子项目各自维护 `projects/{子项目}/plans/budget.md`（成本事实源）；项目集层只留**合同额汇总索引**（指向各子项目 budget），查询时实时聚合，不落盘明细。
+
+整体 P&L 汇总视图（实时从各子项目 budget 聚合）：
 
 | 子项目 | 合同额 | 50%成本线 | 已投入人月 | 已投入人日 | 人力成本 | CPI | 偏差 |
 |--------|--------|-----------|-----------|-----------|----------|-----|------|
@@ -74,40 +80,39 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 
 当合计人力成本占总合同额比重超过预警线时，必须主动预警。
 
-## 5. 人员资源管理
+## 5. 人员资源管理（v2.0.0 零数据源：下放子项目）
 
 ### 5.1 核心原则
 
-1. 人员资源是项目集级管理对象，统一维护在 `portfolio/resources/`。
-2. 子项目级不单独维护资源登记册。
-3. 当前人员分配状态记录在 `resource-register.md`（事实源）。
-4. 人员进场、离场、借调、请假、角色变化、分配比例变化记录在 `transfer-log.md`（独立文件）。
-5. 任何人员流转不得只更新当前状态，必须先登记流转记录。
+1. 人员数据一律下放到子项目：每个子项目各自维护 `projects/{子项目}/resources/resource-register.md`（本项目内人员信息，事实源）。
+2. 项目集层不存人员数据源，只留两个索引：`portfolio/resources/shared-resource-index.md`（跨项目共享资源索引）与 `portfolio/resources/transfer-index.md`（跨项目流转索引），仅含编号+指向子项目+共享状态/日期，只读不改实体。
+3. 共享资源的人属性（在岗/请假/B角/分配比例）在各参与的子项目独立管理；换人发生在哪个项目就记在哪个项目的 transfer-log.md。
+4. 单项目模式：从待办 Owner + `todos/{date}/_index.md` 推导人员清单，不单独维护资源登记册。
+5. 任何人员流转不得只更新当前状态，必须先登记流转记录（子项目级 transfer-log.md）。
 6. AI 不得将未经确认的人员变动直接写为事实，应标记为待确认。
 
-### 5.2 resource-register.md 字段
+### 5.2 子项目 resource-register.md 字段
 
 | 字段 | 说明 | 取值 |
 |------|------|------|
 | Resource ID | 唯一标识 | RES-NNN |
 | 姓名 | 人员姓名 | |
 | 角色/岗位 | 职能 | 项目经理/产品经理/前端开发/后端开发/测试/QA |
-| 当前状态 | 是否在岗 | active / on_leave / left / transferred_out / pending_join |
+| 当前状态 | 是否在岗 | 在岗 / 请假 / 已离场 / 已调出 / 待进场 |
 | 分配方式 | 全职或共享 | full_time / shared / backup / temporary |
-| 主项目 | 当前主要所在 | PRJ-NNN |
-| 同时参与项目 | 其他项目 | PRJ-NNN, PRJ-NNN |
-| 分配详情 | 各项目占比 | 如：全链通50% / 企业通30% / 信用监管20% |
+| 本项目分配比例 | 在本项目的投入占比 | 如：50% |
+| 同时参与项目 | 其他项目（共享人员） | PRJ-NNN, PRJ-NNN |
 | 进场日期 | 最早进场 | YYYY-MM-DD |
 | 计划离场日期 | 预计离场 | YYYY-MM-DD |
 | 实际离场日期 | 实际离场 | YYYY-MM-DD |
-| 累计流转次数 | 在项目集内换了几次 | 数字 |
+| 累计流转次数 | 换了几次 | 数字 |
 | B角 | 替补人员 | RES-NNN |
-| 风险等级 | 资源风险 | low / medium / high |
+| 风险等级 | 资源风险 | 低 / 中 / 高 |
 | Source Type | 来源类型 | meeting / daily / manual |
 | Source Ref | 来源引用 | 文件路径或会议ID |
 | 最近更新 | 最后更新日期 | YYYY-MM-DD |
 
-### 5.3 transfer-log.md 字段
+### 5.3 子项目 transfer-log.md 字段
 
 | 字段 | 说明 | 取值 |
 |------|------|------|
@@ -128,51 +133,78 @@ AI 管理文件只能写入根目录 `ai/` 下。不得在业务子项目目录�
 | Source Type | 来源类型 | meeting / daily / manual |
 | Source Ref | 来源引用 | 文件路径或会议ID |
 
-### 5.4 资源风险触发规则
+### 5.4 项目集层人员索引（只读，不存实体）
 
-以下情况必须提示资源风险并建议写入 `portfolio/risks/risk-register.md`：
+**shared-resource-index.md（跨项目共享资源索引）**：
+
+| 字段 | 说明 |
+|------|------|
+| 姓名 | 共享人员姓名 |
+| 参与子项目 | PRJ-NNN 列表（指向各子项目 resource-register） |
+| 共享状态 | 如：多项目共享/临时支援（仅导航用，人属性以各子项目登记为准） |
+
+**transfer-index.md（跨项目流转索引）**：
+
+| 字段 | 说明 |
+|------|------|
+| Transfer ID | RTF-YYYYMMDD-NNN（指向发生流转的子项目 transfer-log） |
+| 姓名 | 人员姓名 |
+| 流转方向 | 如：PRJ-001 → PRJ-003 |
+| 日期 | YYYY-MM-DD |
+
+> 索引只作导航与提示，不得手动改实体数据；实体变更一律在子项目发生。同一人出现在 2 个及以上子项目 resource-register 时，应登记进 shared-resource-index。
+
+### 5.5 共享人力软兜底机制（交互时提示，不新建数据源）
+
+- **T1 排期冲突提示**：AI 为共享人力创建/查询待办时，软性提示该人跨子项目已有排期（如"胡康利在 PRJ-003 的 08/20 已有 3 条待办"）。仅查询时提示，不落数据源，不阻塞操作。
+- **T3 属性变更提示**：共享人力属性（请假/B角/分配比例）在某子项目变更时，AI 提示 PM 手动同步到其参与的其他子项目（如"胡康利在 PRJ-001 标记请假 08/20-08/22，是否同步到 PRJ-003？"）。
+
+### 5.6 资源风险触发规则
+
+以下情况必须提示资源风险，并建议写入**主归属子项目**的 `projects/{子项目}/risks/risk-register.md`（跨项目资源风险标注影响的全部子项目）：
 
 | 编号 | 触发条件 | 风险等级 |
 |------|----------|----------|
-| RR-01 | 关键岗位无 B 角 | high |
-| RR-02 | 同一人员同时参与 2 个以上 P0/P1 项目 | high |
-| RR-03 | 人员状态为 on_leave，但仍承担关键任务 | high |
-| RR-04 | 人员被抽调导致原项目关键任务无人负责 | high |
-| RR-05 | 共享人员分配比例合计超过 100% | high |
-| RR-06 | 计划离场日期早于关键里程碑完成日期 | medium |
-| RR-07 | 某项目核心角色缺失（无后端/无测试/无产品） | high |
-| RR-08 | 人员连续多次流转（≥3次），影响项目稳定性 | medium |
+| RR-01 | 关键岗位无 B 角 | 高 |
+| RR-02 | 同一人员同时参与 2 个以上 P0/P1 项目 | 高 |
+| RR-03 | 人员状态为请假，但仍承担关键任务 | 高 |
+| RR-04 | 人员被抽调导致原项目关键任务无人负责 | 高 |
+| RR-05 | 共享人员各项目分配比例合计超过 100% | 高 |
+| RR-06 | 计划离场日期早于关键里程碑完成日期 | 中 |
+| RR-07 | 某项目核心角色缺失（无后端/无测试/无产品） | 高 |
+| RR-08 | 人员连续多次流转（≥3次），影响项目稳定性 | 中 |
 
-### 5.5 联动规则
+### 5.7 联动规则
 
 人员资源变动时，AI 必须检查并输出以下联动建议：
 
 ```
 人员变动
-  → transfer-log.md（记录流转）
-  → resource-register.md（更新当前状态）
-  → 若触发资源风险 → portfolio/risks/risk-register.md
-  → 若影响成本 → portfolio/plans/budget.md
-  → 若影响子项目任务 → projects/{子项目}/tasks/board.md
-  → 若需要管理决策 → portfolio/decisions/decision-log.md
+  → projects/{子项目}/resources/transfer-log.md（记录流转，发生在哪个项目记在哪个项目）
+  → projects/{子项目}/resources/resource-register.md（更新当前状态）
+  → 跨项目流转/共享人员变化 → 同步提示维护 portfolio/resources/ 两个索引（只改指针）
+  → 若触发资源风险 → 主归属子项目 risks/risk-register.md
+  → 若影响成本 → projects/{子项目}/plans/budget.md
+  → 若影响子项目待办 → projects/{子项目}/todos/{date}/{owner}.md 待办文件
+  → 若需要管理决策 → 相关子项目 decisions/decision-log.md（跨项目决策拆解到各相关子项目）
 ```
 
 AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提出。
 
-### 5.6 resource-register 与 project-context 一致性检查（v1.6.1 新增）
+### 5.8 resource-register 与 project-context 一致性检查（子项目级）
 
 **核心原则：**
 
-1. `resource-register.md` 是人员当前状态的**唯一主源**。
+1. 子项目 `projects/{子项目}/resources/resource-register.md` 是本项目人员当前状态的**唯一主源**。
 2. `project-context.md` 中的团队列表是 register 的**投影**，不是独立事实源。
-3. 日报目录中的人员信息只能是**候选证据**，不能自动覆盖 register。
+3. 日报/待办文件中的人员信息只能是**候选证据**，不能自动覆盖 register。
 4. AI **不得未经用户确认**直接修改 `resource-register.md` 或 `project-context.md`。
 
 **一致性检查触发条件：**
 
 - 人员资源流转后更新 register 时
 - 用户要求"检查资源一致性"时
-- 生成项目集汇总周报时（作为周报流程的前置检查）
+- 生成项目集汇总周报时（逐子项目作为前置检查）
 
 **差异类型与处理方式：**
 
@@ -190,13 +222,13 @@ AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提
 ## 资源一致性差异报告
 
 ### 检查范围
-- resource-register.md vs projects/{子项目}/context/project-context.md
+- projects/{子项目}/resources/resource-register.md vs projects/{子项目}/context/project-context.md
 
 ### 差异项
 
 | 子项目 | 差异类型 | register 记录 | context 记录 | 建议操作 |
 |---|---|---|---|---|
-| PRJ-002 | 状态不一致 | RES-003 王五: on_leave | 王五: active | A.以register为准更新context / B.以context为准修正register / C.暂不处理 / D.补充说明 |
+| PRJ-002 | 状态不一致 | RES-003 王五: 请假 | 王五: 在岗 | A.以register为准更新context / B.以context为准修正register / C.暂不处理 / D.补充说明 |
 | PRJ-001 | 人员缺失 | 无"赵六" | "赵六: 测试工程师" | A.确认后添加到register / B.从context删除 / C.暂不处理 |
 
 ### 规则
@@ -204,16 +236,20 @@ AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提
 - 用户选择后，AI 按选择执行并记录到 Change Log
 ```
 
-## 6. 里程碑总览
+## 6. 里程碑总览（跨项目里程碑索引）
 
-`portfolio/milestones/milestone-board.md` 汇总所有子项目的里程碑状态：
+> v2.0.0 零数据源：里程碑 = 各子项目 PLAN 文件中 `is_milestone: true` 的 WP；项目集层不存里程碑数据源，只留**跨项目里程碑索引**（指向各子项目 XC/里程碑 WP），查询时实时聚合，倒排倒计时从各子项目 WP 结束时间实时计算。
 
-| 子项目 | 里程碑 | 计划日期 | 实际日期 | 状态 | 风险评估 |
-|--------|--------|----------|----------|------|----------|
-| PRJ-001 全链通 | M06 | | | | |
-| PRJ-001 全链通 | M07 | | | | |
-| PRJ-002 企业通 | M05 | | | | |
+跨项目里程碑索引（实时从各子项目 PLAN WP 聚合，不落盘）：
+
+| 子项目 | 里程碑 WP | 计划日期 | 实际日期 | 状态 | 风险评估 |
+|--------|-----------|----------|----------|------|----------|
+| PRJ-001 全链通 | WP-008（M06 系统测试） | | | | |
+| PRJ-001 全链通 | WP-010（M07 集成联调） | | | | |
+| PRJ-002 企业通 | WP-005（M05 开发启动） | | | | |
 | ... | | | | | |
+
+> 统一门禁达成度聚合：存在跨子项目统一门禁（如封板/割接）时，门禁节点状态 = 所有相关子项目该节点 WP 状态的最小值（任一未完成则整体未完成）；PM 查询时实时计算，不落盘；任一子项目未达标时标注具体子项目 + 原因。
 
 ## 7. 项目索引维护
 
@@ -221,15 +257,15 @@ AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提
 
 | Project ID | Project Name | Management Path | Business Path | PM | Status | Priority | Include In Weekly |
 |------------|-------------|-----------------|---------------|-----|--------|----------|-------------------|
-| PRJ-001 | 全链通重构 | ai/projects/全链通重构 | 全链通重构/ | | in_progress | P0 | yes |
-| PRJ-002 | 企业通重构 | ai/projects/企业通重构 | 企业通重构/ | | in_progress | P0 | yes |
-| PRJ-003 | 信用监管登记注册重构 | ai/projects/信用监管登记注册重构 | 信用监管登记注册重构/ | | in_progress | P0 | yes |
+| PRJ-001 | 全链通重构 | ai/projects/全链通重构 | 全链通重构/ | | 进行中 | P0 | yes |
+| PRJ-002 | 企业通重构 | ai/projects/企业通重构 | 企业通重构/ | | 进行中 | P0 | yes |
+| PRJ-003 | 信用监管登记注册重构 | ai/projects/信用监管登记注册重构 | 信用监管登记注册重构/ | | 进行中 | P0 | yes |
 
 新增子项目时必须在此文件登记，不得通过扫描文件夹代替索引读取。
 
 ## 8. 级联传播规则
 
-本实体（Resource / 项目集级实体）状态变更时，按以下规则触发下游动作。动作分三类：
+本实体（Resource / 跨项目索引实体）状态变更时，按以下规则触发下游动作。动作分三类：
 - [AUTO] 写派生视图（索引/待办），低风险，直接执行
 - [CHECK] 只读校验，检查关联是否存在/一致
 - [SUGGEST] 写事实源或影响其他实体，加入建议更新清单待 PM 确认
@@ -242,29 +278,29 @@ AI 不直接修改子项目任务负责人，只能通过"建议更新清单"提
 
 > **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
 
-Resource 状态 → offboard/transferred →
-  [SUGGEST] 其名下所有 open/in_progress task → 建议重新分配或 blocked
-  [AUTO] 更新 personal-todo-index：移除或标记该人的待办
-  [SUGGEST] 更新 resource-register，记录流转日志
+Resource 状态 → 已离场/已调出 →
+  [SUGGEST] 其名下所有 开放/处理中 待办 → 建议重新分配或标记已阻塞
+  [AUTO] 更新待办文件：该人名下待办标记已转出/建议重分配，并同步绑定文件 todos/{date}/_index.md
+  [SUGGEST] 更新子项目 resource-register，并在该子项目 transfer-log 记录流转日志（跨项目时同步提示维护项目集层索引）
 
-Resource 状态 → onboard →
-  [AUTO] 在 personal-todo-index 中创建该人的空条目
+Resource 状态 → 待进场/进场 →
+  [AUTO] 无需预建条目；该人首次有待办时按需创建其待办文件 todos/{date}/{姓名}.md
 
-### 8.1 transfer-log 归档规则
+### 8.1 transfer-log 归档规则（子项目级）
 
-transfer-log.md 归档规则：
+各子项目 transfer-log.md 归档规则：
 - 拆分触发：>100 条记录 或 文件 >300 行
-- 拆分策略：按年度归档到 `logs/archive/YYYY-transfer-log.md`
-- 归档后维护 `logs/index.md` 索引
+- 拆分策略：按年度归档到子项目 `logs/archive/YYYY-transfer-log.md`
+- 归档后维护子项目 `logs/index.md` 索引
 - 归档操作本身记录在 Change Log 中
 - 注意：transfer-log 为只追加型文件，归档只移动历史条目，不删除任何内容
 
-### 8.2 resource-register 生命周期管理
+### 8.2 resource-register 生命周期管理（子项目级）
 
-resource-register 生命周期管理：
-- 状态为 `left`/`transferred_out` 且离场超过 90 天的人员 → 归档到 `resource-register-archive.md`
+各子项目 resource-register 生命周期管理：
+- 状态为 `已离场`/`已调出` 且离场超过 90 天的人员 → 归档到子项目 `resource-register-archive.md`
 - 归档触发：在周报生成时检查
-- 归档后主体文件仅保留 `active`/`onboard` 状态的资源
+- 归档后主体文件仅保留 `在岗`/`待进场` 状态的资源
 - 归档操作记录在 Change Log 中
 
 > 端到端工作流数据路径见 `00-pm-main-rules.md` §9（WF-1~WF-6）。本文件 §8 定义 Resource 实体的级联规则，00号 §9 WF-6 定义人员流转的完整读/写路径，两者互补不替代。

@@ -68,10 +68,7 @@ def create_continuity_files(ai_dir: Path, project_name: str):
     if not legacy_path.exists():
         copy_template(templates_dir, legacy_path, "legacy-sources-template.md")
 
-    # 创建结转事项登记册
-    carryover_path = continuity_dir / "carryover-register.md"
-    if not carryover_path.exists():
-        copy_template(templates_dir, carryover_path, "carryover-register-template.md")
+    # 结转登记册已删除（v2.0.0：结转/延期字段化到待办表）
 
     # 创建导入日志
     import_log_path = continuity_dir / "import-log.md"

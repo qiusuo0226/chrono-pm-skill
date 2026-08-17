@@ -26,7 +26,7 @@
 ## 4. 复盘索引
 
 ```
-| Date | Event | Milestone | File | Key Lessons |
+| Date | Event | 关联里程碑（WP-NNN） | File | Key Lessons |
 |---|---|---|---|---|
 ```
 

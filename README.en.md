@@ -1,4 +1,4 @@
-# ChronoPM v1.21.0
+# ChronoPM v2.0.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -83,6 +83,74 @@ Talk to the AI like you would to an assistant:
 | "Check if anything's missing" | Scans all management files, lists gaps with priority levels |
 | "Is this requirement within contract scope?" | Traces from contract → bidding → specific requirements with an evidence chain |
 
+## Todos & Work Packages: the core of project execution (v2.0.0)
+
+v2.0.0 converges the entire execution system into two layers: **todo files** manage every concrete task, and **work packages (WP)** manage grouping and milestones. Understand these two concepts and you understand ChronoPM's entire data flow.
+
+### Todos: one file per person per day
+
+Each executor gets one todo file per day: `todos/{date}/{executor}.md`. It is the **single source of truth** for task execution status — daily reports, weekly reports, progress, and the backward-planning matrix are all aggregated from it in real time. No separate boards or indexes are maintained.
+
+- **Globally unique IDs**: every todo gets a `TD-{name-initials}-{date}-{seq}` ID, traceable across days and projects.
+- **Handover changes the ID, not the work**: when a task changes owner, a new ID is created with a traceability chain — it's always clear who did what.
+- **Built-in work log**: daily report content no longer lives in separate files; it goes straight into the todo file's work-log section (done today / in progress / blockers / risks / hours).
+
+### Work packages (WP): the planning unit
+
+Plan files (`plans/PLAN-xxx.md`) organize work with work packages (numbered `WP-NNN`):
+
+- **Todos must belong to a work package**: formal todos carry a WP reference, so plan adjustments cascade precisely down to every todo.
+- **Milestone = milestone work package**: rehearsal, go-live and other milestones no longer get their own files — they are simply work packages flagged as milestones.
+- **Progress is never stored separately**: WP progress = real-time aggregation of its todos' completion ratio. Always consistent with actual execution — no stale progress numbers.
+
+### The full data flow
+
+```
+[Input entries]  Daily reports / meeting minutes / verbal assignments /
+                 requirement breakdown / approved changes / backward planning
+                          │
+                          ▼  AI parses, extracts, unified ownership routing
+[Single source]  todos/{date}/{executor}.md todo files
+                          │
+          ┌───────────────┼───────────────────┐
+          ▼               ▼                   ▼
+  Aggregate by WP ref   Slice by due date   Work-log section
+          │               │                   │
+          ▼               ▼                   ▼
+[Plan view]            [Time view]          [Reporting view]
+WP progress /           "What's on today" /  daily → weekly →
+backward countdown      "this week's plan"   monthly reports
+```
+
+Key point: **todo files are the only write target; everything else is a derived view**. Daily/weekly reports are outputs, not data sources — reports can never drift out of sync with reality.
+
+### Five task-creation entry points
+
+No matter where a task comes in, it goes through the same ownership routing — nothing lost, nothing duplicated, nothing scattered:
+
+| Entry point | Example scenario |
+|---|---|
+| Verbal assignment | "Add a todo for Wang: finish the API doc by Friday" |
+| Daily report extraction | "Tomorrow's plan" in a member's report auto-becomes a todo |
+| Meeting action items | Action items extracted from minutes land as todos |
+| Requirement breakdown | Confirmed requirements split into work packages and todos |
+| Approved changes | Follow-up tasks added/adjusted after a change is approved |
+
+Every new task lands in one of three places: **inside a work package** (high-confidence match) / **standalone todo** (has owner + deadline + deliverable) / **one-time reminder** (doesn't occupy a todo file, reminds once). When unsure, the AI asks — it never decides silently.
+
+### Status system (fully Chinese in the workspace)
+
+| Entity | Status flow |
+|---|---|
+| Todo | pending → in progress → awaiting review → completed (can become blocked / cancelled / transferred out) |
+| Work package | planned → in progress → completed |
+| Requirement | proposed → confirmed → in progress → delivered → accepted (can become changed / cancelled) |
+| Risk | open → monitoring → mitigated → closed (can become escalated-to-issue) |
+| Issue | open → in progress → resolved → closed (can become blocked) |
+| Change | submitted → assessing → approved / rejected → implemented (can become cancelled) |
+
+**How status updates take effect**: say "Wang's API doc is done," and the AI finds the matching todo, proposes marking it completed, and auto-runs cascade checks (WP progress, related risks/issues, requirement status). Process-level updates are written as "pending confirmation" first; terminal changes (completed/cancelled) only take effect after your approval — no missed updates, no unsolicited overwrites.
+
 ## Two working modes
 
 - **Single project mode**: One `ai/` folder manages one project. Good for standalone projects.
@@ -112,7 +180,7 @@ From contracts to bidding documents to specific requirements — a three-layer m
 The same requirement looks like "what to build" to the client (business view) and "how to build it" to developers (implementation view). Dev-side docs (PRD/design/API specs/prototypes) are ingested into the requirement library, with each register entry carrying an "implementation view" and "prototype/doc links." When processing developers' daily reports, the AI can match against the business context — so it truly understands what a report is about.
 
 **Reasoning Baseline — smarter status derivation**
-A built-in lifecycle derivation chain derives the actual completion status of modules/tasks from milestone terminal events such as "rehearsal passed," "review passed," and "acceptance passed," then cross-checks it against the task board. Combined with an entity registry and cross-source contradiction handling, weekly reports and queries no longer rely on a single board status — fewer missed counts and fewer misjudgments.
+A built-in lifecycle derivation chain derives the actual completion status of modules/tasks from milestone terminal events such as "rehearsal passed," "review passed," and "acceptance passed," then cross-checks it against todo files. Combined with an entity registry and cross-source contradiction handling, weekly reports and queries no longer rely on a single todo-file status — fewer missed counts and fewer misjudgments.
 
 ## Capabilities at a glance (CAP-001 ~ CAP-031)
 
@@ -150,15 +218,15 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
 | CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
 | CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
-| — (extension) | Backward Planning & WP Work Packages | Reverse-plan iteration work packages around a target deadline (WF-7: backward planning = a way to arrange iteration plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone task / one-time reminder, formal tasks must land on the board); iteration-register WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown; **Backward Daily Matrix** (person × date, supports portfolio multi-board traversal and legacy degradation) |
+| — (extension) | Backward Planning & WP Work Packages | Reverse-plan plan work packages around a target deadline (WF-7: backward planning = a way to arrange plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone todo / one-time reminder, formal todos must land on todo files); PLAN-file WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown; **Backward Daily Matrix** (person × date, authoritative source = todo files, supports portfolio multi-sub-project todo traversal and legacy degradation) |
 | — (extension) | Reasoning Baseline | Lifecycle derivation chain + cross-source contradiction handling + entity registry + task-set association; derives actual completion status from milestone events |
 
 ## What's included
 
 | Content | Count | Description |
 |---|---|---|
-| Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 49 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Rule files | 21 | Define how the AI should behave in various scenarios |
+| Document templates | 36 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
 | Regression tests | 269 cases | Ensure every update doesn't break existing functionality |
 
@@ -174,12 +242,11 @@ ChronoPM Skill/
 ├── VERSION               # Current version number (plain text), for quick reference.
 ├── CHANGELOG.md          # Change history. What changed in each version, release date, impact scope.
 │
-├── references/           # 📖 Rule files (22 files, numbered 00~21)
+├── references/           # 📖 Rule files (21 files, numbered 00~21; No.03 merged into No.00 since v2.0.0)
 │   │                      # The AI's "code of conduct" — defines what to do in each scenario.
 │   ├── 00-pm-main-rules.md        # PM master rules: core workflows, permission model, safety baseline
-│   ├── 01-daily-report-rules.md   # Daily report handling: merge, idempotency, personal progress sync
+│   ├── 01-daily-report-rules.md   # Daily report handling: merge, idempotency, work-log integration
 │   ├── 02-meeting-rules.md        # Meeting minutes: structured recording, action item extraction, decision archiving
-│   ├── 03-task-board-rules.md     # Task board: task registration, status transitions, cascade propagation
 │   ├── 04-risk-issue-rules.md     # Risk & issue: registration, assessment, multi-source cross-check
 │   ├── 05-query-rules.md          # Query rules: index-first, no full scans
 │   ├── 06-file-rules.md           # File rules: naming conventions, archive paths, read/write constraints
@@ -192,7 +259,7 @@ ChronoPM Skill/
 │   └── ...
 │
 ├── assets/               # 📦 Resource files
-│   └── templates/        # Document templates (49). The AI fills these when generating files,
+│   └── templates/        # Document templates (36). The AI fills these when generating files,
 │                          # ensuring consistent formatting. Covers daily reports, weekly reports,
 │                          # meeting minutes, risk registers, decision logs, retrospectives, etc.
 │                          # Note: the workspace ai/ directory tree is created programmatically by
@@ -222,15 +289,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 1.21.0 |
+| Skill version | 2.0.0 |
 | Workspace schema | 0.8.0 |
-| Rule files | 22 |
-| Document templates | 49 |
+| Rule files | 21 |
+| Document templates | 36 |
 | Regression cases | 269 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v1.21.0.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v2.0.0.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix

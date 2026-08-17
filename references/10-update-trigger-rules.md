@@ -106,17 +106,17 @@
 #### 任务信号
 安排、负责、跟进、完成、延期、阻塞、下周处理、今天处理、交付、联调、测试、修复、上线
 
-→ 触发：`tasks/board.md`、`tasks/backlog.md`
+→ 触发：`todos/{date}/{owner}.md` 待办文件
 
 #### 倒排计划信号
 倒排、根据X月X日、截止日前完成、围绕某日期排、反向排期、到某日必须完成
 
-→ 触发：按 `00-pm-main-rules.md` §9 WF-7 倒排计划编排执行（写 `plans/iteration-register.md` WP 表 + `tasks/board.md`）。
+→ 触发：按 `00-pm-main-rules.md` §9 WF-7 倒排计划编排执行（写 PLAN 文件 WP 表 + 待办文件）。
 
-> **倒排草案查询提示（v1.21.0）**：PM 查询倒排相关内容时，若 board 中倒排范围内的 Task 自上次生成草案后发生过变更，AI 应在输出中附带提示：“board 自上次生成草案后有 N 条变更，建议刷新倒排矩阵”。不新增独立触发类型，仅在现有查询流程中附带提示。
+> **倒排草案查询提示（v1.21.0）**：PM 查询倒排相关内容时，若待办文件中倒排范围内的待办自上次生成草案后发生过变更，AI 应在输出中附带提示：“待办文件自上次生成草案后有 N 条变更，建议刷新倒排矩阵”。不新增独立触发类型，仅在现有查询流程中附带提示。
 
 #### 待办归属信号
-加个待办、加个任务、排一下、安排到迭代、归到某工作包、属于哪个迭代
+加个待办、加个任务、排一下、安排到计划、归到某工作包、属于哪个计划/WP（旧说法"安排到迭代/属于哪个迭代"同样命中）
 
 → 触发：按 `00-pm-main-rules.md` §9 WF-8 归属判定执行（新任务创建统一前置规则）。
 
@@ -133,23 +133,23 @@
 #### 待办信号
 明天做、下周做、安排、计划做、待办、todo、跟进、推动、确认、推进、督促、提醒、记得
 
-→ 触发：`portfolio/todos/personal-todo-index.md`、`portfolio/todos/daily-todo-index.md`、`portfolio/todos/weekly-todo-index.md`
-→ 触发后：待办**创建**统一路由 `00-pm-main-rules.md` WF-8 归属判定（正式任务强制落 board，见 `03-task-board-rules.md` §8.1）；待办**状态更新**执行 §8.1 状态级联检查。
+→ 触发：`todos/{date}/` 待办文件 + 绑定文件 `todos/{date}/_index.md`（项目集模式为各子项目 `projects/*/todos/`）
+→ 触发后：待办**创建**统一路由 `00-pm-main-rules.md` WF-8 归属判定（正式任务强制落待办文件）；待办**状态更新**执行状态级联检查。
 
 #### 资源信号
 请假、抽调、借调、支援、离场、进场、换人、顶替、B角、没人、共享、投入比例、暂停投入、转去、回到
 
-→ 触发：`portfolio/resources/transfer-log.md`、`portfolio/resources/resource-register.md`、`portfolio/risks/risk-register.md`
+→ 触发：`projects/{子项目}/resources/transfer-log.md`、`projects/{子项目}/resources/resource-register.md`（发生在哪个项目记在哪个项目；跨项目时同步提示维护 portfolio/resources/ 索引）、主归属子项目 `risks/risk-register.md`
 
-#### 快照信号
+#### 待办/计划生成信号
 生成 PM 待办、生成周计划、处理日报实际完成
 
-→ 触发：`portfolio/todos/snapshots/` + `portfolio/todos/actuals/` + `history-index.md`
+→ 触发：`todos/{date}/` 待办文件（待办清单 + 工作日志段；v2.0.0 起无前向快照体系，待办文件本身即历史）
 
 #### 评审信号
 需求评审、设计评审、技术评审、方案评审、接口评审、数据库评审、上线评审、验收评审
 
-→ 触发：`meetings/` 或 `reviews/`、`decisions/decision-log.md`、`tasks/backlog.md`、`risks/risk-register.md`、`issues/issue-register.md`、`requirements/change-log.md`
+→ 触发：`meetings/` 或 `reviews/`、`decisions/decision-log.md`、`pending-changes.md`（未排期待办区块）、`risks/risk-register.md`、`issues/issue-register.md`、`requirements/change-log.md`
 
 **提示格式：**
 
@@ -189,7 +189,7 @@ AI 在处理任何用户输入前，必须先读取 `context/project-brief.md`�
 | 内容中提到"整体""所有项目""全局""项目集" | 项目集级 | `ai/portfolio/` |
 | 内容中提到人员姓名，可在 resource-register.md 中匹配 | 该人员所属子项目 | `ai/projects/{子项目}/` |
 | 内容中提到需求编号（REQ-XXX-NNN）| 该需求所属子项目 | `ai/projects/{子项目}/` |
-| 内容中提到任务编号（T-YYYYMMDD-NNN）| 该任务所属子项目 | `ai/projects/{子项目}/` |
+| 内容中提到待办编号（TD-xxx）| 该待办所属子项目 | `ai/projects/{子项目}/` |
 | 关联度低或无法判断 | 不确定 | 追问用户 |
 
 ### 3.3 关联度不匹配时
@@ -227,23 +227,23 @@ AI 在处理任何用户输入前，必须先读取 `context/project-brief.md`�
 - 月报草稿生成
 - 资源流转日志候选
 - AI 操作日志更新
-- backlog 新增待确认任务
-- 风险候选新增为 open
-- 问题候选新增为 open
+- 未排期待办候选新增（登记 `pending-changes.md`）
+- 风险候选新增为开放
+- 问题候选新增为开放
 
 ### 4.3 高风险更新（必须确认后才能更新）
 
-- 需求状态从 proposed 改为 confirmed
-- 需求状态改为 cancelled
-- 需求变更批准（approved）
+- 需求状态从已提议改为已确认
+- 需求状态改为已取消
+- 需求变更批准（已批准）
 - 预算/P&L 金额调整
 - 里程碑日期调整
-- 任务状态改为 done
+- 任务状态改为已完成
 - 风险关闭
 - 问题关闭
-- 正式决策记录新增为 confirmed
-- 验收结论 accepted
-- 人员正式离场（left）
+- 正式决策记录新增为定稿
+- 验收结论已验收
+- 人员正式离场（已离场）
 - 删除、覆盖、重写历史记录
 
 ---
@@ -259,19 +259,19 @@ AI 在处理任何用户输入前，必须先读取 `context/project-brief.md`�
 | 会议纪要（跨项目） | `ai/portfolio/meetings/` |
 | 需求新增 | `ai/projects/{project}/requirements/requirement-register.md` |
 | 需求变更 | `ai/projects/{project}/requirements/change-log.md` |
-| 任务行动项 | `ai/projects/{project}/tasks/backlog.md` 或 `tasks/board.md` |
+| 任务行动项 | `ai/projects/{project}/todos/{date}/{owner}.md` 待办文件 |
 | 项目内风险 | `ai/projects/{project}/risks/risk-register.md` |
-| 跨项目风险 | `ai/portfolio/risks/risk-register.md` |
+| 跨项目风险 | 主归属子项目 `ai/projects/{project}/risks/risk-register.md`（标注影响的子项目；项目集层只留索引） |
 | 项目内问题 | `ai/projects/{project}/issues/issue-register.md` |
-| 跨项目问题 | `ai/portfolio/issues/issue-register.md` |
+| 跨项目问题 | 主归属子项目 `ai/projects/{project}/issues/issue-register.md`（其他子项目加关联指针） |
 | 设计决策 | `ai/projects/{project}/decisions/decision-log.md` |
-| 项目集决策 | `ai/portfolio/decisions/decision-log.md` |
-| 人员流转 | `ai/portfolio/resources/transfer-log.md` |
-| 当前资源分配 | `ai/portfolio/resources/resource-register.md` |
-| 整体预算/P&L | `ai/portfolio/plans/budget.md` |
+| 项目集决策 | 拆解到各相关子项目 `decisions/decision-log.md`（项目集层只留索引） |
+| 人员流转 | `ai/projects/{project}/resources/transfer-log.md`（发生在哪个项目记在哪个项目） |
+| 当前资源分配 | `ai/projects/{project}/resources/resource-register.md`（跨项目共享人员参照 `ai/portfolio/resources/shared-resource-index.md`） |
+| 整体预算/P&L | 实时聚合各子项目 `ai/projects/{project}/plans/budget.md`（项目集层不落盘明细） |
 | 子项目预算 | `ai/projects/{project}/plans/budget.md` |
-| 项目集里程碑 | `ai/portfolio/milestones/milestone-board.md` |
-| 子项目里程碑 | `ai/projects/{project}/milestones/milestone-board.md` |
+| 项目集里程碑 | 实时聚合各子项目 PLAN 文件里程碑 WP（is_milestone=true，项目集层不落盘） |
+| 子项目里程碑 | `ai/projects/{project}/plans/PLAN-NNN-{name}.md`（里程碑 WP） |
 
 ---
 
@@ -296,7 +296,7 @@ AI 在处理任何用户输入前，必须先读取 `context/project-brief.md`�
 这条信息可能是【需求】也可能是【任务】。
 请确认：
 1. 作为需求登记；
-2. 作为任务加入 backlog；
+2. 作为未排期待办登记（pending-changes.md）；
 3. 同时登记需求并拆出任务。
 ```
 

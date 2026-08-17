@@ -69,15 +69,13 @@ AI 在每次会话**首次进入工作区**时（而非每次请求），必须�
 
 | 版本范围 | 检查项 |
 |---|---|
-| 0.3.0+ | `portfolio/resources/resource-register.md` 和 `transfer-log.md` 是否存在 |
+| 0.3.0+（仅旧工作区升级探测） | `portfolio/resources/resource-register.md` 和 `transfer-log.md` 是否存在（仅对 <2.0.0 升级来的工作区有意义；v2.0.0+ 工作区人员事实源在子项目，项目集层本就不应有这两个文件，缺失不记异常，存在时提示按 09 号 §5 迁移） |
 | 0.4.0+ | `context/project-brief.md` 是否存在 |
 | 0.5.0+ | `outputs/` 目录是否存在 |
-| 0.7.0+ | `reports/daily/personal/summaries/` 目录是否存在；是否还在用 `YYYY/MM` 旧结构 |
-| 0.8.0+ | `continuity/` 目录和 4 个文件是否存在 |
-| 0.9.0+ | `portfolio/todos/` 目录是否存在 |
-| 1.1.0+ | `portfolio/todos/snapshots/` 和 `portfolio/todos/actuals/` 目录是否存在 |
-| 1.1.0+ | `portfolio/todos/history-index.md` 是否存在 |
+| 0.7.0+ | 是否还在用 `YYYY/MM` 旧目录结构 |
+| 0.8.0+ | `continuity/` 目录和保留文件（project-lineage/legacy-sources/import-log）是否存在 |
 | 1.9.0+ | `portfolio/context/pm-profile.md`（项目集模式）或 `context/pm-profile.md`（单项目模式）是否存在 |
+| 2.0.0+ | 各子项目/单项目 `todos/` 目录（每人每日待办文件 + 绑定文件 `_index.md`）是否存在；旧待办索引（personal/daily/weekly-todo-index、history-index）已废弃，存在时提示可清理 |
 
 3b. 检查 `ai/templates/` 参考模板库完整性：对比工作区 `ai/templates/` 下的文件与 Skill 包 `assets/templates/` 目录中的模板清单（`ALL_TEMPLATE_FILES`），如有缺失模板，在健康报告的“缺失能力”表中列出并建议执行迁移补齐。同时检查 `outputs/.templates/manifest-template.md` 是否存在。
 
@@ -96,8 +94,8 @@ AI 在每次会话**首次进入工作区**时（而非每次请求），必须�
 
 | 版本 | 能力 | 缺失项 | 影响 |
 |---|---|---|---|
-| 0.9.0 | 快速查询+待办索引 | portfolio/todos/ 目录 | 查询待办时会回退到全量扫描 |
-| 1.1.0 | 计划快照 | snapshots/actuals 目录 | 无法回查历史计划和偏差 |
+| 2.0.0 | 待办查询体系 | todos/ 目录（待办文件+绑定文件） | 查询待办时会回退到全量扫描模式 |
+| 1.1.0 | 历史导入快照 | snapshots 目录 | 无法回查导入的历史计划和偏差 |
 
 ### 建议
 
@@ -128,30 +126,30 @@ python scripts/migrate_workspace.py --project-root . --dry-run
 
 当用户触发某个需要特定目录/文件的能力，但该目录/文件不存在时，AI 不得直接退化为全量扫描，必须先提示工作区可能未升级：
 
-**示例：用户问"我明天的待办是什么"，但 `portfolio/todos/personal-todo-index.md` 不存在**
+**示例：用户问"我明天的待办是什么"，但 `todos/{date}/` 目录不存在**
 
 AI 应输出：
 
 ```markdown
-我准备按快速查询规则读取 PM 待办索引，但当前工作区缺少：
+我准备按快速查询规则读取 PM 待办文件，但当前工作区缺少：
 
-`ai/portfolio/todos/personal-todo-index.md`
+`ai/todos/`（项目集模式为 `ai/projects/{子项目}/todos/`）
 
 这通常表示当前 `ai/` 目录还停留在旧版本结构。
 
 当前建议：
 1. 先执行工作区升级检查
-2. 补齐 `ai/portfolio/todos/` 索引目录
-3. 可选从最近 7 天日报重建待办索引
+2. 补齐 `todos/` 待办目录（待办文件 + 绑定文件 _index.md）
+3. 可选将旧索引/看板中的在办事项迁入待办文件
 4. 再回答"明天待办"
 
 是否现在生成升级计划？
 
-如果你暂时不升级，我也可以进入兼容模式，从任务看板和最近日报索引中查询，但会更慢且可能不完整。
+如果你暂时不升级，我也可以进入兼容模式，从日报和会议纪要中查询，但会更慢且可能不完整。
 ```
 
 **规则：**
-1. 不得在缺少索引时直接创建临时脚本全量扫描。
+1. 不得在缺少待办目录/索引时直接创建临时脚本全量扫描。
 2. 必须先提示工作区可能未升级。
 3. 提示后用户可选择：升级 / 兼容模式 / 取消。
 
@@ -169,8 +167,8 @@ AI 应输出：
 ```markdown
 ⚠️ 兼容模式
 当前工作区未升级到最新版本，以下能力降级运行：
-- 快速查询：退化为读任务看板 + 日报索引（较慢）
-- 计划快照：不可用
+- 快速查询：退化为读旧体系任务看板（tasks/board.md）+ 日报索引（较慢）
+- 待办直读/倒排每日矩阵：不可用（依赖 todos/{date}/ 绑定文件与待办文件）
 - PM 待办全景视图：仅列出 PM 个人任务
 
 如需使用完整能力，请执行：
@@ -183,11 +181,10 @@ python scripts/migrate_workspace.py --project-root .
 
 | 缺失能力 | 兜底策略 |
 |---|---|
-| todos/ 索引缺失 | 退化为读取 `tasks/board.md` + 最近日报索引，但提示较慢 |
+| 绑定文件 `_index.md` 缺失 | 退化为直接扫描 `todos/{date}/` 各人待办文件，但提示较慢 |
 | snapshots/ 缺失 | 退化为读取日报索引，但提示无法对比计划偏差 |
 | continuity/ 缺失 | 跳过历史衔接功能，提示用户初始化 |
 | project-brief.md 缺失 | 退化为读取 project-context.md |
-| summaries/ 缺失 | 退化为逐日扫描该人日报 |
 | outputs/ 缺失 | 在工作区根目录下自动创建 |
 | pm-profile.md 缺失 | 跳过偏好加载，按默认行为处理，提示执行 `migrate_workspace.py --create-profile` 补建，不阻塞 |
 

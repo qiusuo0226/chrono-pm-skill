@@ -85,25 +85,25 @@ AI 进入工作区
 **项目集模式**：录入多个子项目。
 **单项目模式**：确认项目名称。
 
-### Step 3: 迭代层（选填）
+### Step 3: 计划层（选填）
 
 **提示词**：
 
 ```
-【Step 3/6 迭代规划】
-现在为每个项目登记迭代信息。先从"[项目名]"开始：
-该项目规划分几个迭代？请列出迭代名称和计划时间段。
+【Step 3/6 计划规划】
+现在为每个项目登记计划信息。先从"[项目名]"开始：
+该项目规划分几个阶段？请列出阶段名称和计划时间段。
 （如暂未规划可回答"跳过"）
 ```
 
-**目标文件**：`plans/iteration-register.md`
+**目标文件**：`context/project-brief.md`（计划概览段）
 
-**录入字段**：迭代名称、计划开始时间、计划结束时间。
+**录入字段**：阶段名称、计划开始时间、计划结束时间。
 
 **规则**：
-- 迭代 ID 自动分配（ITR-01, ITR-02, ...）。
+- 初始化阶段只记录计划概览；PLAN 文件（`plans/PLAN-NNN-{name}.md`）由 AI 在正式排计划时按需创建，向导不预建。
 - 关联里程碑字段选填（可后置）。
-- 迭代与里程碑是并存关系，可选关联（Q1=C）。
+- 计划阶段与里程碑是并存关系，可选关联（Q1=C）。
 
 ### Step 4: 需求层（选填）
 
@@ -111,11 +111,11 @@ AI 进入工作区
 
 ```
 【Step 4/6 需求规划】
-迭代"[迭代名]"预计包含多少需求？
+阶段"[阶段名]"预计包含多少需求？
 （如已有需求文档可上传，我来解析。如暂未拆解可回答"跳过"）
 ```
 
-**目标文件**：`plans/iteration-register.md`（需求数量字段、需求ID列表字段）
+**目标文件**：`requirements/requirement-register.md`（需求数量、需求ID列表字段）
 
 **规则**：
 - 初始化阶段允许只登记需求数量（Q4=C）。
@@ -128,16 +128,16 @@ AI 进入工作区
 
 ```
 【Step 5/6 资源分配】
-迭代"[迭代名]"的开发资源有谁？请列出姓名和角色。
+阶段"[阶段名]"的开发资源有谁？请列出姓名和角色。
 （如暂未确定可回答"跳过"）
 ```
 
-**目标文件**：`plans/iteration-register.md`（资源字段）, `resources/resource-register.md`（项目集模式）
+**目标文件**：`projects/{子项目}/resources/resource-register.md`（项目集模式：各子项目分别创建，v2.0.0 零数据源，项目集层只维护 shared-resource-index 只读索引；单项目模式人员从待办/日报推导，不单独维护）
 
 **规则**：
-- 迭代登记册中记录资源摘要（姓名(角色)）。
+- project-brief.md 计划概览中记录资源摘要（姓名(角色)）。
 - 资源登记册中记录资源详细信息（RES-NNN/角色/所属项目/状态/分配方式等）。
-- 资源登记册的"迭代分配视图"小节记录每个资源在各迭代的投入。
+- 资源登记册的"计划分配视图"小节记录每个资源在各阶段的投入。
 
 ### Step 6: 里程碑层（选填）
 
@@ -149,11 +149,11 @@ AI 进入工作区
 （如暂无可回答"跳过"）
 ```
 
-**目标文件**：`milestones/milestone-board.md`
+**目标文件**：`plans/progress-plan.md`
 
 **规则**：
 - M01-M12 默认体系已预置，用户只需补充计划日期。
-- 如有额外里程碑，可追加到看板。
+- 如有额外里程碑，后续在 PLAN 文件中追加里程碑型 WP（is_milestone=true）。
 
 ---
 
@@ -219,12 +219,12 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 - 计划完工时间：YYYY-MM-DD
 
 ## 项目清单
-| 项目ID | 项目名称 | 迭代数 | 需求总数 | 资源数 |
+| 项目ID | 项目名称 | 计划阶段数 | 需求总数 | 资源数 |
 |---|---|---|---|---|
 
-## 迭代概览
-| 项目 | 迭代ID | 迭代名称 | 时间段 | 需求数 | 资源 |
-|---|---|---|---|---|---|
+## 计划概览
+| 项目 | 阶段名称 | 时间段 | 需求数 | 资源 |
+|---|---|---|---|---|
 
 ## 里程碑
 | 里程碑 | 计划日期 | 状态 |
@@ -256,13 +256,11 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 | Step 1 合同层 | `portfolio/requirements/contract-register.md`（项目集）/ `requirements/contract-register.md`（单项目） | 合同登记册：每份合同（CON-NNN）的 scope_level/parent_contract_id/coverage/文档簇关联（CR-20260813-002） |
 | Step 2 项目层 | `context/project-index.md` | 子项目清单 |
 | Step 2 项目层 | `context/project-brief.md` | 子项目清单 |
-| Step 3 迭代层 | `plans/iteration-register.md` | 迭代总览表 |
-| Step 3 迭代层 | `context/project-brief.md` | 迭代概览一行摘要 |
-| Step 3 迭代层 | `context/project-index.md` | 子项目清单的迭代数列 |
-| Step 4 需求层 | `plans/iteration-register.md` | 需求数量、需求ID列表字段 |
-| Step 5 资源层 | `plans/iteration-register.md` | 资源字段 |
-| Step 5 资源层 | `resources/resource-register.md` | 资源清单 + 迭代分配视图 |
-| Step 6 里程碑层 | `milestones/milestone-board.md` | 计划日期 |
+| Step 3 计划层 | `context/project-brief.md` | 计划概览（阶段名称/时间段）+ 一行摘要 |
+| Step 3 计划层 | `context/project-index.md` | 子项目清单的计划阶段数列 |
+| Step 4 需求层 | `requirements/requirement-register.md` | 需求数量、需求ID列表字段 |
+| Step 5 资源层 | `projects/{子项目}/resources/resource-register.md`（项目集模式按子项目分建） | 资源清单 + 计划分配视图 |
+| Step 6 里程碑层 | `plans/progress-plan.md` | 计划日期 |
 
 ---
 
@@ -273,8 +271,8 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 | 用户中途退出 | 保存已录入信息到 `project-brief.md` 草稿区域，更新 `init_wizard_progress` |
 | 用户提供的信息与已有文件冲突 | 提示冲突项，询问以哪个为准 |
 | 用户上传文件解析失败 | 提示解析失败原因，改为对话式录入 |
-| 项目集模式下某子项目信息暂时不可用 | 该子项目的迭代/需求/资源步骤标记为"待补充"，不阻塞其他子项目 |
-| 迭代数为 0 | 允许，跳过迭代相关步骤 |
+| 项目集模式下某子项目信息暂时不可用 | 该子项目的计划/需求/资源步骤标记为"待补充"，不阻塞其他子项目 |
+| 计划阶段数为 0 | 允许，跳过计划相关步骤 |
 | 重复触发向导 | 检测到 `status: 已确认` 时提示"项目已完成初始化，是否需要修改？" |
 
 ---
@@ -287,7 +285,7 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 2. 按文件类型选择解析方式：
    - 合同文档 → 提取合同名称/总额/类型/范围/时间
    - 需求清单 → 提取需求数量/需求ID/功能模块
-   - 计划表 → 提取迭代名称/时间段/人员/任务
+   - 计划表 → 提取阶段名称/时间段/人员/任务
 3. 解析结果结构化展示，请用户确认。
 4. 确认后填入对应向导步骤。
 5. 解析失败时降级为对话式录入。
@@ -298,7 +296,7 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 
 > 仅当项目存在多模块/多阶段/多市场主体时提示，单模块简单项目可跳过。
 
-**触发条件**：向导 Step 3（迭代层）完成后，若检测到项目含 ≥2 个模块或 ≥3 个迭代阶段，AI 主动提示：
+**触发条件**：向导 Step 3（计划层）完成后，若检测到项目含 ≥2 个模块或 ≥3 个计划阶段，AI 主动提示：
 
 ```
 【可选步骤 推导基线】
@@ -309,9 +307,9 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 
 **创建流程**：
 1. 从 `assets/templates/entity-registry-template.md` 创建 `context/entity-registry.md`
-2. 引导用户填入已知实体清单（可从已录入的迭代/需求信息推断）
+2. 引导用户填入已知实体清单（可从已录入的计划/需求信息推断）
 3. 引导用户确认项目级推导链覆盖（如"预演"等特有阶段）
-4. 写入后标注 `status: 草稿`，待用户确认后改为 `confirmed`
+4. 写入后标注 `status: 草稿`，待用户确认后改为 `已确认`
 
 **与其他规则的关系**：
 - 创建后触发 `00-pm-main-rules.md` §10 推导基线机制

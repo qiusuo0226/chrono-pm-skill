@@ -20,7 +20,7 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 1.21.0（版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 2.0.0（版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
 | 最后更新 | 2026-08-16 (v1.21.0 倒排每日矩阵查询视图：05号 §6.7 新增倒排每日矩阵（人员×日期，portfolio 多 board 遍历+存量降级）+ 00号 WF-7 草案输出规范（contract_change）+ 10号查询附带提示 + Module 38 回归；v1.20.0 需求双视图与开发文档关联：07号 §8.10 双视图机制（view_business 派生/view_dev+原型链接挂 REQ 层）+ scope_scope 聚合排除硬约束 + WF-2 需求上下文加载 + 开发侧 source_type 扩展 + 词库开发侧分类/预筛懒加载 + Module 37 回归；v1.17.1 治理一致性修复：分发包幽灵引用根治 + 版本失步修正 + audit_release.py 自动断言 + 基线补档；v1.17.0 PM 偏好通用化升级：5 能力模块（日报集成审查/跨实体联动/关闭佐证/委派跟踪/沟通质量）；v1.16.3 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现；v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
@@ -116,11 +116,11 @@ ChronoPM 建立在三层信任模型之上：
 
 **否决方案**：分散式管理（每个子项目独立 ai/）— 汇总时需要跨目录扫描，效率低且易遗漏
 
-### AD-05. 查询采用索引优先，不默认全量扫描
+### AD-05. 查询采用定向读取，不默认全量扫描
 
-**决策**：查询类请求必须先读索引文件（todo-index、history-index），不默认创建临时脚本全量扫描文件。
+**决策**：查询类请求必须先读待办文件（`todos/{date}/{执行人}.md`）与绑定文件（`todos/{date}/_index.md`），不默认创建临时脚本全量扫描文件。
 
-**理由**：项目文件数量增长后，全量扫描耗时且不可控。索引预建确保查询性能稳定。
+**理由**：项目文件数量增长后，全量扫描耗时且不可控。待办按日按人组织可直接定位，确保查询性能稳定。
 
 **否决方案**：每次查询临时扫描 — 性能差，且可能遗漏或重复
 
@@ -194,36 +194,36 @@ ChronoPM 建立在三层信任模型之上：
 | Capability ID | Capability | Status | Maturity | Rule Files | Templates | Notes |
 |---|---|---|---|---|---|---|
 | CAP-001 | Workspace Initialization | stable | L4 | `06-file-rules.md` | project-context, project-index, workspace-health 等 | init_workspace.py 支持 single/portfolio 模式 |
-| CAP-002 | Daily Report Management | stable | L4 | `01-daily-report-rules.md`, `00-pm-main-rules.md` | personal-daily, project-daily, personal-progress | 含合并幂等性 + 个人进度联动 |
+| CAP-002 | Daily Report Management | stable | L4 | `01-daily-report-rules.md`, `00-pm-main-rules.md` | personal-daily-todo, project-daily, daily-todo-binding | 含合并幂等性 + 工作日志段联动 |
 | CAP-003 | Weekly Report & Portfolio Rollup | stable | L3 | `01-daily-report-rules.md`, `09-portfolio-rules.md` | weekly-report, portfolio-weekly | 子项目周报 + 项目集汇总 |
-| CAP-004 | PM Daily Todo (9-section Panorama) | stable | L3 | `05-query-rules.md` | pm-daily-todo, todo-index 系列 | 全团队聚合视图，禁止只列 PM 个人任务 |
-| CAP-005 | Quick Query (Index-First) | stable | L3 | `05-query-rules.md`, `14-self-check-rules.md` | todo-index 系列, history-index | 索引优先，禁止默认全量扫描；v1.21.0 新增 §6.7 倒排每日矩阵查询路由（人员×日期，portfolio 多 board 遍历+存量降级） |
+| CAP-004 | PM Daily Todo (9-section Panorama) | stable | L3 | `05-query-rules.md` | 待办文件 + 绑定文件 | 全团队聚合视图，禁止只列 PM 个人任务 |
+| CAP-005 | Quick Query (Targeted-Read-First) | stable | L3 | `05-query-rules.md`, `14-self-check-rules.md` | 待办文件 + 绑定文件 | 定向读取优先，禁止默认全量扫描；v1.21.0 新增 §6.7 倒排每日矩阵查询路由（人员×日期，portfolio 多子项目待办文件遍历+存量降级） |
 | CAP-006 | Output Artifact Management | stable | L3 | `11-output-artifact-rules.md` | outputs-index, output-manifest | 批次目录 + 草稿/确认/导出流程 |
 | CAP-007 | Risk & Issue Management | stable | L4 | `04-risk-issue-rules.md` | risk-register, issue-register | 含多源交叉校验 |
 | CAP-008 | Requirement Management | stable | L3 | `07-requirement-rules.md` | requirement-register, change-log | 需求追踪矩阵 |
 | CAP-009 | Change Control | stable | L3 | `08-change-control-rules.md` | change-log | 变更流程 + 影响分析 |
 | CAP-010 | Resource Management | stable | L3 | `09-portfolio-rules.md` | resource-register, transfer-log | 状态与历史分离 |
-| CAP-011 | Historical Continuity | partial | L2 | `13-continuity-rules.md` | carryover-register, legacy-sources, project-lineage, import-log | 规则完整但导入仍依赖人工操作 |
-| CAP-012 | Todo Snapshot & Actuals | stable | L3 | `15-snapshot-rules.md` | snapshot, actuals, history-index 系列 | 快照冻结 + 计划vs实际对比 |
-| CAP-013 | Self-Check & Completeness | stable | L3 | `14-self-check-rules.md` | — | D1-D10/M1-M7/R1-R6/T1-T7 自查清单 |
+| CAP-011 | Historical Continuity | partial | L2 | `13-continuity-rules.md` | legacy-sources, project-lineage, import-log；v2.0.0 起结转字段化到待办文件（是否结转/延期次数） | 规则完整但导入仍依赖人工操作 |
+| CAP-012 | Todo Snapshot & Actuals | stable | L3 | `15-snapshot-rules.md` | 仅保留 external_import 导入快照；v2.0.0 起前向快照/actuals 已砍，待办文件本身即历史 | 导入快照冻结 + 历史回查 |
+| CAP-013 | Self-Check & Completeness | stable | L3 | `14-self-check-rules.md` | — | D1-D16/M1-M7/R1-R6/T1-T7 自查清单 |
 | CAP-014 | Excel Generation | stable | L3 | `12-excel-generation-rules.md` | — | 8 种文档 sheet 结构/列头/验证/公式/条件格式 |
 | CAP-015 | Version & Compatibility | stable | L4 | `20-workspace-version-rules.md` | workspace-health, .skill-version.json | 健康检查 + 兼容模式 + 迁移脚本 |
 | CAP-016 | Update Trigger & Intent Detection | stable | L3 | `10-update-trigger-rules.md` | — | 四级触发 + 权限分级 |
 | CAP-017 | Skill Governance | stable | L3 | `16-skill-governance-rules.md` | CR-template, IA-template, RR-template, release-checklist | 变更工单 + AP 审查 + 回归保护 |
 | CAP-018 | Blueprint & External Review | stable | L3 | `16-skill-governance-rules.md §17` | SKILL_BLUEPRINT.md (本文件) | 架构决策 + 能力矩阵 + 外部审查入口 |
 | CAP-019 | Domain Glossary | stable | L3 | `17-domain-glossary-rules.md` | domain-glossary | 术语归一化 + 置信度 + 纠错 + 确认式学习 |
-| CAP-020 | Project Initialization Wizard | stable | L3 | `18-init-wizard-rules.md` | iteration-register | 六步引导建档（合同→项目→迭代→需求→资源→里程碑），含进度记忆、断点续接、确认写入 |
-| CAP-021 | Information Completeness Inspection | stable | L3 | `19-info-completeness-rules.md` | — | 7层检查维度（合同/项目/迭代/需求/任务/资源/里程碑），P0-P3分级提醒，静默策略，巡检报告 |
+| CAP-020 | Project Initialization Wizard | stable | L3 | `18-init-wizard-rules.md` | project-brief（计划概览段） | 六步引导建档（合同→项目→计划→需求→资源→里程碑），含进度记忆、断点续接、确认写入；v2.0.0：PLAN 文件由 AI 正式排计划时按需创建，向导不预建 |
+| CAP-021 | Information Completeness Inspection | stable | L3 | `19-info-completeness-rules.md` | — | 7层检查维度（合同/项目/计划/需求/待办/资源/里程碑），P0-P3分级提醒，静默策略，巡检报告 |
 | CAP-022 | Entry Router & Knowledge Navigation | stable | L4 | `SKILL.md`, `00-pm-main-rules.md` | — | v1.8.0：SKILL.md 主入口改为路由器，规则详情下沉至 references（AD-09），由 SK-1A~1G 回归护航 |
 | CAP-023 | PM Profile & Preference Learning | stable | L3 | `21-pm-profile-rules.md` | pm-profile-template | v1.9.0：用户习惯学习与偏好适配，复用 domain-glossary 状态机，被动观察→pending→confirmed |
-| CAP-024 | Historical Plan Import & Change/Delay Tracking | stable | L3 | `03,05,08,13,15,00` | plan-import, delay-stats, task-board, change-log, todo-history-index | v1.10.0：R1 批量导入存量计划(→external_import 冻结快照)、R2 计划变更追踪(计数+plan_change)、R3 延期计数、R4 聚合查询只读 board 单文件；B 类超期实时计算+索引优先 |
-| CAP-025 | Proactive Change & Pending Window | stable | L3 | `00,01,03,05,06,10,14,19`, `skill-contract` | pending-changes-index, change-log, change-log-index, change-log-archive | v1.11.0：主动变更+人工确认更新模式；待确认记录不参与延期/超期判定(确认窗口期)；权限模型 proactive/passive/progressive；skill-contract #5 与 SKILL.md §7 安全底线 #2 修改(三防线：审计/超时/回滚) |
+| CAP-024 | Historical Plan Import & Change/Delay Tracking | stable | L3 | `05,08,13,15,00` | plan-import, change-log；v2.0.0 起计数字段化到待办文件（计划变更次数/延期次数） | v1.10.0：R1 批量导入存量计划(→external_import 冻结快照)、R2 计划变更追踪、R3 延期计数、R4 聚合查询；v2.0.0：计数改为待办文件字段，聚合只读待办文件，delay-stats/task-board/todo-history-index 模板已删 |
+| CAP-025 | Proactive Change & Pending Window | stable | L3 | `00,01,05,06,10,14,19`, `skill-contract` | pending-changes-index, change-log, change-log-index, change-log-archive | v1.11.0：主动变更+人工确认更新模式；待确认记录不参与延期/超期判定(确认窗口期)；权限模型 proactive/passive/progressive；skill-contract #5 与 SKILL.md §7 安全底线 #2 修改(三防线：审计/超时/回滚) |
 | CAP-026 | Change Log Tiered Archive | stable | L2 | `06-file-rules.md` | change-log-index, change-log-archive | v1.11.0：活跃区 50 行/30 天触发按月归档至 change-log/archive/，维护 change-log/index.md 月份导航 |
 | —（CAP 扩展） | Requirement Intelligence (RI) | stable | L3 | `07` + `05` + `17` + `06` | requirements/atoms/(L1/L2/L3)+canonical；合同作用域：portfolio/requirements + contract-register | v1.15.0：跨源需求拆词/归并/范围判定/三级索引检索；v1.16.0 扩展合同作用域（portfolio/requirements 层级存储 + contract-register + scope_level 路由 + contract_refs 判定，CR-20260813-002）；归属现有 CAP 扩展（非独立 CAP），CR-20260813-001/002 |
-| —（CAP 扩展） | Reasoning Baseline（推导基线） | stable | L3 | `00` §10 + `05` §3(3)a + `01` §6.2 + `03` §8.2 | entity-registry.md（项目级数据） | v1.18.0：生命周期推导链 + 跨源矛盾处理（终态事件豁免）+ 推导后动作规范（SUGGEST+§8a）+ 任务集 4 级降级关联；entity-registry 为事实源派生投影，非独立事实源；归属现有 CAP 扩展（非独立 CAP） |
-| —（CAP 扩展） | Backward Scheduling & Unified Intake（倒排计划与统一归属路由） | stable | L3 | `00` §9 WF-7/WF-8 + `03` §8.0/§8.1 + `01` §5.6b + `02` §3 + `07` §3.2 + `08` §6.1 + `05` §6.7 | iteration-register.md（WP 粗规划表+倒排元数据）、board.md（WP Ref 字段） | v1.19.0：倒排 = 迭代计划编排方式（不另立体系）；任务创建五入口统一 WF-8 归属路由（WP/独立/提醒三分+置信度阈值）；§8.1 流程反转（正式任务强制落 board，索引派生）；WP 进度 = board 实时聚合派生（不建进度索引）；归属现有 CAP 扩展（非独立 CAP），零新增规则/模板文件。v1.21.0：WF-7 草案行补充读文件列+输出规范（倒排每日矩阵，初始草案=WBS/刷新=board/WF-8 闭环）；05号 §6.7 新增倒排每日矩阵查询路由（人员×日期，portfolio 多 board 遍历+存量降级） |
+| —（CAP 扩展） | Reasoning Baseline（推导基线） | stable | L3 | `00` §10 + `05` §3(3)a + `01` §6.2 + `00` §9 级联 | entity-registry.md（项目级数据） | v1.18.0：生命周期推导链 + 跨源矛盾处理（终态事件豁免）+ 推导后动作规范（SUGGEST+§8a）+ 任务集 4 级降级关联；entity-registry 为事实源派生投影，非独立事实源；归属现有 CAP 扩展（非独立 CAP） |
+| —（CAP 扩展） | Backward Scheduling & Unified Intake（倒排计划与统一归属路由） | stable | L3 | `00` §9 WF-7/WF-8 + `01` §5.6 + `02` §3 + `07` §3.2 + `08` §6.1 + `05` §6.7 | plans/PLAN-NNN-{name}.md（WP 粗规划表+倒排元数据）、todos/{date}/ 待办文件（WP Ref 字段） | v1.19.0：倒排 = 计划编排方式（不另立体系）；任务创建五入口统一 WF-8 归属路由（WP/独立/提醒三分+置信度阈值）；WP 进度 = 待办文件实时聚合派生（不建进度索引）；归属现有 CAP 扩展（非独立 CAP），零新增规则/模板文件。v1.21.0：WF-7 草案输出规范（倒排每日矩阵）+ 05号 §6.7 倒排每日矩阵查询路由（人员×日期）。v2.0.0：落点从 board/iteration-register 改为待办文件/PLAN 文件，倒排矩阵权威数据源 = 待办文件 |
 
-> **WF 标准工作流数据路径（v1.14.0 新增）**：WF-1~WF-8 不是独立 CAP，而是 CAP-002/003/004/005/009/010/017 的**执行效率优化层与统一入口约束层**，集中声明于 `00-pm-main-rules.md` §9。它将高频操作场景的读/写文件顺序预定义，判断性推导（状态判定、匹配逻辑、关闭条件）仍保留在判断阶段不弱化（§9.1）。v1.19.0 新增 WF-7（倒排计划编排）与 WF-8（待办创建归属排布，所有任务创建入口的 MANDATORY 前置路由）。Quick Update 路由表（`05-query-rules.md` §2.5）为 CAP-005 的对称扩展（查询→更新）。不新增独立能力 ID、规则文件、ID 前缀（WP Ref 为 board 可选字段）。
+> **WF 标准工作流数据路径（v1.14.0 新增）**：WF-1~WF-8 不是独立 CAP，而是 CAP-002/003/004/005/009/010/017 的**执行效率优化层与统一入口约束层**，集中声明于 `00-pm-main-rules.md` §9。它将高频操作场景的读/写文件顺序预定义，判断性推导（状态判定、匹配逻辑、关闭条件）仍保留在判断阶段不弱化（§9.1）。v1.19.0 新增 WF-7（倒排计划编排）与 WF-8（待办创建归属排布，所有任务创建入口的 MANDATORY 前置路由）。Quick Update 路由表（`05-query-rules.md` §2.5）为 CAP-005 的对称扩展（查询→更新）。不新增独立能力 ID、规则文件、ID 前缀（WP Ref 为待办文件可选字段）。
 
 ### 5.3 成熟度分布
 
@@ -262,9 +262,9 @@ ChronoPM 建立在三层信任模型之上：
 | 编号 | 文件 | 定位 |
 |---|---|---|
 | 00 | `00-pm-main-rules.md` | 总纲：角色、原则、行为边界、意图检测 |
-| 01 | `01-daily-report-rules.md` | 日报：生成、合并、联动、快照 |
+| 01 | `01-daily-report-rules.md` | 日报：合并、工作日志段、联动 |
 | 02 | `02-meeting-rules.md` | 会议：纪要、行动项提取、§6 级联传播规则 |
-| 03 | `03-task-board-rules.md` | 任务：看板字段、状态流转、§8 级联传播规则 |
+| ~~03~~ | （v2.0.0 起删除） | 原任务看板规则，board 砍掉，能力下沉到待办层，级联规则迁入 00 号 WF |
 | 04 | `04-risk-issue-rules.md` | 风险/问题：识别、评估、升级、§9 级联传播规则 |
 | 05 | `05-query-rules.md` | 查询：路由、索引优先、PM 待办输出 |
 | 06 | `06-file-rules.md` | 文件：命名、目录边界、创建/更新/瘦身/归档、索引、安全 |
@@ -289,8 +289,8 @@ ChronoPM 建立在三层信任模型之上：
 ```
 00 (总纲) ──被所有规则依赖──
   │
-  ├── 01 (日报) ──依赖──→ 03 (任务), 04 (风险), 09 (项目集), 15 (快照)
-  ├── 02 (会议) ──依赖──→ 03 (任务), 04 (风险), 08 (变更)
+  ├── 01 (日报) ──依赖──→ 04 (风险), 09 (项目集), 15 (快照)
+  ├── 02 (会议) ──依赖──→ 04 (风险), 08 (变更)
   ├── 05 (查询) ──依赖──→ 01 (日报), 14 (自查), 15 (快照)
   ├── 06 (文件) ──被所有文件操作依赖──
   ├── 07 (需求) ──依赖──→ 08 (变更)
@@ -325,14 +325,11 @@ ChronoPM 建立在三层信任模型之上：
 ### 8.1 日报数据流
 
 ```
-个人日报输入
-  → [01] 生成个人日报文件 (reports/daily/personal/)
-  → [01] 合并多个个人日报 → 生成项目日报 (reports/daily/project/)
+个人工作汇报输入
+  → [01] 写入该成员当日待办文件工作日志段 (todos/{date}/{姓名}.md)
+  → [01] 按需生成项目日报 (reports/daily/project/)
   → [10] 检测更新信号 → 输出建议更新清单
-  → [14] 执行 D1-D10 自查清单
-  → [15] 生成计划快照 (snapshots/daily/) + 实际执行摘要 (actuals/daily/)
-  → [01] 更新个人进度 (summaries/{name}-progress.md)
-  → [01] 更新待办索引 (todos/personal-todo-index.md)
+  → [14] 执行 D1-D16 自查清单
   → [09] 检测资源变动 → 更新 resource-register + transfer-log
   → [04] 检测风险/问题 → 输出风险候选
 ```
@@ -342,13 +339,11 @@ ChronoPM 建立在三层信任模型之上：
 ```
 [11] 用户说"生成周报" → 进入 outputs/ 批次目录
   → [09] 读取 portfolio/context/project-index.md 获取子项目清单
-  → [01] 遍历每个子项目当周日报
-  → [01] 读取各子项目本周周报草稿
+  → [01] 读取每个子项目当周待办文件工作日志段（逐日累积）
   → [04] 汇总各子项目风险/问题
   → [09] 汇总跨项目事项（资源冲突、共性问题）
   → 生成汇总周报草稿 (outputs/{timestamp}/draft.md)
   → 用户确认 → 生成 final.md → 导出
-  → [15] 生成 actuals/weekly/ 实际执行摘要
 ```
 
 ### 8.3 变更数据流
@@ -358,7 +353,7 @@ ChronoPM 建立在三层信任模型之上：
   → [08] 登记到 change-log.md (submitted)
   → [08] 影响分析（范围/进度/成本/质量/风险/里程碑）
   → [00] 项目经理决策 → 记录决策
-  → 若批准：[07] 更新 requirement-register.md + [03] 更新 board.md + [04] 更新风险
+  → 若批准：[07] 更新 requirement-register.md + [00 WF] 更新待办文件/PLAN 文件 + [04] 更新风险
 ```
 
 ### 8.4 历史导入数据流
@@ -369,7 +364,7 @@ ChronoPM 建立在三层信任模型之上：
   → [13] 登记到 legacy-sources.md
   → [13] 内容路由（风险/问题/需求/任务/里程碑/决策）
   → [13] 冲突检测（与当前事实源对比）
-  → [13] 进入 carryover-register.md 等待确认
+  → [13] 进入 delta-analysis.md 结转候选段等待确认
   → 用户确认后 → 更新对应事实源文件
   → [13] 记录到 import-log.md
 ```
@@ -379,9 +374,9 @@ ChronoPM 建立在三层信任模型之上：
 ```
 用户提问
   → [05] 判断问题类型和层级
-  → [05] 查找索引（todo-index/history-index/snapshots/actuals）
-  → 索引命中 → 读取对应事实源文件
-  → 索引未命中 → 提示用户重建索引，不自行全量扫描
+  → [05] 定向读取（待办文件/绑定文件/登记册/快照）
+  → 命中 → 读取对应事实源文件
+  → 待办目录/绑定文件不存在 → 提示工作区可能未升级，不自行全量扫描
   → 输出结论 + 信息来源 + 不确定项
 ```
 
@@ -393,10 +388,10 @@ ChronoPM 建立在三层信任模型之上：
   → [18] 启动六步向导
   → Step 1: 合同层 → 录入合同/立项/启动/完工时间 → 写入 project-context + project-brief
   → Step 2: 项目层 → 确认子项目清单 → 写入 project-index
-  → Step 3: 迭代层 → 录入迭代名称/时间 → 写入 iteration-register
-  → Step 4: 需求层 → 录入迭代需求数量 → 写入 iteration-register
-  → Step 5: 资源层 → 录入迭代资源 → 写入 iteration-register + resource-register
-  → Step 6: 里程碑层 → 补充里程碑时间 → 写入 milestone-board
+  → Step 3: 计划层 → 录入阶段名称/时间 → 写入 project-brief（计划概览段）
+  → Step 4: 需求层 → 录入需求数量 → 写入 requirement-register
+  → Step 5: 资源层 → 录入资源 → 写入 project-brief + resource-register
+  → Step 6: 里程碑层 → 补充里程碑时间 → 写入 progress-plan
   → [18] 生成确认摘要 → 用户确认 → 写入所有文件
   → project-brief.md status 改为"已确认"
 ```
@@ -667,7 +662,7 @@ ChronoPM 建立在三层信任模型之上：
 - 版本号更新
 - Roadmap 补充
 - Known Limitations 补充
-- 状态从 planned 改为 partial / implemented
+- 状态从已规划改为部分落地 / 已落地
 - 审查指南措辞优化
 
 ### 13.4 层级归属

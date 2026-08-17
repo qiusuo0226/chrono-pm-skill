@@ -21,8 +21,9 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 6. **团队信息指针化（v1.6.1 新增）**：`project-brief.md` 中的团队信息不应复制 `resource-register.md` 完整团队列表，而应使用指针。brief 团队部分替换为：
    ```markdown
    ## 3. 团队成员
-   → 见 `portfolio/resources/resource-register.md`（人员当前状态主源）
-   → 见 `portfolio/resources/transfer-log.md`（人员流转历史）
+   → 见 `projects/{子项目}/resources/resource-register.md`（各子项目人员当前状态主源；单项目模式为 `resources/resource-register.md` 或从待办推导）
+   → 见对应子项目 `resources/transfer-log.md`（人员流转历史）
+   → 项目集模式跨项目共享人员参照 `portfolio/resources/shared-resource-index.md`（只读索引）
    ```
    **迁移规则**：不自动删除 brief 已有团队列表，只新增主源指针并标记冗余待清理。下次 register 更新时提示用户"brief 团队列表已指针化，建议删除冗余信息"，确认后删除。
 
@@ -30,7 +31,8 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 |---|---|---|
 | `ai/portfolio/` | ✅ 允许 | 项目集级管理文件 |
 | `ai/projects/{子项目}/` | ✅ 允许 | 子项目级管理文件 |
-| `ai/portfolio/resources/` | ✅ 允许 | 人员资源管理文件（项目集级） |
+| `ai/portfolio/resources/` | ✅ 允许 | 跨项目人员索引（shared-resource-index/transfer-index，只读指针，不存实体） |
+| `ai/projects/{子项目}/resources/` | ✅ 允许 | 子项目人员资源事实源（resource-register/transfer-log） |
 | 业务代码目录 / 需求文档目录 / 交付物目录 | ❌ 禁止 | AI 不得在此创建或修改任何文件 |
 
 ### 1.2 项目集模式目录结构
@@ -44,37 +46,26 @@ ai/
 │   ├── reports/
 │   │   └── weekly/YYYY/YYYY-Wxx.md    # 项目集汇总周报
 │   ├── risks/
-│   │   └── board.md                   # 跨项目风险看板
+│   │   └── cross-project-risk-index.md     # 跨项目风险索引（只读指针，实体在主归属子项目）
 │   ├── plans/
-│   │   └── budget-summary.md           # 整体P&L
+│   │   └── budget-summary.md           # 合同额汇总索引（指向子项目 budget，实时聚合）
 │   ├── requirements/                   # 项目集级跨源需求归集（合同作用域，CR-20260813-002）
 │   │   ├── contract-register.md        # 合同登记册（RI 检索入口事实源）
 │   │   ├── canonical/                  # 项目集级 Canonical（跨层/跨子项目归并）
 │   │   └── atoms/                      # 项目集级 ATOM（portfolio 级合同证据）
-│   ├── todos/                       # 待办查询加速层
-│   │   ├── personal-todo-index.md  # 按人聚合待办
-│   │   ├── daily-todo-index.md     # 按日期聚合待办
-│   │   ├── weekly-todo-index.md    # 按周聚合待办
-│   │   ├── history-index.md       # 历史快照索引
-│   │   ├── snapshots/             # 计划快照（冻结）
-│   │   │   ├── daily/
-│   │   │   └── weekly/
-│   │   └── actuals/               # 实际执行摘要
-│   │       ├── daily/
-│   │       └── weekly/
 │   ├── resources/
-│   │   ├── resource-register.md       # 人员资源当前状态
-│   │   └── transfer-log.md            # 人员流转历史
+│   │   ├── shared-resource-index.md   # 跨项目共享资源索引（只读指针，不存实体）
+│   │   └── transfer-index.md          # 跨项目流转索引（只读指针，不存实体）
 │   └── meetings/YYYYMM/                # 跨项目会议纪要
 ├── projects/
 │   ├── {子项目1}/                     # 子项目1管理文件
-│   │   ├── tasks/
+│   │   ├── todos/                     # 每人每日待办文件 + 绑定文件 _index.md
 │   │   ├── risks/
 │   │   ├── issues/
-│   │   ├── plans/
+│   │   ├── plans/                     # 含 PLAN-NNN-{name}.md 计划文件、budget.md
 │   │   ├── requirements/
-│   │   ├── milestones/
 │   │   ├── decisions/
+│   │   ├── resources/                 # resource-register.md + transfer-log.md（人员事实源）
 │   │   ├── reports/
 │   │   └── meetings/
 │   ├── {子项目2}/
@@ -87,8 +78,8 @@ ai/
 
 单项目模式结构与项目集模式的单个子项目相同，直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
-ai/ ├── tasks/ ├── risks/ ├── issues/ ├── plans/ ├── requirements/ ├── milestones/
-   ├── decisions/ ├── reports/ ├── meetings/ ├── todos/（索引+snapshots+actuals） └── logs/
+ai/ ├── todos/ ├── risks/ ├── issues/ ├── plans/ ├── requirements/ ├── decisions/
+   ├── reports/ ├── meetings/ ├── continuity/ └── logs/
 ```
 完整树见 `SKILL.md` §3.2。
 
@@ -100,11 +91,11 @@ ai/ ├── tasks/ ├── risks/ ├── issues/ ├── plans/ ├─�
 - 日报归档、会议纪要草稿归档、评审纪要归档
 - 周报/月报草稿生成
 - 资源流转日志候选、AI 操作日志更新
-- backlog 新增待确认任务
-- 风险/问题候选新增为 open
+- 未排期待办候选新增（登记 `pending-changes.md`）
+- 风险/问题候选新增为开放
 - 任务 Due Date / 状态中途 / Owner 等过程性更新（写事实源并标记待确认）
 
-> 低/中风险先在事实源记录新值并标 `Confirmed By: 待确认`，PM 确认后翻转为 PM 姓名，驳回则恢复原值并追加 `rejected` 记录。若配置 `update_mode: passive` 则回退为"仅输出建议清单，不写事实源"。
+> 低/中风险先在事实源记录新值并标 `Confirmed By: 待确认`，PM 确认后翻转为 PM 姓名，驳回则恢复原值并追加 `已驳回` 记录。若配置 `update_mode: passive` 则回退为"仅输出建议清单，不写事实源"。
 
 **高风险更新（必须确认后才能更新）：**
 - 需求状态确认/取消、需求变更批准
@@ -117,12 +108,14 @@ ai/ ├── tasks/ ├── risks/ ├── issues/ ├── plans/ ├─�
 
 ### 1.5 资源文件状态与历史分离规则
 
-人员资源管理遵循「状态与历史分离」原则：
+人员资源管理遵循「状态与历史分离」原则（v2.0.0 零数据源：事实源在各子项目，项目集层只留索引）：
 
 | 文件 | 定位 | 内容 | 更新方式 |
 |---|---|---|---|
-| `portfolio/resources/resource-register.md` | 当前状态事实源 | 人员当前状态快照（角色/状态/分配方式/B角等） | 覆盖更新（每次只保留最新状态） |
-| `portfolio/resources/transfer-log.md` | 流转历史记录 | 所有人员进出、调配、角色变更的完整流水 | 追加更新（只增不改不删） |
+| `projects/{子项目}/resources/resource-register.md` | 当前状态事实源 | 本项目人员当前状态快照（角色/状态/分配方式/B角等） | 覆盖更新（每次只保留最新状态） |
+| `projects/{子项目}/resources/transfer-log.md` | 流转历史记录 | 本项目人员进出、调配、角色变更的完整流水 | 追加更新（只增不改不删） |
+| `portfolio/resources/shared-resource-index.md` | 跨项目共享资源索引 | 编号+指向子项目+共享状态（只读指针） | 指针维护，不存实体 |
+| `portfolio/resources/transfer-index.md` | 跨项目流转索引 | 编号+指向子项目+日期（只读指针） | 指针维护，不存实体 |
 
 **规则：**
 1. `resource-register.md` 只反映当前状态，不保留历史状态。历史状态通过 `transfer-log.md` 追溯。
@@ -136,13 +129,14 @@ ai/ ├── tasks/ ├── risks/ ├── issues/ ├── plans/ ├─�
 
 固定文件名，不附加日期：
 ```
-tasks/board.md
-tasks/backlog.md
+todos/{date}/{owner}.md
+todos/{date}/_index.md
+pending-changes.md
 risks/risk-register.md
 issues/issue-register.md
 decisions/decision-log.md
-milestones/milestone-board.md
 plans/progress-plan.md
+plans/PLAN-NNN-{name}.md
 plans/budget.md
 requirements/requirement-register.md
 requirements/change-log.md
@@ -162,7 +156,7 @@ requirements/atoms/{category}.md
 portfolio/context/project-index.md
 portfolio/context/project-context.md
 portfolio/reports/weekly/YYYY/YYYY-Wxx.md
-portfolio/risks/board.md
+portfolio/risks/risk-register.md
 portfolio/plans/budget-summary.md
 portfolio/requirements/contract-register.md
 portfolio/requirements/source-type-registry.md
@@ -171,9 +165,11 @@ portfolio/requirements/canonical/CAN-*.md
 portfolio/requirements/atoms/atom-index.md
 portfolio/requirements/atoms/{category}-index.md
 portfolio/requirements/atoms/{category}.md
-portfolio/resources/resource-register.md
-portfolio/resources/transfer-log.md
+portfolio/resources/shared-resource-index.md   # 只读指针索引，非数据源（v2.0.0 零数据源，见 09 号 §5）
+portfolio/resources/transfer-index.md          # 只读指针索引，非数据源
 ```
+
+> v2.0.0 零数据源：人员资源事实源在各子项目 `projects/{子项目}/resources/`，项目集层 resources/ 只有上述两个只读指针索引，不存实体数据。
 
 ### 2.3 过程记录文件
 
@@ -182,7 +178,6 @@ portfolio/resources/transfer-log.md
 **目录层级规则：按月归档，使用 `YYYYMM` 单级目录，不再使用 `YYYY/MM` 两级。**
 
 ```
-reports/daily/personal/YYYYMM/YYYY-MM-DD-[name].md
 reports/daily/project/YYYYMM/YYYY-MM-DD-[project]-项目日报.md
 reports/weekly/YYYY-Wxx-[project]-周报.md
 reports/monthly/YYYYMM-[project]-月报.md
@@ -190,17 +185,13 @@ meetings/YYYYMM/YYYY-MM-DD-[topic].md
 reviews/YYYYMM/YYYY-MM-DD-[event]-retrospective.md
 ```
 
-**个人进度汇总文件（新增）：**
-```
-reports/daily/personal/summaries/[name]-progress.md
-```
-每个团队成员维护一份个人进度汇总文件，记录当前负责任务、里程碑关联、风险点与历史进展概要。该成员日报更新时自动同步更新此文件。
+> **v2.0.0**：个人日报文件与个人进度汇总文件（原 `reports/daily/personal/` 及 `summaries/[name]-progress.md`）已删除；成员工作汇报写入待办文件工作日志段，个人进度由待办文件实时聚合。
 
 ### 2.4 月度文件数量阈值规则
 
-默认一个月的个人日报放在同一 `YYYYMM/` 目录。当单月个人日报数量超过 **800** 个时，AI 建议启用按日期二级拆分：
+默认一个月的项目日报放在同一 `YYYYMM/` 目录。当单月日报数量超过 **800** 个时，AI 建议启用按日期二级拆分：
 ```
-reports/daily/personal/YYYYMM/YYYY-MM-DD/[name].md
+reports/daily/project/YYYYMM/YYYY-MM-DD/[project]-项目日报.md
 ```
 未超过阈值不主动拆分，避免目录过深。
 
@@ -264,10 +255,10 @@ author: AI辅助生成
 | Change Log | 活跃区上限 50 行或超过 30 天触发按月归档到 `change-log/archive/YYYYMM-change-log.md`，并维护 `change-log/index.md` 月份导航 |
 | 风险登记册 | 超过30条时按类别或时间段拆分，保留 index |
 | 需求登记册 | 超过50条时按模块拆分，保留 index |
-| 任务看板 | 超过50条时按里程碑拆分，保留 index。**拆分后 Task 的 WP Ref 必须完整保留**；按 WP 查询时跨分片按 WP Ref 过滤（WP 关联任务分散在多个里程碑分片属正常，不做物理聚合） |
-| 迭代登记册 | 超过300行或 WP 超30条时按迭代拆分（活跃迭代独立成文件），保留 index；WP 粗规划表保持一行/WP，不内嵌每日明细 |
+| 待办文件 | 按人按日天然拆分（`todos/{date}/{执行人}.md`），无需再拆；绑定文件 `_index.md` 与待办文件同日同目录 |
+| PLAN 文件 | 每计划一文件（`plans/PLAN-NNN-{name}.md`）天然拆分，无需再拆；WP 粗规划表保持一行/WP，不内嵌每日明细 |
 | decision-log | 超过30条或文件超300行时按季度拆分到 `decisions/archive/YYYY-QN-decision-log.md`，保留 index |
-| issue-register | 超过30条时按状态拆分（`resolved`/`closed` 归档，主体保留活跃），保留 index |
+| issue-register | 超过30条时按状态拆分（`已解决`/`已关闭` 归档，主体保留活跃），保留 index |
 | transfer-log | 超过100条或文件超300行时按年度拆分到 `logs/archive/YYYY-transfer-log.md`，保留 index |
 
 > Change Log 归档采用统一的「活跃区 50 行 / 30 天」规则：活跃区超过 50 行或距上次归档超过 30 天时，将历史条目按月归入 `change-log/archive/YYYYMM-change-log.md`（YYYYMM 为归档月份），并在 `change-log/index.md` 登记该月份导航。主动变更（pending）记录在写入时合并写入，同会话确认只记 1 条。
@@ -298,7 +289,7 @@ author: AI辅助生成
 
 > 主动变更模式下，`Confirmed By: 待确认` 的条目还必须同步登记到 `pending-changes.md`（待确认变更索引），与该条目一一对应；PM 确认/驳回后按 §1.4 处理并更新 pending-changes.md。
 
-> 注：此处的 Change Type 是**记录操作类型**（对事实源记录执行的操作），与 `references/08-change-control-rules.md` 中需求变更**影响分类**（requirement/scope/schedule/cost/resource/plan_change）是两个不同概念域，不可混用。计划变更（plan_change）在 board 底部 Change Log 中以 `update` 操作 + Description 标注体现，不在本枚举中新增类型。
+> 注：此处的 Change Type 是**记录操作类型**（对事实源记录执行的操作），与 `references/08-change-control-rules.md` 中需求变更**影响分类**（requirement/scope/schedule/cost/resource/plan_change）是两个不同概念域，不可混用。计划变更（plan_change）在待办文件底部 Change Log 中以 `update` 操作 + Description 标注体现，不在本枚举中新增类型。
 
 ## 9. 归档规则
 
@@ -311,7 +302,7 @@ author: AI辅助生成
 | decision（已执行） | >30 条 | `decisions/archive/YYYY-QN-decision-log.md` | `decisions/index.md` |
 | transfer-log | >100 条 | `logs/archive/YYYY-transfer-log.md` | `logs/index.md` |
 | resource（已离场） | 离场 >90 天 | `resource-register-archive.md` | — |
-| snapshot/actuals | >90 天 | `snapshots/archive/YYYY/`、`actuals/archive/YYYY/` | `history-index.md` |
+| snapshot/actuals | >90 天 | `snapshots/archive/YYYY/`、`actuals/archive/YYYY/` | —（v2.0.0 起无 history-index，目录内按月直查） |
 | outputs（已导出） | >90 天 | `outputs/archive/YYYY/` | `outputs/index.md` |
 
 归档检查时机：日报处理末尾（01 号 §5.8 通用归档检查）、周报生成时、或对应实体变更流程末尾（见各实体级联传播规则 [AUTO]/[SUGGEST]）。
@@ -323,7 +314,7 @@ author: AI辅助生成
 
 统一归档粒度标准：
 - Change Log（各事实源底部）：50 行 / 30 天 → 月归档（已有，不变）
-- 注册表主体（risk/issue/requirement/board）：按条数触发（30-50 条）→ 按类别/状态拆分
+- 注册表主体（risk/issue/requirement/待办文件）：按条数触发（30-50 条）→ 按类别/状态拆分
 - 日志型文件（transfer-log/decision-log）：按条数触发（30-100 条）→ 按时间拆分
 - 目录型文件（snapshots/outputs/daily-reports）：按时间触发（90 天）→ 年度归档
 - ATOM 类别文件 `{category}.md`：超 300 行 → 按 source_type 分片（如 `technical-design_spec.md`），并新增对应 L2 `{category}-index.md` 分片条目

@@ -1,6 +1,7 @@
 ---
 doc_type: pm-profile
 project: "[项目名或项目集名]"
+pm_name: "[PM 姓名或常用称呼/缩写]"
 version: v1.0
 date: YYYY-MM-DD
 status: 活跃
@@ -9,6 +10,8 @@ status: 活跃
 # PM 偏好档案
 
 > 本文件由 ChronoPM 技能自动维护。AI 在每次交互中被动观察用户行为，自动写入 pending 偏好，经用户确认后升为 confirmed。
+>
+> **pm_name**：PM 姓名或常用称呼/缩写。AI 用它推导对话中的"我"是谁（如待办 Owner 匹配、"我的待办"查询），也用于 TD 编号中的人名缩写段。可留空，留空时按默认行为处理，不做身份假设。
 >
 > 用户也可手动编辑本文件。手动编辑后，AI 会在下次加载时检测格式一致性。
 

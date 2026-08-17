@@ -30,21 +30,22 @@ author: AI辅助生成
 | PRJ-002 | [子项目2] | [一句话描述] | M0x | [姓名] | 进行中 |
 | PRJ-003 | [子项目3] | [一句话描述] | M0x | [姓名] | 进行中 |
 
-## 3. 迭代概览
+## 3. 计划概览
 
-> 仅放一行摘要，明细见各子项目 `plans/iteration-register.md`。
+> 仅放一行摘要，明细见各子项目 `plans/PLAN-NNN-{name}.md` 计划文件。
 
-- [子项目1]：0 个迭代 / 0 个需求 / 0 名资源
-- [子项目2]：0 个迭代 / 0 个需求 / 0 名资源
-- [子项目3]：0 个迭代 / 0 个需求 / 0 名资源
+- [子项目1]：0 个计划阶段 / 0 个需求 / 0 名资源
+- [子项目2]：0 个计划阶段 / 0 个需求 / 0 名资源
+- [子项目3]：0 个计划阶段 / 0 个需求 / 0 名资源
 
 ## 4. 团队成员
 
-> 人员当前状态以 `portfolio/resources/resource-register.md` 为唯一主源。
+> 人员当前状态以各子项目 `projects/{子项目}/resources/resource-register.md` 为事实源（v2.0.0 零数据源，项目集层不存人员数据）。
 > 此处仅保留指针，不复制完整团队列表，避免与 register 不一致。
 
-→ 人员当前状态：`portfolio/resources/resource-register.md`
-→ 人员流转历史：`portfolio/resources/transfer-log.md`
+→ 人员当前状态：各子项目 `projects/{子项目}/resources/resource-register.md`
+→ 人员流转历史：各子项目 `projects/{子项目}/resources/transfer-log.md`
+→ 跨项目共享人员：`portfolio/resources/shared-resource-index.md`（只读指针索引）
 
 （旧版 brief 中如已有团队列表，建议在 register 更新后逐步删除冗余信息，替换为本指针。）
 
@@ -69,13 +70,13 @@ author: AI辅助生成
 
 | 内容类型 | 目标文件 |
 |---|---|
-| 人员变动 / 请假 / 借调 | `portfolio/resources/transfer-log.md` + `resource-register.md` |
+| 人员变动 / 请假 / 借调 | `projects/{子项目}/resources/transfer-log.md` + `resource-register.md`（跨项目时同步 portfolio/resources/ 只读索引指针） |
 | 新需求 / 需求变更 | `projects/{子项目}/requirements/requirement-register.md` 或 `change-log.md` |
-| 任务进展 / 任务完成 | `projects/{子项目}/tasks/board.md` |
+| 任务进展 / 任务完成 | `projects/{子项目}/todos/{date}/{owner}.md` |
 | 风险识别 | `projects/{子项目}/risks/risk-register.md`（项目集级 → `portfolio/risks/`）|
 | 问题 / 阻塞 | `projects/{子项目}/issues/issue-register.md` |
 | 决策 / 结论 | `projects/{子项目}/decisions/decision-log.md` |
-| 里程碑变更 | `projects/{子项目}/milestones/milestone-board.md` |
+| 里程碑变更 | `projects/{子项目}/plans/progress-plan.md` |
 | 成本 / 预算变动 | `projects/{子项目}/plans/budget.md`（项目集级 → `portfolio/plans/budget.md`）|
 | 日报归档 | `projects/{子项目}/reports/daily/` |
 | 会议纪要 | `projects/{子项目}/meetings/`（跨项目 → `portfolio/meetings/`）|

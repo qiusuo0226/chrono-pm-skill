@@ -22,7 +22,7 @@ version: 1.0
 
 ### 1.2 边界
 
-- PM Profile 不修改事实源（tasks/board.md 等）
+- PM Profile 不修改事实源（todos/ 待办文件等）
 - pending 偏好不直接改变 AI 输出行为
 - pending 偏好不写入确定事实源
 - 低置信度不应用
@@ -63,6 +63,16 @@ version: 1.0
 - 创建前必须检查目标路径是否存在
 - 已存在时**不得覆盖**
 - 创建后记录 Change Log 或迁移日志
+
+### 2.4 姓名字段与"我"的身份推导（v2.0.0 新增）
+
+`pm-profile.md` front matter 包含 `pm_name` 字段（PM 姓名或常用称呼/缩写），用途：
+
+1. **"我"推导**：对话中出现"我""我的待办""给我加个任务"等第一人称时，AI 用 `pm_name` 推导指代对象（匹配待办 Owner、TD 编号人名段）。
+2. **TD 编号人名缩写段**：TD-{人名缩写}-{YYYYMMDD}-{NNN} 中的人名缩写优先取自 `pm_name`。
+3. **缺失处理**：`pm_name` 为空或不存在时，按默认行为处理——不做身份假设，无法匹配时追问（如"您说的'我'是指哪位？或请在 PM Profile 中填写 pm_name"）。
+4. **边界**：`pm_name` 属于辅助理解配置数据，不是事实源；不得用它覆盖事实源中的 Owner 记录，仅用于身份推导与匹配。
+5. **老工作区**：`migrate_workspace.py --create-profile` 创建时 `pm_name` 留空，由用户后续手动填写或 AI 在用户自报姓名时提示补录（SUGGEST，不静默写入）。
 
 ## 3. 习惯分类
 
