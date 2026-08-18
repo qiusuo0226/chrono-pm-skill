@@ -1,4 +1,4 @@
-# ChronoPM v2.0.0
+# ChronoPM v2.1.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -83,7 +83,7 @@ Talk to the AI like you would to an assistant:
 | "Check if anything's missing" | Scans all management files, lists gaps with priority levels |
 | "Is this requirement within contract scope?" | Traces from contract → bidding → specific requirements with an evidence chain |
 
-## Todos & Work Packages: the core of project execution (v2.0.0)
+## Todos & Work Packages: the core of project execution (v2.0.0 / v2.1.0 enhanced)
 
 v2.0.0 converges the entire execution system into two layers: **todo files** manage every concrete task, and **work packages (WP)** manage grouping and milestones. Understand these two concepts and you understand ChronoPM's entire data flow.
 
@@ -94,6 +94,10 @@ Each executor gets one todo file per day: `todos/{date}/{executor}.md`. It is th
 - **Globally unique IDs**: every todo gets a `TD-{name-initials}-{date}-{seq}` ID, traceable across days and projects.
 - **Handover changes the ID, not the work**: when a task changes owner, a new ID is created with a traceability chain — it's always clear who did what.
 - **Built-in work log**: daily report content no longer lives in separate files; it goes straight into the todo file's work-log section (done today / in progress / blockers / risks / hours).
+- **Identity snapshot (v2.1.0)**: each daily todo file carries a §0 identity block (role / name / contact / responsible module / start date / expected end date), auto-copied via T+1 carryover; conflicts with resource-register are resolved in favor of the register.
+- **Progress column (v2.1.0)**: the core execution table adds a "Progress" column (0%-100%), updated from daily-report mapping; two-track arbitration with status — status=completed forces progress to 100%, progress=100% without completed status does NOT auto-promote (terminal state needs PM confirmation).
+- **Two-step daily-report flow (v2.1.0)**: the daily report's original text is first archived verbatim into the todo file's §2 archive section (no summarizing), then mapped into the §3 work-log section and todo fields, fully traceable.
+- **Todo carryover (v2.1.0)**: before creating/updating todos, the AI mandatorily scans the previous day's all-person unresolved todos and carries them over to today (Step 0, hard block — no new todos before it completes); same-person carryover keeps the same ID across days.
 
 ### Work packages (WP): the planning unit
 
@@ -151,10 +155,12 @@ Every new task lands in one of three places: **inside a work package** (high-con
 
 **How status updates take effect**: say "Wang's API doc is done," and the AI finds the matching todo, proposes marking it completed, and auto-runs cascade checks (WP progress, related risks/issues, requirement status). Process-level updates are written as "pending confirmation" first; terminal changes (completed/cancelled) only take effect after your approval — no missed updates, no unsolicited overwrites.
 
+**Close gate (v2.1.0, DF-002)**: closing (completed/cancelled/transferred-out) requires the four elements "ID + evidence + related impact + PM confirmation"; after daily/weekly-report flows the AI proactively lists close candidates for your confirmation.
+
 ## Two working modes
 
 - **Single project mode**: One `ai/` folder manages one project. Good for standalone projects.
-- **Portfolio mode**: One program manager coordinates multiple subprojects. Information flows bottom-up, decisions flow top-down.
+- **Portfolio mode**: One program manager coordinates multiple subprojects. Information flows bottom-up, decisions flow top-down. Portfolio-level availability/schedule aggregations are dynamic views (v2.1.0 hard constraint) — personnel availability, schedule conflicts, staffing rates, milestone/gate attainment are all aggregated in real time from each subproject at query time and never persisted to any index file, so aggregated data never goes stale.
 
 ## Key features
 
@@ -225,8 +231,8 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 
 | Content | Count | Description |
 |---|---|---|
-| Rule files | 21 | Define how the AI should behave in various scenarios |
-| Document templates | 36 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Rule files | 22 | Define how the AI should behave in various scenarios |
+| Document templates | 35 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
 | Regression tests | 269 cases | Ensure every update doesn't break existing functionality |
 
@@ -242,7 +248,7 @@ ChronoPM Skill/
 ├── VERSION               # Current version number (plain text), for quick reference.
 ├── CHANGELOG.md          # Change history. What changed in each version, release date, impact scope.
 │
-├── references/           # 📖 Rule files (21 files, numbered 00~21; No.03 merged into No.00 since v2.0.0)
+├── references/           # 📖 Rule files (22 files, numbered 00~22; No.03 merged into No.00 since v2.0.0)
 │   │                      # The AI's "code of conduct" — defines what to do in each scenario.
 │   ├── 00-pm-main-rules.md        # PM master rules: core workflows, permission model, safety baseline
 │   ├── 01-daily-report-rules.md   # Daily report handling: merge, idempotency, work-log integration
@@ -253,9 +259,9 @@ ChronoPM Skill/
 │   ├── 07-requirement-rules.md    # Requirement management: registration, traceability, RI three-layer model, business⇄implementation dual-view
 │   ├── 08-change-control-rules.md # Change control: flow, impact analysis, cascade rules
 │   ├── 09-portfolio-rules.md      # Portfolio coordination: multi-subproject coordination, resource transfer
-│   ├── 10~21                      # Other rules (update triggers, output artifacts, Excel generation,
+│   ├── 10~22                      # Other rules (update triggers, output artifacts, Excel generation,
 │   │                              # compatibility, self-check, snapshots, glossary, init wizard,
-│   │                              # completeness inspection, version rules, PM profile, etc.)
+│   │                              # completeness inspection, version rules, PM profile, personal todo, etc.)
 │   └── ...
 │
 ├── assets/               # 📦 Resource files
@@ -276,6 +282,7 @@ ChronoPM Skill/
 │   ├── contracts/             # Core contract: defines protection levels and release rules for Skill changes
 │   ├── baselines/             # Version baseline snapshots: complete file copies per version, for rollback/audit
 │   ├── change-requests/       # Change requests (CR): formal records of every Skill self-modification
+│   ├── migrations/            # Upgrade files: authoritative execution source of the version chain (upgrade-to-{version}.md)
 │   ├── impact-analysis/       # Impact analysis (IA): pre-change impact scope assessment
 │   ├── regression-reports/    # Regression reports (RR): full test results for each release
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
@@ -289,15 +296,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 2.0.0 |
+| Skill version | 2.1.0 |
 | Workspace schema | 0.8.0 |
-| Rule files | 21 |
-| Document templates | 36 |
+| Rule files | 22 |
+| Document templates | 35 |
 | Regression cases | 269 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v2.0.0.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v2.1.0.zip`):
 
 - **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix

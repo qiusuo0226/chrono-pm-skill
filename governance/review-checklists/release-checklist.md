@@ -50,6 +50,49 @@
 - [ ] 若修改了 `tools/pack-skill/scripts/pack.ps1` 的排除规则，是否确认 audit 脚本的排除模型实读仍与之匹配（四类机制：excludeDirs/excludeFiles/excludeFilePaths/includeExceptions）？
 - [ ] 新增版本是否已建立 `governance/baselines/<版本号>/` 基线目录（audit 断言 9 会拦截）？
 
+## Skill 升级完整文档变更清单（MANDATORY，每次发布必须逐项确认，v2.1.0 需求十一）
+
+> 设计原则：机器可执行的自动运行，AI 可预检的由 AI 先跑 + 人工确认，纯内容判断的由人工最终判断。
+
+### A. 推导依据（为什么改）——AI 可自动审核
+
+- [ ] `governance/change-requests/CR-*.md` 是否已创建？（含 Problem Statement + Change Goal + Scope + 决策链）
+- [ ] `governance/impact-analysis/IA-*.md` 是否已创建？（若 CR 标记需要 IA）
+- [ ] CR 是否已获得用户确认？（⚠️ 必须人工确认）
+
+### B. 升级执行文件（怎么升）——AI 可自动审核
+
+- [ ] `governance/migrations/upgrade-to-{新版本}.md` 是否已创建？
+  - 7 类操作（新增目录/新增文件/删除/规则变更/模板变更/工作流变更/验证检查）是否全部描述？
+  - 是否标注了对应的 CR 编号？
+- [ ] 版本链是否连续？（每个版本都有对应升级文件，无断点）
+
+### C. 版本同步 + 发布审计——机器自动执行
+
+- [ ] 是否已运行 `python scripts/sync_version.py`？（全量同步全部 8 个派生触点的版本号）
+- [ ] 是否已运行 `python governance/scripts/audit_release.py` 且退出码为 0？（12 类断言统一守护）
+
+### D. AI 预检内容一致性——AI 自动检查，人工确认结果
+
+- [ ] `skill.json` versionHistory 摘要是否与升级文件“变更摘要”一致？（AI 对比）
+- [ ] `skill.json` migrations 数组是否需新增条目？（AI 检测 schema 版本是否变化）
+- [ ] `CHANGELOG.md` 格式是否完整？（AI 检查 Added/Changed/Notes 三段 + Blueprint Impact 标注）
+- [ ] 升级文件中新增/删除的文件路径是否存在幽灵引用？（AI 扫描）
+- [ ] 升级方案目标态目录树权威源（§4.3）与摘要视图（§8.3）及各类摘要/状态行是否一致？（V0.41 强制同步校验：双改登记完成，历史行已加注更正）
+
+### E. 内容质量——人工最终判断（AI 无法判断内容质量）
+
+- [ ] `skill.json` versionHistory 摘要是否准确？（AI 已预检一致性，人工判断准确性）
+- [ ] `CHANGELOG.md` 内容是否完整准确？（AI 已预检格式，人工判断内容质量）
+- [ ] `SKILL_BLUEPRINT.md` 能力全景/成熟度是否需更新？（必更/应更/免更）
+- [ ] `tests/regression-suite.md` 是否新增测试用例？统计表是否更新？
+- [ ] `governance/regression-reports/rr-*.md` 是否已生成？
+
+### F. 发布验证——人工确认
+
+- [ ] 分发包打包是否成功？体积是否在预期范围内？（AI 可自动运行 pack.py --dry-run，人工确认结果）
+- [ ] 是否复制到灵犀安装目录？（⚠️ 必须人工确认）
+
 ## v1.13.0 架构精简改造专项检查（CR-20260812-001）
 
 - [ ] 级联传播规则：确认 03/04/07/08/09/02 号文件的级联 §已添加且格式一致

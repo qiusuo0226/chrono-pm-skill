@@ -52,8 +52,8 @@ def create_indexes(base_dir: Path, index_templates: dict, name: str):
 
 
 def create_continuity_files(ai_dir: Path, project_name: str):
-    """在 ai/continuity/ 下创建阶段衔接文件"""
-    continuity_dir = ai_dir / "continuity"
+    """在 ai/context/ 下创建阶段衔接文件（v2.1.0：原 continuity/ 并入 context/，D-9）"""
+    continuity_dir = ai_dir / "context"
     continuity_dir.mkdir(parents=True, exist_ok=True)
 
     templates_dir = get_templates_dir()

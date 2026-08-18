@@ -17,11 +17,21 @@ status: 活跃
 
 ## 1. 偏好映射表
 
+> **内置默认偏好**（DF-NNN）：系统内置行为基线，用户可直接修改或废弃。
+> **用户自定义偏好**（PF001、PF002...）：通过交互学习到的偏好。
+> 两套编号互不干扰。
+
 | 编号 | 类别 | 偏好项 | 偏好值 | 状态 | 来源 | 首次观察 | 最近观察 | 观察次数 | 备注 |
 |------|------|--------|--------|------|------|---------|---------|---------|------|
+| DF-001 | P-OUT | 待确认问题编号 | 必须 1/2/3/4/5 编号罗列 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 便于逐条作答 |
+| DF-002 | P-CFM | 可关闭项确认关闭 | 日报后罗列可关闭的风险/问题，明确到具体编号（I-XXXX/R-XXXX）并附详细描述和佐证，PM 确认后才改库 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 关闭必须佐证 |
+| DF-003 | P-WRK | PM 同步进度自动记日报 | 白天 PM 同步的成员进度自动记为当日日报；晚间自写日报作为补充自动合并；歧义编号罗列确认 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 日报合并机制 |
+| DF-004 | P-WRK | 查询必须实读文件 | PM 说"再查一下/查一下"时必须实际重读事实源文件，不得凭记忆或缓存，以实读结果为准并说明差异 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 与 CQ-5 互补 |
+| DF-005 | P-STY | 禁止内部文件术语 | 向 PM 提问或建议不用 board/Task N 等术语，用通俗语言解释文件用途并给推荐方案 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 沟通面向 PM |
+| DF-006 | P-STY | 操作建议说人话 | 提操作建议不抛技术术语，需讲清改哪个字段、改成什么值、效果是什么 | confirmed | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 可操作性优先 |
 
 > 字段说明：
-> - **编号**：PF + 三位数字（PF001、PF002...），全局唯一递增
+> - **编号**：两套编号体系互不干扰——内置默认偏好为 DF-NNN（DF-001 起，系统预填）；用户自定义偏好为 PF + 三位数字（PF001、PF002...），全局唯一递增
 > - **类别**：P-OUT（输出格式）/ P-FOC（管理重点）/ P-STY（沟通风格）/ P-WRK（工作流）/ P-CFM（确认行为）
 > - **状态**：confirmed / pending / rejected / conflict / deprecated
 > - **来源**：首次观察的交互内容摘要或用户明确声明

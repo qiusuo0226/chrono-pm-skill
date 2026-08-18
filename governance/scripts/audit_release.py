@@ -24,7 +24,9 @@
     9. 基线存在性：governance/baselines/<VERSION>/ 目录存在
    10. README 目录树不标注仓库中不存在的顶层目录（workspace-template 类问题）
    11. 命名漂移守门：仓库根目录无 chrono-pm-*.zip 类漂移命名产物
-   12. 汇总：任一失败退出码非零
+   12. 统计类断言（v2.1.0 需求十一/D-20）：规则文件数/模板数自动统计，
+       比对 README×2 与 BLUEPRINT §1 中标注的数字
+   13. 汇总：任一失败退出码非零
 
 本脚本只读，不修改任何文件。
 """
@@ -266,10 +268,34 @@ def main() -> int:
         "; ".join(drift_names) if drift_names else "无漂移产物",
     )
 
-    # 12. 汇总
+    # 12. 统计类断言（v2.1.0 需求十一/D-20）：规则数/模板数自动统计比对
+    n_rules = len(list((ROOT / "references").glob("*.md")))
+    n_templates = len(list((ROOT / "assets" / "templates").glob("*.md")))
+    stat_bad = []
+    for readme in ("README.md", "README.en.md"):
+        rt = read(ROOT / readme)
+        zh = readme == "README.md"
+        m_r = re.search(r"规则文件\s*\|\s*(\d+)\s*份" if zh else r"Rule files\s*\|\s*(\d+)", rt)
+        m_t = re.search(r"文档模板\s*\|\s*(\d+)\s*个" if zh else r"Document templates\s*\|\s*(\d+)", rt)
+        if not m_r or int(m_r.group(1)) != n_rules:
+            stat_bad.append(f"{readme} 规则数={m_r.group(1) if m_r else '<缺失>'}")
+        if not m_t or int(m_t.group(1)) != n_templates:
+            stat_bad.append(f"{readme} 模板数={m_t.group(1) if m_t else '<缺失>'}")
+    m_bp = re.search(r"(\d+) 份规则 \+ (\d+) 个模板", bp)
+    if not m_bp or int(m_bp.group(1)) != n_rules or int(m_bp.group(2)) != n_templates:
+        stat_bad.append(
+            f"BLUEPRINT §1=({m_bp.group(1)},{m_bp.group(2)})" if m_bp else "BLUEPRINT §1=<缺失>"
+        )
+    check(
+        "12. 统计类断言（规则数/模板数 vs README×2 + BLUEPRINT）",
+        not stat_bad,
+        "; ".join(stat_bad) or f"规则={n_rules}, 模板={n_templates} 全部一致",
+    )
+
+    # 13. 汇总
     print()
     if FAILURES:
-        print(f"== 审计失败：{len(FAILURES)}/11 类断言未通过，禁止发布 ==")
+        print(f"== 审计失败：{len(FAILURES)}/12 类断言未通过，禁止发布 ==")
         for f in FAILURES:
             print(f"  - {f}")
         return 1

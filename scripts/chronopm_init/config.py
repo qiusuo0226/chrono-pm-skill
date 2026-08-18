@@ -26,7 +26,7 @@ CURRENT_YM = datetime.now().strftime("%Y%m")
 # ============================================================
 SINGLE_PROJECT_DIRS = [
     "context",
-    "continuity",
+    # v2.1.0：continuity/ 合并入 context/（D-9），不再单独建目录
     "requirements",
     "requirements/canonical",
     "requirements/atoms",
@@ -43,6 +43,8 @@ SINGLE_PROJECT_DIRS = [
     "templates",
     "logs",
     "prompts",
+    # v2.1.0：outputs/ 移入 ai/ 内（D-8），工作区根目录不再有 outputs/
+    "outputs",
 ]
 
 SINGLE_FACT_SOURCE_FILES = {
@@ -144,7 +146,7 @@ updated: YYYY-MM-DD
 # ============================================================
 SUB_PROJECT_DIRS = [
     "context",
-    "continuity",
+    # v2.1.0：continuity/ 合并入 context/（D-9），不再单独建目录
     "requirements",
     "requirements/canonical",
     "requirements/atoms",
@@ -234,8 +236,8 @@ project: "{name}"
 # 所有模板文件列表（复制到 ai/templates/）
 # v2.0.0 待办体系重构后：board/迭代登记册/里程碑板/旧待办索引/快照/actuals/
 # 个人日报/个人进度/结转/延期统计等模板已删除，新增 PLAN/待办文件/绑定文件模板。
+# v2.1.0：项目日报模板已删除（按需生成，无独立模板，见 01 号规则 §2.2）。
 ALL_TEMPLATE_FILES = [
-    "project-daily-template.md",
     "weekly-report-template.md",
     "meeting-template.md",
     "risk-register-template.md",

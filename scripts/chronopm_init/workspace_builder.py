@@ -108,15 +108,15 @@ def create_single_project(project_root: str, project_name: str = ""):
     # 9b. 创建 continuity 目录
     print("\n创建阶段衔接目录...")
     create_continuity_files(ai_dir, project_name)
-    print("  create continuity/project-lineage.md")
-    print("  create continuity/legacy-sources.md")
-    print("  create continuity/import-log.md")
+    print("  create context/project-lineage.md")
+    print("  create context/legacy-sources.md")
+    print("  create context/import-log.md")
 
-    # 10. 创建 outputs 目录
+    # 10. 创建 outputs 目录（v2.1.0：位于 ai/outputs/）
     print("\n创建输出物目录...")
     create_outputs_dir(project_root, project_name)
-    print("  create outputs/index.md")
-    print("  create outputs/.templates/manifest-template.md")
+    print("  create ai/outputs/index.md")
+    print("  create ai/outputs/.templates/manifest-template.md")
 
     # 11. 创建版本文件
     print("\n创建版本文件...")
@@ -244,15 +244,15 @@ def create_portfolio(project_root: str, portfolio_name: str, sub_projects: list)
     # === 8b. 创建 continuity 目录 ===
     print("\n创建阶段衔接目录...")
     create_continuity_files(ai_dir, portfolio_name)
-    print("  create continuity/project-lineage.md")
-    print("  create continuity/legacy-sources.md")
-    print("  create continuity/import-log.md")
+    print("  create context/project-lineage.md")
+    print("  create context/legacy-sources.md")
+    print("  create context/import-log.md")
 
-    # === 9. 创建输出物目录 ===
+    # === 9. 创建输出物目录（v2.1.0：位于 ai/outputs/） ===
     print("\n创建输出物目录...")
     create_outputs_dir(project_root, portfolio_name)
-    print("  create outputs/index.md")
-    print("  create outputs/.templates/manifest-template.md")
+    print("  create ai/outputs/index.md")
+    print("  create ai/outputs/.templates/manifest-template.md")
 
     # === 10. 创建版本文件 ===
     print("\n创建版本文件...")

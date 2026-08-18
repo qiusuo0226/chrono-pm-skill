@@ -19,8 +19,8 @@ from .template_renderer import copy_template, get_templates_dir
 
 
 def create_outputs_dir(project_root: str, project_name: str):
-    """在项目根目录下创建 outputs/ 目录和索引文件"""
-    outputs_dir = Path(project_root) / "outputs"
+    """在 ai/ 内创建 outputs/ 目录和索引文件（v2.1.0：outputs/ 移入 ai/ 内，D-8）"""
+    outputs_dir = Path(project_root) / "ai" / "outputs"
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
     # 创建 outputs/index.md
@@ -515,7 +515,7 @@ date: "{today}"
 ## 相关目录
 
 - `ai/`（本目录）：事实源、规则、模板、项目管理记录
-- `outputs/`（同级）：AI 生成物和导出文件（周报/月报/Excel/Word/PDF等）
+- `ai/outputs/`（本目录内）：AI 生成物和导出文件（周报/月报/Excel/Word/PDF等）
 
 ## 版本信息
 
@@ -629,7 +629,7 @@ date: "{today}"
 ## 相关目录
 
 - `ai/`（本目录）：事实源、规则、模板、项目管理记录
-- `outputs/`（同级）：AI 生成物和导出文件（周报/月报/Excel/Word/PDF等）
+- `ai/outputs/`（本目录内）：AI 生成物和导出文件（周报/月报/Excel/Word/PDF等）
 
 ## 版本信息
 
