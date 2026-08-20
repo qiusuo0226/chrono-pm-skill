@@ -1810,7 +1810,7 @@ CR-A **零新增能力**，全部为现有路由表/规则文案/脚本的扩展
 ## 20. 当前结论
 
 > **施工后登记（2026-08-20）**：用户授权「开始/继续」后，CR-A/G/B/C/D 同会话一次提交落地（2b25904）、CR-E 单独提交（6374bc3）。未按原「每 CR 单独 B 审+口令」节奏，属流程偏差、内容核对通过。事后复核两份报告：§7 已干净；§4 人员指针与 14 号月度索引 4 处为真残留，已当场修补。CR-F 未执行。本机 Skill 换装另记。
-> **基线复核登记（2026-08-20，A 处置另一 agent 复查报告）**：① baselines/3.5.0/ChronoPM-Project 重建为与当前包**逐文件零差异**（补齐缺失的 scripts/（10 文件）+ tests/，同步 c7d000f 影响的 6 个文件，删除错置包根的旧 regression-suite.md）；② 历史基线缺漏（3.1.0 平铺缺 assets/scripts/tests；3.1.1/3.2.0～3.4.0 缺 scripts/tests）按「baselines 只增不改」**不回填**，已建 governance-shared/baselines/README.md 登记策略差异与「自 3.5.0 起基线=全包快照」规范；③ 3.2.0～3.4.0 基线中 project-brief §4 旧版为发布时真实状态，属合法快照不回改；④ 待决事项：c7d000f 修复未升版本号（按 16 号治理应为 PATCH），如后续正式治理则升 3.5.1 另建基线。
+> **基线复核登记（2026-08-20，A 处置另一 agent 复查报告）**：① baselines/3.5.0/ChronoPM-Project 重建为与当前包**逐文件零差异**（补齐缺失的 scripts/（10 文件）+ tests/，同步 c7d000f 影响的 6 个文件，删除错置包根的旧 regression-suite.md）；② 历史基线缺漏（3.1.0 平铺缺 assets/scripts/tests；3.1.1/3.2.0～3.4.0 缺 scripts/tests）按「baselines 只增不改」**不回填**，已建 governance-shared/baselines/README.md 登记策略差异与「自 3.5.0 起基线=全包快照」规范；③ 3.2.0～3.4.0 基线中 project-brief §4 旧版为发布时真实状态，属合法快照不回改；④ ~~待决事项~~ **已闭环（2026-08-20）**：c7d000f 修复已正式治理为 **3.5.1（Patch）**——全触点同步（sync_version.py）+ CHANGELOG/BLUEPRINT 演进表 + upgrade-to-3.5.1.md（零迁移）+ baselines/3.5.1 全包快照（双包逐文件零差异），audit_release.py 13/13 通过，tag v3.5.1 推远程。
 
 - 忠实于目标：是；目标偏移：否（需求二~十三已拆入后续 CR，CR-A 保持纯纠偏）；覆盖完整：是；可落地：是。
 - **CR-A 状态（V0.17）**：B 对 V0.16 复审判**通过-可执行**（附 1 条施工前补丁：AP-4 config.py 行去 R9），**补丁已落地**；R9 旧引用全部清零（全局唯一口径"R9 ∉ CR-A，属 CR-D"）；Q2/Q3/Q4 待用户终确认；**等待用户口令"同意执行 CR-A"后施工**（只按 AP-4 改文件，禁抄 §7 整表；产出 upgrade-to-3.1.0.md + CR/IA 后再动代码；config.py 不改 Task Sync 表头）。

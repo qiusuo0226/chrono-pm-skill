@@ -1,4 +1,4 @@
-# ChronoPM v3.5.0 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
+# ChronoPM v3.5.1 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
 
 **让 AI 帮你管项目，而不是帮你写文档。**
 
@@ -253,7 +253,7 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 3.5.0 |
+| Skill 版本 | 3.5.1 |
 | 工作区 Schema | 0.10.0 |
 | 规则文件 | 22 份 |
 | 文档模板 | 35 个 |
