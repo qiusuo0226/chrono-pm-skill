@@ -69,7 +69,7 @@
       "description": "待确认变更索引 pending-changes.md + change-log 分层归档 (CR-20260811-002)"
     }
   ],
-  "description": "以 Markdown 为事实源的单项目项目管理技能。录入只发生在本项目 ai 目录。跨项目归集请使用 ChronoPM-Portfolio（只读）。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、初始化向导、完整性巡检、PM 偏好。",
+  "description": "给项目经理的 AI 副手。日报、合同、风险写进 Markdown，你确认才算数。人走，项目记忆还在文件夹里。跨项目请用 ChronoPM-Portfolio（只读）。",
   "modes": [
     "single"
   ],
