@@ -1,4 +1,4 @@
-# ChronoPM v3.5.1
+# ChronoPM v3.6.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -232,15 +232,15 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 35 | Daily reports, weekly reports, meeting minutes, risk registers, WP files, and more |
+| Document templates | 37 | Daily reports, weekly reports, meeting minutes, risk registers, WP files, source-doc decompose, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 344 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 350 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (344 cases))
+├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (350 cases))
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion package
 ├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit / historical upgrades
 ├── tools/                # Shared pack-skill tooling
@@ -253,18 +253,18 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.5.1 |
-| Workspace schema | 0.10.0 |
+| Skill version | 3.6.0 |
+| Workspace schema | 0.11.0 |
 | Rule files | 22 |
-| Document templates | 35 |
-| Regression cases | 344 |
+| Document templates | 37 |
+| Regression cases | 350 |
 
 ## Distribution package naming
 
 Release artifacts follow `{BrandName}-Skill-v{version}.zip`. Since v3.0.0 one release produces two packages (G-3):
 
-- `ChronoPM-Project-Skill-v3.5.0.zip` (main package, single-project management)
-- `ChronoPM-Portfolio-Skill-v3.5.0.zip` (read-only aggregation companion)
+- `ChronoPM-Project-Skill-v3.6.0.zip` (main package, single-project management)
+- `ChronoPM-Portfolio-Skill-v3.6.0.zip` (read-only aggregation companion)
 
 - **BrandName**: brand prefix of `displayName` in each package's `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix (both packages share one version line)
