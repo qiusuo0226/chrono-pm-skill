@@ -1,4 +1,4 @@
-# ChronoPM v3.4.0
+# ChronoPM v3.5.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -224,7 +224,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | CAP-029 | Closure Confirmation with Evidence | Risk/issue closure suggestions must list ID + evidence + related impact; no unsupported closure |
 | CAP-030 | Communication Quality Rules | Numbered pending items + mandatory live file reading (no cache); traceable, accurate output |
 | CAP-031 | Query Default Filtering | Task/todo queries default to incomplete items only; explicit "all" shows everything |
-| — (extension) | Backward Planning & WP Work Packages | Reverse-plan plan work packages around a target deadline (WF-7: backward planning = a way to arrange plans, not a separate system); unified ownership routing for all five task-creation entry points (WF-8: three-way split into WP / standalone todo / one-time reminder, formal todos must land on todo files); PLAN-file WP rough-planning table + backward-planning metadata; WP hierarchical query & backward-planning countdown; **Backward Daily Matrix** (person × date, authoritative source = todo files, supports portfolio multi-sub-project todo traversal and legacy degradation) |
+| — (extension) | Backward Planning & WP Work Packages | Reverse-plan work packages around a target deadline (WF-7); unified ownership routing (WF-8); independent WP files `wps/WP-NNN.md` + `_index.md` accelerator (v3.5.0); PLAN §3 is a 4-column reference table; WP hierarchical query & countdown; **Backward Daily Matrix** (authoritative source = todo files) |
 | — (extension) | Reasoning Baseline | Lifecycle derivation chain + cross-source contradiction handling + entity registry + task-set association; derives actual completion status from milestone events |
 
 ## What's included
@@ -232,15 +232,15 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 33 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Document templates | 35 | Daily reports, weekly reports, meeting minutes, risk registers, WP files, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 327 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 344 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (327 cases))
+├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (344 cases))
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion package
 ├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit / historical upgrades
 ├── tools/                # Shared pack-skill tooling
@@ -253,18 +253,18 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.4.0 |
-| Workspace schema | 0.9.0 |
+| Skill version | 3.5.0 |
+| Workspace schema | 0.10.0 |
 | Rule files | 22 |
-| Document templates | 33 |
-| Regression cases | 327 |
+| Document templates | 35 |
+| Regression cases | 344 |
 
 ## Distribution package naming
 
 Release artifacts follow `{BrandName}-Skill-v{version}.zip`. Since v3.0.0 one release produces two packages (G-3):
 
-- `ChronoPM-Project-Skill-v3.4.0.zip` (main package, single-project management)
-- `ChronoPM-Portfolio-Skill-v3.4.0.zip` (read-only aggregation companion)
+- `ChronoPM-Project-Skill-v3.5.0.zip` (main package, single-project management)
+- `ChronoPM-Portfolio-Skill-v3.5.0.zip` (read-only aggregation companion)
 
 - **BrandName**: brand prefix of `displayName` in each package's `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix (both packages share one version line)

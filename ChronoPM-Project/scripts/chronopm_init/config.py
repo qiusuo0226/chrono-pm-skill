@@ -31,6 +31,7 @@ SINGLE_PROJECT_DIRS = [
     "requirements/canonical",
     "requirements/atoms",
     "plans",
+    "wps",
     "todos",
     f"meetings/{CURRENT_YM}",
     f"reports/daily/project/{CURRENT_YM}",
@@ -104,6 +105,18 @@ project: "{name}"
 | Date | Event | 关联里程碑（WP-NNN） | File | Key Lessons |
 |------|--------|-----------|------|-------------|
 """,
+    "wps/_index.md": """---
+doc_type: wp-index
+project: "{name}"
+---
+
+# WP 索引
+
+> 查找加速器，不是存在性判据。文件存在性以 wps/WP-*.md 为准。
+
+| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 是否里程碑 | 关联需求 | 文件路径 |
+|---|---|---|---|---|---|---|---|
+""",
 }
 
 # 所有模板文件列表（复制到 ai/templates/）
@@ -112,6 +125,7 @@ project: "{name}"
 # v2.1.0：项目日报模板已删除（按需生成，无独立模板，见 01 号规则 §2.2）。
 # v3.0.0（P-13）：portfolio-weekly-template / 集级 project-index-template 迁
 # ChronoPM-Portfolio 包，Project 侧不再 init 复制（模板总数 35→33）。
+# v3.5.0：+ wp-template / wp-index-template（33→35）。
 ALL_TEMPLATE_FILES = [
     "weekly-report-template.md",
     "meeting-template.md",
@@ -143,6 +157,8 @@ ALL_TEMPLATE_FILES = [
     "plan-template.md",
     "personal-daily-todo-template.md",
     "daily-todo-binding-template.md",
+    "wp-template.md",
+    "wp-index-template.md",
     # AI 运行时格式参考副本（非 FACT_SOURCE 实例化模板）
     "decision-log-template.md",
     "project-notes-template.md",

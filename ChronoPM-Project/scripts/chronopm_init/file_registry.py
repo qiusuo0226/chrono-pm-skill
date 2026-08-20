@@ -539,9 +539,12 @@ ai/
 │   ├── canonical/                 # Canonical（跨源归并）
 │   └── atoms/                     # ATOM 三级索引（L1/L2/L3）
 ├── plans/                         # 计划类事实源
-│   ├── PLAN-NNN-{{name}}.md      # PLAN 计划文件（含 WP 粗规划表，AI 按需创建）
+│   ├── PLAN-NNN-{{name}}.md      # PLAN 计划文件（§3 = WP 引用简表，AI 按需创建）
 │   ├── progress-plan.md
 │   └── budget.md
+├── wps/                           # WP 独立文件（v3.5.0 / schema 0.10.0）
+│   ├── _index.md                  # WP 索引（查找加速器，非存在性判据）
+│   └── WP-NNN.md                  # 独立 WP 文件（短号）
 ├── todos/                         # 待办（执行状态唯一事实源）
 │   └── {{YYYY-MM-DD}}/            # 每日一目录
 │       ├── _index.md              # 绑定文件（当日参与人员索引）
@@ -561,7 +564,9 @@ ai/
 ## 事实源文件
 
 - `todos/{{YYYY-MM-DD}}/{{执行人}}.md` - 待办文件（执行状态唯一事实源）
-- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（WP 粗规划表，唯一计划编排事实源）
+- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（WP 引用简表，唯一计划编排事实源）
+- `wps/WP-NNN.md` - 独立 WP 文件（短号；下辖待办纯派生）
+- `wps/_index.md` - WP 索引（查找加速器，文件存在性以 WP 文件为准）
 - `risks/risk-register.md` - 风险登记册
 - `issues/issue-register.md` - 问题登记册
 - `decisions/decision-log.md` - 决策记录

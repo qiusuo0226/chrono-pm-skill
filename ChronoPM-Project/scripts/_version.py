@@ -22,10 +22,11 @@ CHANGELOG）由发布流程统一同步，禁止遗漏。
 """
 
 # Skill 本体版本（发布时统一 bump）
-SKILL_VERSION = "3.4.0"
+SKILL_VERSION = "3.5.0"
 
 # 工作区目录结构 Schema 版本（CR-20260811-002 → 0.6.0；CR-20260813-001 → 0.7.0 跨源需求归集；
 # CR-20260813-002 → 0.8.0 合同作用域 RI，新增 portfolio/requirements + contract-register；
 # v2.1.0 保持 0.8.0 不变：路径整合 continuity/→context/、outputs/→ai/outputs/ 为存量迁移，不引入新 schema；
-# 0.9.0 = 联邦挂载 projects/{名}/ai/ + 项目 ai 内禁 portfolio/projects）
-WORKSPACE_SCHEMA_VERSION = "0.9.0"
+# 0.9.0 = 联邦挂载 projects/{名}/ai/ + 项目 ai 内禁 portfolio/projects；
+# 0.10.0 = 新增 wps/ 独立 WP 目录 + _index.md）
+WORKSPACE_SCHEMA_VERSION = "0.10.0"

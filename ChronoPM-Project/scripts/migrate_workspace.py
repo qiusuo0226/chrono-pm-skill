@@ -607,6 +607,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.4.0（schema 保持 0.9.0）：报告存根范式 + 时间线报懒建。不预建 timeline/。",
     },
+    {
+        "version": "3.5.0",
+        "schema": "0.10.0",
+        "capabilities": ["wp_independent_files", "wp_index_accelerator", "wp_bind_detect"],
+        "new_dirs": ["wps"],
+        "new_files": ["wps/_index.md"],
+        "note": "v3.5.0（schema 0.9.0→0.10.0）：wps/ 独立 WP 文件 + _index.md 查找加速器。脚本只建空目录和索引；计划内嵌 WP 一次性抽取由 AI 输出清单→PM 确认→先迁后验，脚本不自动删内嵌表。编号短号不变。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -763,6 +771,7 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         "portfolio/requirements/source-type-registry.md": "source-type-registry-template.md",
         "context/entity-registry.md": "entity-registry-template.md",
         "portfolio/context/entity-registry.md": "entity-registry-template.md",
+        "wps/_index.md": "wp-index-template.md",
     }
 
     for f in files:
@@ -1446,6 +1455,21 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
                 print(f"  ⚠️ 未能改写 .skill-version.json: {e}")
         elif dry_run:
             print("  [dry-run] 将更新 .skill-version.json skillVersion/schemaVersion/skillName")
+
+    # 4d. v3.5.0：建 wps/ + 打印一次性抽取入口（不自动删计划内嵌表）
+    needs_v350 = _vcmp(skill_version, "3.5.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.5.0") < 0
+    )
+    if needs_v350:
+        print(f"\n{'='*40}")
+        print("v3.5.0：将创建 wps/ 与 wps/_index.md（schema 0.10.0）")
+        print("一次性抽取入口（脚本不自动执行）：")
+        print("  1. 扫描 plans/PLAN-*.md 内嵌 WP 表 → 输出抽取清单（含关联需求候选）")
+        print("  2. PM 确认 → 建 wps/WP-NNN.md + 更新 _index.md")
+        print("  3. 先迁后验（数量核对+抽样）→ 通过后才删计划内嵌表")
+        print("  截止条件：首次生成周报或新建待办前必须完成抽取")
+        print("  抽取完成前 fallback：查询仍可读 plans 嵌入清单")
+        print(f"{'='*40}")
 
     if dry_run:
         print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")
