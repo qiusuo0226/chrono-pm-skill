@@ -17,7 +17,7 @@ skill_version: 0.5.0
 | Batch ID | YYYYMMDDHHMMSS |
 | Created At | YYYY-MM-DD HH:MM:SS |
 | Status | draft |
-| Request Type | [portfolio_weekly_report / sub_project_weekly / meeting_minutes / ...] |
+| Request Type | [weekly_report / meeting_minutes / requirement_review / design_review / export_excel / export_word / export_pdf] |
 | User Request | [用户原始请求] |
 | Skill Version | chrono-pm 0.5.0 |
 | Workspace Mode | [single / portfolio] |

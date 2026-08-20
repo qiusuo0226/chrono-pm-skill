@@ -1,7 +1,7 @@
 # Project Notes（项目备忘录）
 
 > PM 方法论、干系人沟通备忘、项目洞察、交付策略等**低结构化、追加式**内容（CR-20260813-001，07 号 §8.8）。
-> **只追加**，不修改/删除历史条目。位置：`ai/projects/{子项目}/context/project-notes.md`（项目集 `ai/portfolio/context/project-notes.md`）。
+> **只追加**，不修改/删除历史条目。位置：本项目 `ai/context/project-notes.md`。跨项目备忘请用 ChronoPM-Portfolio，本包不写 `projects/{子项目}/` 或 `portfolio/`。
 
 ## 记录规则
 

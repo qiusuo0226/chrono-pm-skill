@@ -39,7 +39,7 @@ AI 查询时**必须**：
 | 日报处理完成后 | 从"明日计划"提取 TODO → 落待办文件 `todos/{date}/{owner}.md` + 绑定文件 `_index.md` |
 | 会议纪要处理后 | 从行动项提取 TODO → 落待办文件 + 绑定文件 `_index.md` |
 | 待办状态变更后 | 同步状态到待办文件 + 绑定文件 `todos/{date}/_index.md` |
-| 日报索引维护时 | 更新 `YYYYMM/index.md` 月度索引 |
+| 日报处理完成后（报告侧） | **不再**维护 `YYYYMM/index.md`（v3.4.0 停维）。项目日报/周报/时间线报按 01 号存根范式；判重走 D23 |
 | 待确认变更新增时（主动写事实源/高风险建请求） | **写入前查重**：按 Change Log 指针（目标文件+字段/实体 ID）+事项描述匹配；已存在相同待确认项则**合并**（更新说明/时间，不追加新行、`total_pending` 不加）。无重复才写入 `pending-changes.md` 新条目，`total_pending` 加 1，保持与 Change Log `Confirmed By: 待确认` 条目一一对应 |
 | 待确认变更确认后 | 更新 Change Log `Confirmed By` 为 PM 姓名，从 `pending-changes.md` 移除对应条目，`total_pending` 减 1 |
 | 待确认变更驳回后 | Change Log 追加 `修改原因: 驳回-恢复原值`（保留驳回轨迹），AI 恢复事实源原值，从 `pending-changes.md` 移除对应条目，`total_pending` 减 1 |
@@ -53,7 +53,7 @@ AI 在每次更新索引后，必须执行一致性检查：
 |---|---|
 | 绑定文件 vs 待办文件 | `todos/{date}/_index.md` 中的待办概览状态必须与各人 `todos/{date}/{owner}.md` 待办清单状态一致 |
 | 待办 vs 来源 | 每条正式待办的来源（日报"明日计划"/纪要行动项/变更批准等）可追溯 |
-| 月度索引 vs 文件 | `YYYYMM/index.md` 中的记录数必须与 `YYYYMM/` 目录下的日报文件数一致 |
+| 日报月度索引（停维） | 存量 `YYYYMM/index.md` 可留不删；**不得**再追加、不得再做记录数一致性校验 |
 | RI 登记册 vs 检索路由 | RI 范围判定查询前检查本项目 `requirements/contract-register.md` 非空且格式完整（字段齐全）；登记册中的 active 合同须能在本项目 canonical 索引找到。空登记册 → 触发补录引导，不臆造结论（CR-20260813-002）。跨项目检索请用 ChronoPM-Portfolio |
 | 本项目禁写集层 | 本项目 `ai/` 内不得把 `portfolio/` 当事实源落点；发现 `portfolio/` 存储路径 → 不读写，提示跨项目归集请用 ChronoPM-Portfolio |
 
@@ -118,7 +118,7 @@ AI 在每次更新索引后，必须执行一致性检查：
 | D5 | 潜在风险表述是否全部识别为风险候选 | 风险遗漏 | 扫描"可能""担心""如果""担心"等关键词 |
 | D6 | 资源变动关键词是否触发资源联动 | 人员变动遗漏 | 扫描"请假""抽调""借调"等关键词 |
 | D7 | 投入工时是否更新到待办文件工时列 | 工时统计不准 | 核对"投入工时"区块 |
-| D8 | 日报是否更新月度索引 | 索引不完整 | 确认 `YYYYMM/index.md` 已追加记录 |
+| D8 | 日报月度索引已停维（v3.4.0） | 继续维护已废索引 | **不要**再追加 `YYYYMM/index.md` / `reports/daily/index.md`。缺 `reports/timeline/` 不报 P0。判重走 D23 |
 | D9 | 绑定文件是否同步更新 | 团队待办概览过期 | 确认 `todos/{date}/_index.md` 待办概览已更新 |
 | D10 | 同人同天多次汇报是否检查了合并追加 | 工作日志内容丢失 | 确认同人同天汇报合并追加到同一待办文件工作日志段，未覆盖 |
 | D11 | 待确认变更：写入前按 Change Log 指针+事项查重（重复则合并不追加）；`pending-changes.md` 与 Change Log `Confirmed By: 待确认` 一一对应、`total_pending` 一致 | pending 重复粘贴或索引与实际不一致 | 写入前查重；核对本次新增/确认/驳回是否已同步；不一致则以 Change Log 为准重建 |
@@ -302,7 +302,7 @@ AI 操作日志中应记录每次处理的遗漏率：
 | 索引文件 | 过期阈值 | 过期处理 |
 |---|---|---|
 | `todos/{date}/_index.md`（绑定文件） | 24 小时 | 提示「绑定文件上次更新 X 小时前，建议刷新」 |
-| `YYYYMM/index.md` | 实时 | 每次日报处理时同步更新 |
+| `YYYYMM/index.md`（v3.4.0 停维） | — | 不再实时同步；存量可留 |
 | `pending-changes.md` 待确认项 | 7 天 | 超 7 天未确认进入**日常提醒**（每日催办，合入 `19-info-completeness-rules.md` P0-P3）；超 14 天未确认升级为 **critical**（P0/P1 优先级） |
 
 ### 7.2 过期提示格式

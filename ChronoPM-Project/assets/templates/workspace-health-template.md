@@ -44,7 +44,7 @@ ignored_until:
 | Index File | Exists | Last Updated | Records | Status |
 |---|---|---|---|---|
 | todos/{date}/_index.md（当日绑定文件） | yes/no | | | fresh / stale / empty / missing |
-| YYYYMM/index.md | yes/no | | | |
+| YYYYMM/index.md（v3.4.0 停维，存量可留） | yes/no | | | 不得再追加 |
 | change-log/index.md | yes/no | | | |
 
 ## 推荐动作
