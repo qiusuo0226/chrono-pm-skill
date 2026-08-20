@@ -1,4 +1,4 @@
-# ChronoPM v3.6.0
+# ChronoPM v3.7.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -232,15 +232,15 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 37 | Daily reports, weekly reports, meeting minutes, risk registers, WP files, source-doc decompose, and more |
+| Document templates | 38 | Daily reports, weekly reports, meeting minutes, risk registers, WP files, source-doc decompose, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 350 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 380 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (350 cases))
+├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (380 cases))
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion package
 ├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit / historical upgrades
 ├── tools/                # Shared pack-skill tooling
@@ -253,11 +253,11 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.6.0 |
-| Workspace schema | 0.11.0 |
+| Skill version | 3.7.0 |
+| Workspace schema | 0.12.0 |
 | Rule files | 22 |
-| Document templates | 37 |
-| Regression cases | 350 |
+| Document templates | 38 |
+| Regression cases | 380 |
 
 ## Distribution package naming
 

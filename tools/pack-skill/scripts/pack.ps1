@@ -132,7 +132,8 @@ $excludeFiles = @(
 # Specific file paths to exclude (matched by normalized relative path)
 # Customize per project: these are ChronoPM-specific governance artifacts
 $excludeFilePaths = @(
-    "references/16-skill-governance-rules.md"  # Skill self-governance rules — developer-side process
+    "references/16-skill-governance-rules.md",  # Skill self-governance rules — developer-side process
+    "source-split-skill/SKILL.md"  # 清单性文件，防宿主递归发现成第二 Skill
 )
 
 # ── Test function ─────────────────────────────────────────

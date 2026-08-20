@@ -24,6 +24,7 @@ baselines/{version}/
 | 3.2.0~3.4.0 | references + assets/templates + governance（缺 scripts/tests） | 已知偏差不回填 |
 | **3.5.0 起** | **全包内容**（references/assets/scripts/tests/governance 齐全，= 发布时包内容） | 规范基线 |
 | **3.6.0** | 全包快照（含 sources 模板 + schema 0.11.0） | 与发布包逐文件一致 |
+| **3.7.0** | 全包快照（parse-log/分片/WP §3b/风险册重构 + schema 0.12.0） | 与发布包逐文件一致 |
 
 **规范（自 3.5.0 起）**：发布新版本时，baseline 必须是该版本包内容的**全量快照**（含 scripts/ 与 tests/），与发布包逐文件一致；audit 与回归以当前版基线为对照基准。
 
