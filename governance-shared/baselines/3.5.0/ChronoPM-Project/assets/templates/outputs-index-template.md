@@ -23,7 +23,7 @@ status: 草稿
 | Batch ID | 批次目录名（时间戳） | YYYYMMDDHHMMSS |
 | Created At | 创建时间 | YYYY-MM-DD HH:MM:SS |
 | Request | 用户原始请求 | [文本] |
-| Type | 生成类型 | portfolio_weekly_report / sub_project_weekly / meeting_minutes / requirement_review / design_review / export_excel / export_word / export_pdf |
+| Type | 生成类型 | weekly_report / meeting_minutes / requirement_review / design_review / export_excel / export_word / export_pdf（集周报归 ChronoPM-Portfolio，本包不写） |
 | Status | 当前状态 | draft / pending_confirmation / revising / final / exported / archived / cancelled |
 | Main File | 主文件路径 | outputs/{batch_id}/draft.md 或 files/xxx.xlsx |
 | Related AI File | 关联的事实源文件（归档后填写） | reports/weekly/YYYY/... 或 pending |

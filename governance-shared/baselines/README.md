@@ -1,0 +1,31 @@
+# Baselines（版本基线快照）
+
+## 用途
+
+每个发布版本的包内容快照，用于发布对照、回归比对与审计追溯。**只增不改**：历史基线一经建立即冻结，不得回填或改写内容。
+
+## 目录结构（v3.1.0 起）
+
+```
+baselines/{version}/
+├── ChronoPM-Project/    # 单项目主包快照（3.1.1+ 强制；3.1.0 为平铺首版，audit 豁免）
+└── ChronoPM-Portfolio/  # 项目集伴生包快照
+```
+
+≤3.0.0 的历史基线为单包时代冻结快照，结构保持原样不动。
+
+## 快照策略差异登记（2026-08-20 复核确认）
+
+| 版本 | 内容完整度 | 说明 |
+|---|---|---|
+| ≤3.0.0 | 单包全量 | 冻结，不动 |
+| 3.1.0 | references + 核心文件（平铺无 ChronoPM-Project 子树；缺 assets/scripts/tests） | 重组后首个基线，audit_release.py 已豁免子树要求；**已知偏差不回填** |
+| 3.1.1 | ChronoPM-Project 子树 + references（缺 assets/scripts/tests） | 同上，不回填 |
+| 3.2.0~3.4.0 | references + assets/templates + governance（缺 scripts/tests） | 已知偏差不回填 |
+| **3.5.0 起** | **全包内容**（references/assets/scripts/tests/governance 齐全，= 发布时包内容） | 规范基线 |
+
+**规范（自 3.5.0 起）**：发布新版本时，baseline 必须是该版本包内容的**全量快照**（含 scripts/ 与 tests/），与发布包逐文件一致；audit 与回归以当前版基线为对照基准。
+
+## 特别登记
+
+- **3.5.0 快照含 c7d000f 修复内容**（2026-08-20）：正式包在 3.5.0 发布后做了措辞残留修复（project-brief §4 人员路由、14 号月度索引停维、outputs 模板 portfolio 枚举清理、project-notes 位置指针、workspace-health 停维标注），未升版本号；本基线已同步为修复后状态，即"3.5.0 基线 = 当前包"。若后续对该修复做正式版本治理（如升 PATCH），以新版本基线为准。

@@ -40,12 +40,11 @@ author: AI辅助生成
 
 ## 4. 团队成员
 
-> 人员当前状态以各子项目 `projects/{子项目}/resources/resource-register.md` 为事实源（v2.0.0 零数据源，项目集层不存人员数据）。
-> 此处仅保留指针，不复制完整团队列表，避免与 register 不一致。
+> 人员当前状态以本项目 `resources/resource-register.md` 为事实源。
+> 此处仅保留指针，不复制完整团队列表，避免与 register 不一致。跨项目共享人力查询请用 ChronoPM-Portfolio，本包不写 `portfolio/`、不写 `projects/{子项目}/`。
 
-→ 人员当前状态：各子项目 `projects/{子项目}/resources/resource-register.md`
-→ 人员流转历史：各子项目 `projects/{子项目}/resources/transfer-log.md`
-→ 跨项目共享人员：`portfolio/resources/shared-resource-index.md`（只读指针索引）
+→ 人员当前状态：本项目 `resources/resource-register.md`
+→ 人员流转历史：本项目 `resources/transfer-log.md`
 
 （旧版 brief 中如已有团队列表，建议在 register 更新后逐步删除冗余信息，替换为本指针。）
 
