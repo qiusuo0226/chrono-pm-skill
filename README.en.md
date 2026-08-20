@@ -1,10 +1,10 @@
-# ChronoPM v3.0.0
+# ChronoPM v3.4.0
 
 **Let AI manage your project — not just write documents for you.**
 
 ## What is this?
 
-ChronoPM is an AI skill for project managers. Once installed, your AI assistant understands your project and helps with daily management — writing daily reports, organizing meeting minutes, tracking tasks and risks, managing requirement changes, and generating weekly/monthly reports.
+ChronoPM is an AI skill for project managers. Once installed, your AI assistant understands your project and helps with daily management — writing daily reports, organizing meeting minutes, tracking tasks and risks, managing requirement changes, and generating weekly reports.
 
 It's not another project management app. It works directly in your existing folders. All project data is plain Markdown — no database, no cloud service, no vendor lock-in.
 
@@ -79,7 +79,7 @@ Talk to the AI like you would to an assistant:
 | "We had a kickoff meeting, here are the notes…" | Organizes minutes, extracts action items, assigns owners |
 | "The client wants to add feature XX" | Registers the requirement, assesses impact, updates the traceability matrix |
 | "How's this week going?" | Pulls from all files and generates a weekly summary |
-| "Overall program status" | Aggregates all subproject statuses into a program-level monthly report |
+| "Cross-project overall status" | Switch to a ChronoPM-Portfolio conversation for read-only rollup (this pack does not generate a program monthly report) |
 | "Check if anything's missing" | Scans all management files, lists gaps with priority levels |
 | "Is this requirement within contract scope?" | Traces from contract → bidding → specific requirements with an evidence chain |
 
@@ -122,8 +122,8 @@ Plan files (`plans/PLAN-xxx.md`) organize work with work packages (numbered `WP-
           │               │                   │
           ▼               ▼                   ▼
 [Plan view]            [Time view]          [Reporting view]
-WP progress /           "What's on today" /  daily → weekly →
-backward countdown      "this week's plan"   monthly reports
+WP progress /           "What's on today" /  daily → weekly
+backward countdown      "this week's plan"   reports
 ```
 
 Key point: **todo files are the only write target; everything else is a derived view**. Daily/weekly reports are outputs, not data sources — reports can never drift out of sync with reality.
@@ -177,7 +177,7 @@ Requirement registration, change control, impact analysis — every step is reco
 All project knowledge lives in files. When someone new joins, the AI reads the files and gets up to speed. When someone leaves, the project history stays.
 
 **End-to-end reporting**
-Daily reports, weekly reports, monthly reports, meeting minutes, decision logs, retrospectives — all have standard templates. The AI fills them in and rolls them up automatically.
+Daily reports, weekly reports, meeting minutes, decision logs, retrospectives — all have standard templates. The AI fills them in and rolls them up automatically.
 
 **Requirement scope is traceable**
 From contracts to bidding documents to specific requirements — a three-layer model helps you answer "is this requirement within the contract scope?"
@@ -194,7 +194,7 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 |---|---|---|
 | CAP-001 | Workspace Initialization | One-click project workspace setup, single/portfolio modes |
 | CAP-002 | Daily Report Management | Report processing, merge idempotency, personal progress sync |
-| CAP-003 | Weekly Report & Portfolio Rollup | Subproject weekly + program monthly auto-rollup |
+| CAP-003 | Project Weekly Report | This project's weekly report; cross-project rollup uses ChronoPM-Portfolio |
 | CAP-004 | PM Daily Todo | Whole-team aggregated todo view, 9-section panorama |
 | CAP-005 | Quick Query | Index-first lookup, no full scans by default |
 | CAP-006 | Output Artifact Management | Batch-dir output + draft/confirm/export flow |
@@ -234,86 +234,45 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Rule files | 22 | Define how the AI should behave in various scenarios |
 | Document templates | 33 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 299 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 327 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
 ```
 ChronoPM Skill/
-├── SKILL.md              # AI entry file. The AI reads this first when loading the Skill
-│                          # to understand its capabilities, routing rules, and behavior.
-│                          # Think of it as the AI's "job description."
-├── skill.json            # Skill metadata. Version, capability declarations, upgrade history —
-│                          # used by AI tool platforms to identify and manage this Skill.
-├── VERSION               # Current version number (plain text), for quick reference.
-├── CHANGELOG.md          # Change history. What changed in each version, release date, impact scope.
-│
-├── references/           # 📖 Rule files (22 files, numbered 00~22; No.03 merged into No.00 since v2.0.0)
-│   │                      # The AI's "code of conduct" — defines what to do in each scenario.
-│   ├── 00-pm-main-rules.md        # PM master rules: core workflows, permission model, safety baseline
-│   ├── 01-daily-report-rules.md   # Daily report handling: merge, idempotency, work-log integration
-│   ├── 02-meeting-rules.md        # Meeting minutes: structured recording, action item extraction, decision archiving
-│   ├── 04-risk-issue-rules.md     # Risk & issue: registration, assessment, multi-source cross-check
-│   ├── 05-query-rules.md          # Query rules: index-first, no full scans
-│   ├── 06-file-rules.md           # File rules: naming conventions, archive paths, read/write constraints
-│   ├── 07-requirement-rules.md    # Requirement management: registration, traceability, RI three-layer model, business⇄implementation dual-view
-│   ├── 08-change-control-rules.md # Change control: flow, impact analysis, cascade rules
-│   ├── 09-portfolio-rules.md      # Portfolio coordination: multi-subproject coordination, resource transfer
-│   ├── 10~22                      # Other rules (update triggers, output artifacts, Excel generation,
-│   │                              # compatibility, self-check, snapshots, glossary, init wizard,
-│   │                              # completeness inspection, version rules, PM profile, personal todo, etc.)
-│   └── ...
-│
-├── assets/               # 📦 Resource files
-│   └── templates/        # Document templates (36). The AI fills these when generating files,
-│                          # ensuring consistent formatting. Covers daily reports, weekly reports,
-│                          # meeting minutes, risk registers, decision logs, retrospectives, etc.
-│                          # Note: the workspace ai/ directory tree is created programmatically by
-│                          # the init script; it does not rely on a separate directory template.
-│
-├── scripts/              # ⚙️ Automation scripts
-│   ├── init_workspace.py      # Workspace initialization: creates directory structure in single/portfolio mode
-│   ├── migrate_workspace.py   # Workspace migration: automatically upgrades old workspaces to latest structure
-│   ├── sync_version.py        # Version sync: propagates version from single source of truth to all touchpoint files
-│   ├── _version.py            # Single source of truth for versions: SKILL_VERSION + WORKSPACE_SCHEMA_VERSION
-│   └── chronopm_init/         # Initialization engine: config, template rendering, validation, directory building
-│
-├── governance/           # 🛡️ Governance contracts (for developers)
-│   ├── contracts/             # Core contract: defines protection levels and release rules for Skill changes
-│   ├── baselines/             # Version baseline snapshots: complete file copies per version, for rollback/audit
-│   ├── change-requests/       # Change requests (CR): formal records of every Skill self-modification
-│   ├── migrations/            # Upgrade files: authoritative execution source of the version chain (upgrade-to-{version}.md)
-│   ├── impact-analysis/       # Impact analysis (IA): pre-change impact scope assessment
-│   ├── regression-reports/    # Regression reports (RR): full test results for each release
-│   ├── review-checklists/     # Release checklists: ensures no release step is skipped
-│   └── planning/              # Design documents: design docs for major features
-│
-└── tests/                # 🧪 Regression test suite (299 cases)
-                              # Run after every Skill update to ensure nothing breaks.
+├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (327 cases))
+├── ChronoPM-Portfolio/   # Read-only portfolio companion package
+├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit / historical upgrades
+├── tools/                # Shared pack-skill tooling
+├── README.md
+├── README.en.md
+└── LICENSE.txt
 ```
 
 ## Version info
 
 | Item | Value |
 |---|---|
-| Skill version | 3.0.0 |
+| Skill version | 3.4.0 |
 | Workspace schema | 0.9.0 |
 | Rule files | 22 |
 | Document templates | 33 |
-| Regression cases | 299 |
+| Regression cases | 327 |
 
 ## Distribution package naming
 
 Release artifacts follow `{BrandName}-Skill-v{version}.zip`. Since v3.0.0 one release produces two packages (G-3):
 
-- `ChronoPM-Project-Skill-v3.0.0.zip` (main package, single-project management)
-- `ChronoPM-Portfolio-Skill-v3.0.0.zip` (read-only aggregation companion package)
+- `ChronoPM-Project-Skill-v3.4.0.zip` (main package, single-project management)
+- `ChronoPM-Portfolio-Skill-v3.4.0.zip` (read-only aggregation companion)
 
 - **BrandName**: brand prefix of `displayName` in each package's `skill.json` (before `—` or `(`)
 - **version**: semantic version with `v` prefix (both packages share one version line)
 
-On this machine, packaging uses the Python entry `tools/pack-skill/scripts/pack.py` (when PowerShell execution policy is restricted); its exclusion model reads `pack.ps1` as the **single source of truth**, while `pack.ps1` serves as the cross-platform reference implementation. Running `pack.py` at the repo root auto-detects the `ChronoPM-Portfolio/` companion and emits both zips; the Project package excludes `ChronoPM-Portfolio/` (exclusion model in `pack.ps1`). Before release, `governance/scripts/audit_release.py` must pass, including a “naming drift guard” assertion that rejects legacy `{name}-{version}.zip` artifacts.
+Pack from the repo root: `python tools/pack-skill/scripts/pack.py --skill-root ChronoPM-Project`. The companion sibling `ChronoPM-Portfolio/` is packed automatically; zips are written to the repo root. Before release, `python governance-shared/scripts/audit_release.py` must pass.
+
+Dev-repo install: copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if needed) into the AI tool's skill directory — do not copy the whole repo root. Distribution zips still have `SKILL.md` at the package top.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md).

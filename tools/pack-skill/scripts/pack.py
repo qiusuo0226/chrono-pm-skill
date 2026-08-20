@@ -29,6 +29,7 @@ import re
 import sys
 import zipfile
 from pathlib import Path
+from typing import Optional
 
 
 def parse_args():
@@ -85,6 +86,33 @@ def read_brand_name(root: Path) -> str:
 
 # ── Exclusion model (read from pack.ps1 — single source of truth) ──
 
+def find_repo_root(skill_root: Path) -> Path:
+    """Locate the git/dev repo root that holds tools/pack-skill/scripts/pack.ps1.
+
+    CR-G: skill-root is ChronoPM-Project/ or ChronoPM-Portfolio/; pack.ps1 stays at repo root.
+    """
+    cur = skill_root.resolve()
+    for _ in range(5):
+        if (cur / "tools" / "pack-skill" / "scripts" / "pack.ps1").is_file():
+            return cur
+        if cur.parent == cur:
+            break
+        cur = cur.parent
+    return skill_root.resolve()
+
+
+def find_companion(skill_root: Path) -> Optional[Path]:
+    """Companion ChronoPM-Portfolio next to ChronoPM-Project, or nested (pre-CR-G)."""
+    skill_root = skill_root.resolve()
+    sibling = skill_root.parent / "ChronoPM-Portfolio"
+    if skill_root.name == "ChronoPM-Project" and (sibling / "SKILL.md").is_file():
+        return sibling
+    nested = skill_root / "ChronoPM-Portfolio"
+    if (nested / "SKILL.md").is_file():
+        return nested
+    return None
+
+
 def pack_exclusions(ps1_root: Path) -> dict:
     """Read exclusion arrays from pack.ps1 at runtime.
 
@@ -116,9 +144,14 @@ def is_excluded_file(rel_path: str, exclusions: dict, extra_exclude_dirs: list) 
     """Determine if a file should be excluded from the distribution package."""
     rel = rel_path.replace("\\", "/")
 
-    # Exceptions first
-    if rel in exclusions["exceptions"]:
-        return False
+    # Exceptions first (exact path, or directory prefix ending with "/")
+    for exc in exclusions["exceptions"]:
+        if rel == exc:
+            return False
+        if exc.endswith("/"):
+            prefix = exc.rstrip("/")
+            if rel == prefix or rel.startswith(prefix + "/"):
+                return False
 
     parts = rel.split("/")
 
@@ -244,20 +277,20 @@ def main() -> int:
     args = parse_args()
 
     skill_root = Path(args.skill_root).resolve()
-    output_dir = Path(args.output_dir).resolve() if args.output_dir else skill_root
+    repo_root = find_repo_root(skill_root)
+    output_dir = Path(args.output_dir).resolve() if args.output_dir else repo_root
     extra_excludes = args.exclude or []
 
-    rc = pack_one(skill_root, skill_root, output_dir, extra_excludes, args.dry_run)
+    rc = pack_one(skill_root, repo_root, output_dir, extra_excludes, args.dry_run)
     if rc != 0:
         return rc
 
-    # v3.0.0 (G-3) dual-pack: auto-detect ChronoPM-Portfolio/ companion and
-    # emit a second zip for it (exclusion model still read from repo-root pack.ps1)
-    companion = skill_root / "ChronoPM-Portfolio"
-    if (companion / "SKILL.md").is_file():
+    # v3.0.0 (G-3) / v3.1.1 (CR-G): auto-detect ChronoPM-Portfolio companion
+    companion = find_companion(skill_root)
+    if companion is not None:
         print()
         print(">> Companion package detected: ChronoPM-Portfolio — packing second zip")
-        rc = pack_one(companion, skill_root, output_dir, extra_excludes, args.dry_run)
+        rc = pack_one(companion, repo_root, output_dir, extra_excludes, args.dry_run)
     return rc
 
 

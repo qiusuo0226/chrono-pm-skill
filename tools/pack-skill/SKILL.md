@@ -18,10 +18,11 @@ description: 将任意 Qoder Skill 项目打包为分发包 zip。自动检测�
 
 ### Step 1：定位 Skill 根目录
 
-检查当前工作区根目录是否存在 `SKILL.md`。
+检查当前工作区：
 
-- 存在 → 当前工作区即为 Skill 根目录
-- 不存在 → 报错退出
+- 仓库根下存在 `ChronoPM-Project/SKILL.md` → Skill 根目录 = `ChronoPM-Project/`（v3.1.1 CR-G）
+- 当前目录存在 `SKILL.md` → 当前目录即为 Skill 根目录
+- 否则报错退出
 
 ### Step 2：读取版本信息
 
@@ -54,7 +55,7 @@ powershell -ExecutionPolicy Bypass -File ~/.qoder/skills/pack-skill/scripts/pack
 2. 排除下方黑名单中的路径/模式（排除模型实读自 pack.ps1，单一事实源）
 3. 其余全部打入 zip
 4. 产物命名：`{BrandName}-Skill-v{version}.zip`（BrandName 取自 skill.json displayName 品牌前缀）
-5. **双包感知（v3.0.0，G-3）**：Skill 根下存在 `ChronoPM-Portfolio/` 伴生包（含 SKILL.md）时，主包排除该目录后，自动再为其打第二个 zip（一次发布两个产物）
+5. **双包感知（v3.0.0 G-3 / v3.1.1 CR-G）**：`--skill-root ChronoPM-Project` 时自动打包兄弟目录 `ChronoPM-Portfolio/` 为第二 zip；zip 默认写仓库根。`governance/migrations/`（仅当前 upgrade）与 `governance/contracts/skill-contract.md` 例外放行入包。
 
 **建议先 DryRun 预览：**
 
@@ -80,7 +81,7 @@ python tools/pack-skill/scripts/pack.py --skill-root <path> --dry-run
 | 构建缓存 | `__pycache__/`、`*.pyc`、`*.pyo` |
 | OS 元数据 | `.DS_Store`、`Thumbs.db` |
 | 打包产物 | `*.zip`、`*.tar.gz` |
-| 开发者治理 | `governance/`（例外放行 `governance/contracts/skill-contract.md`） |
+| 开发者治理 | `governance/`（例外放行 `governance/contracts/skill-contract.md` 与 `governance/migrations/` 当前 upgrade） |
 | 测试 | `tests/`（如存在） |
 | 架构文档 | `SKILL_BLUEPRINT.md`（开发者侧架构审查文档） |
 | 治理规则 | `references/16-skill-governance-rules.md`（Skill 自身变更治理规则，开发者侧） |

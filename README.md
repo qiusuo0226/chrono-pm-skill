@@ -1,4 +1,4 @@
-# ChronoPM v3.0.0 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
+# ChronoPM v3.4.0 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
 
 **让 AI 帮你管项目，而不是帮你写文档。**
 
@@ -6,7 +6,7 @@
 
 ## 这是什么？
 
-ChronoPM 是一个给项目经理用的 AI 技能（Skill）。装上之后，AI 就能理解你的项目，帮你处理日常管理工作——写日报、整理会议纪要、跟踪任务和风险、管理需求变更、生成周报月报。
+ChronoPM 是一个给项目经理用的 AI 技能（Skill）。装上之后，AI 就能理解你的项目，帮你处理日常管理工作——写日报、整理会议纪要、跟踪任务和风险、管理需求变更、生成周报。
 
 它不是又一个项目管理软件。它直接在你现有的文件夹里工作，所有项目数据都是 Markdown 文件，不依赖任何数据库或云服务。
 
@@ -81,7 +81,7 @@ ChronoPM 的定位是**项目管理智能知识助手**。靠日常工作中项�
 | "开个项目启动会，要点如下…" | 整理会议纪要，提取待办事项，分配到责任人 |
 | "客户要加一个 XX 需求" | 登记需求，评估影响范围，更新追踪矩阵 |
 | "这周进展怎么样" | 从各文件汇总生成本周周报 |
-| "项目集整体状态" | 汇总各子项目状态，生成项目集月报 |
+| "跨项目整体状态" | 请到 ChronoPM-Portfolio 对话做只读归集（本包不生成项目集月报） |
 | "检查一下项目信息完不完整" | 扫描所有管理文件，列出缺失项并分级提醒 |
 | "这个需求在不在合同范围内" | 从合同→招投标→具体需求三层追溯，给出证据链 |
 
@@ -123,7 +123,7 @@ v2.0.0 把整个执行体系收敛成两层：**待办文件**管每一条具体
           │                    │                     │
           ▼                    ▼                     ▼
 【计划视图】            【时间视图】            【汇报视图】
-任务包进度/倒排倒计时    "今天做什么"/"本周计划"   日报 → 周报 → 月报
+任务包进度/倒排倒计时    "今天做什么"/"本周计划"   日报 → 周报
 ```
 
 要点：**写只写待办文件，其他全是它的派生视图**。日报/周报是输出物不是数据源，不会出现"报表和实际不一致"。
@@ -176,8 +176,8 @@ AI 每次操作前先读取现有文件了解上下文。写入重要信息前�
 **项目知识不随人员流动**
 所有项目知识都在文件里。新人来了，AI 读完文件就能接手；人走了，项目历史不会丢。
 
-**从日报到月报一条龙**
-日报、周报、月报、会议纪要、决策记录、复盘总结——全部有标准模板，AI 自动填充和汇总。
+**从日报到周报一条龙**
+日报、周报、会议纪要、决策记录、复盘总结——全部有标准模板，AI 自动填充和汇总。
 
 **需求范围可追溯**
 从合同到招投标文件到具体需求，三层模型帮你搞清楚"这个需求在不在合同范围内"。
@@ -194,7 +194,7 @@ AI 每次操作前先读取现有文件了解上下文。写入重要信息前�
 |---|---|---|
 | CAP-001 | 工作区初始化 | 一键建立项目工作区，支持单项目/项目集两种模式 |
 | CAP-002 | 日报管理 | 日报处理、合并幂等、个人进度联动 |
-| CAP-003 | 周报与项目集汇总 | 子项目周报 + 项目集月报自动汇总 |
+| CAP-003 | 本项目周报 | 本项目周报；跨项目汇总周报请用 ChronoPM-Portfolio |
 | CAP-004 | PM 每日待办 | 全团队聚合待办视图，9 段全景展示 |
 | CAP-005 | 快捷查询 | 索引优先查询，禁止默认全量扫描 |
 | CAP-006 | 输出物管理 | 输出物批次目录 + 草稿/确认/导出流程 |
@@ -234,78 +234,45 @@ AI 每次操作前先读取现有文件了解上下文。写入重要信息前�
 | 规则文件 | 22 份 | 定义 AI 在各类场景下该怎么做事 |
 | 文档模板 | 33 个 | 日报、周报、会议纪要、风险登记册等全套模板 |
 | 自动化脚本 | 5 个 | 工作区初始化、版本迁移、版本同步等 |
-| 回归测试 | 299 个用例 | 确保每次更新不破坏已有功能 |
+| 回归测试 | 327 个用例 | 确保每次更新不破坏已有功能 |
 
 ## 目录结构
 
 ```
 ChronoPM Skill/
-├── SKILL.md              # AI 入口文件。AI 加载 Skill 时首先读取这个文件，
-│                          # 从中了解整个 Skill 的能力、路由规则和行为规范。
-│                          # 相当于 AI 的“岗位说明书”。
-├── skill.json            # Skill 元数据。版本号、能力声明、升级历史等，
-│                          # 供 AI 工具平台识别和管理本 Skill。
-├── VERSION               # 当前版本号（纯文本），便于快速查看。
-├── CHANGELOG.md          # 变更历史。每个版本的改动内容、发布日期、影响范围。
-│
-├── references/           # 📖 Project 规则（21 份有效规则 + 09 退役指针；编号 00~22，03 已删）
-│   ├── 00-pm-main-rules.md        # 主控 + 操作确认分级表
-│   ├── 01-daily-report-rules.md   # 日报 + 录入归属判定
-│   ├── 05-query-rules.md          # 查询 + 待办清单输出规范
-│   ├── 09-portfolio-rules.md      # v3.0.0 退役指针 → ChronoPM-Portfolio
-│   └── 10~22                      # 其余规则
-├── ChronoPM-Portfolio/   # 只读项目集伴生包
-│
-├── assets/               # 📦 资源文件
-│   └── templates/        # 文档模板（33 个）。AI 生成文件时按模板填充，
-│                          # 确保格式统一。涵盖日报、周报、会议纪要、
-│                          # 风险登记册、决策记录、复盘报告等全套模板。
-│                          # 注：工作区 ai/ 目录树由 init 脚本程序化创建，
-│                          # 不依赖独立的目录模板文件。
-│
-├── scripts/              # ⚙️ 自动化脚本
-│   ├── init_workspace.py      # 工作区初始化：仅 single 模式（v3.0.0，portfolio 已拒绝）
-│   ├── migrate_workspace.py   # 工作区迁移：旧版本工作区自动升级到最新结构
-│   ├── sync_version.py        # 版本同步：从单一版本源同步到所有触点文件
-│   ├── _version.py            # 版本单一事实源：SKILL_VERSION + WORKSPACE_SCHEMA_VERSION
-│   └── chronopm_init/         # 初始化引擎：配置、模板渲染、校验、目录构建
-│
-├── governance/           # 🛡️ 治理契约（开发者使用）
-│   ├── contracts/             # 核心契约：定义 Skill 变更的保护层级和发布规则
-│   ├── baselines/             # 版本基线快照：每个版本的完整文件副本，用于回滚/审计
-│   ├── change-requests/       # 变更工单（CR）：每次 Skill 自身变更的正式记录
-│   ├── migrations/            # 升级文件：版本链权威执行源（upgrade-to-{version}.md）
-│   ├── impact-analysis/       # 影响分析（IA）：变更前评估影响范围
-│   ├── regression-reports/    # 回归报告（RR）：每次发布的全量测试结果
-│   ├── review-checklists/     # 发布检查清单：确保发布流程不遗漏检查项
-│   └── planning/              # 方案设计：重大功能的设计文档
-│
-└── tests/                # 🧪 回归测试套件（299 个用例）
-                              # 每次 Skill 更新后运行，确保不破坏已有功能。
+├── ChronoPM-Project/     # 单项目 Skill 包根（打包根；内含 SKILL.md / references / assets / scripts / tests 回归测试套件（327 个用例） / governance/migrations 当前 upgrade）
+├── ChronoPM-Portfolio/   # 只读项目集伴生包（含 governance/migrations 指针）
+├── governance-shared/    # 仓库级共享（不进分发包）：baselines / CR / IA / RR / audit / 历史 upgrade
+├── tools/                # 共享打包工具 pack-skill
+├── README.md
+├── README.en.md
+└── LICENSE.txt
 ```
 
 ## 版本信息
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 3.0.0 |
+| Skill 版本 | 3.4.0 |
 | 工作区 Schema | 0.9.0 |
 | 规则文件 | 22 份 |
 | 文档模板 | 33 个 |
-| 回归用例 | 299 个 |
+| 回归用例 | 327 个 |
 
 ## 分发包命名规范
 
 发布产物按 `{BrandName}-Skill-v{version}.zip` 命名。v3.0.0 起一次发布打两个包（G-3）：
 
-- `ChronoPM-Project-Skill-v3.0.0.zip`（主包，单项目管理）
-- `ChronoPM-Portfolio-Skill-v3.0.0.zip`（只读归集伴生包）
+- `ChronoPM-Project-Skill-v3.4.0.zip`（主包，单项目管理）
+- `ChronoPM-Portfolio-Skill-v3.4.0.zip`（只读归集伴生包）
 
 - **BrandName**：取自各包 `skill.json` 的 `displayName` 品牌前缀（`—` 或 `(` 之前）
 - **version**：语义化版本号，加 `v` 前缀（双包同版本）
 
-本机打包使用 Python 入口 `tools/pack-skill/scripts/pack.py`（PowerShell 执行策略受限时）；其排除模型实读 `pack.ps1`，以之为**唯一事实源**，`pack.ps1` 作为跨平台参考实现。在仓库根运行 `pack.py` 时自动感知 `ChronoPM-Portfolio/` 伴生包并依次产出两个 zip；Project 包排除 `ChronoPM-Portfolio/` 目录（排除模型见 `pack.ps1`）。发布前须通过 `governance/scripts/audit_release.py` 审计（含“命名漂移守门”断言，禁止 `{name}-{version}.zip` 类旧格式产物）。
+本机打包：在仓库根运行 `python tools/pack-skill/scripts/pack.py --skill-root ChronoPM-Project`（排除模型实读 `pack.ps1`）。自动感知兄弟目录 `ChronoPM-Portfolio/` 打第二包；zip 默认写仓库根。发布前须通过 `python governance-shared/scripts/audit_release.py`。
+
+开发仓安装：把 `ChronoPM-Project/`（及需要时的 `ChronoPM-Portfolio/`）复制到 AI 工具的 Skill 目录，不要复制整个仓库根。分发包 zip 内部仍以 `SKILL.md` 为顶层。
 
 ## 升级日志
 
-详见 [CHANGELOG.md](CHANGELOG.md)。
+详见 [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)。

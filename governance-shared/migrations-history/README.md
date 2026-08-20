@@ -1,0 +1,22 @@
+# 升级历史链归档（开发仓，不进分发包）
+
+> 本目录是 ChronoPM Skill **完整历史** `upgrade-to-*.md` 的归档（D-18）。
+> 运行时 / 分发包只携带各 skill 包根 `governance/migrations/` 里当前这一份。
+
+## 当前执行源（包内）
+
+- Project：`ChronoPM-Project/governance/migrations/upgrade-to-3.1.1.md`
+- Portfolio：`ChronoPM-Portfolio/governance/migrations/upgrade-to-3.1.1.md`（指针，主包为准）
+
+## 版本链（0.1.0 → 3.1.1，连续无断点）
+
+0.1.0 → 0.2.0 → 0.3.0 → 0.4.0 → 0.5.0 → 0.6.0 → 0.7.0 → 0.7.1 → 0.8.0 → 0.9.0 → 1.0.0 → 1.0.1 → 1.1.0 → 1.2.0 → 1.3.0 → 1.3.1 → 1.4.0 → 1.5.0 → 1.6.0 → 1.6.1 → 1.7.0 → 1.7.1 → 1.8.0 → 1.8.1 → 1.8.2 → 1.8.3 → 1.8.4 → 1.9.0 → 1.10.0 → 1.10.1 → 1.10.2 → 1.11.0 → 1.12.0 → 1.13.0 → 1.13.1 → 1.14.0 → 1.15.0 → 1.16.0 → 1.16.1 → 1.16.2 → 1.16.3 → 1.17.0 → 1.17.1 → 1.18.0 → 1.18.1 → 1.19.0 → 1.19.1 → 1.20.0 → 1.21.0 → 2.0.0 → 2.1.0 → 3.0.0 → 3.1.0 → 3.1.1
+
+跨多个历史版本升级时：在本目录按链逐级读取 `upgrade-to-{version}.md`（0.1.0 为初始版本，无升级文件）。
+
+## 信息架构
+
+- 包内 `governance/migrations/` = 当前版执行源（进分发包）
+- 本目录 = 完整历史（仅开发仓）
+- `skill.json` versionHistory = 摘要索引
+- `VERSION_CAPABILITIES`（`ChronoPM-Project/scripts/migrate_workspace.py`）= 运行时派生

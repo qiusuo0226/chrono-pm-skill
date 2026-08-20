@@ -105,16 +105,19 @@ $excludeDirs = @(
     "governance",
     "tests",
     "tools",
-    # v3.0.0（G-3）：仓库根打 Project 包时不得含伴生包；
-    # Portfolio 包另行以 -SkillRoot ChronoPM-Portfolio 单独打包
-    "ChronoPM-Portfolio"
+    # v3.1.1（CR-G）：打包根已是 ChronoPM-Project/ 或 ChronoPM-Portfolio/，
+    # 下列名称用于防误把兄弟目录/共享目录打进包
+    "ChronoPM-Portfolio",
+    "ChronoPM-Project",
+    "governance-shared"
 )
 if ($Exclude) { $excludeDirs += $Exclude }
 
 # Exception: files to INCLUDE even if parent dir is excluded
 # Paths use forward slash; matched after normalizing \ → /
 $includeExceptions = @(
-    "governance/contracts/skill-contract.md"
+    "governance/contracts/skill-contract.md",
+    "governance/migrations/"
 )
 
 # File extensions to exclude
@@ -140,9 +143,14 @@ function Test-Excluded {
     # Normalize path separators to forward slash for consistent matching
     $relNorm = $rel -replace '\\', '/'
 
-    # Check exception list first (include even if parent dir is excluded)
+    # Check exception list first (include even if parent dir is excluded).
+    # Trailing "/" = directory prefix (CR-G: governance/migrations/ 当前 upgrade 入包)
     foreach ($exc in $includeExceptions) {
         if ($relNorm -eq $exc) { return $false }
+        if ($exc.EndsWith("/")) {
+            $prefix = $exc.TrimEnd("/")
+            if ($relNorm -eq $prefix -or $relNorm.StartsWith("$prefix/")) { return $false }
+        }
     }
 
     $parts = $relNorm -split '/'
