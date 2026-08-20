@@ -3,7 +3,7 @@
 > 从 2.0.0 升级到 2.1.0
 > 发布日期：2026-08-18
 > Schema 变更：无（workspace schema 保持 0.8.0，skill schemaVersion 保持 0.6.0）
-> CR 编号：升级方案 `governance/upgrade-plan-v2.1.md`（V0.42 定稿，双 Agent 十三轮审核放行，13 个需求）
+> CR 编号：—（未走独立 CR，参照 2.0.0 先例；升级方案 V0.42 定稿经双 Agent 十三轮审核放行，13 个需求，实质已固化于本文件 + baselines/2.1.0/ + CHANGELOG 2.1.0 段）
 
 ## 变更摘要
 

@@ -7,6 +7,13 @@
 scripts/init_workspace.py 原样迁移，保证行为零变化。
 v2.0.0 待办体系重构：迭代登记册函数删除（PLAN 文件由 AI 按需创建），
 内嵌文案中的 board/里程碑板/旧索引路径全部替换为新体系路径。
+
+v3.0.0（P-14/P-30）：portfolio 初始化分支已删除——init 仅产单项目工作区，
+集工作区归 ChronoPM-Portfolio 伴生包（无 init 脚本）。本文件中
+is_portfolio 渲染分支、generate_portfolio_readme、集层目标目录分支均随
+create_portfolio 一并移除。注意：存量 portfolio 工作区的**读取/迁移**仍由
+scripts/migrate_workspace.py 承载（其内 is_portfolio 分支为存量兼容有意保留，
+日后市监工作区原地升级依赖之），不属于本文件职责。
 """
 
 import json
@@ -101,7 +108,7 @@ def create_skill_version(ai_dir: Path, mode: str):
         return
 
     metadata = {
-        "skill": "chrono-pm",
+        "skill": "chrono-pm-project",
         "skillVersion": SKILL_VERSION,
         "workspaceSchemaVersion": WORKSPACE_SCHEMA_VERSION,
         "mode": mode,
@@ -145,24 +152,18 @@ schema_version: "{WORKSPACE_SCHEMA_VERSION}"
     log_path.write_text(content, encoding="utf-8")
 
 
-def create_brief_file(base_dir: Path, project_name: str, is_portfolio: bool = False, sub_projects: list = None):
-    """创建项目简报文件（AI 首读入口文件）"""
+def create_brief_file(base_dir: Path, project_name: str):
+    """创建项目简报文件（AI 首读入口文件）。v3.0.0 起仅单项目口径。"""
     brief_path = base_dir / "context" / "project-brief.md"
     if brief_path.exists():
         return
 
-    scope = "portfolio" if is_portfolio else "project"
-    scope_label = "项目集" if is_portfolio else "项目"
-    mode = "项目集" if is_portfolio else "单项目"
+    scope = "project"
+    scope_label = "项目"
+    mode = "单项目"
 
-    # 构建子项目清单表格
-    sub_table_lines = []
-    if is_portfolio and sub_projects:
-        for idx, sub_name in enumerate(sub_projects, 1):
-            sub_table_lines.append(f"| PRJ-{idx:03d} | {sub_name} | | M0x | | 进行中 |")
-        sub_table = "\n".join(sub_table_lines)
-    else:
-        sub_table = "| （单项目模式，无子项目） |"
+    # 单项目模式无子项目表
+    sub_table = "| （单项目模式，无子项目） |"
 
     brief_content = f"""---
 doc_type: project-brief
@@ -188,7 +189,7 @@ author: AI辅助生成
 - **启动日期**：YYYY-MM-DD
 - **计划完成**：YYYY-MM-DD
 
-## 2. 子项目清单（项目集模式填写）
+## 2. 子项目清单（单项目模式恒空；跨项目请换用 ChronoPM-Portfolio）
 
 | 项目ID | 子项目名称 | 一句话描述 | 当前里程碑 | PM | 状态 |
 |---|---|---|---|---|---|
@@ -198,7 +199,7 @@ author: AI辅助生成
 
 > 仅放一行摘要，明细见各子项目 `plans/PLAN-NNN-{{name}}.md` 计划文件。
 
-{sub_table if is_portfolio else "- [项目名称]：0 个计划 / 0 个需求 / 0 名资源"}
+- [项目名称]：0 个计划 / 0 个需求 / 0 名资源
 
 ## 4. 团队核心成员
 
@@ -225,16 +226,16 @@ author: AI辅助生成
 
 | 内容类型 | 目标文件 |
 |---|---|
-| 人员变动 / 请假 / 借调 | `projects/{{子项目}}/resources/transfer-log.md` + `resource-register.md`（跨项目时同步 portfolio/resources/ 只读索引指针） |
-| 新需求 / 需求变更 | `projects/{{子项目}}/requirements/requirement-register.md` 或 `change-log.md` |
-| 任务进展 / 任务完成 | `projects/{{子项目}}/todos/{{日期}}/{{执行人}}.md` |
-| 风险识别 | `projects/{{子项目}}/risks/risk-register.md`（项目集级 → `portfolio/risks/risk-register.md`）|
-| 问题 / 阻塞 | `projects/{{子项目}}/issues/issue-register.md` |
-| 决策 / 结论 | `projects/{{子项目}}/decisions/decision-log.md` |
-| 里程碑变更 | `projects/{{子项目}}/plans/PLAN-NNN-{{name}}.md`（里程碑 = WP，is_milestone=true）|
-| 成本 / 预算变动 | `projects/{{子项目}}/plans/budget.md`（项目集级 → `portfolio/plans/budget.md`）|
-| 日报归档 | `projects/{{子项目}}/reports/daily/` |
-| 会议纪要 | `projects/{{子项目}}/meetings/`（跨项目 → `portfolio/meetings/`）|
+| 人员变动 / 请假 / 借调 | `resources/transfer-log.md` + `resource-register.md`（跨项目共享人力查询请用 ChronoPM-Portfolio） |
+| 新需求 / 需求变更 | `requirements/requirement-register.md` 或 `change-log.md` |
+| 任务进展 / 任务完成 | `todos/{{日期}}/{{执行人}}.md` |
+| 风险识别 | `risks/risk-register.md` |
+| 问题 / 阻塞 | `issues/issue-register.md` |
+| 决策 / 结论 | `decisions/decision-log.md` |
+| 里程碑变更 | `plans/PLAN-NNN-{{name}}.md`（里程碑 = WP，is_milestone=true）|
+| 成本 / 预算变动 | `plans/budget.md` |
+| 日报归档 | `reports/daily/` |
+| 会议纪要 | `meetings/`（跨项目汇总周报请换用 ChronoPM-Portfolio）|
 
 ## 8. AI 处理前必读声明
 
@@ -261,18 +262,18 @@ AI 在处理以下任何类型输入前，**必须先读取本文件**：
     brief_path.write_text(brief_content, encoding="utf-8")
 
 
-def create_context_file(base_dir: Path, project_name: str, is_portfolio: bool = False):
-    """创建项目上下文文件"""
+def create_context_file(base_dir: Path, project_name: str):
+    """创建项目上下文文件（v3.0.0 起仅单项目口径）"""
     context_path = base_dir / "context" / "project-context.md"
     if context_path.exists():
         return
 
-    doc_type = "portfolio-context" if is_portfolio else "project-context"
-    scope_label = "项目集" if is_portfolio else "项目"
+    doc_type = "project-context"
+    scope_label = "项目"
 
     context_content = f"""---
 doc_type: {doc_type}
-{"portfolio" if is_portfolio else "project"}: "{project_name}"
+project: "{project_name}"
 version: v1.0
 date: "{datetime.now().strftime("%Y-%m-%d")}"
 status: 草稿
@@ -374,19 +375,19 @@ status: 草稿
     lessons_path.write_text(lessons_content, encoding="utf-8")
 
 
-def create_project_rules(base_dir: Path, name: str, is_portfolio: bool = False):
-    """创建项目级规则覆盖文件"""
+def create_project_rules(base_dir: Path, name: str):
+    """创建项目级规则覆盖文件（v3.0.0 起仅单项目口径）"""
     prompts_dir = base_dir / "prompts"
     prompts_dir.mkdir(parents=True, exist_ok=True)
 
-    scope = "项目集" if is_portfolio else "项目"
+    scope = "项目"
 
     rules_path = prompts_dir / "project-rules.md"
     if rules_path.exists():
         return
     rules_content = f"""---
-doc_type: {"portfolio-rules" if is_portfolio else "project-rules"}
-{"portfolio" if is_portfolio else "project"}: "{name}"
+doc_type: project-rules
+project: "{name}"
 ---
 
 # {scope}特有规则
@@ -404,16 +405,13 @@ doc_type: {"portfolio-rules" if is_portfolio else "project-rules"}
     rules_path.write_text(rules_content, encoding="utf-8")
 
 
-def create_glossary(project_root: str, mode: str):
-    """创建领域词库模板，内置用户已确认初始词条，不自动抽取历史术语"""
+def create_glossary(project_root: str):
+    """创建领域词库模板（v3.0.0 仅单项目），内置用户已确认初始词条，不自动抽取历史术语"""
     templates_dir = get_templates_dir()
     template_name = "domain-glossary-template.md"
     src = templates_dir / template_name
 
-    if mode == "portfolio":
-        target_dir = Path(project_root) / "ai" / "portfolio" / "context"
-    else:
-        target_dir = Path(project_root) / "ai" / "context"
+    target_dir = Path(project_root) / "ai" / "context"
 
     target_dir.mkdir(parents=True, exist_ok=True)
     target_path = target_dir / "domain-glossary.md"
@@ -472,16 +470,13 @@ def create_ri_skeleton(ai_dir: Path, base: str = "requirements"):
             path.write_text(content, encoding="utf-8")
 
 
-def create_pm_profile(project_root: str, mode: str):
-    """创建 PM 偏好档案模板，不自动抽取历史偏好"""
+def create_pm_profile(project_root: str):
+    """创建 PM 偏好档案模板（v3.0.0 仅单项目），不自动抽取历史偏好"""
     templates_dir = get_templates_dir()
     template_name = "pm-profile-template.md"
     src = templates_dir / template_name
 
-    if mode == "portfolio":
-        target_dir = Path(project_root) / "ai" / "portfolio" / "context"
-    else:
-        target_dir = Path(project_root) / "ai" / "context"
+    target_dir = Path(project_root) / "ai" / "context"
 
     target_dir.mkdir(parents=True, exist_ok=True)
     target_path = target_dir / "pm-profile.md"
@@ -602,154 +597,3 @@ Level 4: 用户提供的输入资料
 """
 
 
-def generate_portfolio_readme(portfolio_name: str, sub_projects: list) -> str:
-    """生成项目集 README.md"""
-    today = datetime.now().strftime("%Y-%m-%d")
-    sub_tree = ""
-    for idx, sub_name in enumerate(sub_projects, 1):
-        prj_id = f"PRJ-{idx:03d}"
-        sub_tree += f"│   ├── {sub_name}/             # {prj_id}\n"
-    # 最后一个去掉 ├── 改为 └──
-    lines = sub_tree.rstrip().split("\n")
-    if lines:
-        lines[-1] = lines[-1].replace("├──", "└──")
-    sub_tree = "\n".join(lines) + "\n"
-
-    return f"""---
-doc_type: workspace-readme
-portfolio: "{portfolio_name}"
-version: v1.0
-date: "{today}"
----
-
-# ChronoPM 项目集管理工作区
-
-本目录是 ChronoPM 技能的项目实例（**项目集模式**）。
-
-## 相关目录
-
-- `ai/`（本目录）：事实源、规则、模板、项目管理记录
-- `ai/outputs/`（本目录内）：AI 生成物和导出文件（周报/月报/Excel/Word/PDF等）
-
-## 版本信息
-
-- Skill 版本：{SKILL_VERSION}
-- Workspace Schema 版本：{WORKSPACE_SCHEMA_VERSION}
-- 模式：portfolio
-- 详细变更见 Skill 包 `CHANGELOG.md`
-- AI 进入工作区时先读取 `.skill-version.json` 检查版本兼容性
-
-## 目录结构
-
-```
-ai/
-├── README.md                      # 本文件
-├── portfolio/                     # 项目集级管理文件
-│   ├── context/
-│   │   ├── project-index.md      # 子项目索引（PRJ-NNN）
-│   │   └── project-context.md    # 项目集背景
-│   ├── reports/
-│   │   └── weekly/               # 项目集汇总周报
-│   ├── risks/
-│   │   └── risk-register.md       # 跨项目风险登记册
-│   ├── plans/
-│   │   └── budget-summary.md     # 整体 P&L
-│   ├── requirements/               # 项目集级跨源需求归集（RI）
-│   │   ├── contract-register.md  # 合同登记册（唯一，CR-20260813-002）
-│   │   ├── source-type-registry.md  # 源类型登记（RI）
-│   │   ├── canonical/             # Canonical 跨源归并
-│   │   └── atoms/                 # ATOM 三级索引（L1/L2/L3）
-│   ├── resources/               # v2.0.0 零数据源：项目集层只留只读索引
-│   │   ├── shared-resource-index.md  # 跨项目共享资源索引（指针，非事实源）
-│   │   └── transfer-index.md    # 跨项目人员流转索引（指针，非事实源）
-│   ├── meetings/                 # 跨项目会议纪要
-│   └── logs/
-├── projects/                      # 各子项目管理文件
-{sub_tree}└── logs/
-    └── ai-generation-log.md
-```
-
-## 事实源文件
-
-### 项目集级
-- `portfolio/context/project-index.md` - 子项目索引
-- `portfolio/risks/risk-register.md` - 跨项目风险登记册
-- `portfolio/plans/budget-summary.md` - 整体 P&L
-- `portfolio/resources/shared-resource-index.md` - 跨项目共享资源索引（只读指针，非事实源）
-- `portfolio/resources/transfer-index.md` - 跨项目人员流转索引（只读指针，非事实源）
-- `portfolio/requirements/contract-register.md` - 合同登记册（RI 合同作用域范围判定入口，CR-20260813-002）
-- `portfolio/requirements/source-type-registry.md` - 源类型登记（项目集级 RI）
-
-### 子项目级（每个子项目）
-- `todos/{{YYYY-MM-DD}}/{{执行人}}.md` - 待办文件（执行状态唯一事实源）
-- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（里程碑 = WP，is_milestone=true）
-- `risks/risk-register.md` - 风险登记册
-- `issues/issue-register.md` - 问题登记册
-- `plans/budget.md` - 预算与 P&L
-- `requirements/requirement-register.md` - 需求登记册
-- `requirements/change-log.md` - 需求变更记录
-- `requirements/source-type-registry.md` - 源类型登记（子项目级 RI）
-- `resources/resource-register.md` - 人员资源当前状态（v2.0.0 事实源）
-- `resources/transfer-log.md` - 人员流转历史（v2.0.0 事实源）
-
-## 资源管理说明
-
-v2.0.0 项目集层零数据源：人员资源事实源一律下放到子项目，项目集层只留只读指针索引（见 09 号 §5）：
-
-| 文件 | 定位 | 更新方式 |
-|------|------|----------|
-| `projects/{{子项目}}/resources/resource-register.md` | 当前状态（事实源） | 覆盖更新 |
-| `projects/{{子项目}}/resources/transfer-log.md` | 流转历史（事实源） | 只追加 |
-| `portfolio/resources/shared-resource-index.md` | 跨项目共享人员指针索引 | 同步维护 |
-| `portfolio/resources/transfer-index.md` | 跨项目流转指针索引 | 同步维护 |
-
-资源 ID：`RES-NNN`（资源）、`RTF-YYYYMMDD-NNN`（流转记录）
-
-## 报告层级
-
-```
-各子项目日报（每日）→ 各子项目周报（每周）→ 项目集汇总周报（每周）
-```
-
-## 提示词路由
-
-| 场景 | 必须加载 | 可选加载 |
-|------|----------|----------|
-| 日报处理 | 00 + 01 + 06 | 04、07、09 |
-| 项目集周报 | 00 + 01 + 09 + 06 | 04 |
-| 会议纪要处理 | 00 + 02 + 06 | 04、07、08 |
-| 需求评审/变更 | 00 + 07 + 08 + 06 | - |
-| 待办更新 | 00 + 06 | - |
-| 风险评估 | 00 + 04 | 09（跨项目风险）|
-| 项目状态查询 | 00 + 05 | 09（跨项目查询） |
-| 资源管理 | 00 + 09 + 06 | 05（资源查询） |
-
-## 规则优先级
-
-```
-Level 0: 平台/系统安全规则（不可覆盖）
-Level 1: Skill 核心底线（不可覆盖）
-Level 2: 项目集级规则（portfolio/prompts/）
-Level 2.5: 子项目级规则（projects/{{子项目}}/prompts/）
-Level 3: 本次任务运行时指令
-Level 4: 用户提供的输入资料
-```
-
-## 业务目录不侵入原则
-
-AI 生成的所有管理文件统一存放在 `ai/` 目录下，**严禁在业务代码目录或项目交付物目录中创建任何 AI 管理文件**。
-
-## ID 编码体系
-
-| 前缀 | 含义 | 格式 |
-|------|------|------|
-| TD- | 待办 | TD-{{人名缩写}}-YYYYMMDD-NNN |
-| PLAN- | 计划文件 | PLAN-NNN-{{name}} |
-| WP- | 工作包 | WP-NNN |
-| R- | 风险 | R-YYYYMMDD-NNN |
-| I- | 问题 | I-YYYYMMDD-NNN |
-| MTG- | 会议 | MTG-YYYYMMDD-NNN |
-| RES- | 资源 | RES-NNN |
-| RTF- | 资源流转 | RTF-YYYYMMDD-NNN |
-| PRJ- | 子项目 | PRJ-NNN |
-"""

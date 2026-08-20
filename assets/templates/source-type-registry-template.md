@@ -23,8 +23,10 @@
 | supplement | contractual | 补充协议 | L1 | 否 | 合同变更 |
 | tender_doc | procurement | 招标文件 | L2 | 否 | 含补遗/答疑 |
 | bid_doc | procurement | 投标文件 | L2 | 否 | 投标承诺 |
+| tender-source | procurement | 投标文件拆解产物目录 | L2 | 否 | `requirements/tender-source/` |
 | initiation | approval | 立项批复 | L3 | 否 | 可研/建议书 |
 | security_req | compliance | 密评/等保 | L4 | 否 | 强制门禁 |
+| security-assessment-source | compliance | 密评拆解产物目录 | L4 | 否 | `requirements/security-assessment-source/` |
 | expert_review | technical | 专家评审意见 | L3 | 否 | - |
 | design_spec | technical | 需求规格说明书 | L3 | 否 | 甲方侧需求规格；与开发侧 design_doc 语义不同（07 号 §8.10.2） |
 | dev_prd | technical | 开发需求文档/PRD | L3 | 否 | 开发侧，不参与 scope_scope（07 号 §8.5） |

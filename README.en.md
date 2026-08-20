@@ -1,4 +1,4 @@
-# ChronoPM v2.1.0
+# ChronoPM v3.0.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -232,9 +232,9 @@ A built-in lifecycle derivation chain derives the actual completion status of mo
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | Define how the AI should behave in various scenarios |
-| Document templates | 35 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
+| Document templates | 33 | Daily reports, weekly reports, meeting minutes, risk registers, and more |
 | Automation scripts | 5 | Workspace initialization, version migration, version sync, etc. |
-| Regression tests | 269 cases | Ensure every update doesn't break existing functionality |
+| Regression tests | 299 cases | Ensure every update doesn't break existing functionality |
 
 ## Directory layout
 
@@ -288,7 +288,7 @@ ChronoPM Skill/
 │   ├── review-checklists/     # Release checklists: ensures no release step is skipped
 │   └── planning/              # Design documents: design docs for major features
 │
-└── tests/                # 🧪 Regression test suite (269 cases)
+└── tests/                # 🧪 Regression test suite (299 cases)
                               # Run after every Skill update to ensure nothing breaks.
 ```
 
@@ -296,20 +296,23 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 2.1.0 |
-| Workspace schema | 0.8.0 |
+| Skill version | 3.0.0 |
+| Workspace schema | 0.9.0 |
 | Rule files | 22 |
-| Document templates | 35 |
-| Regression cases | 269 |
+| Document templates | 33 |
+| Regression cases | 299 |
 
 ## Distribution package naming
 
-Release artifacts follow `{BrandName}-Skill-v{version}.zip` (e.g. `ChronoPM-Skill-v2.1.0.zip`):
+Release artifacts follow `{BrandName}-Skill-v{version}.zip`. Since v3.0.0 one release produces two packages (G-3):
 
-- **BrandName**: brand prefix of `displayName` in `skill.json` (before `—` or `(`)
-- **version**: semantic version with `v` prefix
+- `ChronoPM-Project-Skill-v3.0.0.zip` (main package, single-project management)
+- `ChronoPM-Portfolio-Skill-v3.0.0.zip` (read-only aggregation companion package)
 
-On this machine, packaging uses the Python entry `tools/pack-skill/scripts/pack.py` (when PowerShell execution policy is restricted); its exclusion model reads `pack.ps1` as the **single source of truth**, while `pack.ps1` serves as the cross-platform reference implementation. Before release, `governance/scripts/audit_release.py` must pass, including a “naming drift guard” assertion that rejects legacy `{name}-{version}.zip` artifacts.
+- **BrandName**: brand prefix of `displayName` in each package's `skill.json` (before `—` or `(`)
+- **version**: semantic version with `v` prefix (both packages share one version line)
+
+On this machine, packaging uses the Python entry `tools/pack-skill/scripts/pack.py` (when PowerShell execution policy is restricted); its exclusion model reads `pack.ps1` as the **single source of truth**, while `pack.ps1` serves as the cross-platform reference implementation. Running `pack.py` at the repo root auto-detects the `ChronoPM-Portfolio/` companion and emits both zips; the Project package excludes `ChronoPM-Portfolio/` (exclusion model in `pack.ps1`). Before release, `governance/scripts/audit_release.py` must pass, including a “naming drift guard” assertion that rejects legacy `{name}-{version}.zip` artifacts.
 
 ## Changelog
 

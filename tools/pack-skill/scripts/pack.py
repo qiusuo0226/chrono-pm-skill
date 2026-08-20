@@ -12,6 +12,11 @@ Naming convention: {BrandName}-Skill-v{version}.zip
   - BrandName: extracted from skill.json displayName (text before first — or ()
   - version: from VERSION file or skill.json version field
 
+v3.0.0 (G-3) dual-pack: when skill-root contains a ChronoPM-Portfolio/
+companion package (has its own SKILL.md), pack.py emits a second zip for it
+(ChronoPM-Portfolio-Skill-v{version}.zip). The main package excludes the
+companion directory (exclusion model in pack.ps1, single source of truth).
+
 Usage:
     python pack.py --skill-root <path>
     python pack.py --skill-root <path> --dry-run
@@ -80,13 +85,15 @@ def read_brand_name(root: Path) -> str:
 
 # ── Exclusion model (read from pack.ps1 — single source of truth) ──
 
-def pack_exclusions(root: Path) -> dict:
+def pack_exclusions(ps1_root: Path) -> dict:
     """Read exclusion arrays from pack.ps1 at runtime.
 
     Parses $excludeDirs, $excludeFiles, $excludeFilePaths, $includeExceptions.
     Same approach as audit_release.py pack_exclusions() — single source of truth.
+    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1
+    (for the companion package this is the parent repo root, not the package dir).
     """
-    ps1_path = root / "tools" / "pack-skill" / "scripts" / "pack.ps1"
+    ps1_path = ps1_root / "tools" / "pack-skill" / "scripts" / "pack.ps1"
     if not ps1_path.is_file():
         print(f"ERROR: pack.ps1 not found at {ps1_path}", file=sys.stderr)
         sys.exit(1)
@@ -142,13 +149,13 @@ def is_excluded_file(rel_path: str, exclusions: dict, extra_exclude_dirs: list) 
 
 # ── Main ──────────────────────────────────────────────────
 
-def main() -> int:
-    args = parse_args()
+def pack_one(skill_root: Path, ps1_root: Path, output_dir: Path,
+             extra_excludes: list, dry_run: bool) -> int:
+    """Pack a single Skill project into its distribution zip.
 
-    skill_root = Path(args.skill_root).resolve()
-    output_dir = Path(args.output_dir).resolve() if args.output_dir else skill_root
-    extra_excludes = args.exclude or []
-
+    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1;
+    for the companion package it is the parent repo root.
+    """
     # Validate
     skill_md = skill_root / "SKILL.md"
     if not skill_md.is_file():
@@ -165,7 +172,7 @@ def main() -> int:
         skill_name = data.get("name", "skill")
 
     # Read exclusions from pack.ps1 (single source of truth)
-    exclusions = pack_exclusions(skill_root)
+    exclusions = pack_exclusions(ps1_root)
 
     # Package name
     package_name = f"{brand}-Skill-v{version}"
@@ -193,7 +200,7 @@ def main() -> int:
     file_count = len(included_files)
     total_size = sum(f.stat().st_size for f, _ in included_files)
 
-    if args.dry_run:
+    if dry_run:
         print()
         print("=== DRY RUN ===")
         print(f"Skill   : {skill_name} ({brand})")
@@ -231,6 +238,27 @@ def main() -> int:
     print("============================================")
 
     return 0
+
+
+def main() -> int:
+    args = parse_args()
+
+    skill_root = Path(args.skill_root).resolve()
+    output_dir = Path(args.output_dir).resolve() if args.output_dir else skill_root
+    extra_excludes = args.exclude or []
+
+    rc = pack_one(skill_root, skill_root, output_dir, extra_excludes, args.dry_run)
+    if rc != 0:
+        return rc
+
+    # v3.0.0 (G-3) dual-pack: auto-detect ChronoPM-Portfolio/ companion and
+    # emit a second zip for it (exclusion model still read from repo-root pack.ps1)
+    companion = skill_root / "ChronoPM-Portfolio"
+    if (companion / "SKILL.md").is_file():
+        print()
+        print(">> Companion package detected: ChronoPM-Portfolio — packing second zip")
+        rc = pack_one(companion, skill_root, output_dir, extra_excludes, args.dry_run)
+    return rc
 
 
 if __name__ == "__main__":

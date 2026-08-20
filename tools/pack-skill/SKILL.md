@@ -54,6 +54,7 @@ powershell -ExecutionPolicy Bypass -File ~/.qoder/skills/pack-skill/scripts/pack
 2. 排除下方黑名单中的路径/模式（排除模型实读自 pack.ps1，单一事实源）
 3. 其余全部打入 zip
 4. 产物命名：`{BrandName}-Skill-v{version}.zip`（BrandName 取自 skill.json displayName 品牌前缀）
+5. **双包感知（v3.0.0，G-3）**：Skill 根下存在 `ChronoPM-Portfolio/` 伴生包（含 SKILL.md）时，主包排除该目录后，自动再为其打第二个 zip（一次发布两个产物）
 
 **建议先 DryRun 预览：**
 
@@ -83,6 +84,7 @@ python tools/pack-skill/scripts/pack.py --skill-root <path> --dry-run
 | 测试 | `tests/`（如存在） |
 | 架构文档 | `SKILL_BLUEPRINT.md`（开发者侧架构审查文档） |
 | 治理规则 | `references/16-skill-governance-rules.md`（Skill 自身变更治理规则，开发者侧） |
+| 伴生包 | `ChronoPM-Portfolio/`（仓库根打 Project 包时排除；伴生包自动单独打第二个 zip，v3.0.0 G-3） |
 
 > `governance/` 默认整目录排除，但 `governance/contracts/skill-contract.md`（核心契约）例外放行——因为 `references/` 中 7 个运行时规则文件引用了它第 5 条。
 > `SKILL_BLUEPRINT.md` 和 `references/16-skill-governance-rules.md` 是开发者侧架构/治理文档，PM 使用者运行时不需要。

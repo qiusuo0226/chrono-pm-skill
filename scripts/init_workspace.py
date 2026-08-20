@@ -2,29 +2,22 @@
 """
 ChronoPM 项目工作区初始化脚本（入口壳）
 
-支持两种模式：
-  1. 单项目模式：在指定目录下创建 ai/ 目录结构
-  2. 项目集模式：在指定目录下创建 ai/portfolio/ + ai/projects/{子项目}/ 结构
+v3.0.0：init 仅单项目模式。集工作区请使用 ChronoPM-Portfolio。
 
 用法:
-    # 单项目模式
     python init_workspace.py --project-root /path/to/project --project-name "项目名"
 
-    # 项目集模式
-    python init_workspace.py --project-root /path/to/portfolio \\
-        --mode portfolio \\
-        --portfolio-name "江苏省市监重构项目集" \\
-        --sub-projects "全链通重构,企业通重构,信用监管登记注册重构"
+--mode portfolio 将被拒绝，并提示改用 ChronoPM-Portfolio。
 
 重构说明（CR-20260810-001）：本文件已由 1269 行单体脚本重构为入口壳，
-实际逻辑拆分至 scripts/chronopm_init/ 包。CLI 参数与生成物目录结构完全不变。
+实际逻辑拆分至 scripts/chronopm_init/ 包。
 """
 
 import argparse
+import sys
 
 from chronopm_init.file_registry import create_glossary, create_pm_profile
-from chronopm_init.validators import validate_and_handle
-from chronopm_init.workspace_builder import create_portfolio, create_single_project
+from chronopm_init.workspace_builder import create_single_project
 
 
 def main():
@@ -38,22 +31,12 @@ def main():
         "--mode",
         choices=["single", "portfolio"],
         default="single",
-        help="初始化模式：single=单项目，portfolio=项目集（默认: single）",
+        help="初始化模式：仅 single。portfolio 已移除，请使用 ChronoPM-Portfolio",
     )
     parser.add_argument(
         "--project-name",
         default="",
         help="项目名称（单项目模式）",
-    )
-    parser.add_argument(
-        "--portfolio-name",
-        default="",
-        help="项目集名称（项目集模式）",
-    )
-    parser.add_argument(
-        "--sub-projects",
-        default="",
-        help="子项目列表，逗号分隔（项目集模式），如：全链通重构,企业通重构,信用监管登记注册重构",
     )
 
     parser.add_argument(
@@ -73,20 +56,14 @@ def main():
     args = parser.parse_args()
 
     if args.mode == "portfolio":
-        sub_projects = validate_and_handle(
-            args.mode, args.portfolio_name, args.sub_projects
-        )
-        create_portfolio(args.project_root, args.portfolio_name, sub_projects)
-        if args.glossary:
-            create_glossary(args.project_root, "portfolio")
-        if args.profile:
-            create_pm_profile(args.project_root, "portfolio")
-    else:
-        create_single_project(args.project_root, args.project_name)
-        if args.glossary:
-            create_glossary(args.project_root, "single")
-        if args.profile:
-            create_pm_profile(args.project_root, "single")
+        print("错误: 请使用 ChronoPM-Portfolio 管理集工作区，init 仅 single")
+        sys.exit(1)
+
+    create_single_project(args.project_root, args.project_name)
+    if args.glossary:
+        create_glossary(args.project_root)
+    if args.profile:
+        create_pm_profile(args.project_root)
 
 
 if __name__ == "__main__":

@@ -9,6 +9,12 @@ ChronoPM 工作区迁移脚本
     python migrate_workspace.py --project-root /path/to/project
     python migrate_workspace.py --project-root /path/to/project --dry-run
     python migrate_workspace.py --project-root /path/to/project --target-version 1.2.0
+
+v3.0.0 存量兼容声明（P-14/P-30 配套）：init 侧 portfolio 分支已删除，
+但本脚本内的 is_portfolio 分支与 PORTFOLIO_050_DIRS / PORTFOLIO_060_DIRS
+等旧结构常量为**有意保留**——存量 portfolio 工作区（如市监重构项目管理，
+用户已定界本次不迁移）日后按 upgrade-to-3.0.0.md 原地升级（D-13/D-21）时，
+依赖本脚本读取旧结构并下沉/补建。删除将导致存量工作区无法迁移。
 """
 
 import argparse
@@ -552,6 +558,14 @@ VERSION_CAPABILITIES = [
         "new_dirs": ["outputs"],
         "new_files": [],
         "note": "v2.1.0（schema 保持 0.8.0）：路径整合 continuity/*→context/（4 文件含 carryover-register，D-9）、工作区根 outputs/→ai/outputs/（D-8），由 migrate_v210_paths() 执行搬移（不覆盖合并）；旧报告结构迁移按 §7.3.2b 由 migrate_v210_reports() 执行（检测→迁移→验证→删除，空源登记跳过）；新增 22 号个人待办规则（规则层，无预建文件）。",
+    },
+    {
+        "version": "3.0.0",
+        "schema": "0.9.0",
+        "capabilities": ["federal_mount", "single_project_only", "energy_ledger"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.0.0：Skill 双包；工作区 schema 0.9.0 联邦挂载。脚本默认只更新 .skill-version.json 元数据（skillName=chrono-pm-project）。结构下沉/补建见 upgrade-to-3.0.0.md 节 B，不自动拆业务工作区。",
     },
 ]
 
@@ -1368,6 +1382,30 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
             print(f"  {line}")
         for line in migrate_v210_reports(ai_dir, dry_run, mode == "portfolio"):
             print(line)
+
+    # 4c. v3.0.0：默认只升元数据，不自动拆/下沉业务目录（upgrade-to-3.0.0.md 节 B）
+    needs_v300 = _vcmp(skill_version, "3.0.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.0.0") < 0
+    )
+    if needs_v300:
+        print(f"\n{'='*40}")
+        print("v3.0.0：工作区结构迁移见 governance/migrations/upgrade-to-3.0.0.md 节 B")
+        print("本次脚本不自动拆工作区、不下沉子项目。仅更新 .skill-version.json 元数据。")
+        print(f"{'='*40}")
+        sv = ai_dir / ".skill-version.json"
+        if sv.exists() and not dry_run:
+            try:
+                data = json.loads(sv.read_text(encoding="utf-8"))
+                data["skillVersion"] = CURRENT_SKILL_VERSION
+                data["schemaVersion"] = CURRENT_SCHEMA_VERSION
+                if data.get("skillName") in (None, "", "chrono-pm"):
+                    data["skillName"] = "chrono-pm-project"
+                sv.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                print("  已更新 .skill-version.json（skillName=chrono-pm-project, 3.0.0 / schema 0.9.0）")
+            except Exception as e:
+                print(f"  ⚠️ 未能改写 .skill-version.json: {e}")
+        elif dry_run:
+            print("  [dry-run] 将更新 .skill-version.json skillVersion/schemaVersion/skillName")
 
     if dry_run:
         print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")

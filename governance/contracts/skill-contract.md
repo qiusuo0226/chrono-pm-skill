@@ -4,7 +4,7 @@
 
 ## Skill Purpose
 
-本 Skill 用于项目集/项目管理，支持日报、周报、任务、风险、问题、资源、输出物、历史衔接、待办查询、计划快照、自查校验等管理场景。
+本文件是 **ChronoPM-Project**（单项目管理）核心契约。跨项目只读归集见 ChronoPM-Portfolio（只读五条：对成员项目 ai 零写、只写 portfolio/、变更走建议更新清单、聚合不落盘为数据源、人的视图实时聚合）。
 
 ## Hard Constraints
 
@@ -12,7 +12,8 @@
 2. 生成文件不得混入 `ai/`，事实源更新不得写入 `outputs/`。
 3. 历史项目内容不得直接覆盖当前事实源，必须走衔接流程。
 4. 查询类请求必须索引优先，禁止默认创建临时脚本。
-5. 事实源更新必须经过确认、明确触发，或按主动变更模式写入并标记待确认（`Confirmed By: 待确认`）；任何先写后确认的记录必须先登记于 `pending-changes.md`，人工确认后方视为持久化且生效，未经确认的记录在到期判定、已完成统计中一律不视为已确认。
+5. 事实源更新必须经过确认、明确触发，或按主动变更模式写入并标记待确认（`Confirmed By: 待确认`）；任何先写后确认的记录必须先登记于 `pending-changes.md`，人工确认后方视为持久化且生效，未经确认的记录在到期判定、已完成统计中一律不视为已确认。操作确认分级只决定问不问，不决定是否留痕。
+5a. 不得在本项目待办文件镜像他项目任务。
 6. Skill 变更必须先生成变更工单。
 7. 未经用户确认，不得修改核心契约层。
 8. 任何目录结构变更必须提升 workspace schema 版本。
@@ -35,12 +36,11 @@
 
 | 文件 | 用途 |
 |---|---|
-| `portfolio/requirements/` | 项目集级跨源需求归集目录（canonical/ + atoms/ + 索引） |
-| `portfolio/requirements/contract-register.md` | 合同登记册（项目集模式唯一）；scope_level / parent_contract_id / coverage / 文档簇关联 |
-| `portfolio/requirements/source-type-registry.md` | 项目集级来源类型登记 |
-| `requirements/contract-register.md`（单项目模式） | 合同登记册（单项目无 portfolio 分层） |
+| `requirements/contract-register.md` | 本项目合同登记册（v3.0.0 起各项目一份） |
+| `requirements/{type}-source/` | 拆解产物（单簇 ledger 记 source_id + seg 平铺；簇 ID 在登记册） |
+| `requirements/canonical/` `requirements/atoms/` | 本项目 RI 归集 |
 
-> 项目集模式下合同登记册唯一在 `portfolio/requirements/`，子项目不复制（D4）；补充协议（supplement）登记在对应模式的登记册中，parent_contract_id 必填（D7）。
+> v3.0.0：废除「集层唯一登记册、子项目不复制」。跨项目成套文档每项目各存一套；跨项目检索由 Portfolio 遍历+指纹去重。补充协议 parent_contract_id 必填（D7）仍有效，存储随父合同在本项目。
 
 ### ai/context/ 项目备忘（v1.15.0，CR-20260813-001）
 
@@ -55,7 +55,7 @@
 | Capability | ID | Description |
 |---|---|---|
 | daily_report | DAILY | 个人/项目日报管理（含合并幂等性） |
-| weekly_report | WEEKLY | 周报生成和项目集汇总 |
+| weekly_report | WEEKLY | 本项目周报生成（集周报属 ChronoPM-Portfolio） |
 | pm_daily_todo | PMTODO | PM 每日待办（9 章节全景视图） |
 | quick_query | QUERY | 快速查询（索引优先） |
 | output_artifact | OUTPUT | 输出物管理（批次目录+草稿确认） |
@@ -68,7 +68,7 @@
 | update_trigger | TRIG | 更新意图识别和触发 |
 | init_wizard | INIT | 项目初始化向导（六步引导建档） |
 | completeness_check | COMPLENESS | 信息完整性巡检与补全提醒（P0-P3分级） |
-| cross_source_requirement_intelligence | RI | 跨源需求归集：拆词/归并/范围判定/三级索引检索（requirements/atoms + canonical + source-type-registry），CR-20260813-001；合同作用域扩展：portfolio/requirements 层级存储 + contract-register 合同登记册 + 按 scope_level 路由 + 带合同维度 scope 判定（contract_refs），CR-20260813-002 |
+| cross_source_requirement_intelligence | RI | 本项目 contract-register + atoms/canonical + {type}-source；跨项目由 Portfolio |
 
 ## Rule Layer Classification
 
@@ -88,6 +88,29 @@
 | 新增能力或目录结构 | Minor + workspace schema |
 | 规则修复 | Patch |
 | 仅新增测试或模板 | Patch |
+
+### Schema 版本说明（v3.0.0）
+
+Skill 本体与工作区结构采用两个独立版本号，随契约 diff 联动（D-24 概念分离）：
+
+| 概念 | 载体 | v3.0.0 变化 | 说明 |
+|---|---|---|---|
+| skill schemaVersion | `skill.json` 顶层 `schemaVersion` | 0.6.0 → **0.7.0** | Skill 包契约/元数据结构版本；双包拆分属架构变更，提升 Minor |
+| workspace schema | `scripts/_version.py` `WORKSPACE_SCHEMA_VERSION` | 0.8.0 → **0.9.0** | 工作区目录结构版本；RI 下沉项目级、去集层目录，联邦挂载 ChronoPM-Portfolio |
+
+两版本号不得混用：Skill 包升级改 schemaVersion；工作区目录结构变更改 workspace schema（硬约束 8）。
+
+## ChronoPM-Portfolio 伴生包契约（v3.0.0）
+
+ChronoPM-Portfolio 为只读归集伴生包（skill name `chrono-pm-portfolio`，modes `viewer`，无 init 脚本），与 ChronoPM-Project 同版本发布、双基线归档。只读五条硬约束：
+
+1. **对成员项目 `ai/` 零写**：不得向任何成员项目的事实源目录写入。
+2. **只写 `portfolio/` 归集区**：伴生包自身仅可在归集工作区 `portfolio/` 下产出。
+3. **变更走建议更新清单**：需改成员项目数据时，只产出建议更新清单，由成员项目的 ChronoPM-Project 确认后执行。
+4. **聚合不落盘为数据源**：跨项目聚合结果仅作为视图产物，不得成为后续计算的事实源。
+5. **人的视图实时聚合**：面向人的汇总视图按请求实时聚合生成，不维护常驻副本。
+
+存量 portfolio 工作区（如市监重构项目管理）不在本次拆分迁移范围，原地升级由 `scripts/migrate_workspace.py` 的 is_portfolio 存量兼容分支承载（见 upgrade-to-3.0.0.md）。
 
 ## Baseline Rule
 

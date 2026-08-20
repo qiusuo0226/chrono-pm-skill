@@ -22,7 +22,7 @@
 
 - 简单查询只读取完成当前任务所需的最少文件
 - 不在简单问题中读取完整 SKILL.md
-- 不进行全目录扫描（不得为了回答简单查询而枚举 ai/、references/、projects/ 目录）
+- 不进行全目录扫描（不得为了回答简单查询而枚举 ai/、references/ 目录）
 - 简单查询超过 3 个文件必须先说明原因
 - 复杂处理任务（日报处理、周报生成、风险评估等）超过 3 个文件可继续，但需列出读取的文件清单
 - 用户未明确要求全量分析时，不主动加载无关规则文件
@@ -36,8 +36,8 @@
 | Skill 版本是多少 | `ai/.skill-version.json` | SKILL.md, references/, project-brief |
 | 我明天/今天的任务 | 优先读绑定文件 `ai/.../todos/{date}/_index.md` → 各人待办文件 `todos/{date}/{姓名}.md` | SKILL.md, references/ |
 | 今天谁没交日报 | `ai/.../todos/{date}/` 目录（比对绑定文件参与人员与工作日志段覆盖情况） | references/, governance/ |
-| 当前风险 | `ai/projects/{子项目}/risks/risk-register.md`（跨项目风险记在主归属子项目；项目集层只留索引） | SKILL.md, references/ |
-| 项目概况 | `ai/portfolio/context/project-brief.md` 或 `ai/projects/{子项目}/context/project-brief.md` | references/ |
+| 当前风险 | `ai/risks/risk-register.md`（本项目事实源；跨项目风险归集请用 ChronoPM-Portfolio 包） | SKILL.md, references/ |
+| 项目概况 | `ai/context/project-brief.md`（v3.0.0：单项目路径；旧集层 ai/portfolio/ 录入口已废弃） | references/ |
 | 更新某人的待办/状态 | 按 WF-1 路径执行（完整加载见 SKILL.md §6 路由表 WF-1 行） | SKILL.md, references/（判断阶段按需加载） |
 
 注：以上路径为 ChronoPM 设计路径。若文件不存在，输出"未找到 {文件路径}，如该项目尚未初始化，可执行 init_workspace.py；否则请确认文件路径"。
@@ -91,7 +91,7 @@
 | 文件管理 | `references/06-file-rules.md` |
 | 需求管理 | `references/07-requirement-rules.md` |
 | 变更控制 | `references/08-change-control-rules.md` |
-| 项目集管理 | `references/09-portfolio-rules.md` |
+| 跨项目只读归集 | ChronoPM-Portfolio（09 号已退役） |
 | 输出物管理 | `references/11-output-artifact-rules.md` |
 | Excel 生成 | `references/12-excel-generation-rules.md` |
 | 历史衔接 | `references/13-continuity-rules.md` |

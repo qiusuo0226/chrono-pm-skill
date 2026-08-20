@@ -26,7 +26,9 @@
    11. 命名漂移守门：仓库根目录无 chrono-pm-*.zip 类漂移命名产物
    12. 统计类断言（v2.1.0 需求十一/D-20）：规则文件数/模板数自动统计，
        比对 README×2 与 BLUEPRINT §1 中标注的数字
-   13. 汇总：任一失败退出码非零
+   13. 双包一致性（v3.0.0 G-2）：ChronoPM-Portfolio 伴生包版本/命名/模式
+       与主包一致 + 基线含双包快照
+   14. 汇总：任一失败退出码非零
 
 本脚本只读，不修改任何文件。
 """
@@ -209,7 +211,7 @@ def main() -> int:
         if ln.startswith("|") and not ln.startswith("|---")
         and "模块" not in ln and "合计" not in ln
     ]
-    ids = re.findall(r"^\|\s*([A-Z]{2,3}-[0-9A-Z]{1,4})\s*\|", suite, re.M)
+    ids = re.findall(r"^\|\s*([A-Z][A-Z0-9]{1,2}-[0-9A-Z]{1,4})\s*\|", suite, re.M)
     uniq = len(set(ids))
     ok5 = modules == len(stat_rows) and uniq == suite_total
     check(
@@ -292,10 +294,42 @@ def main() -> int:
         "; ".join(stat_bad) or f"规则={n_rules}, 模板={n_templates} 全部一致",
     )
 
-    # 13. 汇总
+    # 13. 双包一致性（v3.0.0 G-2：双包版本一致 + 双基线 + 双包命名）
+    pkg = ROOT / "ChronoPM-Portfolio"
+    dual_bad = []
+    if not pkg.is_dir():
+        dual_bad.append("ChronoPM-Portfolio/ 目录缺失")
+    else:
+        pv_file = pkg / "VERSION"
+        pv = pv_file.read_text(encoding="utf-8").strip() if pv_file.is_file() else "<缺失>"
+        if pv != version:
+            dual_bad.append(f"Portfolio VERSION={pv}")
+        pj_file = pkg / "skill.json"
+        if pj_file.is_file():
+            pj = json.loads(read(pj_file))
+            if pj.get("name") != "chrono-pm-portfolio":
+                dual_bad.append(f"Portfolio name={pj.get('name')}")
+            if str(pj.get("version")) != version:
+                dual_bad.append(f"Portfolio skill.json version={pj.get('version')}")
+            if pj.get("modes") != ["viewer"]:
+                dual_bad.append(f"Portfolio modes={pj.get('modes')}")
+        else:
+            dual_bad.append("Portfolio skill.json 缺失")
+        if not (pkg / "SKILL.md").is_file():
+            dual_bad.append("Portfolio SKILL.md 缺失")
+    dual_baseline = ROOT / "governance" / "baselines" / version / "ChronoPM-Portfolio"
+    if not dual_baseline.is_dir():
+        dual_bad.append(f"baselines/{version}/ChronoPM-Portfolio/ 双基线缺失")
+    check(
+        "13. 双包一致性（版本/命名/viewer/双基线）",
+        not dual_bad,
+        "; ".join(dual_bad) or f"双包均 {version}，命名/模式/双基线齐备",
+    )
+
+    # 14. 汇总
     print()
     if FAILURES:
-        print(f"== 审计失败：{len(FAILURES)}/12 类断言未通过，禁止发布 ==")
+        print(f"== 审计失败：{len(FAILURES)}/13 类断言未通过，禁止发布 ==")
         for f in FAILURES:
             print(f"  - {f}")
         return 1

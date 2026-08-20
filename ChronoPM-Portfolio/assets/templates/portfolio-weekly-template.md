@@ -5,9 +5,14 @@ week: YYYY-Wxx
 date_range: YYYY-MM-DD ~ YYYY-MM-DD
 status: 草稿
 author: AI辅助生成
+generated_from: []
+updated: YYYY-MM-DDTHH:MM
+stale_after: YYYY-MM-DD
 ---
 
 # 项目集汇总周报 - YYYY-Wxx
+
+> **本模板仅用于 `portfolio/reports` 派生产物。** 禁止按本文件改写成员项目事实源。成员项目需变更时输出建议更新清单，到对应 ChronoPM-Project 对话执行。
 
 ## 1. 项目集概要
 
@@ -75,7 +80,7 @@ author: AI辅助生成
 
 ### 4.3 人力配置容忍度检查表
 
-> 生成周报时由各子项目 `projects/{子项目}/resources/resource-register.md` **实时聚合**得出（本表为当期周报快照，不作为数据源被其他文件引用）。容忍度阈值参照 `00-pm-main-rules.md` §5c 例外管理容忍度；风险触发规则参照 `09-portfolio-rules.md` §5.6。
+> 生成周报时由各成员项目 `ai/projects/{名}/ai/resources/resource-register.md` **实时聚合**得出（本表为当期周报快照，不作为数据源被其他文件引用）。风险触发见本包 `references/05-resource-shared-rules.md`；命中后列入建议更新清单，禁止直接写成员项目 risk-register。
 
 | 子项目 | 需求人力 | 当前可用 | 人力配置率 | 容忍度下限 | 检查结果 | 触发风险规则 | 建议处置 |
 |---|---|---|---|---|---|---|---|
@@ -87,7 +92,7 @@ author: AI辅助生成
 > - **当前可用**：register 中状态为在岗的人数；借出/休假/已离场不计入可用，仅列在备注
 > - **人力配置率**：当前可用 / 需求人力
 > - **检查结果**：配置率 < 容忍度下限 → ⚠️ 标注「资源风险触发」，并在周报末尾同步标注
-> - **触发风险规则**：命中 `09-portfolio-rules.md` §5.6 RR-01~RR-08 的编号（如关键岗位无 B 角 → RR-01）；命中后建议写入主归属子项目 risk-register
+> - **触发风险规则**：命中本包 `05-resource-shared-rules.md` RR-01~RR-08（如关键岗位无 B 角 → RR-01）；命中后建议更新清单指向主归属项目 risk-register，不代写
 
 **人力风险提示：**
 - [风险提示1]：[子项目]人力配置率 xx%，低于容忍度下限 xx%，建议补充人员
@@ -135,24 +140,23 @@ author: AI辅助生成
 
 ## 状态推导说明
 
-> 以下状态基于过程记录推导（非待办文件直接读取），已标注推导链路。
-> 推导依据：`00-pm-main-rules.md` §10.3 推导链 + 项目级覆盖（entity-registry §2）
+> 以下状态基于过程记录推导（非待办文件直接读取），已标注推导链路。摘自各成员项目周报/entity-registry，本包不回写待办。
 
 | 子项目 | 实体/模块 | 触发事件 | 来源 | 推导结论 | 待办文件状态 | 差异 |
 |---|---|---|---|---|---|---|
 | （无推导状态差异时填"无"） | | | | | | |
 
 ## 信息来源
-- 子项目周报：
-  - ai/projects/{子项目1}/reports/weekly/YYYY/YYYY-Wxx.md
-  - ai/projects/{子项目2}/reports/weekly/YYYY/YYYY-Wxx.md
-  - ai/projects/{子项目3}/reports/weekly/YYYY/YYYY-Wxx.md
-- 资源文件（v2.0.0 零数据源：事实源在各子项目）：
-  - ai/projects/{子项目}/resources/resource-register.md
-  - ai/projects/{子项目}/resources/transfer-log.md
-  - ai/portfolio/resources/shared-resource-index.md（跨项目共享人员索引，只读）
+- 子项目周报（generated_from）：
+  - ai/projects/{子项目1}/ai/reports/weekly/YYYY/YYYY-Wxx.md
+  - ai/projects/{子项目2}/ai/reports/weekly/YYYY/YYYY-Wxx.md
+  - ai/projects/{子项目3}/ai/reports/weekly/YYYY/YYYY-Wxx.md
+- 资源文件（事实源在各成员项目；集层仅指针）：
+  - ai/projects/{子项目}/ai/resources/resource-register.md
+  - ai/projects/{子项目}/ai/resources/transfer-log.md
+  - ai/portfolio/resources/shared-resource-index.md（跨项目共享人员索引，只读指针）
 - 成本文件：
-  - ai/projects/{子项目}/plans/budget.md
+  - ai/projects/{子项目}/ai/plans/budget.md
 
 ## 不确定项与待补充信息
 - [不确定项1]
