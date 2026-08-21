@@ -111,7 +111,8 @@
 | A6.1 | `tests/regression-suite.md` | DR-005 期望改为提示更新花名册/§0.5，不再写 resource-register。新增 Module「v3.8.0 Personnel/Confirm/Cost (PC)」10 条：PC-001 对外不说建议更新清单；PC-002 进度 100% 必须已完成；PC-003 禁止建未来日目录；PC-004 创建契机先全员 Step 0；PC-005 花名册=index §1 无第二文件；PC-006 日合计无分次空表；PC-007 同日多行 SUM；PC-008 能效按日并置不伪造分摊；PC-009 历史回填不建空日目录；PC-010 待办状态无「待评审」。合计 380→390。RM/V3/人员旧路径用例同步改待办体系 |
 | A6.2 | `governance-shared/review-checklists/release-checklist.md` | 增 D5：发布验证通过且用户检查完毕后，删除本版 `upgrade-plan-v*.md`。**本发布先保留 `upgrade-plan-v3.8.0.md` 供用户检查**；删除 `upgrade-plan-v3.7.0.md`（Q-4） |
 | A6.3 | `governance-shared/migrations-history/upgrade-template.md` | 末尾强制步骤：删除本版 AP 草稿 + CHANGELOG 登记 Removed（发布后执行） |
-| A6.4 | `governance-shared/scripts/audit_release.py` | 本轮 **不** 把「无任何 upgrade-plan」做成发布阻断（否则本版 AP 无法给用户检查）。可扫「不得残留上一版 upgrade-plan-v3.7.0.md」 |
+| A6.4 | `governance-shared/scripts/audit_release.py` | 第 14 条 **警告不阻断**：发现「版本号≠当前」的 `upgrade-plan-v*.md`，或 `planning/` 除 README.md 以外的 `.md`，打印 WARN。当前版 AP 允许留待检查。禁止把本条做成退出码非零 |
+| A6.12 | `governance-shared/planning/` | **Q-4**：删除 `requirements-intelligence-scheme.md`（已落地 v1.15.0）与 `contract-scope-ri-scheme.md`（已落地 v1.16.0）。保留目录 + README 写生命周期（Q-5） |
 | A6.5 | `ChronoPM-Project/governance/migrations/README.md` | 当前文件改为 upgrade-to-3.8.0.md |
 | A6.6 | `ChronoPM-Portfolio/governance/migrations/upgrade-to-3.8.0.md` | 指针文件，指向主包 |
 | A6.7 | `governance-shared/change-requests/CR-20260822-001.md` | 本 CR |

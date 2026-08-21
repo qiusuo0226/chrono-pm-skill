@@ -28,6 +28,7 @@ Blueprint Impact: full
 - ⚠ 本发布不代迁业务工作区数据、不删 8-23、不搬根级 backup 快照、不灌历史工时表。脚本只建空 backup/ + 升 schema。
 - 成本对账由 PM 负责；AI 不编造数字。历史日个人 md 不回写 §0.6。
 - `upgrade-plan-v3.8.0.md` 保留供用户检查，确认后再删。
+- 收尾：按 Q-4 删除 `planning/` 两份已落地方案；`audit_release.py` 对上一版 AP / planning 草稿打警告（不阻断）。
 
 ## 3.7.0 — 2026-08-21（released）
 

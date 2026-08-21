@@ -28,7 +28,9 @@
        比对 README×2 与 BLUEPRINT §1 中标注的数字
    13. 双包一致性（v3.0.0 G-2）：ChronoPM-Portfolio 伴生包版本/命名/模式
        与主包一致 + 基线含双包快照
-   14. 汇总：任一失败退出码非零
+   14. 升级残留（警告，不阻断）：上一版 upgrade-plan-v*.md；
+       planning/ 除 README.md 以外的方案草稿
+   15. 汇总：失败退出码非零；警告仍允许发布
 
 本脚本只读，不修改任何文件。
 """
@@ -45,6 +47,7 @@ PORTFOLIO = ROOT / "ChronoPM-Portfolio"
 SHARED = ROOT / "governance-shared"
 
 FAILURES = []
+WARNINGS = []
 
 
 def check(name: str, ok: bool, detail: str = "") -> None:
@@ -55,6 +58,21 @@ def check(name: str, ok: bool, detail: str = "") -> None:
     print(line)
     if not ok:
         FAILURES.append(name)
+
+
+def warn_check(name: str, ok: bool, detail: str = "") -> None:
+    """警告级：打印 WARN 但不计入失败、不阻断发布。"""
+    if ok:
+        line = f"[PASS] {name}"
+        if detail:
+            line += f" — {detail}"
+        print(line)
+        return
+    line = f"[WARN] {name}"
+    if detail:
+        line += f" — {detail}"
+    print(line)
+    WARNINGS.append(name)
 
 
 def read(path: Path) -> str:
@@ -340,13 +358,46 @@ def main() -> int:
         "; ".join(dual_bad) or f"双包均 {version}，命名/模式/双基线齐备",
     )
 
-    # 14. 汇总
+    # 14. 升级残留（警告，不阻断）——需求四：别再留下已落地的 AP / planning 草稿
+    leftover_ap = []
+    for p in sorted(SHARED.glob("upgrade-plan-v*.md")):
+        m = re.search(r"upgrade-plan-v(.+)\.md$", p.name)
+        ver = m.group(1) if m else ""
+        if ver != version:
+            leftover_ap.append(p.name)
+    planning_dir = SHARED / "planning"
+    leftover_plan = []
+    if planning_dir.is_dir():
+        leftover_plan = sorted(
+            x.name
+            for x in planning_dir.glob("*.md")
+            if x.name.lower() != "readme.md"
+        )
+    warn_bits = []
+    if leftover_ap:
+        warn_bits.append("上一版AP=" + ",".join(leftover_ap))
+    if leftover_plan:
+        warn_bits.append("planning草稿=" + ",".join(leftover_plan))
+    warn_check(
+        "14. 升级残留（警告，不阻断）：上一版 AP / planning 草稿",
+        not leftover_ap and not leftover_plan,
+        "; ".join(warn_bits) or f"无上一版 AP；planning/ 仅允许 README（当前 {version} 的 AP 可留待检查）",
+    )
+
+    # 15. 汇总
     print()
     if FAILURES:
-        print(f"== 审计失败：{len(FAILURES)}/13 类断言未通过，禁止发布 ==")
+        print(f"== 审计失败：{len(FAILURES)} 类断言未通过，禁止发布 ==")
         for f in FAILURES:
             print(f"  - {f}")
+        if WARNINGS:
+            print(f"另有 {len(WARNINGS)} 条警告（未计入失败）")
         return 1
+    if WARNINGS:
+        print(f"== 审计通过：阻断项全部成立；{len(WARNINGS)} 条警告不阻断发布 ==")
+        for w in WARNINGS:
+            print(f"  WARN - {w}")
+        return 0
     print("== 审计通过：全部断言成立，可继续发布流程 ==")
     return 0
 

@@ -6,6 +6,21 @@ Install the skill. Feed it daily reports, minutes, contracts. Facts live in Mark
 
 > **Two packs:** day-to-day entry uses **ChronoPM-Project**. Cross-project progress / risk / contracts / weekly rollup uses **ChronoPM-Portfolio** (read-only — it never writes member-project facts).
 
+## Core ideas
+
+These few rules are the whole model. Everything else hangs off them.
+
+| Idea | In one sentence |
+|---|---|
+| Write in Project, read in Portfolio | Facts are written only in this project's `ai/`. Cross-project views aggregate; they never edit members. |
+| Todos are the smallest facts | Execution state lives only in `todos/{date}/{person}.md`. Daily/weekly reports and progress are derived, not a second truth. |
+| You confirm, then it counts | Done / closed / delete / cross-project writes need your nod. The AI may draft as pending; it does not rewrite live facts for you. |
+| The roster is not a new file | The team list is §1 of that day's (or latest legal day's) `todos/{date}/_index.md`. Do not keep a parallel staff register. |
+| A person has three layers | Role/status sit on the roster; contact lives in personal §0; join/leave history in §0.5. Cost/effort sits on the person's **latest file** §0.6: new files copy the whole table then append — never create empty historical day folders. |
+| Units are project-defined | Person-days, hours, months come from `project-context` cost accounting. The skill never hard-codes one company's formula. |
+| Archive ≠ backup | Archive is living history, read via indexes. `backup/` is upgrade junk and unread by default. |
+| "Tomorrow" is not tomorrow's folder | "Tomorrow" in a daily report is written into **today's** todo. Do not pre-create future-dated directories. |
+
 ## Sound familiar?
 
 | Pain | ChronoPM |
@@ -30,12 +45,13 @@ Install the skill. Feed it daily reports, minutes, contracts. Facts live in Mark
 
 Terminal states (done / closed) need your confirmation. The AI does not rewrite facts on its own.
 
-## What's new in v3.7.0
+## What's new in v3.8.0
 
-- **Source-document split:** same-file recognition across projects, incremental re-parse on updates, parse history; large docs shard so the AI can still read them.
-- **Entity progress lives on the WP:** no separate entity-registry; module/entity state is WP §3b.
-- **Risks are classified before they are filed:** "there's a risk of X" does not auto-register. Registers are entry blocks + a status timeline (≤7 columns). New IDs: `R-NNN` / `I-NNN`.
-- **High-grade risks must have a response todo** (suggested for your confirm — never silently written).
+- **People live on todos:** `resource-register` / `transfer-log` retired. Roster is `_index` §1; join/leave is personal §0.5.
+- **Talk to the PM in plain language:** no paths, IDs, or process names in questions. "Please confirm" means only approve-or-reject or allow-or-deny.
+- **No future-dated todo folders.** Before editing one person's file, finish carry-over for everyone who should have a file today.
+- **Labor-cost ledger:** §0.6 accumulates by day; if cost accounting is blank, mentions of labor cost still get recorded; reconciling with the company timesheet is the PM's job.
+- **Portfolio:** V-11 shared-file split suggestions; V-12 glossary pointer index (read-only).
 
 ## Two ways to work
 

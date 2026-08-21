@@ -71,6 +71,8 @@
 
 - [ ] 上一版 `governance-shared/upgrade-plan-v*.md` 已删除（本发布删 v3.7.0）
 - [ ] 本版 AP 在用户检查通过后再删除（发布验证通过 ≠ 立刻删正在检查的 AP）
+- [ ] Q-4：`planning/` 已落地草稿已删（仅留 README 生命周期说明）
+- [ ] `audit_release.py` 第 14 条对上一版 AP / planning 草稿打 WARN（不阻断）
 
 ### C. 版本同步 + 发布审计——机器自动执行
 
