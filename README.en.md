@@ -1,4 +1,4 @@
-# ChronoPM v3.7.0
+# ChronoPM v3.8.0
 
 **Let AI manage your project — not just write documents for you.**
 
@@ -56,13 +56,13 @@ Before release: `python governance-shared/scripts/audit_release.py` must pass.
 | Content | Count | Description |
 |---|---|---|
 | Rule files | 22 | How the AI should behave in each scenario |
-| Document templates | 38 | Daily/weekly reports, minutes, risk registers, WPs, source-doc split |
+| Document templates | 36 | Daily/weekly reports, minutes, risk registers, WPs, source-doc split |
 | Automation scripts | 5 | Init, migrate, version sync |
-| Regression tests | 380 cases | Guard against breaking existing behavior |
+| Regression tests | 390 cases | Guard against breaking existing behavior |
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (380 cases))
+├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (390 cases))
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion
 ├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit
 ├── tools/                # pack-skill
@@ -75,12 +75,12 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.7.0 |
-| Workspace schema | 0.12.0 |
+| Skill version | 3.8.0 |
+| Workspace schema | 0.13.0 |
 | Rule files | 22 |
-| Document templates | 38 |
-| Regression cases | 380 |
+| Document templates | 36 |
+| Regression cases | 390 |
 
-Release zips: `ChronoPM-Project-Skill-v3.7.0.zip` + `ChronoPM-Portfolio-Skill-v3.7.0.zip`.
+Release zips: `ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`.
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)

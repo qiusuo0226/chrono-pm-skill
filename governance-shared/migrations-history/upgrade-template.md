@@ -45,3 +45,8 @@
 - [ ] 新增文件存在检查
 - [ ] 删除路径已清理检查
 - [ ] 版本信息同步检查
+
+## 发布收尾（强制）
+
+- [ ] 删除本版 AP 草稿 `governance-shared/upgrade-plan-v{version}.md`（须用户检查通过后）
+- [ ] CHANGELOG 登记 Removed（若有删除项）

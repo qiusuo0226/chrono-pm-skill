@@ -1,4 +1,4 @@
-# ChronoPM v3.7.0 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
+# ChronoPM v3.8.0 — ChronoPM-Project 单项目 + ChronoPM-Portfolio 只读集
 
 **让 AI 帮你管项目，而不是帮你写文档。**
 
@@ -56,13 +56,13 @@
 | 内容 | 数量 | 说明 |
 |---|---|---|
 | 规则文件 | 22 份 | 定义 AI 在各类场景下该怎么做事 |
-| 文档模板 | 38 个 | 日报、周报、会议纪要、风险登记册、WP、源文档拆解 |
+| 文档模板 | 36 个 | 日报、周报、会议纪要、风险登记册、WP、源文档拆解 |
 | 自动化脚本 | 5 个 | 初始化、迁移、版本同步 |
-| 回归测试 | 380 个用例 | 确保每次更新不破坏已有功能 |
+| 回归测试 | 390 个用例 | 确保每次更新不破坏已有功能 |
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # 单项目 Skill 包根（打包根；内含 SKILL.md / references / assets / scripts / tests 回归测试套件（380 个用例） / governance/migrations 当前 upgrade）
+├── ChronoPM-Project/     # 单项目 Skill 包根（打包根；内含 SKILL.md / references / assets / scripts / tests 回归测试套件（390 个用例） / governance/migrations 当前 upgrade）
 ├── ChronoPM-Portfolio/   # 只读项目集伴生包
 ├── governance-shared/    # 仓库级共享（不进分发包）：baselines / CR / IA / RR / audit
 ├── tools/                # 打包工具
@@ -75,12 +75,12 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 3.7.0 |
-| 工作区 Schema | 0.12.0 |
+| Skill 版本 | 3.8.0 |
+| 工作区 Schema | 0.13.0 |
 | 规则文件 | 22 份 |
-| 文档模板 | 38 个 |
-| 回归用例 | 380 个 |
+| 文档模板 | 36 个 |
+| 回归用例 | 390 个 |
 
-发布产物：`ChronoPM-Project-Skill-v3.7.0.zip` + `ChronoPM-Portfolio-Skill-v3.7.0.zip`。
+发布产物：`ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`。
 
 升级日志：[ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
