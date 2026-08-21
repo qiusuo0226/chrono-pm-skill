@@ -1,91 +1,69 @@
-# ChronoPM v3.8.0
+# ChronoPM — An AI Sidekick That Actually Manages Projects
 
-**Let AI manage your project — not just write documents for you.**
+**You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
-Install the skill. Feed it daily reports, minutes, contracts. Facts live in Markdown and take effect only after you confirm. People leave; the folder stays.
+ChronoPM is a project-management methodology packaged as an AI skill: talk the way you already do — paste a daily report, share meeting minutes, ask about progress — and it files the facts into a clean set of Markdown files. Anything that matters takes effect only after you nod. People leave, AI tools change; the project's memory stays in the folder.
 
-> **Two packs:** day-to-day entry uses **ChronoPM-Project**. Cross-project progress / risk / contracts / weekly rollup uses **ChronoPM-Portfolio** (read-only — it never writes member-project facts).
+> **Two packs:** day-to-day entry with **ChronoPM-Project** (single project — every write happens here); cross-project progress / risk / contract / weekly rollups with **ChronoPM-Portfolio** (read-only — it never writes member projects).
 
-## Core ideas
+## Why you need it
 
-These few rules are the whole model. Everything else hangs off them.
+A PM's project facts scatter everywhere: daily reports in chat threads, minutes in inboxes, risks in someone's head, progress in a stale deck. Trying to confirm "how was this requirement decided?" turns into an afternoon of archaeology.
 
-| Idea | In one sentence |
+Generic AI doesn't fix that. Its context resets, it forgets your project, and it will enthusiastically log an offhand "seems risky" as a formal risk entry. Numbers without provenance you can't trust — and shouldn't.
+
+Handover is worse: zip ten folders, hit send, and the next PM starts from zero against a structure they've never seen.
+
+ChronoPM solves all three at once: **facts live in files, the AI guards the files, you gate the changes.**
+
+## Three commitments
+
+The whole system rests on three commitments; everything else follows from them:
+
+1. **One truth per fact.** Todos, risks, issues, decisions, requirements, and contracts each have a single source-of-truth file. Daily and weekly reports, progress, and backward plans are all derived live from those facts. No second truth exists — so nothing can "drift apart."
+2. **The AI drafts; you approve.** Mention a new requirement, a risk, or a staffing change, and the AI catches it and files it. But operations that change the record — marking done, closing, deleting — take effect only after your confirmation, with every change logged.
+3. **Handover is a folder.** All management activity lives inside the project's own `ai/` directory and never touches your deliverables. Hand that folder to the AI, and the next PM picks up right where you left off.
+
+## Just talk to it
+
+| You say | It does |
 |---|---|
-| Write in Project, read in Portfolio | Facts are written only in this project's `ai/`. Cross-project views aggregate; they never edit members. |
-| Todos are the smallest facts | Execution state lives only in `todos/{date}/{person}.md`. Daily/weekly reports and progress are derived, not a second truth. |
-| You confirm, then it counts | Done / closed / delete / cross-project writes need your nod. The AI may draft as pending; it does not rewrite live facts for you. |
-| The roster is not a new file | The team list is §1 of that day's (or latest legal day's) `todos/{date}/_index.md`. Do not keep a parallel staff register. |
-| A person has three layers | Role/status sit on the roster; contact lives in personal §0; join/leave history in §0.5. Cost/effort sits on the person's **latest file** §0.6: new files copy the whole table then append — never create empty historical day folders. |
-| Units are project-defined | Person-days, hours, months come from `project-context` cost accounting. The skill never hard-codes one company's formula. |
-| Archive ≠ backup | Archive is living history, read via indexes. `backup/` is upgrade junk and unread by default. |
-| "Tomorrow" is not tomorrow's folder | "Tomorrow" in a daily report is written into **today's** todo. Do not pre-create future-dated directories. |
+| "Here's today's report…" | Archives it, updates owners' todos, shows a judgment card before any risk gets registered |
+| "Kickoff notes…" | Structures the minutes and drops action items onto each owner's todo file |
+| "Is this requirement backed by the contract?" | Walks contract → bid → clause and answers with an evidence chain |
+| "How did this week go?" | Aggregates the weekly report from live todos — every number traceable |
+| "We launch next month — plan backwards" | Derives the plan from milestones, flagging the critical path and resource conflicts |
+| "How's the whole portfolio?" | Switch to ChronoPM-Portfolio for a read-only rollup across projects |
 
-## Sound familiar?
+The full surface of day-to-day management is covered: requirements and change tracking, todos and work packages, plans and backward scheduling, milestones, risks and issues, decision records, meetings and reviews, daily and weekly reports, labor-cost ledgers, lessons learned — plus a glossary that grows with your project, so the AI gets better at your jargon over time.
 
-| Pain | ChronoPM |
-|---|---|
-| Every PM runs a different standard | One rule set as the floor |
-| Daily reports, risks, and todos drift apart | Todo files are the single source of truth; reports are derived |
-| Handover is a zip dump nobody can navigate | Hand over `ai/`; the AI reads it and picks up |
-| General AI doesn't speak your project's jargon | Glossary + project memory — more accurate over time |
-| The words "there's a risk" get registered as a risk | v3.7.0 judgment card: three questions first, then write |
+## Getting started
 
-## Talk to it like an assistant
-
-| You say | AI does |
-|---|---|
-| "Today's daily report" | Archives it, maps todos, judgment card before any risk write |
-| "Kickoff notes…" | Minutes + action items onto owners' todo files |
-| "Is this in the contract?" | Contract → bid → clause, with an evidence chain |
-| "How's this week?" | Weekly report aggregated from todos — no invention |
-| "Cross-project status" | Switch to ChronoPM-Portfolio for a read-only rollup |
-
-**Writes go only to todo files** `todos/{date}/{person}.md`. Daily/weekly reports, progress, and backward-planning all roll up from there. Work packages `WP-NNN` group work and milestones; WP progress = live completion ratio of its todos — no stale progress file.
-
-Terminal states (done / closed) need your confirmation. The AI does not rewrite facts on its own.
-
-## What's new in v3.8.0
-
-- **People live on todos:** `resource-register` / `transfer-log` retired. Roster is `_index` §1; join/leave is personal §0.5.
-- **Talk to the PM in plain language:** no paths, IDs, or process names in questions. "Please confirm" means only approve-or-reject or allow-or-deny.
-- **No future-dated todo folders.** Before editing one person's file, finish carry-over for everyone who should have a file today.
-- **Labor-cost ledger:** §0.6 accumulates by day; if cost accounting is blank, mentions of labor cost still get recorded; reconciling with the company timesheet is the PM's job.
-- **Portfolio:** V-11 shared-file split suggestions; V-12 glossary pointer index (read-only).
-
-## Two ways to work
-
-- **Single project:** one `ai/` folder, one project.
-- **Portfolio:** ChronoPM-Portfolio rolls up many projects read-only; cross-project numbers are computed at query time and not persisted.
-
-## Get going
-
-1. Copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need the rollup) into your AI tool's skill directory. Do not copy the whole repo root.
+1. Copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
 2. Tell the AI: "Initialize my project workspace."
-3. Feed it materials the way you already work.
+3. From then on, feed it materials the way you already work.
 
-Pack from repo root: `python tools/pack-skill/scripts/pack.py --skill-root ChronoPM-Project`  
+Pack from the source repo: `python tools/pack-skill/scripts/pack.py --skill-root ChronoPM-Project`  
 Before release: `python governance-shared/scripts/audit_release.py` must pass.
 
-## What's included
-
-| Content | Count | Description |
-|---|---|---|
-| Rule files | 22 | How the AI should behave in each scenario |
-| Document templates | 36 | Daily/weekly reports, minutes, risk registers, WPs, source-doc split |
-| Automation scripts | 5 | Init, migrate, version sync |
-| Regression tests | 390 cases | Guard against breaking existing behavior |
+## Repository layout
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project Skill package root (pack root; tests = Regression test suite (390 cases))
+├── ChronoPM-Project/     # Single-project skill pack (rules, templates, scripts, regression suite)
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion
-├── governance-shared/    # Repo-level shared (not packed): baselines / CR / IA / RR / audit
-├── tools/                # pack-skill
+├── governance-shared/    # Repo-level governance: baselines / CR / impact analysis / release audit (not packed)
+├── tools/                # Packing tools
 ├── README.md
 ├── README.en.md
 └── LICENSE.txt
 ```
+
+## Engineering quality
+
+- **390 regression cases** guarding every update against breaking existing behavior;
+- **Two-layer versioning:** the skill version and the workspace schema evolve independently, with compatibility checks and migration guidance on upgrade;
+- **Governance built in:** change requests, impact analysis, and release audits are formal flows in the repo, not verbal agreements.
 
 ## Version info
 
@@ -97,6 +75,10 @@ ChronoPM Skill/
 | Document templates | 36 |
 | Regression cases | 390 |
 
-Release zips: `ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`.
+Release artifacts: `ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`.
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
+
+## License
+
+[MIT](LICENSE.txt)
