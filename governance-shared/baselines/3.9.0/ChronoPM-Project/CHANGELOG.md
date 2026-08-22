@@ -33,7 +33,8 @@ Blueprint Impact: full
 
 ### Notes
 - ⚠ 本发布不代迁市监业务仓。ops 日志懒建。
-- CR-20260822-002 / upgrade-to-3.9.0 / IA-20260822-002。
+- CR-20260822-002 / upgrade-to-3.9.0 / IA-20260822-002 / rr-20260822-3.9.0。
+- 收尾：AP 已删；CR 已斩断草稿路径；upgrade-to C 清单勾齐；Grok skills 已替换为 3.9.0。
 
 ## 3.8.0 — 2026-08-22（released）
 

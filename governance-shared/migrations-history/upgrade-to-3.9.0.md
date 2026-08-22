@@ -164,3 +164,10 @@
 每完成一个节点：annotated tag（中文说明）推 origin（Gitee）与 github。
 
 完整升级后：打 `v3.9.0`，发布包到 Downloads。
+
+收尾（用户确认核验后）：
+
+- [x] `rr-20260822-3.9.0` 已生成
+- [x] CR 已斩断 AP 草稿路径
+- [x] AP 已删；`planning/` 仅 README
+- [x] 分发包已写入 Downloads；Grok skills 已替换为 3.9.0
