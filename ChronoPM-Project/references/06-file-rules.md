@@ -28,7 +28,7 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 
 | 目录 | 是否允许创建AI文件 | 说明 |
 |---|---|---|
-| `ai/` 下本项目目录（todos/wps/risks/issues/plans/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7） |
+| `ai/` 下本项目目录（todos/wps/risks/issues/plans/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7）。过程日志=`logs/ops/`；决策文件=`pm-decisions.md`（懒建） |
 | 业务代码目录 / 需求文档目录 / 交付物目录 | ❌ 禁止 | AI 不得在此创建或修改任何文件 |
 | 他项目 `ai/` | ❌ 禁止 | 不得代写；跨项目可见性由 ChronoPM-Portfolio 只读聚合 |
 
@@ -41,7 +41,8 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
 ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├── plans/ ├── requirements/ ├── decisions/
-   ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ └── backup/
+   ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ops/ ├── backup/
+   └── pm-decisions.md（懒建，不预建）
 ```
 > v2.1.0：原 `continuity/` 目录合并入 `context/`（4 个文件：carryover-register/import-log/legacy-sources/project-lineage）；原工作区根目录 `outputs/` 移入 `ai/outputs/`，工作区根目录只留一个 `ai/` 顶层目录。
 完整树见 `SKILL.md` §3.2。
@@ -50,11 +51,11 @@ ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├──
 
 默认采用 `proactive` 模式（主动变更 + 人工确认）。项目可在 `prompts/project-rules.md` 中修改权限级别。
 
-**低/中风险更新（proactive 模式下直接写入事实源，并标记 `Confirmed By: 待确认`，同步登记 `pending-changes.md`，待 PM 确认后持久化）：**
+**低/中风险更新（proactive 模式下直接写入事实源，并标记 `Confirmed By: 待确认`，同步登记 `pm-decisions.md` 对应块，待 PM 确认后持久化）：**
 - 日报归档、会议纪要草稿归档、评审纪要归档
 - 周报草稿生成
-- 花名册/§0.5 人员变动候选、AI 操作日志更新
-- 未排期待办候选新增（登记 `pending-changes.md`）
+- 花名册/§0.5 人员变动候选、AI 操作日志 / 过程日志更新
+- 待办缺负责人 → `pm-decisions.md` **块 6**（不落无主待办）；未绑定 WP → **块 5**；已经写了等点头 → **块 8**
 - 风险/问题候选新增为开放
 - 任务 Due Date / 状态中途 / Owner 等过程性更新（写事实源并标记待确认）
 
@@ -76,13 +77,13 @@ ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├──
 | 位置 | 定位 | 内容 | 更新方式 |
 |---|---|---|---|
 | 最新合法日（date≤今天）`todos/{date}/_index.md` **§1 花名册** | 当前状态主源 | 全员名录（姓名/缩写/岗位/状态六态/首次进组/分配方式/备注） | 覆盖更新该节；无待办者进出组也只改这里 |
-| 同文件 **§3 当日参与** | 当天目录派生 | 当天实际有待办文件的人（Owner/File Ref/Todo Count/来源） | 由当日个人文件重建，不独立维护 |
+| 同文件 **§3 当日参与** | 当天目录派生 | 当天实际有待办文件的人（Owner/File Ref/Todo Count/来源） | 由当日个人文件重建，不独立维护；**扫描排除整个 `inbox/`**（含 `.claim-*` 与点文件） |
 | 同文件 **§6 TD 缩写** | 缩写权威 | 姓名/现行缩写/历史别名/冻结日 | 一人一行；冲突 ASK |
 | 个人待办 **§0** | 有待办者身份细节 | 只留联系方式、负责模块 | T+1 拷贝；岗位/在组状态以花名册为准 |
 | 个人待办 **§0.5** | 有待办者流转历史 | 进组/出组日期、触发依据 | 追加事件行，不删历史行 |
 
 **规则：**
-1. 当前状态只写最新合法 `_index` §1；§3 必须能在同文件 §1 找到对应人；File Ref 必须指向已存在文件。
+1. 当前状态只写最新合法 `_index` §1；§3 必须能在同文件 §1 找到对应人；File Ref 必须指向已存在文件。§3 扫描排除整个 `inbox/`（含 claim）与点文件，inbox 稿不是当日参与。
 2. 有待办者的进出组追加 §0.5；无待办者只改花名册（状态 + 首次进组 + 备注含离场日/原因），禁止建空待办。
 3. 跨项目共享人力索引不在本包维护；查询请使用 ChronoPM-Portfolio。
 4. 检测到资源变动时，建议更新花名册 §1，有待办者同时追加 §0.5；须确认后写入。
@@ -95,7 +96,7 @@ ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├──
 
 | 概念 | 是什么 | 读 | 巡检 | 作源 |
 |---|---|---|---|---|
-| **归档** | 06 §9 表内存活类型（issue/risk/decision/snapshot-actuals/outputs）+ change-log 月归档 + parse-log / project-notes 归档 | **索引受控可读**：先读 index，按指向读分片，禁止遍历目录 | 不巡检归档分片字段 | 可按索引回看（活历史） |
+| **归档** | 06 §9 表内存活类型（issue/risk/decision/snapshot-actuals/outputs）+ change-log 月归档 + parse-log / project-notes 归档 + ops 跨月归档 `logs/archive/YYYYMM-ops.md` + pm-decisions 决策记录月归档 | **索引受控可读**：先读 index，按指向读分片，禁止遍历目录 | 不巡检归档分片字段 | 可按索引回看（活历史） |
 | **备份** `backup/` | 升级垃圾与退役人员文件（如 resource-register / transfer-log 及年度切片） | **禁读**（用户显式单次解封或本次迁移步骤除外） | 不巡检 | **不作源** |
 
 `logs/migration-log.md` 标记「视为 backup」的根级目录（如工作区根 `backup-v*` / `*-pre-*upgrade*`）与 `backup/` **同效力**：禁读、不巡检、不作源，不搬入 `ai/backup/`。
@@ -110,7 +111,9 @@ ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├──
 ```
 todos/{date}/{owner}.md
 todos/{date}/_index.md
-pending-changes.md
+pm-decisions.md
+logs/ops/_index.md
+logs/ops/YYYY-MM-DD.md
 risks/risk-register.md
 issues/issue-register.md
 decisions/decision-log.md
@@ -119,6 +122,7 @@ plans/PLAN-NNN-{name}.md
 plans/budget.md
 wps/_index.md
 wps/WP-NNN.md
+requirements/_index.md
 requirements/requirement-register.md
 requirements/change-log.md
 requirements/source-type-registry.md
@@ -156,7 +160,9 @@ reviews/YYYYMM/YYYY-MM-DD-[event]-retrospective.md
 >
 > **v2.1.0 废弃路径标注**：`reports/daily/personal/`（任何子目录层级）已废弃，**禁止写入**（见 01 号 §1.2a 与本文件 §12 禁用清单）；周报路径统一为 `reports/weekly/YYYY/YYYY-Wxx.md`（R-1，以 01 号 §3.0 单项目周报为准，不再使用 `YYYY-Wxx-[project]-周报.md` 旧命名）。
 >
-> **v3.4.0**：`reports/timeline/` 懒建（首次生成时间线报时创建），**不列入本标准结构表**，健康检查不得因缺该目录报 P0。历史 `todos/{date}/{owner}.md` **不可变留档**（存根有效性前提）；回改必须登记 pending 并标注受影响报告存根可能失效。
+> **v3.4.0**：`reports/timeline/` 懒建（首次生成时间线报时创建），**不列入本标准结构表**，健康检查不得因缺该目录报 P0。历史 `todos/{date}/{owner}.md` **不可变留档**（存根有效性前提）；回改必须登记 `pm-decisions.md` 并标注受影响报告存根可能失效。
+>
+> **v3.9.0**：过程日志 `logs/ops/` 懒建（无 `_index.md` = 尚未发生，不报 P0）。`pm-decisions.md` 懒建，不预建实例。旧 `pending-changes.md` 迁入后进 `backup/`，不再当事实源读。
 
 ### 2.4 月度文件数量阈值规则
 
@@ -182,6 +188,32 @@ reports/daily/project/YYYYMM/YYYY-MM-DD/[project]-项目日报.md
 2. 本包不使用 `ai/portfolio/` 或 `ai/projects/{子项目}/` 作为默认存储路径
 3. 跨项目引用由 ChronoPM-Portfolio 处理；本包需提示时只给项目名 / 兄弟项目 ai 路径指针，不代写
 
+### 2.8 过程日志、inbox 与临时文件（v3.9.0）
+
+过程日志**不是**事实源。查询先读 `logs/ops/_index.md`（无则尚未发生）。路径单一事实源：一律 `logs/ops/_index.md`，禁止再写 `ops-index.md`。ops 懒建，不预建。
+
+**落盘（活跃区按日）**
+
+| 文件 | 内容 | 上限 | 超限 |
+|---|---|---|---|
+| `logs/ops/_index.md` | 日期指针（表 C） | 自身 ≤100 行 | 旧月指针进 archive 索引 |
+| `logs/ops/YYYY-MM-DD.md` | 表 A 步骤流水 | **300 行** | 拆 `YYYY-MM-DD-p2.md`，index 加一行 |
+| `logs/ops/YYYY-MM-DD-errors.md` | 表 B 字段错误（无错误则不建） | **300 行** | 同样 -p2 |
+| `logs/ops/runs/{run_id}/{隔离键}.md` | 运行中工人私有，逐步 flush | 单文件 ≤100 行 | 工人不得改别人的 run 文件 |
+| `logs/archive/YYYYMM-ops.md` | **跨月**整包（不是超 300 行的去处） | — | 活历史，index 受控可读 |
+
+收尾必须把 `runs/{run_id}/` **并入当天文件后删除该 run 目录**。禁止把分片当长期存储。禁止等整批结束再补写当天日志。禁止编造 token/模型/耗时。token 是用量，不是 API Key。
+
+**临时文件三件套（结束必须空）**
+
+| 文件 | 有没有业务内容 | 谁建 | 谁删 | 禁令 |
+|---|---|---|---|---|
+| `todos/{date}/inbox/{owner}-{HHmmss}-{agent}.md` | **有**（日报/行动项原文） | 工人 | 第一者按实读清单 L 删；冲突则保留，ops 表 B 记失败，下轮/巡检 AUTO 接走 | **禁止静默删；禁止 ASK 挂起** |
+| `todos/{date}/inbox/.claim-{owner}-{ISO}-{run_id}.md` | 无 | 每个进入 C' 的人 | 任何结局都删自己的；收尾把剩余 claim 全删 | 可直接删 |
+| `logs/ops/runs/{run_id}/` | 过程日志，收尾并入当天 ops | A/B | 并入后删目录 | 可直接删 |
+
+inbox 不是第二份日报。凡改 `{owner}.md` 一律 inbox → C'，无豁免。§3 派生扫描 **必须排除** 整个 `inbox/`（含 claim）与点文件。
+
 ## 3. 文档元数据头
 每份正式文档头部必须包含：
 
@@ -198,10 +230,12 @@ author: AI辅助生成
 ```
 
 ## 4. 文件创建规则
-1. 新文件创建时必须从 `templates/` 目录对应模板复制。
-2. 如果模板不存在，先创建模板再创建文件。
-3. 创建后必须在对应 `index.md` 中登记。
-4. 文件创建时状态默认为"草稿"。
+1. **模板权威 = Skill 包** `assets/templates/`。工作区 `ai/templates/` 只是给人看的副本，**不是权威**。写业务文件前读 Skill 包模板，禁止以工作区过期副本或「昨天那份文件的章节」当规范。
+2. 升级时现行模板**覆盖同步**工作区副本；退役模板搬 `backup/`，禁止继续当现行。
+3. 新文件必须从 Skill 包对应模板复制。Skill 包没有该 `doc_type` 模板 → **禁止新建**，禁止现场发明模板或章节。
+4. 一级标题必须是该 `doc_type` 模板上的节；多出来的节 = 失败。T+1 只拷贝允许的字段，不拷贝已删除的列/节。
+5. 创建后必须在对应 `index.md` 中登记（完全派生索引由协调者收尾重建，工人不写 `_index.md`）。
+6. 文件创建时状态默认为"草稿"。
 
 ## 5. 文件更新规则
 
@@ -233,14 +267,16 @@ author: AI辅助生成
 | 复盘 | 按事件或里程碑拆分 |
 | Change Log | 活跃区上限 50 行或超过 30 天触发按月归档到 `change-log/archive/YYYYMM-change-log.md`，并维护 `change-log/index.md` 月份导航 |
 | 风险登记册 | 超过30条时按类别或时间段拆分，保留 index |
-| 需求登记册 | 超过50条时按模块拆分，保留 index |
+| 需求登记册 | 超过 **50** 条时按模块拆分 + `requirements/_index.md` 检索索引；查询先读索引再打开命中分片，禁止默认通读整册 |
 | 待办文件 | 按人按日天然拆分（`todos/{date}/{执行人}.md`），无需再拆；绑定文件 `_index.md` 与待办文件同日同目录 |
 | PLAN 文件 | 每计划一文件（`plans/PLAN-NNN-{name}.md`）天然拆分；§3 引用简表保持一行/WP，不内嵌详情 |
 | WP 文件 | 每 WP 一文件（`wps/WP-NNN.md`）；索引 `wps/_index.md` 一行/WP；下辖待办不落盘 |
 | decision-log | 超过30条或文件超300行时按季度拆分到 `decisions/archive/YYYY-QN-decision-log.md`，保留 index |
 | issue-register | 超过30条时按状态拆分（`已解决`/`已关闭` 归档，主体保留活跃），保留 index |
+| 过程日志 ops | 按日 `logs/ops/YYYY-MM-DD.md`；超 **300 行**拆 `-p2`（不是去月归档）；跨月整包归档到 `logs/archive/YYYYMM-ops.md` |
+| pm-decisions 决策记录 | 活跃区 **50 行 / 30 天** → `ai/pm-decisions-archive/YYYYMM.md` + 索引指针。开放项不随决策记录一起归档 |
 
-> Change Log 归档采用统一的「活跃区 50 行 / 30 天」规则：活跃区超过 50 行或距上次归档超过 30 天时，将历史条目按月归入 `change-log/archive/YYYYMM-change-log.md`（YYYYMM 为归档月份），并在 `change-log/index.md` 登记该月份导航。主动变更（pending）记录在写入时合并写入，同会话确认只记 1 条。
+> Change Log 归档采用统一的「活跃区 50 行 / 30 天」规则：活跃区超过 50 行或距上次归档超过 30 天时，将历史条目按月归入 `change-log/archive/YYYYMM-change-log.md`（YYYYMM 为归档月份），并在 `change-log/index.md` 登记该月份导航。主动变更写入时合并写入，同会话确认只记 1 条。`pm-decisions` 决策记录同样 50 行 / 30 天。
 
 ### 6.3 拆分后处理
 
@@ -263,7 +299,9 @@ author: AI辅助生成
 
 `wps/_index.md` 必须包含 8 列：`WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 是否里程碑 | 关联需求 | 文件路径`。
 
-**语义**：查找加速器，**不是存在性判据**。文件存在性以 `wps/WP-*.md` 为准；索引缺行补行不删除文件；索引有行文件缺失 → 登记 pending。plan_ref/状态/关联需求必须与 WP 文件镜像一致（00 号 §8c）。
+**状态**合法值：`待确认` / `已规划` / `进行中` / `已完成`。待确认不拆待办、不进计划时间盒。
+
+**语义**：查找加速器，**不是存在性判据**。文件存在性以 `wps/WP-*.md` 为准；索引缺行补行不删除文件；索引有行文件缺失 → 登记 `pm-decisions.md`。plan_ref/状态/关联需求必须与 WP 文件镜像一致（00 号 §8c）。
 ### 7.5 源文档台账索引（v3.6.0）
 
 `requirements/sources/_index.md` 必须包含 7 列：`编号 | 源文档名称 | source_type | 生命周期阶段 | 版本 | 拆解状态 | 产出计数`。
@@ -279,7 +317,7 @@ author: AI辅助生成
 - Source：来源文件或会议 ID
 - Confirmed By：确认人姓名（AI 建议的记录为"待确认"）
 
-> 主动变更模式下，`Confirmed By: 待确认` 的条目还必须同步登记到 `pending-changes.md`（待确认变更索引），与该条目一一对应；PM 确认/驳回后按 §1.4 处理并更新 pending-changes.md。
+> 主动变更模式下，`Confirmed By: 待确认` 的「已经写了等点头」还必须同步登记到 `pm-decisions.md` **块 8**，与该条目一一对应；PM 确认/驳回后按 14 号处理。块 1–7 以决策文件为权威，禁止用 Change Log 重建。完整机制见 `14-self-check-rules.md`。
 
 > 注：此处的 Change Type 是**记录操作类型**（对事实源记录执行的操作），与 `references/08-change-control-rules.md` 中需求变更**影响分类**（requirement/scope/schedule/cost/resource/plan_change）是两个不同概念域，不可混用。计划变更（plan_change）在待办文件底部 Change Log 中以 `update` 操作 + Description 标注体现，不在本枚举中新增类型。
 
@@ -294,6 +332,8 @@ author: AI辅助生成
 | decision（已执行） | >30 条 | `decisions/archive/YYYY-QN-decision-log.md` | `decisions/index.md` |
 | snapshot/actuals | >90 天 | `snapshots/archive/YYYY/`、`actuals/archive/YYYY/` | —（v2.0.0 起无 history-index，目录内按月直查） |
 | outputs（已导出） | >90 天 | `ai/outputs/archive/YYYY/`（v2.1.0 起 outputs/ 在 ai/ 下） | `ai/outputs/index.md` |
+| ops 过程日志 | 跨月 | `logs/archive/YYYYMM-ops.md`（超 300 行拆 `-p2`，不去月归档） | `logs/ops/_index.md` |
+| pm-decisions 决策记录 | 50 行 / 30 天 | `ai/pm-decisions-archive/YYYYMM.md` | 文件内指针 |
 
 归档检查时机：日报处理末尾（01 号 §5.8 通用归档检查）、周报生成时、或对应实体变更流程末尾（见各实体级联传播规则 [AUTO]/[SUGGEST]）。
 
@@ -304,7 +344,9 @@ author: AI辅助生成
 
 统一归档粒度标准：
 - Change Log（各事实源底部）：50 行 / 30 天 → 月归档（已有，不变）
-- 注册表主体（risk/issue/requirement/待办文件）：按条数触发（30-50 条）→ 按类别/状态拆分
+- `pm-decisions.md` 决策记录：50 行 / 30 天 → `ai/pm-decisions-archive/YYYYMM.md`
+- 过程日志 ops：按日 + 300 行拆 `-p2`；跨月归档 `logs/archive/YYYYMM-ops.md`
+- 注册表主体（risk/issue/requirement/待办文件）：按条数触发（30-50 条）→ 按类别/状态拆分；需求超 50 条按模块分片 + `requirements/_index.md`
 - 日志型文件（decision-log）：按条数触发（30-100 条）→ 按时间拆分。人员流转不再走独立 transfer-log 归档
 - 目录型文件（snapshots/outputs/daily-reports）：按时间触发（90 天）→ 年度归档
 - ATOM 类别文件 `{category}.md`：超 300 行 → 按 source_type 分片（如 `technical-design_spec.md`），并新增对应 L2 `{category}-index.md` 分片条目
@@ -336,7 +378,7 @@ author: AI辅助生成
 | `projects/*/reports/daily/personal/` | v1 个人日报，能力已并入待办工作日志 | `todos/{date}/{owner}.md` §3 工作日志段 |
 | `projects/*/summaries/` | v1 个人进度汇总 | 待办文件实时聚合 |
 | `projects/*/tasks/board.md` 及 `tasks/_historic/` | v1 看板体系 | `todos/{date}/` 待办文件 |
-| `projects/*/tasks/backlog.md` | v1 遗留 | `pending-changes.md` |
+| `projects/*/tasks/backlog.md` | v1 遗留 | `pm-decisions.md` |
 | v1.x 非标准命名/层级的日报周报文件 | 迁移后不应存在 | v2 标准结构（YYYYMM/ 单级、YYYY/Wxx） |
 
 **禁止读写**：AI 对禁用路径的任何读/写/创建操作均视为严重错误，必须中止并输出警告「⚠️ 命中 v1.x 禁用路径 {path}，已中止。正确入口：{v2 替代入口}」。

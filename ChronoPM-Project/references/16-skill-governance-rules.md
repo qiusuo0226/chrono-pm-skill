@@ -409,7 +409,7 @@ Agent 在升级过程中只能创建治理流程明确定义的交付物类型�
 
 未列举的交付物类型不得创建。如需新类型的交付物，必须先修改本治理规则本身。
 
-**AP 生命周期**：审查期留存（供双 Agent 审核与用户定稿）；**正式发布验证通过后清理删除**。实质已固化于 `governance/migrations/upgrade-to-{version}.md` + `governance/baselines/{version}/` + CHANGELOG，草稿不再作为长期归档。v3.0.0 方案草稿已按本规则删除（2026-08-19）。
+**AP 生命周期**：设计阶段只改 AP。用户准许执行后**第一步**写 CR + upgrade-to + IA 接住思路。删除门=该版本已有 CR、upgrade-to 不再引用 upgrade-plan 路径、CHANGELOG 有该版本段、baselines/{v}/ 存在，且检查清单已提示。顺序：改引用 → 写/核对 CR 与 upgrade-to → 提醒检查 → 删 AP → audit。已有基线仍留该版 AP = 发布失败。
 
 **作用域**：本条款约束范围为 `governance/` 目录下的所有归档文件（包括 `change-requests/`、`impact-analysis/`、`regression-reports/`、`baselines/` 等子目录）。
 

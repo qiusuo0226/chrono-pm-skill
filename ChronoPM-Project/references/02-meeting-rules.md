@@ -97,10 +97,11 @@ status: 草稿
 ## 2. 行动项提取规则
 
 1. 会议纪要中的行动项必须提取为任务候选。
-2. 如果缺少负责人、截止时间或完成标准，记入 `pending-changes.md` 未排期待办区块或标记为"待确认"，不得直接进入正式进行中任务。
-3. 行动项必须有 Action ID（格式：`A-NNN`），后续落待办文件时分配待办编号（TD-{人名缩写}-{YYYYMMDD}-{NNN}）。
-4. 行动项必须标注来源会议 ID。
-5. **正式行动项（有负责人 + 截止时间 + 完成标准）落待办文件前必须执行 `00-pm-main-rules.md` WF-8 归属判定**：命中 PLAN WP → 待办带 WP Ref；未命中 → 独立任务（WP Ref: none）；证据不足必须追问，不得静默默认。
+2. **正式行动项（T-A4）**：同时具备负责人 + 截止时间 + 完成标准 → 按 WF-8 **自动建待办**（先写后告知）。写入必须经 inbox→C'，**禁止直写** `{owner}.md`。落待办前必须执行 `00-pm-main-rules.md` WF-8 归属判定：命中 PLAN WP → 待办带 WP Ref；未命中 → 独立任务（WP Ref: none）；证据不足必须追问，不得静默默认。
+3. **缺负责人**：不落无主待办，写入 `ai/pm-decisions.md` 块 6「待办缺负责人」，等裁定后再按 WF-8 建。**废除**「未排期待办区块」及任何 `pending-changes` 指针。
+4. 缺截止或完成标准、但有负责人：仍可落待办（走 inbox→C'），缺口记入 `ai/pm-decisions.md` 块 8 或待办备注待补全。
+5. 行动项必须有 Action ID（格式：`A-NNN`），后续落待办文件时分配待办编号（TD-{人名缩写}-{YYYYMMDD}-{NNN}）。
+6. 行动项必须标注来源会议 ID。
 
 ## 3. 事实源同步规则
 
@@ -108,15 +109,15 @@ status: 草稿
 
 | 会议内容类型 | 目标文件 | 处理方式 |
 |---|---|---|
-| 明确行动项 | `todos/{date}/{owner}.md` 待办文件 | **MANDATORY** 新增待办（正式行动项强制落待办文件，走 WF-8 归属判定填 WP Ref；禁止只写待办索引不落待办文件） |
-| 暂未排期事项 | `pending-changes.md` 未排期待办区块 | 建议新增为未排期待办 |
+| 明确行动项（T-A4） | `todos/{date}/{owner}.md`（经 inbox→C'，禁止直写） | **MANDATORY** 自动新增待办（正式行动项强制落待办文件，走 WF-8 归属判定填 WP Ref；禁止只写待办索引不落待办文件） |
+| 缺负责人 | `ai/pm-decisions.md` 块 6「待办缺负责人」 | 不落无主待办；废除未排期待办区块 / `pending-changes` 指针 |
 | 潜在风险 | 识别判定卡 →（确认后）`risks/risk-register.md` | 先出判定卡再 SUGGEST，禁止见词直登 |
 | 已发生问题 | 识别判定卡 →（确认后）`issues/issue-register.md` | 先出判定卡再 SUGGEST |
 | 关键决策 | `decisions/decision-log.md` | 建议新增决策记录 |
 | 需求变更 | `requirements/change-log.md` | 建议新增变更请求（submitted 状态） |
 | 里程碑调整 | `plans/progress-plan.md` | 建议更新里程碑状态 |
 
-所有同步项必须通过"建议更新清单"输出，人工确认后执行。
+正式行动项自动落待办（inbox→C'），不等人点头。其余同步项走确认后执行。对外处理类列出改动文件路径，禁止章节号。
 
 ## 4. 会议纪要归档规则
 
@@ -145,7 +146,7 @@ status: 草稿
 - [CHECK] 只读校验，检查关联是否存在/一致
 - [SUGGEST] 写事实源或影响其他实体，加入建议更新清单待 PM 确认
 
-> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 pending 登记）一律受 `skill-contract.md` 第 5 条约束。
+> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 `ai/pm-decisions.md` 登记）一律受 `skill-contract.md` 第 5 条约束。AUTO **不得**被理解成直写 `{owner}.md`；行动项落待办走 inbox→C'。
 
 执行顺序：先 AUTO → 再 CHECK → 最后 SUGGEST。
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
@@ -154,7 +155,7 @@ status: 草稿
 > **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
 
 Decision 创建 →
-  [SUGGEST] 若决策产生新的 action item → 建议加入待办文件
+  [SUGGEST] 若决策产生新的 action item → 正式行动项按 §2 T-A4 经 inbox→C' 落待办；缺负责人写入 `ai/pm-decisions.md` 块 6
   [SUGGEST] 若决策影响风险评估 → 建议更新 risk-register
   [AUTO] 更新 decision-log 衍生索引（若已拆分）
 

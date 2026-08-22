@@ -111,7 +111,7 @@
 #### 倒排计划信号
 倒排、根据X月X日、截止日前完成、围绕某日期排、反向排期、到某日必须完成
 
-→ 触发：按 `00-pm-main-rules.md` §9 WF-7 倒排计划编排执行（写 `wps/WP-*.md` + `_index.md` + PLAN §3 引用简表 + 待办文件）。
+→ 触发：写 `wps/WP-*.md` + `wps/_index.md` + PLAN 文件（§3 引用简表 + 倒排元数据）。**禁止按人员×日期把原子待办灌进 todos。** 待办只从已规划 WP 拆给执行人。
 
 > **倒排草案查询提示（v1.21.0）**：PM 查询倒排相关内容时，若待办文件中倒排范围内的待办自上次生成草案后发生过变更，AI 应在输出中附带提示：“待办文件自上次生成草案后有 N 条变更，建议刷新倒排矩阵”。不新增独立触发类型，仅在现有查询流程中附带提示。
 
@@ -145,6 +145,12 @@
 
 → 触发：本项目 `todos/{date}/` 待办文件 + 绑定文件 `todos/{date}/_index.md`。跨项目待办查询/结转请到 ChronoPM-Portfolio 对话。
 → 触发后：待办**创建**统一路由 `00-pm-main-rules.md` WF-8 归属判定（正式任务强制落待办文件）；待办**状态更新**执行状态级联检查。
+→ **缺负责人**（没人认领 / Owner 空）：写入 `pm-decisions.md` **块 6**，**不落无主待办**。裁定负责人后再建。
+
+#### 过程日志 / token / 漏条款信号
+过程日志、token、用量、耗时、字段错误、漏条款、幻觉排查、模型用量
+
+→ 触发：先读 `logs/ops/_index.md`；按日打开表 A（用量/token/耗时）/ 表 B（字段错误、漏条款）。无 index = 尚未发生。禁止编造 token/模型。日志不是进度事实源。
 
 #### 资源信号
 请假、抽调、借调、支援、离场、进场、换人、顶替、B角、没人、共享、投入比例、暂停投入、转去、回到
@@ -164,7 +170,7 @@
 #### 评审信号
 需求评审、设计评审、技术评审、方案评审、接口评审、数据库评审、上线评审、验收评审
 
-→ 触发：`meetings/` 或 `reviews/`、`decisions/decision-log.md`、`pending-changes.md`（未排期待办区块）、`risks/risk-register.md`、`issues/issue-register.md`、`requirements/change-log.md`
+→ 触发：`meetings/` 或 `reviews/`、`decisions/decision-log.md`、`pm-decisions.md`（缺负责人→块 6；其他待裁定→块 8）、`risks/risk-register.md`、`issues/issue-register.md`、`requirements/change-log.md`
 
 **提示格式：**
 
@@ -229,7 +235,7 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 | 级别 | 说明 |
 |---|---|
 | `passive` | AI 只输出建议更新清单，不直接更新文件 |
-| `proactive` | AI 可写入低/中风险事实源并标记 `Confirmed By: 待确认`、登记 `pending-changes.md`，高风险文件必须确认（默认） |
+| `proactive` | AI 可写入低/中风险事实源并标记 `Confirmed By: 待确认`、登记 `pm-decisions.md`，高风险文件必须确认（默认） |
 | `progressive` | AI 可自动处理多数文件，关键事实源变更必须确认 |
 
 > 注：`confirm_before_write` 已移除，存量配置自动映射到 `proactive` 处理。
@@ -242,7 +248,7 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 - 周报草稿生成
 - 花名册 / §0.5 人员变动候选
 - AI 操作日志更新
-- 未排期待办候选新增（登记 `pending-changes.md`）
+- 待办缺负责人 / 未绑定 WP 等缺口登记 `pm-decisions.md` 对应块（缺负责人→块 6，不落无主待办）
 - 风险/问题候选 → 经识别判定卡 SUGGEST，不得低风险直写登记册
 
 ### 4.3 高风险更新（必须确认后才能更新）
@@ -309,8 +315,8 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 这条信息可能是【需求】也可能是【任务】。
 请确认：
 1. 作为需求登记；
-2. 作为未排期待办登记（pending-changes.md）；
-3. 同时登记需求并拆出任务。
+2. 作为待裁定事项写入 `pm-decisions.md`（缺负责人→块 6；未绑定 WP→块 5）；
+3. 同时登记需求并绑定工作包（禁止需求直接拆成待办）。
 ```
 
 ### 不清楚是否为正式决策时
@@ -344,7 +350,7 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 5. 提取结构化事项
 6. 判断是否需要追问（最小追问规则）
 7. 判断更新权限（低风险可主动 / 高风险需确认）
-7.5 写入低/中风险项时必须标记 `Confirmed By: 待确认` 并在 `pending-changes.md` 登记；高风险项仍须确认
+7.5 写入低/中风险项时必须标记 `Confirmed By: 待确认` 并在 `pm-decisions.md` 对应块登记；高风险项仍须确认。缺负责人只进块 6，不落无主待办。
 8. **级联传播执行**：对每个变更事项，执行其对应实体的级联传播规则（见各实体规则文件 §级联传播规则）。所有 AUTO 直接执行，所有 CHECK 执行并记录，所有 SUGGEST 汇总到建议清单——不得静默跳过任何级联动作（见 `00-pm-main-rules.md` §8a）
 9. 输出更新计划或直接生成内容
 10. 输出 Suggested File Updates（必须包含所有级联 SUGGEST 项）
@@ -401,7 +407,7 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 | 类型 | 内容 | 目标文件 | 风险等级 | 是否需要确认 |
 |---|---|---|---|---|
 
-> "是否需要确认"列含义：`proactive` 模式下，低/中风险项填"否（写为待确认）"（写入事实源并标记 `Confirmed By: 待确认`、登记 `pending-changes.md`）；高风险项填"是"（须确认后才写）。
+> "是否需要确认"列含义：`proactive` 模式下，低/中风险项填"否（写为待确认）"（写入事实源并标记 `Confirmed By: 待确认`、登记 `pm-decisions.md`）；高风险项填"是"（须确认后才写）。
 
 ## 需要确认的问题
 

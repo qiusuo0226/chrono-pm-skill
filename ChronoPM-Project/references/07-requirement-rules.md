@@ -1,6 +1,8 @@
 # 需求管理约束规则
 
-本规则适用于需求的收集、分类、拆解、评审和追踪矩阵维护。需求变更管理见 `08-change-control-rules.md`。
+本规则适用于需求的收集、分类、拆解、评审和追踪矩阵维护。需求变更管理见 `08-change-control-rules.md`。源文档拆解（提取/归并/台账/分片）正文见 `source-split-skill/references/split-rules.md`，仅拆文件时加载。
+
+**硬分离**：需求 ≠ 工作包 ≠ 待办。三者编号、文件、生命周期均独立。需求只绑工作包；待办只从已规划工作包拆出；禁止把需求正文写入工作包文件。
 
 ---
 
@@ -25,7 +27,7 @@
 | Could | 可以实现 | 有价值但非本次必须 |
 | Won't | 暂不实现 | 明确排除的范围 |
 
-注意：需求优先级（MoSCoW）代表业务价值，任务优先级（P0-P3）代表执行紧急度，两者不完全等同。一个 Must 需求拆出的任务不一定都是 P0。
+注意：需求优先级（MoSCoW）代表业务价值，待办优先级（P0-P3）代表执行紧急度，两者不完全等同。一个 Must 需求绑定的工作包，其下待办不一定都是 P0。
 
 ### 1.3 按来源分类
 
@@ -38,7 +40,7 @@
 
 ## 2. 需求登记册
 
-`requirements/requirement-register.md` 是需求管理的核心事实源，同时承载需求清单和追踪矩阵。
+`requirements/requirement-register.md`（或按模块分片）是需求管理的核心事实源，同时承载需求清单和追踪矩阵。查询不得默认通读整册，见 §2.3。
 
 ### 2.1 字段定义
 
@@ -48,46 +50,84 @@
 | 标题 | 需求标题 | 是 |
 | 类型 | FR / NFR / CR / IR / DR | 是 |
 | 优先级 | Must / Should / Could / Won't | 是 |
+| 确认状态 | 未确认 / 已确认 / 已否决（独立于生命周期，见 §2.1.1） | 是 |
+| 确认缺口 | 未确认时可多项：做不做 / 效果未对齐 / 方案未对齐；已确认、已否决填 — | 未确认时是 |
+| 生命周期 | 已提议 / 进行中 / 已交付 / 已验收 / 已变更 / 已取消（不再用「已确认」占位） | 是 |
 | 来源 | contract / document / meeting / implied | 是 |
-| 来源引用 | 合同条款号或文档章节 | 是 |
+| 来源指针 | 文件（`sources/SRC-NNN` 或文档名）+ 章节/条款 + 页码；从 ATOM `source_ref` 上提，页码不得只活在证据层 | 是 |
+| 工作包 | 可多个 WP-NNN（逗号分隔，如 `WP-001, WP-014`）；空值「—」合法，但必须进 `ai/pm-decisions.md`「需求未绑定工作包」 | 否 |
 | 验收标准 | 可验证的验收条件 | 是 |
 | 实现视图 | 面向开发的实现摘要（关键模块/接口名 + 一句话要点，≤100 字，见 §8.10 双视图） | 否 |
 | 原型/文档链接 | 关联的原型图、设计稿、接口文档的路径或 URL 指针（原文档不入库，见 §8.10） | 否 |
-| 关联任务 | 待办编号列表（TD-xxx） | 否（拆解后填） |
 | 关联里程碑 | 里程碑型 WP 编号（WP-NNN） | 否 |
 | 验收状态 | 待验收 / 验收中 / 已验收 / 已驳回 | 是 |
-| 状态 | 已提议 / 已确认 / 进行中 / 已交付 / 已验收 / 已变更 / 已取消 | 是 |
 | 变更记录 | CR-YYYYMMDD-NNN | 否 |
 | Source | 来源说明 | 是 |
 
+禁止字段：
+
+- **关联任务**（TD-xxx）。需求不直接绑待办。存量「关联任务」列停用为只读遗留；触碰该条时改写「工作包」列，不批量回填待办号。
+- 需求正文、验收标准、功能描述不得作为工作包字段或抄进 WP 文件。
+
+#### 2.1.1 确认状态与生命周期
+
+确认状态与生命周期是两个独立维度，禁止用生命周期「已确认」占位。
+
+| 确认状态 | 含义 | 约束 |
+|----------|------|------|
+| 未确认 | 刚入库或评审未齐 | 必须标缺口（可多项）：做不做 / 效果未对齐 / 方案未对齐。三项没齐不得标已确认 |
+| 已确认 | 做不做、效果、方案三项均已对齐 | 才允许组**已规划**工作包、才允许从已规划 WP 拆待办 |
+| 已否决 | 明确不做 | 不得绑已规划 WP、不得拆待办；生命周期通常为已取消 |
+
+| 生命周期 | 含义 |
+|----------|------|
+| 已提议 | 刚入库；与确认状态=未确认同时出现 = 还在等项目经理裁定 |
+| 进行中 | 已进入已规划工作包并开始执行 |
+| 已交付 | 实现侧交付完成，待验收 |
+| 已验收 | 验收通过 |
+| 已变更 | 基线需求被变更单改写（关联 CR） |
+| 已取消 | 不再纳入范围 |
+
+未确认需求可以继续留在清单里（后续文件还会拆出更多条），**不得**拿去组已规划工作包、**不得**拆待办。可暂绑状态=`待确认`的 WP 草案；需求确认与 WP 确认均完成后才允许拆待办。
+
 ### 2.2 追踪矩阵
 
-追踪矩阵内嵌在需求登记册中，通过字段关联实现全链路追溯：
+追踪矩阵内嵌在需求登记册中，通过编号关联实现全链路追溯：
 
 ```
 合同条款 → 需求(REQ) → 工作包(WP) → 待办(TD) → 测试用例 → 验收
 ```
 
-每条需求必须能追溯到来源（合同条款或需求文档），并能向下追踪到工作包/待办和验收。
+每条需求必须能追溯到来源指针（文件 + 章节/条款 + 页码），并能向下追踪到工作包。待办经 WP 回指需求，需求清单不维护待办号。REQ↔WP 双向**只存编号**。
+
+### 2.3 查询与分片
+
+查询先读 `requirements/_index.md`（≤7 列：`Req ID | 标题 | 确认状态 | 生命周期 | 工作包 | 来源指针 | 优先级`），再打开命中分片。禁止默认通读整册。正文超 50 条按模块分片，索引保持瘦；Change Log 50 行/30 天按月归档（与 06 号一致）。
 
 ## 3. 需求拆解
 
 ### 3.1 拆解层级
 
 ```
-需求（Requirement）
-  └── Epic（业务史诗）
-       └── Feature（功能特性）
-            └── 待办（执行任务，TD-xxx）
+源文件（合同 / 招标 / 立项 / 合规等）
+  └── 需求清单（REQ，默认确认状态=未确认）
+       └──（确认状态=已确认后）绑定工作包（WP；一需求可多 WP，多小需求可进一个 WP）
+            └──（WP 已规划后）拆待办（TD）
 ```
+
+删除 Epic→Feature→待办。拆解产出写入需求清单，**不落待办**。
 
 ### 3.2 拆解原则
 
-1. 每层拆解必须符合 MECE 原则（相互独立、完全穷尽）。
-2. 拆解为待办时必须满足可分配、可估算、可测试。
-3. 一个需求拆解为多个任务时，所有任务必须关联到该需求 ID。
-4. 拆解后必须更新需求登记册的"关联任务"字段。
-5. **拆解出的待办落待办文件前必须执行 `00-pm-main-rules.md` WF-8 归属判定填 WP Ref**：该需求已映射到 PLAN WP（需求所属计划的工作包）→ 直接继承 WP Ref；否则走 WF-8 三分判定。Requirement Ref（需求溯源）与 WP Ref（执行归属）并存不冲突。
+1. 需求 ≠ 工作包 ≠ 待办。禁止把三层写成同一条记录。
+2. 每层拆解必须符合 MECE 原则（相互独立、完全穷尽）。
+3. 拆解只写入需求清单，默认确认状态=`未确认`、生命周期=`已提议`。禁止「拆解出的待办」、禁止回填「关联任务」。
+4. 未确认需求不得组已规划工作包、不得拆待办。
+5. REQ↔WP 双向只存编号。禁止把需求正文、验收标准、功能描述写入 WP 文件。
+6. 一需求可绑定多个 WP；多个小需求可进入同一个 WP。AI **禁止**代切颗粒度。
+7. **无需求禁止建 WP**。搜不到需求 → 禁止建包，进 `ai/pm-decisions.md`「工作包无需求」。项目经理坚持要这块活 → 先在需求清单补需求（可仍是未确认），再绑，并记疑似蔓延。
+8. 工作包列空值合法，但必须进 `ai/pm-decisions.md`「需求未绑定工作包」。
+9. 待办只从已规划工作包拆出（见 `00-pm-main-rules.md` WF-8）。需求拆解不是待办入口。
 
 ### 3.3 需求描述规范
 
@@ -96,7 +136,11 @@
 
 **类型**：FR
 **优先级**：Must
-**来源**：合同附件3 第2.1条
+**确认状态**：未确认
+**确认缺口**：做不做；效果未对齐；方案未对齐
+**生命周期**：已提议
+**来源指针**：sources/SRC-NNN 第2.1条 第12页
+**工作包**：— （空值须进 pm-decisions「需求未绑定工作包」）
 **验收标准**：
 1. [条件1] 时，系统应 [行为1]
 2. [条件2] 时，系统应 [行为2]
@@ -105,13 +149,9 @@
 **实现视图**（可选，面向开发的摘要级描述）：[关键模块/接口名 + 一句话实现要点]
 
 **原型/文档链接**（可选）：[原型地址 / PRD 章节 / 接口文档链接 / 无]
-
-**关联任务**：
-- TD-ZS-YYYYMMDD-001
-- TD-ZS-YYYYMMDD-002
-
-**状态**：已确认
 ```
+
+工作包侧对应段只写 `REQ-[模块代号]-NNN`（及可选来源文件路径指针），不粘贴本段正文。
 
 ## 4. 需求评审
 
@@ -123,23 +163,26 @@
 | 清晰性 | 无歧义，无主观形容词（如"快速""友好"） |
 | 一致性 | 与其他需求无矛盾 |
 | 可验证性 | 验收标准明确且可执行 |
-| 可追溯性 | 可追溯到合同条款或需求文档 |
+| 可追溯性 | 来源指针含文件 + 章节/条款 + 页码 |
 | 可行性 | 有技术可行性分析 |
 | 必要性 | 与项目目标相关，非镀金 |
+| 确认三项 | 做不做、效果、方案均已对齐（缺任一项不得标已确认） |
 
 ### 4.2 评审结论
 
-- **通过**：纳入基线，状态改为 `已确认`。
-- **有条件通过**：列出待补充项，状态保持 `已提议`。
-- **不通过**：说明原因，状态改为 `已取消`。
-- **暂缓**：记录到需求池，状态保持 `已提议`，标注暂缓原因。
+- **通过**：确认状态改为 `已确认`（三项已齐）；生命周期保持 `已提议`，直至进入已规划工作包后改为 `进行中`。
+- **有条件通过**：列出待补充项，确认状态保持 `未确认`，标对应缺口。
+- **不通过**：说明原因，确认状态改为 `已否决`，生命周期改为 `已取消`。
+- **暂缓**：记录到需求池，确认状态保持 `未确认`，标缺口，生命周期保持 `已提议`。
+
+确认/否决写入 `ai/pm-decisions.md` 决策记录（不是对话日志）。未确认项同时留在决策文件「需求未确认」块。
 
 ## 5. 需求与变更的边界
 
 1. 需求登记册只记录当前有效的需求状态。
 2. 任何变更（新增、修改、删除、优先级调整）必须先进入 `requirements/change-log.md`。
-3. 变更批准后才能更新需求登记册。
-4. 需求登记册中的"变更记录"字段关联到对应的 Change ID。
+3. 变更批准后才能更新需求登记册，并走工作包绑定/调整；禁止跳过 WP 直接灌待办。
+4. 需求登记册中的"变更记录"字段关联到对应的 Change ID；生命周期改为 `已变更`。
 
 ## 6. Change Log
 
@@ -152,7 +195,7 @@
 - [CHECK] 只读校验，检查关联是否存在/一致
 - [SUGGEST] 写事实源或影响其他实体，加入建议更新清单待 PM 确认
 
-> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 pending 登记）一律受 `skill-contract.md` 第 5 条约束。
+> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 pm-decisions 登记）一律受 `skill-contract.md` 第 5 条约束。
 
 执行顺序：先 AUTO → 再 CHECK → 最后 SUGGEST。
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
@@ -160,16 +203,21 @@
 
 > **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
 
-Requirement 状态变更 →
-  [CHECK] 检查关联 task 的状态一致性（追踪矩阵）
-  [AUTO] 更新 requirement-register 衍生索引
+Requirement 确认状态 / 生命周期变更 →
+  [CHECK] 检查关联 WP 编号双向一致（需求清单「工作包」列 ↔ WP 关联需求编号）
+  [CHECK] 未确认或已否决的需求未进入已规划 WP、未拆待办
+  [AUTO] 更新 `requirements/_index.md` 衍生索引
 
 Requirement 优先级变更 →
-  [CHECK] 检查关联 task 是否需要调整优先级
+  [CHECK] 检查关联 WP 是否需要调整优先级（不直接改待办）
+
+Requirement 工作包列变更 →
+  [CHECK] 双向只存编号且一致；空值已进 `ai/pm-decisions.md`「需求未绑定工作包」
+  [SUGGEST] WP 无关联 REQ → `ai/pm-decisions.md`「工作包无需求」（禁止维持无需求 WP）
 
 ## 8. 跨源需求归集与范围判定（RI）(CR-20260813-001)
 
-当同一批需求分散在**合同、招投标、立项、密评/等保、里程碑**等多来源文档时，用三层数据模型把"需求在不在某范围"从扯皮变成**可取证**。本能力在 §1.3 来源分类与 §2 追踪矩阵之上扩展，不改变既有 REQ 层字段。
+当同一批需求分散在**合同、招投标、立项、密评/等保、里程碑**等多来源文档时，用三层数据模型把"需求在不在某范围"从扯皮变成**可取证**。本能力在 §1.3 来源分类与 §2 追踪矩阵之上扩展。REQ 层字段以 §2.1 为准；ATOM/Canonical 模型不变。
 
 ### 8.1 三层数据模型
 
@@ -184,7 +232,7 @@ Requirement 优先级变更 →
 | 归并层 | Canonical | 跨源语义归并后的规范需求，含 evidence 证据链 + scope_scope 判定；`Canonical 1:N ATOM` |
 | 管理层 | REQ | 现有登记册条目；默认 `REQ 1:1 Canonical`，多交付需求时允许多 REQ 以 `canonical_id` 回指同一 Canonical |
 
-`Canonical 1:N ATOM`；`REQ 1:1 Canonical`（默认）+ `Canonical 1:N REQ`（canonical_id 回指）。REQ 的 `来源/Source` 字段升级为指向 Canonical ID 的指针（旧工作区仍为自由文本，向后兼容）。
+`Canonical 1:N ATOM`；`REQ 1:1 Canonical`（默认）+ `Canonical 1:N REQ`（canonical_id 回指）。REQ 的 `来源/Source` 字段升级为指向 Canonical ID 的指针（旧工作区仍为自由文本，向后兼容）。入库 REQ 时必须同时写「来源指针」（文件 + 章节/条款 + 页码），从 ATOM `source_doc` + `source_ref` 上提。
 
 ### 8.2 双层来源分类
 
@@ -229,6 +277,8 @@ updated         : 时间戳
 > scope_scope 是**跨源聚合结论**，只属 Canonical 层；单个 ATOM 用 authority + source_category 表达单条证据效力，不设 scope_scope。
 >
 > **kind 落盘（v3.6.0）**：需求类（requirement / requirement_directive / agreement / constraint）写入 `requirements/sources/{编号}/atoms.md`，走 ATOM→Canonical→REQ。非需求类（background / baseline / hardware / spec / term / milestone_fact）写入同目录 `facts.md`，**不进** Canonical / scope_scope。旧 4 类 kind 全部兼容，不强制重标。监理/验收中的服务承诺/质保条款：kind=agreement/constraint，source_type 归 operational（Q10）。
+>
+> **上提到来源指针**：产 REQ 时把 `source_doc` + `source_ref`（章节/条款 + 页码）写入需求清单「来源指针」，不得只把页码留在 ATOM。
 
 ### 8.5 Canonical 字段
 
@@ -247,26 +297,7 @@ status          : active / evidence_stale
 
 ### 8.6 提取与归并流程
 
-1. **触发**：A) PM 主动提供源文档并要求提取/拆解；B) 初始化向导 Step1 合同层同步提取；C) 源文档出新版本（补充协议/补遗）时增量提取 + 源版本 stale 判定；D) PM 提供开发侧文档（PRD/设计文档/接口说明/原型描述）要求提取/关联（technical 类，见 §8.10）。
-2. **拆词归一**：按 ES 分析链，AI 原子化切块 → 17 号语义归一生成 norm_text（术语级走词库状态机，句子级 confidence 记于 ATOM、人工确认）。开发侧文档按**模块/接口/页面维度**原子化切块（而非按条款），norm_text 保留技术术语原样（类名/方法名/字段名），keywords 四元组中 [对象] 填模块名/接口名。
-3. **归并**：基于 norm_text + keywords 双路匹配，命中已有 Canonical 则追加 evidence；未命中则新建 Canonical；归并/新建结果须 PM 确认。**technical 类 ATOM 归并**：优先匹配已有 Canonical；命中则追加 evidence 并 SUGGEST 填充对应 REQ 的"实现视图"字段（待 PM 确认）；technical 类 ATOM 无论是否命中，均**不参与**第 4 步范围判定（见 §8.5 scope_scope 聚合排除规则）。
-4. **范围判定**：Canonical 聚合 all evidence 判定 scope_scope（**仅 contractual/procurement/approval/compliance/operational 五类**，technical 排除）；来源互斥标 conflict 转人工裁决；密评等 compliance 类带强制门禁（不过密评不得进入验收）。
-5. **索引**：更新对应类别 L1/L2 索引与 ATOM 全文（见 05 号三级索引，technical 类同样建索引供开发侧检索）；任何失败整体回退并标记 stale。
-6. **落点（v3.7.0）**：产物写入 `requirements/sources/{编号}/` 六件套（meta/_digest/atoms/facts/ledger/parse-log），同步 `sources/_index.md`。存量旧 `{type}-source/` 未完成零清前禁止新拆解（见零清门禁）。
-7. **术语入流（节流）**：术语原文证据落 facts（kind=term）；词库只收候选指针。拆解结束攒批一次确认，禁止逐条弹。入 pending 前对原词/标准词查重，命中只计次不加行。confirmed 仅对跨文档复用 ≥2 次或 PM 点名 SUGGEST 升级。详见 17 号。
-
-**大文档渐进导入**：源文档不要求一次性全量导入，按章节/模块分批提取（每批约 2000-5000 字）；ATOM 的 `source_ref` 精确到章节号以支持断点续导；拆解状态「部分」与已拆/待拆章节记在 meta.md。原始文档**不进入工作区**，仅存指针（source_doc + source_version + source_ref）+ 指纹。
-
-**零清门禁（v3.7.0）**：存量旧结构（`{type}-source/`、平铺 `atoms/`、`canonical/`）未完成零清前，**禁止**新拆解/对账/RI 判定；输出零清清单待 PM 确认（upgrade-to-3.7.0.md）。已建 `sources/{编号}/` 不删。3.6.0 一次性迁移路径已被零清替代。
-
-**WF-SD-2 增量重拆**（PM 提供源文档新版本 / 再说「拆一下这份」）：
-1. 新指纹 = meta 指纹 → 输出「无变化，跳过」（强制重拆需 PM 明示）。
-2. 不同 → 比对 source_version（不给则标「版本未知-指纹{8位}」，不猜测）。
-3. 只对变化章节重提取（断点续导）。章节号对不上 → SUGGEST 整份重拆，不硬猜映射。
-4. ATOM：新增章节追加；变化章节旧标 superseded_by、新标 supersedes；删除章节旧标 stale（evidence 保留）。
-5. [AUTO] Canonical evidence + 索引；受影响 Canonical 标 evidence_stale。
-6. [SUGGEST] 受影响 REQ → 08 号变更；未确认前登记册不动。
-7. [AUTO] parse-log + meta + `_index.md`。覆盖通过血缘链实现，不原地改写 ATOM。
+正文见 `source-split-skill/references/split-rules.md`。
 
 ### 8.7 级联传播规则（RI 扩展）
 
@@ -325,7 +356,7 @@ RI 范围判定隐含"合同↔项目 1:1"假设，但现实中为**多对多**�
 | superseded_by | 否 | 合同拆分/替代时的血缘（D8） |
 | Source | 是 | 来源合同/文档 |
 
-> 撰写遵循 SKILL.md 底线 #2（待确认 + pending-changes）；写入走主动变更模式标记 `Confirmed By: 待确认`。
+> 撰写遵循 SKILL.md 底线 #2（待确认 + `ai/pm-decisions.md`）；写入走主动变更模式标记 `Confirmed By: 待确认`。
 
 **文档簇关联（N5）**：招投标/立项/密评等文档与合同成套出现。通过 contract-register 的关联字段形成文档簇：`CON-NNN（合同）← BID-NNN（招标文件）← INIT-NNN（立项批复）← COMP-NNN（密评报告）`。检索"某 PDF 要求 X 在不在合同范围"时，先经文档簇定位对应合同，再走 §8.9.3 路由。
 
@@ -374,23 +405,7 @@ Step 3  输出 scope_scope(result) + contract_refs + 证据链
 
 #### 8.9.5 ledger.md 字段规范（sources/ 拆解台账，v3.6.0）
 
-每个 `requirements/sources/{编号}/` 配一份 `ledger.md`。存量 `{type}-source/` 未迁完时仍可读其 ledger。**模板契约不得只靠兼容兜底**，字段如下：
-
-| 字段 | 必填 | 说明 |
-|---|---|---|
-| source_id | 是 | 目录编号（SRC-NNN 或簇固定号） |
-| file | 是 | 相对本目录的文件名（或外部指针名） |
-| file_type | 是 | pdf/docx/xlsx/md/其他 |
-| size_kb | 否 | 工具可得时填；否则 — |
-| source_fingerprint | 是 | **优先 MD5**；不可得回退「大小+mtime」（Portfolio V-8 去重键） |
-| file_created | 否 | 不可得填 —，不猜测 |
-| source_version | 是 | PM 登记；未知标「版本未知-指纹{8位}」 |
-| description | 否 | ≤30 字；不可得 — |
-| parse_history | 是 | 轮次计数 + 最近日期，明细见 parse-log.md |
-
-必填最小集：source_id / file / file_type / source_fingerprint / source_version / parse_history。parsed_by / parsed_at 只在 parse-log，ledger 不双写。旧 5 列读取缺列按 —；触碰时 SUGGEST 补齐。历史产物不回填猜测值。
-
-跨项目检索由 ChronoPM-Portfolio 遍历 + **簇固定号 + source_fingerprint** 去重。指纹相同视为同一文档跨项目副本，**禁止二次拆解**。副本 meta 标 `shared_from`；可追加 `local_only: true` 的本项目 facts，不回流。存量无 ledger 的旧目录，首次触碰时补建（SUGGEST → 待确认），不回填猜测值。
+正文见 `source-split-skill/references/split-rules.md`。
 
 ### 8.10 需求双视图与开发文档关联（CR-20260815-001）
 
@@ -401,9 +416,9 @@ Step 3  输出 scope_scope(result) + contract_refs + 证据链
 | 视图 | 存储方式 | 挂载层 | 定位 |
 |---|---|---|---|
 | 业务视图（view_business） | **不新增字段**，为 business 类（contractual/procurement/approval/compliance/operational）ATOM 的 `norm_text` 派生聚合，查时现算 | Canonical（经 evidence 派生） | 面向甲方/PM 的业务表述 |
-| 实现视图（view_dev） | **新增字段**，登记册"实现视图"列 | **REQ 层**（与 Task→REQ 日报链路对齐） | 面向开发的**摘要级**实现表述 |
+| 实现视图（view_dev） | **新增字段**，登记册"实现视图"列 | **REQ 层**（日报经 WP 关联需求编号回指 REQ） | 面向开发的**摘要级**实现表述 |
 
-**粒度约束**：实现视图只承载"关键模块/接口名 + 一句话实现要点"（≤100 字）；细粒度开发功能不进实现视图，走既有 REQ→Task 链路（Task 自带实现描述）。Canonical 层不新增视图字段，仅通过 evidence 中 ATOM 的 source_category 区分来源。
+**粒度约束**：实现视图只承载"关键模块/接口名 + 一句话实现要点"（≤100 字）；细粒度开发功能不进实现视图，走 REQ→WP→待办链路（待办自带实现描述）。禁止把需求正文抄进 WP 文件。Canonical 层不新增视图字段，仅通过 evidence 中 ATOM 的 source_category 区分来源。
 
 #### 8.10.2 开发侧 source_type 扩展
 
@@ -426,65 +441,56 @@ Step 3  输出 scope_scope(result) + contract_refs + 证据链
 #### 8.10.4 日报场景数据链路
 
 ```
-Task.Requirement Ref (REQ-XXX-NNN)
-  → REQ.标题 + 功能描述（业务上下文）
+待办.WP Ref (WP-NNN)
+  → WP 关联需求编号（只存编号，不存需求正文）
+  → 需求清单 REQ.标题 + 验收标准（业务上下文，读需求文件）
   → REQ.实现视图（开发上下文，如存在）
   → REQ.原型/文档链接（如存在）
 ```
 
-WF-2 日报处理按此链路加载需求上下文（性能控制见 05 号 §2.5）；字段缺失时降级输出已有字段，不阻塞。
+WF-2 日报处理按此链路加载需求上下文（性能控制见 05 号 §2.5）；字段缺失时降级输出已有字段，不阻塞。独立任务（WP Ref=待绑定）无需求上下文时不编造。
 
 #### 8.10.5 字段完整性巡检
 
-双视图链路字段完整性纳入 19 号信息完整性巡检（**存在性校验，非强制必填**）：已填 Requirement Ref 的待办校验其 REQ 存在且未取消；已确认状态 REQ 的实现视图/原型链接覆盖率作巡检提示（Requirement Ref 本身为 00 号 WF-8 定义的可选字段，不得变相强制）。
+双视图链路字段完整性纳入 19 号信息完整性巡检（**存在性校验，非强制必填**）：已填 WP Ref 的待办经 WP 关联需求编号校验其 REQ 存在且未取消；确认状态=已确认的 REQ，其实现视图/原型链接覆盖率作巡检提示（独立任务 WP Ref=待绑定合法，同时进 `ai/pm-decisions.md`「待办未绑定工作包」；不得变相强制每条待办必须另填 Requirement Ref）。
 
 ### 8.11 源文档台账、目录化与互认（v3.6.0 / CR-F）
 
+编号、目录与加载、共享复制见 `source-split-skill/references/split-rules.md`。本文件仅保留 REQ↔WP 绑定。
+
 #### 8.11.1 编号
 
-| 用途 | 格式 | 说明 |
-|---|---|---|
-| 项目内任意源文档 | `SRC-NNN` 短号 | 项目内递增，不编码日期 |
-| 跨项目共享 / 文档簇 | CON-/BID-/INIT-/COMP-/SUP-/TRN- + `{YYYYMMDD}-{HHmmss}` | 互认键 = 簇固定号 + ledger 指纹。清单外前缀：项目在 source-type-registry 追加一行即可（Q11） |
-
-SRC-NNN **不得**作跨项目互认键。同一文档被 ≥2 项目使用时必须升级为簇固定号。
+正文见 `source-split-skill/references/split-rules.md`。
 
 #### 8.11.2 目录与加载
 
-`requirements/sources/{编号}/`：meta.md、_digest.md、atoms.md（或 `atoms/` 分片）、facts.md（或 `facts/`）、ledger.md、parse-log.md。查询先读 `sources/_index.md` → `_digest.md` → 取证才读 atoms/facts（分片时先读 `atoms/_index.md`，单次 1 片）。索引是加速器；存在性以 `sources/*/meta.md` 为准，缺行补行。
-
-#### 8.12 同源判定与接收侧对账 WF-SD-1（v3.7.0）
-
-**同源只看输入侧**：`(簇固定号 OR source_doc 指针名+版本) + source_fingerprint` 相同即为同源。不同 AI / Skill 版本拆出的 ATOM 数量、颗粒度、措辞不同**不影响同源、不构成重拆理由**。
-
-触发：联邦挂载/新 ai 放入 `projects/` 后首次对话，或 PM 说「对账/查重」。提示一次，**不阻断主体任务**（如日报/查询）。Portfolio 侧 V-8 承接遍历。
-
-```
-Step 1 扫描新纳入项目 sources/*/ledger.md（+meta 指纹）
-Step 2 与其余项目比对互认键
-Step 3 ├─ 指纹相同 → 同源副本：本项目已有则跳过（禁二次拆解）；没有则复制首拆 sources/{簇ID}/ 并标 shared_from
-       ├─ 簇 ID 同、指纹不同 → 源已变：SUGGEST 走 WF-SD-2
-       ├─ 文件名/指针名相似但指纹不同 → 待裁决 + pending-changes，禁止擅自归并
-       └─ 无匹配 → 新建
-Step 4 [AUTO] 更新 _index.md；输出对账报告
-```
-
-写入均待确认；分支失败回退，不留半对账。对账中 meta 标 `status: 对账中`。
-
-#### 8.13 atoms/facts 分片（v3.7.0）
-
-**>300 条或 >1500 行**（06 号可配置软阈值）→ 转 `atoms/` 或 `facts/`：按章节分片 `part-NN-{章节}.md` + `_index.md`。目录内二级，索引仍 ≤3 层。禁止按行数硬切条款。旧单文件不强制转，仅新建/重拆达阈值时转。纯展示层拆分不动 ATOM 数据。
-
-#### 8.14 REQ 自动编号（v3.7.0）
-
-拆解产 REQ 自动取号 `REQ-[模块代号]-NNN`。模块代号由来源派生（冲突以登记册既有代号为准，映射表只兜底）：CON→CONTRACT、BID→BID、INIT→INIT、COMP→COMP、SUP→SUPPLEMENT、TRN→TRANSFER、SRC→登记册既有或文档缩写（PM 可首次改写一次）。NNN 在该代号下接续。编号回填 ATOM/Canonical 的 REQ 指针。WP 绑定复用 §8.11.3。
+正文见 `source-split-skill/references/split-rules.md`。
 
 #### 8.11.3 REQ↔WP 双向绑定
 
-- 正向：新产 REQ 提示归属 WP；未分配合法，但登记 pending（类型=REQ 未规划 WP）。
-- 反向：WP §2 关联需求 ↔ requirement-register「所属计划/WP」必须一致（写后必检，复用 00 号 §8c）。
-- D22（14 号，限局部）：WP 无关联 REQ → pending（疑似需求蔓延）；REQ 无 WP → SUGGEST 规划。与 WF-8 溯源同一指针则**合并** pending，不重复告警。
+硬规则：
+
+- **需求 ≠ 工作包 ≠ 待办**。双向只存编号（`REQ-XXX-NNN` ↔ `WP-NNN`），禁止把需求正文、验收标准、功能描述写入 WP 文件。
+- **无需求禁止建 WP**。搜不到需求 → 禁止建包，进 `ai/pm-decisions.md`「工作包无需求」。项目经理坚持要这块活 → 先在需求清单补需求（可仍是未确认），再绑，并记疑似蔓延。
+- 一需求可多个 WP；多个小需求可进一个 WP。工作包列空值「—」合法，但必须进 pm-decisions「需求未绑定工作包」。
+- 未确认需求不得组**已规划**工作包、不得拆待办。可暂绑状态=`待确认`的 WP 草案。
+
+正向：新产 REQ 提示归属 WP（可填多个编号）；未分配合法，但登记 `ai/pm-decisions.md`（块=需求未绑定工作包）。
+反向：WP 关联需求编号 ↔ 需求清单「工作包」列必须一致（写后必检，复用 00 号 §8c）。
+D22（14 号，限局部）：WP 无关联 REQ → pm-decisions「工作包无需求」（疑似需求蔓延）；REQ 无 WP → 登记「需求未绑定工作包」。与同一指针则**合并**决策行，不重复告警。
 
 #### 8.11.4 共享复制
 
-首个登记项目拆解一次，`sources/{簇 ID}/` 复制到各覆盖项目（meta.`shared_from` + coverage）。禁止二次拆解。副本只读引用 + 可追加 `local_only` facts。本包不写 `portfolio/`。
+正文见 `source-split-skill/references/split-rules.md`。
+
+### 8.12 同源判定与接收侧对账 WF-SD-1（v3.7.0）
+
+正文见 `source-split-skill/references/split-rules.md`。
+
+### 8.13 atoms/facts 分片（v3.7.0）
+
+正文见 `source-split-skill/references/split-rules.md`。
+
+### 8.14 REQ 自动编号（v3.7.0）
+
+正文见 `source-split-skill/references/split-rules.md`。WP 绑定复用 §8.11.3。

@@ -160,7 +160,7 @@ version: 1.0
 | DF-002 | P-CFM | 可关闭项确认关闭（编号+佐证+PM 确认） | P-ALWAYS | `04-risk-issue-rules.md` 关闭规则 |
 | DF-003 | P-WRK | PM 同步进度自动记日报（白天同步+晚间合并） | P-WF-2 | `01-daily-report-rules.md` §1.3a |
 | DF-004 | P-WRK | 查询必须实读文件 | P-ALWAYS | `00-pm-main-rules.md` CQ-5 强化 |
-| DF-005 | P-STY | 禁止内部文件术语（说人话） | P-REPLY | `00-pm-main-rules.md` 对外确认专节（本文件不复述正文） |
+| DF-005 | P-STY | 禁止内部文件术语（说人话）；范围=**全部对外正文**（提问+处理汇报+推导），不仅确认提问 | P-REPLY | `00-pm-main-rules.md` 对外表达专节（本文件不复述词典） |
 | DF-006 | P-STY | 操作建议说人话 | P-REPLY | `00-pm-main-rules.md` 对外确认专节（本文件不复述正文） |
 | DF-007 | P-WRK | PM 待办只记本人动作，不自动生成跟进条 | P-WF-1+WF-8 | `00-pm-main-rules.md` WF-1（已删 18.6）+ WF-8 |
 | DF-008 | P-WRK | 日报更新联动待办文件（`todos/{date}/{owner}.md`）与需求登记册、本项目日报；**不要** `tasks/board.md`（v2.0.0 已删） | P-WF-2 | `01-daily-report-rules.md` §5 |
@@ -168,11 +168,11 @@ version: 1.0
 | DF-010 | P-WRK | 日报梳理主动提问（结合风险/问题/计划/里程碑） | P-WF-2 | `01-daily-report-rules.md` §7 |
 | DF-011 | P-OUT | 任务引用必须完整（项目 + 计划 + 名称），禁止缩略写法 | P-REPLY | PM Profile 层 |
 | DF-012 | P-OUT | 查询默认未办结 | P-REPLY | `05-query-rules.md`「待办清单查询输出规范」（规则主导，本行兜底） |
-| DF-013 | P-WRK | 日报明确 100% / 「已完成」→ 对应待办自动完成（D-23 白名单，先写后告知级，仍登记 pending） | P-WF-2 | `00-pm-main-rules.md` §3.3 + `01-daily-report-rules.md` 01 号双轨仲裁 |
+| DF-013 | P-WRK | 日报明确 100% / 「已完成」→ 对应待办自动完成（D-23 白名单，先写后告知级，仍登记 `pm-decisions.md` 块 8） | P-WF-2 | `00-pm-main-rules.md` §3.3 + `01-daily-report-rules.md` 01 号双轨仲裁 |
 | DF-014 | P-WRK | 间接配合人员进出组：有日报=进组/在岗，无日报不按台账卡死离组。判定落点 = 待办文件 **§0.5**。内置值**不要具体人名** | P-WF-2 | `22-carried-over-rules.md` + 待办模板 §0.5（日报 WF-2 与结转加载 22 号时均应用） |
 | DF-015 | P-CFM | 一次问完协议（覆盖所有对外确认场景） | P-ALWAYS | `00-pm-main-rules.md` 对外确认专节（本文件不复述正文） |
 | DF-016 | P-WRK | 非本项目进度不入库 | P-WF-2 | `01-daily-report-rules.md` §1.0 |
-| DF-017 | P-OUT | 回复涉及文件读取/改动/移动时打印路径（数据来源） | P-REPLY | `00-pm-main-rules.md` §9.0 |
+| DF-017 | P-OUT | 处理类默认打印改动文件路径，**禁止章节号**；查询类可保留数据来源文件路径，同样禁止强制章节号 | P-REPLY | `00-pm-main-rules.md` §9.0 / §5.0（本文件不复述词典） |
 | DF-018 | P-CFM | 每轮主动观察偏好；连续 3 次一致 → pending + SUGGEST；不静默写入 | P-ALWAYS | 本文件 **§5.1** |
 | DF-019 | P-OUT | 待绑定/待确认提醒必须编号清单直问，禁止长段落解释 | P-REPLY | `00-pm-main-rules.md` 对外确认专节（§8b.4 为对内落地；本文件不复述正文） |
 

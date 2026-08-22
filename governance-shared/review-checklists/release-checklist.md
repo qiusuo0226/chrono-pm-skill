@@ -67,12 +67,12 @@
   - 是否标注了对应的 CR 编号？
 - [ ] 版本链是否连续？（每个版本都有对应升级文件，无断点）
 
-### D5. AP 草稿清理（需求四）
+### D5. AP 草稿清理
 
-- [ ] 上一版 `governance-shared/upgrade-plan-v*.md` 已删除（本发布删 v3.7.0）
-- [ ] 本版 AP 在用户检查通过后再删除（发布验证通过 ≠ 立刻删正在检查的 AP）
-- [ ] Q-4：`planning/` 已落地草稿已删（仅留 README 生命周期说明）
-- [ ] `audit_release.py` 第 14 条对上一版 AP / planning 草稿打 WARN（不阻断）
+- [ ] 已发布版本：有基线则不得再留该版 AP（audit FAIL）
+- [ ] 在研 AP：高于当前 VERSION 且无基线的至多 1 份
+- [ ] 删除顺序：改引用 → CR/upgrade-to 接思路 → 打印检查清单 → 人确认或清单勾完 → 删 AP → audit
+- [ ] `planning/` 仅留 README
 
 ### C. 版本同步 + 发布审计——机器自动执行
 

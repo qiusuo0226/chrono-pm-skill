@@ -55,6 +55,7 @@
 2. 必须先进入 `requirements/change-log.md`，状态为 `已提交`。
 3. 变更未经审批前，相关事实源文件保持不变。
 4. 客户口头需求不得直接进入需求登记册，只能进入 change-log 的已提交状态。
+5. **变更批准后走需求清单 / 工作包**，禁止跳过 WP 直接灌待办。已规划 WP 上的增量任务才允许拆待办。
 
 ## 3. 变更登记
 
@@ -77,11 +78,11 @@
 | 审批日期 | YYYY-MM-DD | 否 |
 | 执行状态 | 待实施 / 已实施 / 已取消 | 否 |
 | 关联需求 | REQ-XXX-NNN | 否 |
-| 关联任务 | TD-xxx（待办编号） | 否 |
+| 关联 WP | WP-NNN（可多个） | 否 |
 | 关联决策 | D-{YYYYMMDD}-{HHmmss}（旧号 D-YYYYMMDD-NNN 双格式兼容；工作区 Change ID 仍为 CR-YYYYMMDD-NNN，不改） | 否 |
 | Source | 来源 | 是 |
 
-> `plan_change` 类型建议通过"关联任务"字段指向具体待办 TD-xxx，并在"变更后内容"中记录新的 Due Date / Owner。
+> `plan_change` 类型建议通过「关联 WP」字段指向工作包 WP-NNN，并在「变更后内容」中记录新的时间盒 / 负责人。禁止只改待办而绕过工作包。存量「关联任务」列停用；触碰该条时改写「关联 WP」。
 
 ### 3.2 变更状态流转
 
@@ -160,16 +161,22 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 ### 6.1 批准后执行步骤
 
 1. 更新 `requirements/change-log.md`：状态改为 `已实施`。
-2. 更新 `requirements/requirement-register.md`：新增/修改/标记对应需求。
-3. 更新 `todos/{date}/{owner}.md` 待办文件：新增/调整对应待办。新增待办必须执行 `00-pm-main-rules.md` WF-8 归属判定填 WP Ref（需求已映射 PLAN WP → 继承；Requirement Ref 与 WP Ref 并存不冲突）；调整待办时若 Due Date/Owner 变更，同步执行 WP 关联检查。
-4. 更新 `plans/progress-plan.md`：调整进度计划（如需）。
-5. 更新 `plans/budget.md`：调整预算（如需）。
-6. 更新 `plans/progress-plan.md`：调整里程碑（如需）。
+2. 更新需求清单（`requirements/_index.md` + 登记册/分片）：新增/修改/标记对应需求；生命周期改为 `已变更`（如适用）。
+3. 绑定或调整受影响工作包（`wps/WP-NNN.md`）。无对应需求则先补需求再绑，**禁止无需求建 WP**。
+4. **仅当 WP 状态为「已规划」时**，才允许拆增量待办。禁止变更单跳过 WP 直接灌待办。
+5. 更新 `plans/progress-plan.md`：调整进度计划 / 工作包时间盒（如需）。计划只引用工作包，不按人员×日期灌待办。
+6. 更新 `plans/budget.md`：调整预算（如需）。
 7. 更新 `risks/risk-register.md`：新增变更引入的风险（如有）。
 8. 更新 `decisions/decision-log.md`：记录审批决策。
 9. 通知相关干系人。
 
-> 计划变更（`plan_change`）批准后，额外同步更新待办文件的 `Due Date` / `Owner` 字段，并递增 `计划变更次数`（若适用）。
+> 计划变更（`plan_change`）批准后，同步 WP 时间盒；下辖待办的 `Due Date` / `Owner` 从所属 WP 继承，禁止只改待办行而绕过工作包。
+
+### 6.1a 禁止跳过工作包
+
+- 批准后的路径：变更单 → 需求清单 → 工作包 →（已规划 WP）待办。
+- 禁止：变更单 → 待办。
+- 未确认需求不得组已规划工作包、不得拆待办。
 
 ### 6.2 执行输出
 
@@ -178,8 +185,8 @@ CCB（变更控制委员会）组成：项目经理、技术负责人、客户�
 
 | Target File | Update Type | Suggested Change | Confirmed |
 |---|---|---|---|
-| requirements/requirement-register.md | update | REQ-XXX-001 状态改为 changed | 待确认 |
-| todos/{date}/{owner}.md | add | 新增 TD-XXX-YYYYMMDD-NNN | 待确认 |
+| requirements/_index.md 与需求清单分片 | update | REQ-XXX-001 生命周期改为已变更 | 待确认 |
+| wps/WP-NNN.md | update | 绑定/调整工作包（只存需求编号） | 待确认 |
 | ... | | | |
 ```
 
@@ -203,7 +210,7 @@ change-log.md 本身不需要底部 Change Log（它本身就是变更记录）�
 - [CHECK] 只读校验，检查关联是否存在/一致
 - [SUGGEST] 写事实源或影响其他实体，加入建议更新清单待 PM 确认
 
-> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 pending 登记）一律受 `skill-contract.md` 第 5 条约束。
+> **AUTO 作用域声明**：AUTO 仅作用于非事实源的派生视图，不触碰任何事实源文件。事实源写入（含 `ai/pm-decisions.md` 登记）一律受 `skill-contract.md` 第 5 条约束。
 
 执行顺序：先 AUTO → 再 CHECK → 最后 SUGGEST。
 同一处理流程内，级联动作只执行一次；多个 SUGGEST 汇总为同一批建议清单，流程末尾统一输出。
@@ -212,9 +219,9 @@ change-log.md 本身不需要底部 Change Log（它本身就是变更记录）�
 > **强制执行要求**（见 `00-pm-main-rules.md` §8a）：以上 AUTO/CHECK/SUGGEST 动作不得静默跳过。SUGGEST 必须呈现给 PM 确认，不得以"用户未要求"为由省略。流程末尾必须输出"级联完整性"结论。
 
 变更批准 →
-  [SUGGEST] 更新所有受影响的事实源文件（影响范围见变更影响分析）
+  [SUGGEST] 更新所有受影响的事实源文件（影响范围见变更影响分析；路径=需求清单→工作包，禁止跳过 WP 灌待办）
   [AUTO] 更新 change-log 衍生索引
-  [AUTO] 更新 pending-changes.md（移除已确认条目）
+  [AUTO] 更新 `ai/pm-decisions.md`（从开放块移除已确认条目，追加决策记录）
 
 变更拒绝 →
-  [AUTO] 更新 pending-changes.md（标记为已驳回）
+  [AUTO] 更新 `ai/pm-decisions.md`（决策记录留驳回）

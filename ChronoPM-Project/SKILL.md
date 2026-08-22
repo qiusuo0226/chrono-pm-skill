@@ -3,14 +3,14 @@ name: chrono-pm-project
 version: 3.8.0
 schema_version: 0.13.0
 updated_at: 2026-08-22
-description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好。支持主动变更+人工确认：写入即标记待确认并登记 pending-changes，确认后生效。
+description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
 ---
 # ChronoPM-Project — 单项目 Markdown 项目管理技能
 
 ## 1. 概述
 本技能以项目文件夹下的 `ai/` 目录为载体，以 Markdown 为项目记忆，以 AI 为副手，以人工确认为最终控制点。
 **核心理念**：事实源文件是唯一真相；日报/纪要是输入，不能替代事实源。
-**待办单一数据源**：执行状态 = `todos/{date}/{owner}.md`；PLAN = 唯一计划编排事实源（§3 只引用 WP）；WP 独立文件 = `wps/WP-NNN.md`；WP 进度 / 日周计划 / todo 索引 / WP 索引均为派生或加速器。
+**待办单一数据源**：执行状态 = `todos/{date}/{owner}.md`（一人一天一份；写入经 inbox 再合并）。PLAN = 唯一计划编排事实源（只引用 WP，不列待办）。WP 独立文件 = `wps/WP-NNN.md`（须有需求编号；待确认不拆待办）。需求只绑工作包，待办只绑工作包。
 **v3.0.0**：本包仅单项目。旧 portfolio 录入口废弃。跨项目只读归集见 ChronoPM-Portfolio。
 
 ## 2. 工作模式
@@ -30,20 +30,22 @@ project-root/
     ├── backup/           # 升级垃圾封存（禁读；3.8.0 空目录）
     ├── resources/        # 退役：register/transfer-log 迁 backup；人员读 todos/_index
     ├── reports/          # 项目日报按需生成（存根，可能不存在）+ 周报；个人日报在 todos
-    ├── meetings/  reviews/  logs/  outputs/
-    ├── pending-changes.md
+    ├── meetings/  reviews/  logs/ops/  outputs/
+    ├── pm-decisions.md      # 等你裁定（分块）；旧 pending-changes 升级迁入
     └── .skill-version.json
 ```
 联邦集工作区（Portfolio 使用，本包不创建）：`ai/portfolio/` + `ai/projects/{名}/ai/`（内部即上图）。项目 ai 内禁止再出现 `portfolio/` 或 `projects/`。
 
 ## 4. 事实源（须确认后生效；主动变更先写后确认）
-写入即 `Confirmed By: 待确认`、登记 `pending-changes.md`，确认前不进已完成统计、不参与超期判定。
+写入即 `Confirmed By: 待确认`、登记 `pm-decisions.md`，确认前不进已完成统计、不参与超期判定。
 
 | 文件 | 对象 |
 |------|------|
 | `todos/{date}/{owner}.md` | 待办与人员快照/进出组/能耗（§0 只留联系方式与负责模块） |
 | `todos/{date}/_index.md` | 花名册 §1 + 结转 §2 + 当日参与 §3 + TD 缩写 §6 |
-| `pending-changes.md` | 待确认变更 |
+| `pm-decisions.md` | 等你裁定的事项（分块 + 决策记录） |
+| `logs/ops/_index.md` | 过程日志索引（懒建） |
+| `requirements/_index.md` | 需求检索 |
 | `risks/` `issues/` `decisions/` | 风险/问题/决策 |
 | `plans/PLAN-*.md` `progress-plan.md` `budget.md` | 计划/进度/预算（PLAN §3 = WP 引用简表） |
 | `wps/WP-*.md` `wps/_index.md` | 独立 WP 文件 + 查找加速器（存在性以文件为准） |
@@ -62,7 +64,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 5.1b 版本检查（进入工作区先做）
 读 `ai/.skill-version.json` → 比 Skill `VERSION`。Skill < 工作区版本 → 提示升级 Skill + 只读降级。见 `20-workspace-version-rules.md`。
 ### 5.2 日报
-先 §1.0 录入归属判定 → 存档 §2 → 映射待办。个人日报落 `todos/{date}/{owner}.md`（§2 存档 + §3 工作日志），禁止写入 `reports/daily/`。项目日报为按需生成的存根（`reports/daily/project/`，可能不存在）。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
+先判定是否本项目 → 原文进 inbox → 合并进当天一人一份个人文件 → 映射待办（够正式的未匹配进展自动建待办）。禁止写入 `reports/daily/`。明日计划留在当天原文，次日才落待办。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
 ### 5.3 查询
 本项目事实源。跨项目用 Portfolio。待办清单输出见 05 号新节（默认未办结；未确认终态仍可见）。日报内容（含「昨天日报风险点/问题」）默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`；仅用户明确要项目日报文件时才读 `reports/daily/project/`（目录不存在=未生成，不报错）。
 ### 5.4 其他
@@ -86,7 +88,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 风险评估 | 00+04 | — |
 | 本项目查询 | 00+05+17 | 按问题 |
 | 跨源范围判定 | 00+07+05+17+06 | Step0 读本项目 contract-register |
-| 源文档拆解 | 00+07+06+17 | 14、18 |
+| 源文档拆解 | 00+07+06+17 + `source-split-skill/references/split-rules.md` | 14、18 |
 | 人员资源（本项目） | 00+06 | 04 |
 | 更新意图/文件入库 | 00+06+10+17 | 按类型 |
 | 生成报告/导出 | 00+05+06+10+11 | 12 |
@@ -100,9 +102,9 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 
 ## 7. 安全底线
 1. 不得编造；不足须说明缺什么。
-2. 不得未经确认改事实源（主动变更须待确认 + pending-changes + 可回滚；未确认不进完成统计/超期）。
+2. 不得未经确认改事实源（主动变更须待确认 + pm-decisions + 可回滚；未确认不进完成统计/超期）。
 3. 不得把日报/纪要当事实源结论。
-4. 不得混淆需求与任务、风险与问题。
+4. 不得混淆需求与任务、风险与问题。需求不写进工作包正文。计划不列待办。
 5. 推测必须标注。
 6. 不得代 PM 做资源/范围/里程碑决策。
 7. 不得擅自承诺范围工期成本验收。
@@ -141,7 +143,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | `11-output-artifact-rules.md` | 生成物 |
 | `12-excel-generation-rules.md` | Excel 生成 |
 | `13-continuity-rules.md` | 阶段衔接 |
-| `14-self-check-rules.md` | 自查（含 pending 查重、DF 完整性） |
+| `14-self-check-rules.md` | 自查（含决策文件查重、DF 完整性） |
 | `15-snapshot-rules.md` | 快照冻结 |
 | `16-skill-governance-rules.md` | Skill 治理（开发仓，分发包不含） |
 | `17-domain-glossary-rules.md` | 词库 |
