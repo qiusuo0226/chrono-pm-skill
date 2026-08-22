@@ -28,6 +28,12 @@ The whole system rests on three commitments; everything else follows from them:
 
 Module flow diagrams (person → AI → which file → whether you decide): [ChronoPM-Project/SKILL_MODULE_MAP.md](ChronoPM-Project/SKILL_MODULE_MAP.md)
 
+## See a real conversation
+
+Conversation walkthroughs (names and numbers are fake; the way you talk is real). Written in Chinese, covering init, feeding contracts, daily reports, meetings, backward plans, portfolio, and change:
+
+Index: [examples/](examples/) (17 pieces; follow the reading order there)
+
 ## Just talk to it
 
 | You say | It does |
@@ -56,6 +62,7 @@ Before release: `python governance-shared/scripts/audit_release.py` must pass.
 ChronoPM Skill/
 ├── ChronoPM-Project/     # Single-project skill pack (rules, templates, scripts, regression suite)
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion
+├── examples/             # Conversation walkthroughs (init through portfolio, 17 pieces)
 ├── governance-shared/    # Repo-level governance: baselines / CR / impact analysis / release audit (not packed)
 ├── tools/                # Packing tools
 ├── README.md
