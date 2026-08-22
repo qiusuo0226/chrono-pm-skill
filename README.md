@@ -32,7 +32,7 @@ ChronoPM 把这三件事一起解决：**事实写在文件里，AI 守着文件
 
 对话示例（项目名和数字是假的，问法是真的），从初始化、投喂材料、日报会议，到倒排、项目集、变更：
 
-目录：[examples/](examples/)（17 篇，建议按里面的阅读顺序看）
+目录：[examples/](examples/)（18 篇，建议按里面的阅读顺序看）
 
 ## 开口就能用
 
@@ -62,7 +62,7 @@ ChronoPM 把这三件事一起解决：**事实写在文件里，AI 守着文件
 ChronoPM Skill/
 ├── ChronoPM-Project/     # 单项目 Skill 包（规则、模板、脚本与回归测试套件）
 ├── ChronoPM-Portfolio/   # 只读项目集伴生包
-├── examples/             # 对话示例（初始化 → 日常 → 项目集，17 篇）
+├── examples/             # 对话示例（初始化 → 日常 → 项目集，18 篇）
 ├── governance-shared/    # 仓库级治理共享：基线 / 变更请求 / 影响分析 / 发布审计（不进分发包）
 ├── tools/                # 打包工具
 ├── README.md
