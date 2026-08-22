@@ -27,6 +27,10 @@ Blueprint Impact: full
 - migrate 覆盖同步现行模板
 - 已发布版 AP 有基线则不得再留（audit FAIL）
 
+### Fixed
+- 9 条旧回归用例期望从 pending-changes 改指 pm-decisions.md 块 8/块 6（PW-001/003/004、UT-001、WF-001、BS-023、V3-007、V3-019、SD-102）；条数仍 443
+- 16 号业务对话行「需求与待确认」改为 `pm-decisions.md`
+
 ### Notes
 - ⚠ 本发布不代迁市监业务仓。ops 日志懒建。
 - CR-20260822-002 / upgrade-to-3.9.0 / IA-20260822-002。

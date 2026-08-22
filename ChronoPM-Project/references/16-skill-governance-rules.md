@@ -111,7 +111,7 @@ AI 在提出任何 Skill 变更前，**必须先输出完整的升级方案审�
 | 设计阶段 | **只改 AP**。方案讨论、审查、修订一律写在 `upgrade-plan-v*.md`（或 AP 正文），**不得**落 CR 文件 |
 | CR 创建时机 | **仅当用户准许执行**（如确认 upgrade-to 施工清单）时，才在开发仓 `governance-shared/change-requests/` 创建 CR |
 | 创建位置 | CR / IA / 基线等 governance 文件只允许出现在开发仓 `governance-shared/`，不得写入业务工作区 |
-| 业务对话 | ChronoPM-Project 业务对话**严禁创建任何 governance 层文件**（含 CR/IA/基线）。需求与待确认走 `pending-changes.md` 或直接回答。用户说「帮我开 CR」→ 拒绝落文件，引导到开发仓先写 AP |
+| 业务对话 | ChronoPM-Project 业务对话**严禁创建任何 governance 层文件**（含 CR/IA/基线）。需求与待确认走 `pm-decisions.md` 或直接回答。用户说「帮我开 CR」→ 拒绝落文件，引导到开发仓先写 AP |
 
 ### 2.2 审查输出格式要求
 

@@ -130,7 +130,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| UT-001 | "记录一下，陈佳菁被抽调" | 触发更新流程：低/中风险按 proactive 直接写入事实源并标记待确认（登记 pending-changes），高风险先确认后写 | positive |
+| UT-001 | "记录一下，陈佳菁被抽调" | 触发更新流程：低/中风险按 proactive 直接写入事实源并标记待确认（登记 pm-decisions.md 块 8），高风险先确认后写 | positive |
 | UT-002 | 上传评审材料 | 识别文件类型，主动询问是否入库 | positive |
 | UT-003 | 日报中包含"决定""确认" | 识别为决策信号，提示更新 decision-log | positive |
 | UT-004 | 纯查询"现在有哪些风险" | 不触发更新清单 | regression |
@@ -297,14 +297,14 @@
 
 ## 26. Pending Window（待确认窗口期 · 主动变更+人工确认）
 
-> 对应 CR-20260811-002（v1.11.0）。覆盖事实源直接写入+待确认标记、pending-changes 登记、确认/驳回回滚、Due Date 空窗期判定。
+> 对应 CR-20260811-002（v1.11.0）。覆盖事实源直接写入+待确认标记、pm-decisions.md 块 8 登记、确认/驳回回滚、Due Date 空窗期判定。
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| PW-001 | 低风险事实源更新（如新增任务行） | 直接写入事实源并标记 `Confirmed By: 待确认`，同时登记 `pending-changes.md`，末尾提示待人工确认 | positive |
+| PW-001 | 低风险事实源更新（如新增任务行） | 直接写入事实源并标记 `Confirmed By: 待确认`，同时登记 `pm-decisions.md` 块 8，末尾提示待人工确认 | positive |
 | PW-002 | 待确认记录 | 在到期判定、已完成统计中一律视为未确认（不参与延期/超期计数） | positive |
-| PW-003 | 用户确认"确认 PW001" | pending → confirmed，从 pending-changes 移除（Change Log 保留），标记生效 | positive |
-| PW-004 | 用户驳回"驳回 PW001" | 恢复变更前原值，pending-changes 标记 rejected，不留错误事实 | regression |
+| PW-003 | 用户确认"确认 PW001" | pending → confirmed，从 pm-decisions.md 块 8 移除（Change Log 保留），标记生效 | positive |
+| PW-004 | 用户驳回"驳回 PW001" | 恢复变更前原值，pm-decisions.md 块 8 标记 rejected 并记入决策记录，不留错误事实 | regression |
 | PW-005 | 待确认记录超 7/14 天未确认 | 触发催办升级提示，不静默丢弃 | regression |
 | PW-006 | 高风险变更（如删任务/改里程碑基线） | 必须先确认后写，不适用主动写入待确认模式 | regression |
 
@@ -364,11 +364,11 @@
 
 ## 31. Workflow Data Path（标准工作流数据路径）
 
-> 对应 v1.14.0（CR-20260812-001 续）。覆盖 00 号 §9 WF-1~WF-6 标准工作流数据路径与 05 号 §2.5 Quick Update 路由表。重点验证：路径预定义不弱化判断阶段（§9.1 五条强化规则）、写入仍遵循 SKILL.md §7 底线 #2（pending-changes 登记）。
+> 对应 v1.14.0（CR-20260812-001 续）。覆盖 00 号 §9 WF-1~WF-6 标准工作流数据路径与 05 号 §2.5 Quick Update 路由表。重点验证：路径预定义不弱化判断阶段（§9.1 五条强化规则）、写入仍遵循 SKILL.md §7 底线 #2（pm-decisions.md 块 8 登记）。
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| WF-001 | "更新于文聪的待办" + 事实依据 | 按 WF-1 步骤 1-18 执行：定位(读绑定文件/待办文件/issue/risk)→判断(待办匹配/状态判定/问题关闭/风险关闭)→写入(含 pending-changes 登记)→补全(日报索引)→输出变更摘要 | positive |
+| WF-001 | "更新于文聪的待办" + 事实依据 | 按 WF-1 步骤 1-18 执行：定位(读绑定文件/待办文件/issue/risk)→判断(待办匹配/状态判定/问题关闭/风险关闭)→写入(含 pm-decisions.md 块 8 登记)→补全(日报索引)→输出变更摘要 | positive |
 | WF-002 | WF-1 步骤 6 待办匹配：用户用别名/缩写描述 | §9.1 规则1 生效：语义匹配考虑别名缩写，不因路径预定义简化判断 | positive |
 | WF-003 | WF-1 步骤 8/9 关联问题/风险仅"部分缓解" | §9.1 规则3/4 生效：不自动关闭，列入建议清单待 PM 确认 | regression |
 | WF-004 | WF-1 步骤 16：单纯状态更新指令（无工作进展描述） | §9.1 规则5 生效：不触发 PF006 日报补全，仅更新待办状态 | regression |
@@ -472,7 +472,7 @@
 | BS-020 | 14号自查执行 | D15 检出待办文件 WP Ref 完整性异常（指向不存在/缺失的 WP）→ 报不一致并走 WF-8 补落 | regression |
 | BS-021 | 日报"明日计划"含正式任务 | 只进当天原文；次日第一次写待办时才建；禁止当日落未来日待办 | positive |
 | BS-022 | 会议纪要行动项"李四 8/20 前完成环境部署" | 02号 §2/§3：MANDATORY 落待办文件 + WF-8 归属填 WP Ref，不再是建议级 | positive |
-| BS-023 | 纪要行动项缺负责人/截止日 | 入 pending-changes 未排期待办区块标"待确认"（02号 §2.2 既有规则保持），不强制落待办文件 | regression |
+| BS-023 | 纪要行动项缺负责人/截止日 | 缺负责人写入 pm-decisions.md 块 6、不落无主待办；缺截止但有负责人仍可落待办、缺口进块 8。废除未排期待办区块 | regression |
 | BS-024 | 待办状态更新（WF-1 场景） | 走 §8.1 状态级联，不误入 WF-8 创建流程；触发源拆分语义自洽 | regression |
 
 
@@ -526,7 +526,7 @@
 | V3-004 | Skill 包版本 < 工作区 .skill-version.json | 提示下载更高 Skill + 只读降级，禁止写入 | regression |
 | V3-005 | projects/{名}/ai/ 内出现 portfolio/ 或 projects/ | 挂载校验/巡检告警，拒绝聚合（防套娃） | regression |
 | V3-006 | 同一项目 ai 挂独立工作区 vs 集工作区 projects/ | 读写行为一致（双宿主换装） | positive |
-| V3-007 | 子项目下沉后打包带走 | 含 D-21 最小文件集（todos/_index 花名册、reports/pending-changes/contract-register/pm-profile/templates/.skill-version.json）；不依赖 resource-register | positive |
+| V3-007 | 子项目下沉后打包带走 | 含 D-21 最小文件集（todos/_index 花名册、pm-decisions、contract-register、pm-profile、templates、.skill-version.json）；不依赖 resource-register | positive |
 | V3-008 | 删除 pm-profile 某 DF 行 | 自愈恢复该行，状态 disabled + 提示 PM | regression |
 | V3-009 | 用户说「废弃 DF-013」 | 转为 disabled 留痕，行不删、不移入废弃段 | regression |
 | V3-010 | 混报含非本项目进度 | 不入库本项目事实源（DF-016） | positive |
@@ -538,7 +538,7 @@
 | V3-016 | 补录历史能耗 | 只改当日明细+累计按明细重算，不回溯改历史快照 | regression |
 | V3-017 | 新风险编号 | `R-NNN`，只读 risks/index.md 求最大；存量时间戳号仍识别 | positive |
 | V3-018 | 查询旧编号 R-011 | 双格式兼容，级联不炸 | regression |
-| V3-019 | 直接落库级新建待办 | 不弹确认，但登记 pending-changes，Confirmed By=待确认 | positive |
+| V3-019 | 直接落库级新建待办 | 不弹确认，但登记 pm-decisions.md 块 8，Confirmed By=待确认 | positive |
 | V3-020 | 终态关闭（非 DF-013） | 必须逐条确认，不可简化 | regression |
 | V3-021 | 日报 100% /「已完成」对应待办 | DF-013 自动完成 + pending；未确认不进已完成统计、不参超期 | positive |
 | V3-022 | 查询我的待办，含未确认已完成 | **默认仍可见**（未办结或「待确认完成」分组），禁止当已办结隐藏 | regression |
@@ -695,7 +695,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | SD-101 | 拷入含共享合同的 ai 后首次对话 | WF-SD-1 提示一次，不阻断主体任务；同源标 shared_from 不重拆 | positive |
-| SD-102 | 同名文档指纹不同 | 待裁决 + pending-changes | positive |
+| SD-102 | 同名文档指纹不同 | 待裁决 + 写入 pm-decisions.md 块 8 | positive |
 | SD-103 | 同文档新版本二次拆解 | WF-SD-2 增量血缘替换，parse-log 记轮次 | positive |
 | SD-104 | 指纹未变再拆 | 输出无变化跳过 | negative |
 | SD-105 | atoms 超 300 条 | 转 atoms/ 分片 + _index.md，不动 ATOM 数据 | positive |

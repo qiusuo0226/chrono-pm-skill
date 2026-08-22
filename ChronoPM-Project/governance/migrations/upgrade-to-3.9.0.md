@@ -147,15 +147,17 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.9.0 / 0.14.0
-- [ ] audit 退出码 0
-- [ ] pack dry-run 有意排除；zip 有 source-split 无嵌套 SKILL.md
-- [ ] parse-log 与 ops 模板 ≤7 列
-- [ ] 未改验证仓
-- [ ] upgrade-to-3.8.0 无 upgrade-plan 路径
-- [ ] 回归 443
-- [ ] README 中英文有模块图链接
-- [ ] 3.9.0 AP 在基线拍完、检查清单勾完后删除
+- [x] `_version.py` 3.9.0 / 0.14.0
+- [x] audit 退出码 0
+- [x] pack dry-run 有意排除；zip 有 source-split 无嵌套 SKILL.md
+- [x] parse-log 与 ops 模板 ≤7 列
+- [x] 未改验证仓
+- [x] upgrade-to-3.8.0 无 upgrade-plan 路径
+- [x] 回归 443（含 P1-J：9 条旧用例期望改指 pm-decisions 块 8/块 6，条数不变）
+- [x] README 中英文有模块图链接
+- [x] 3.9.0 AP 在基线拍完、检查清单勾完后删除
+
+> 核验补修：P1-J 旧期望改指块 8/块 6；P2-J 16 号业务对话行改 `pm-decisions.md`。勾齐后删除 AP。
 
 ## D. 发布
 
