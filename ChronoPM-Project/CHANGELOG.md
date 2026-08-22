@@ -4,7 +4,34 @@
 
 ---
 
-## 3.8.0 — 2026-08-22（本次发布 · released）
+## 3.9.0 — 2026-08-22（本次发布 · released）
+
+> 发布归档：Minor + schema_change + contract_change + governance-change。过程日志、inbox 合并、需求/工作包/待办三层绑定、决策文件、关联处理方式。workspace schema 0.13.0 → 0.14.0。
+
+Blueprint Impact: full
+
+### Added
+- 过程日志 `logs/ops/`（7 列、按日、每步 flush）
+- 日报 inbox + claim 合并（一人一天一份）
+- 工作包状态「待确认」；需求清单确认状态与来源页码
+- `pm-decisions.md` 分块决策文件 + 决策记录
+- 关联待办处理方式（有指示则 AUTO）
+- `SKILL_MODULE_MAP.md` 模块链路图（不进发行包）
+- 回归 53 条（合计 443）
+
+### Changed
+- 需求只绑工作包，不落待办；计划只确认工作包时间盒
+- source-split 无嵌套 SKILL.md，四模板迁入能力目录并打进发行包
+- 处理类列出改动文件，禁止章节号
+- pending-changes 退役迁入 pm-decisions
+- migrate 覆盖同步现行模板
+- 已发布版 AP 有基线则不得再留（audit FAIL）
+
+### Notes
+- ⚠ 本发布不代迁市监业务仓。ops 日志懒建。
+- CR-20260822-002 / upgrade-to-3.9.0 / IA-20260822-002。
+
+## 3.8.0 — 2026-08-22（released）
 
 > 发布归档：Minor + schema_change + contract_change。人员文件整合、对外确认话术、V-11/V-12、兼容人工成本台账。workspace schema 0.12.0 → 0.13.0。
 

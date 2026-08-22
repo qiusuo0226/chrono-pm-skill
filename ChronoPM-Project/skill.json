@@ -1,13 +1,18 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
-    "current": "0.13.0"
+    "current": "0.14.0"
   },
   "migrations": [
+    {
+      "from": "0.13.0",
+      "to": "0.14.0",
+      "description": "v3.9.0：pm-decisions 取代 pending-changes；需求索引；WP 待确认；关联处理记录。ops 日志懒建。"
+    },
     {
       "from": "0.12.0",
       "to": "0.13.0",
@@ -87,6 +92,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.9.0",
+      "date": "2026-08-22",
+      "summary": "过程日志+inbox合并+需求只绑WP+决策文件分块+关联处理方式AUTO；source-split无嵌套SKILL.md完整进包；对外给文件不给章节号；workspace schema 0.13.0→0.14.0；回归443。"
+    },
     {
       "version": "3.8.0",
       "date": "2026-08-22",
@@ -433,7 +443,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-22",
-    "lastVersion": "3.8.0",
+    "lastVersion": "3.9.0",
     "updateRequiredOn": [
       "major",
       "minor",

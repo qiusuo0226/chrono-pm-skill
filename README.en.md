@@ -65,7 +65,7 @@ ChronoPM Skill/
 
 ## Engineering quality
 
-- **390 regression cases** guarding every update against breaking existing behavior;
+- **443 regression cases** guarding every update against breaking existing behavior;
 - **Two-layer versioning:** the skill version and the workspace schema evolve independently, with compatibility checks and migration guidance on upgrade;
 - **Governance built in:** change requests, impact analysis, and release audits are formal flows in the repo, not verbal agreements.
 
@@ -73,13 +73,13 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.8.0 |
-| Workspace schema | 0.13.0 |
+| Skill version | 3.9.0 |
+| Workspace schema | 0.14.0 |
 | Rule files | 22 |
-| Document templates | 36 |
-| Regression cases | 390 |
+| Document templates | 35 |
+| Regression cases | 443 |
 
-Release artifacts: `ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`.
+Release artifacts: `ChronoPM-Project-Skill-v3.9.0.zip` + `ChronoPM-Portfolio-Skill-v3.9.0.zip`.
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 

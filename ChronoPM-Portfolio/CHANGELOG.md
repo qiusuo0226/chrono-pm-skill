@@ -4,6 +4,14 @@
 
 ---
 
+## 3.9.0 — 2026-08-22（版本锁步 · released）
+
+> 与 Project 3.9.0 共用版本线。只读归集各项目过程日志 index 与 pm-decisions 开放计数。禁止读成员 inbox。过程日志不当进度。workspace schema 0.14.0。
+
+### Changed
+- 未确认终态改读成员 `pm-decisions` 块 8
+- 禁写清单 pending-changes → pm-decisions
+
 ## 3.8.0 — 2026-08-22（版本锁步 · released）
 
 > 与 Project 3.8.0 共用版本线。新增 V-11 跨项目共享文件拆分、V-12 术语指针索引。V-3 人员聚合改读各项目待办 §0/§0.5 + `_index`（不再读 resource-register）。对外确认改白话，不对用户说「建议更新清单」（内部能力名 V-9 保留）。进入工作区扫 `projects/` 一级目录，新目录 ASK 收编，确认后自动刷 glossary-index；无后台盯盘。workspace schema 0.13.0（集层结构不加 backup 义务）。

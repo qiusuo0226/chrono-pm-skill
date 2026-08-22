@@ -65,7 +65,7 @@ ChronoPM Skill/
 
 ## 工程质量
 
-- **390 个回归用例**，确保每次更新不破坏已有行为；
+- **443 个回归用例**，确保每次更新不破坏已有行为；
 - **双层版本控制**：Skill 版本与工作区数据结构（schema）独立演进，升级时自动检测兼容性并给出迁移指引；
 - **治理内建**：变更请求、影响分析、发布审计是仓库里的正式流程，而非口头约定。
 
@@ -73,13 +73,13 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 3.8.0 |
-| 工作区 Schema | 0.13.0 |
+| Skill 版本 | 3.9.0 |
+| 工作区 Schema | 0.14.0 |
 | 规则文件 | 22 份 |
-| 文档模板 | 36 个 |
-| 回归用例 | 390 个 |
+| 文档模板 | 35 个 |
+| 回归用例 | 443 个 |
 
-发布产物：`ChronoPM-Project-Skill-v3.8.0.zip` + `ChronoPM-Portfolio-Skill-v3.8.0.zip`。
+发布产物：`ChronoPM-Project-Skill-v3.9.0.zip` + `ChronoPM-Portfolio-Skill-v3.9.0.zip`。
 
 升级日志：[ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 

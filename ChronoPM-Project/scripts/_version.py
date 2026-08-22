@@ -22,7 +22,7 @@ CHANGELOG）由发布流程统一同步，禁止遗漏。
 """
 
 # Skill 本体版本（发布时统一 bump）
-SKILL_VERSION = "3.8.0"
+SKILL_VERSION = "3.9.0"
 
 # 工作区目录结构 Schema 版本（CR-20260811-002 → 0.6.0；CR-20260813-001 → 0.7.0 跨源需求归集；
 # CR-20260813-002 → 0.8.0 合同作用域 RI，新增 portfolio/requirements + contract-register；
@@ -31,5 +31,6 @@ SKILL_VERSION = "3.8.0"
 # 0.10.0 = 新增 wps/ 独立 WP 目录 + _index.md；
 # 0.11.0 = 新增 requirements/sources/ 文档级拆解目录 + _index.md；
 # 0.12.0 = parse-log + 可选 atoms/facts 分片；废 entity-registry；风险/问题登记册新结构；
-# 0.13.0 = 各项目 ai/backup/ 空目录；人员事实源改待办+_index）
-WORKSPACE_SCHEMA_VERSION = "0.13.0"
+# 0.13.0 = 各项目 ai/backup/ 空目录；人员事实源改待办+_index；
+# 0.14.0 = pm-decisions 取代 pending-changes；需求索引；WP 待确认；关联处理记录）
+WORKSPACE_SCHEMA_VERSION = "0.14.0"
