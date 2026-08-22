@@ -14,7 +14,7 @@
 
 禁止行为（发现即停止该动作并改输出内部 V-9；对外白话，不对用户说「建议更新清单」）：
 
-1. 改成员项目 todos（含 `_index.md` / 个人待办）/ PLAN / risk-register / issue-register / resource-register / transfer-log / contract-register / pending-changes / 日报周报原文。
+1. 改成员项目 todos（含 `_index.md` / 个人待办）/ PLAN / risk-register / issue-register / resource-register / transfer-log / contract-register / pm-decisions / 日报周报原文。
 2. 在成员项目 `ai/` 内建文件「方便汇总」。
 3. 把集层聚合结果写回成员项目。
 4. 代写他项目待办（含镜像、抄送、同步完成状态）。

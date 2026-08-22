@@ -55,4 +55,4 @@ stale_after: YYYY-MM-DD
 
 ## 执行说明
 
-请到各目标项目的 ChronoPM-Project 对话，携带对应行执行。本包不跟踪成员项目 pending-changes；回访时重新实时读取验证。
+请到各目标项目的 ChronoPM-Project 对话，携带对应行执行。本包不跟踪成员项目 pm-decisions；回访时重新实时读取验证。

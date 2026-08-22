@@ -24,6 +24,10 @@ The whole system rests on three commitments; everything else follows from them:
 2. **The AI drafts; you approve.** Mention a new requirement, a risk, or a staffing change, and the AI catches it and files it. But operations that change the record — marking done, closing, deleting — take effect only after your confirmation, with every change logged.
 3. **Handover is a folder.** All management activity lives inside the project's own `ai/` directory and never touches your deliverables. Hand that folder to the AI, and the next PM picks up right where you left off.
 
+## How the pieces connect
+
+Module flow diagrams (person → AI → which file → whether you decide): [ChronoPM-Project/SKILL_MODULE_MAP.md](ChronoPM-Project/SKILL_MODULE_MAP.md)
+
 ## Just talk to it
 
 | You say | It does |
