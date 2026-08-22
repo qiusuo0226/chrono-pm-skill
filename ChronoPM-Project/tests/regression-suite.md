@@ -29,7 +29,7 @@
 | DR-003 | 同人同天第二次提交汇报 | 合并追加到同一待办文件工作日志段，不覆盖，追加合并记录 | regression |
 | DR-004 | 汇报中包含"担心接口延期" | 识别为风险候选，输出在自查清单中 | positive |
 | DR-005 | 汇报中包含"请假" | 触发资源变动检测，提示更新花名册（`_index` §1）/ 待办 §0.5，不写 resource-register | positive |
-| DR-006 | 汇报中包含明日计划 | 提取为待办，经 WF-8 归属判定落待办文件 + 更新绑定文件 | positive |
+| DR-006 | 汇报中包含明日计划 | 只写入当天日报原文；不建未来日目录；不在当日落成待办行 | positive |
 | DR-007 | 处理日报后 | 执行 D1-D16 自查清单并输出结果 | regression |
 | DR-008 | 日报文件路径 | 使用 `YYYYMM` 单级目录，不使用 `YYYY/MM` | regression |
 
@@ -470,7 +470,7 @@
 | BS-018 | "给王五加个待办：调研竞品"（有 Owner+Deadline 但无 WP 命中） | 判定独立任务 → 落待办文件（WP Ref: none）；禁止只写绑定文件 | positive |
 | BS-019 | 归属证据不足（两个 WP 均语义近似命中） | 置信度阈值生效：必须追问 PM 确认归属，不得静默落库或自行拍板 | negative |
 | BS-020 | 14号自查执行 | D15 检出待办文件 WP Ref 完整性异常（指向不存在/缺失的 WP）→ 报不一致并走 WF-8 补落 | regression |
-| BS-021 | 日报"明日计划"含正式任务 | 01号 §5.6：走 WF-8 归属后落待办文件 + 更新绑定文件；v2.0.0 起不生成前向快照 | positive |
+| BS-021 | 日报"明日计划"含正式任务 | 只进当天原文；次日第一次写待办时才建；禁止当日落未来日待办 | positive |
 | BS-022 | 会议纪要行动项"李四 8/20 前完成环境部署" | 02号 §2/§3：MANDATORY 落待办文件 + WF-8 归属填 WP Ref，不再是建议级 | positive |
 | BS-023 | 纪要行动项缺负责人/截止日 | 入 pending-changes 未排期待办区块标"待确认"（02号 §2.2 既有规则保持），不强制落待办文件 | regression |
 | BS-024 | 待办状态更新（WF-1 场景） | 走 §8.1 状态级联，不误入 WF-8 创建流程；触发源拆分语义自洽 | regression |
@@ -597,7 +597,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | TD-001 | 为两人创建同一件事的待办 | §1.3 双向写入关联待办编号 | positive |
-| TD-002 | 将 TD-A 标已完成且有关联 TD-B | SUGGEST 同步 + pending；禁止 AUTO 改 TD-B | positive |
+| TD-002 | 将 TD-A 标已完成且有关联 TD-B | 无处理方式：问一次并写入决策文件；有处理方式：AUTO 完结，不问 | positive |
 | TD-003 | 存量待办无关联待办列 | 按无关联处理，仍输出已检查 | regression |
 
 
@@ -742,7 +742,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| PC-001 | 对外确认输出 | 对外不说「建议更新清单」；说人话；路径/编号不对用户甩 | regression |
+| PC-001 | 对外确认/处理汇报 | 对外不说「建议更新清单」；处理类列出改动文件路径；禁止章节号 §2/§3 | regression |
 | PC-002 | 待办进度标 100% | 进度 100% 必须已完成（状态同步落已完成；正文「收尾」不回退） | positive |
 | PC-003 | 日报明日计划指向未来日 | 禁止建 `todos/{date>今天}/` 目录或未来日待办行；只写入当天个人 §2 | regression |
 | PC-004 | 碰今天任一待办 md 或今天 index，且今日结转未完成 | 创建契机先按 §1 全员 Step 0，再建/改点名的人 | positive |
@@ -752,6 +752,65 @@
 | PC-008 | 查某人能效/成本损耗 | 最新文件 §0.6 按日并置同日 §1/§3；不伪造任务分摊；不与 budget 混 | positive |
 | PC-009 | 补录历史能耗 | 只写该人最新文件 §0.6；历史回填不建空日目录 | regression |
 | PC-010 | 待办状态枚举 | 待办状态无「待评审」（评审是独立待办） | positive |
+
+
+## 58. v3.9.0 过程日志 / 分片 / 映射 / 需求链路 / 打包
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| OL-001 | 拆解一步结束 | logs/ops/ 已有该步行，即使后续失败 | positive |
+| OL-002 | 无 token 接口 | 写「未知」不编造 | regression |
+| OL-003 | 字段抽空 | 表 B 有行，摘录 ≤80 字 | positive |
+| OL-004 | 当天文件超 300 行 | 拆 YYYY-MM-DD-p2.md，index 加一行；不得直接进月归档 | regression |
+| OL-005 | 跨月 | 上月整包进 logs/archive/YYYYMM-ops.md | regression |
+| SH-001 | 两人日报并行 | 双方只写自己的 inbox；_index 仅收尾重建当日参与 | positive |
+| SH-002 | 工人写 _index 或 {owner}.md | 失败 / 回归禁止 | regression |
+| SH-003 | 大文档两片 | 不一次全量；各写 part 文件 | positive |
+| SH-004 | 同人同日第二份（同一 agent） | 经 inbox 按 §1.3 合并追加 | regression |
+| SH-005 | 两 agent 同时投同一人 | 一天仍一份 {owner}.md；收尾 inbox 无稿无 claim | regression |
+| SH-006 | 两 run 同时 C' | 仅第一者写 {owner}.md；无稿则中止；非第一者删自己的 claim | regression |
+| SH-007 | 遗留稿 + 孤儿 claim | C' 全目录接管；冲突重试 3 次；不向人 ASK | regression |
+| SH-008 | 实读之后又新投一份 | 只删实读清单；新文件下一轮才合 | regression |
+| SH-009 | 巡检发现残留稿 | AUTO 跑 C'；不建 pending、不删未合并稿 | regression |
+| MP-001 | 日报进展对不上已有待办且够正式 | 自动新建待办；列出新建了哪条；不 ASK | positive |
+| MP-002 | 日报只有「熟悉了一下」 | 不新建待办 | regression |
+| MP-003 | 喂了花名册没有的人的日报 | 自动建个人文件+花名册；岗位待补全 | positive |
+| MP-004 | 「给某某加个待办」而此人不在册 | 自动建人+待办 | positive |
+| MP-005 | 日报提到「配合了李四」，李四未入册 | 不自动为李四入册 | regression |
+| MP-006 | 他项目进展 | 不在本项目新建待办/入册 | regression |
+| MP-007 | 新建风险，责任人未入册且无跟踪待办 | 自动建人+跟踪待办；不给 PM 另建 | positive |
+| MP-008 | 责任人已入册且已有关联本条开放待办 | 不重复建人、不重复建待办 | regression |
+| MP-009 | 责任人已入册但无跟踪本条 | 只建跟踪待办 | positive |
+| MP-010 | P-N3 自动建跟踪待办后 | 当日该人 md 仍唯一；花名册与人员信息一致 | regression |
+| RQ-001 | 投喂合同拆出需求 | 只写入需求清单（未确认）；不创建待办 | positive |
+| RQ-002 | 一条已确认需求绑两个 WP | 需求工作包列含两个编号 | positive |
+| RQ-003 | 未确认需求被拿去拆待办 | 拒绝；进决策文件需求未确认 | regression |
+| RQ-004 | 需求来源 | 同时有文件、章节、页码 | positive |
+| WP-001 | 无任何需求编号要新建 WP | 禁止建包；进决策文件 | regression |
+| WP-002 | 待确认 WP 拆待办 | 拒绝 | regression |
+| WP-003 | 三条小需求绑同一个 WP | 合法 | positive |
+| WP-004 | 一条大需求绑三个 WP | 合法 | positive |
+| WP-005 | PM 确认待确认 WP | 状态→已规划，此后允许拆待办 | positive |
+| PD-001 | 行动项缺负责人 | 不落待办；决策文件块 6 有行 | positive |
+| PD-002 | 已确认需求未绑 WP | 决策文件块 2 有行 | positive |
+| PD-003 | 升级时旧 pending-changes 有未结项 | 全部出现在新决策文件；旧文件在 backup；无丢行 | regression |
+| PD-004 | 决策记录 | 有裁定摘要与对象编号；没有对话原文整段 | regression |
+| LK-001 | PM 已说张三办结自动完结李四 | 张三办结时李四 AUTO；不问 | positive |
+| LK-002 | 只建了关联、没说处理方式 | 办结时问一次 | regression |
+| PL-001 | 日报处理回复 | 正文无 §2、§3、Target File、建议更新清单 | regression |
+| PL-002 | 处理完一批日报 | 主动列出改动文件路径，不含章节号 | positive |
+| PL-003 | 集层处理汇报 | 给文件、不给章节 | regression |
+| PL-004 | 计划正文 | 只有工作包引用行，没有待办编号行 | regression |
+| PL-005 | PM 确认倒排计划 | 写 WP+计划简表；不按人员×日期灌待办 | regression |
+| PK-001 | dry-run Project zip | 无 tests/BLUEPRINT/16/MODULE_MAP；有 source-split 规则与四模板；该目录无 SKILL.md | regression |
+| PK-002 | zip 内有 references 无 SKILL.md 的子树 | 仅当主 SKILL 未引用时 FAIL；source-split 被拆解路由引用则合法 | regression |
+| CL-005 | VERSION=3.8.0 且 baselines/3.8.0 存在时若存在 upgrade-plan-v3.8.0.md | audit 非 0 | regression |
+| CL-006 | 同时存在无基线的 3.9.0 与 3.10.0 两份 AP | audit 非 0 | regression |
+| SS-001 | 源文档拆解场景 | 加载 split-rules.md；日报场景不加载 | regression |
+| SS-002 | zip / 开发仓 | source-split 无 SKILL.md；有 CAPABILITY.md + 四模板 | regression |
+| TM-001 | migrate 现行模板 | 工作区 daily-todo 与 Skill 包 headings 一致（覆盖） | regression |
+| TM-002 | 新建个人待办 | 不得用昨天文件的旧节顶替 | regression |
+| TM-003 | 无模板类型 | 禁止新建 milestones/milestone-board.md | regression |
 
 
 ## 回归用例统计
@@ -815,4 +874,5 @@
 | Entity Registry Retired (ER) | 7 | 4 | 3 |
 | Risk Issue Restructure (RJ) | 10 | 7 | 3 |
 | v3.8.0 Personnel/Confirm/Cost (PC) | 10 | 6 | 4 |
-| **合计** | **390** | **246** | **144** |
+| v3.9.0 过程日志/分片/映射/需求链路/打包 | 53 | 19 | 34 |
+| **合计** | **443** | **265** | **178** |
