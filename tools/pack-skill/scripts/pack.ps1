@@ -93,6 +93,15 @@ if (-not $brandName) {
 }
 
 Write-Host "Detected: $skillName ($brandName) v$version at $SkillRoot"
+Write-Host ""
+Write-Host "有意排除（产品化裁剪，不是 bug）"
+Write-Host "| 路径 | 理由 |"
+Write-Host "|---|---|"
+Write-Host "| tests/ | 开发者回归套件，运行时不加载 |"
+Write-Host "| SKILL_BLUEPRINT.md | 开发者架构审查，不进发行包 |"
+Write-Host "| references/16-skill-governance-rules.md | Skill 自身变更治理，开发者侧 |"
+Write-Host "| SKILL_MODULE_MAP.md | 给人看的模块图，不进发行包 |"
+Write-Host "不排除：source-split-skill/（能力目录，必须进包；目录内禁止 SKILL.md）"
 
 # ── Exclusion rules ───────────────────────────────────────
 # Directory names to always exclude (matched anywhere in path)
@@ -126,15 +135,23 @@ $excludeExts = @(".pyc", ".pyo")
 # File names to exclude
 $excludeFiles = @(
     ".DS_Store", "Thumbs.db", ".gitignore",
-    "SKILL_BLUEPRINT.md"  # Architecture review doc — developer-side, not needed by PM users
+    "SKILL_BLUEPRINT.md",   # Architecture review doc — developer-side, not needed by PM users
+    "SKILL_MODULE_MAP.md"   # 给人看的模块图，不进发行包
 )
 
 # Specific file paths to exclude (matched by normalized relative path)
 # Customize per project: these are ChronoPM-specific governance artifacts
 $excludeFilePaths = @(
-    "references/16-skill-governance-rules.md",  # Skill self-governance rules — developer-side process
-    "source-split-skill/SKILL.md"  # 清单性文件，防宿主递归发现成第二 Skill
+    "references/16-skill-governance-rules.md"  # Skill self-governance rules — developer-side process
 )
+
+# === 有意排除清单 BEGIN ===
+# tests/|开发者回归套件，运行时不加载
+# SKILL_BLUEPRINT.md|开发者架构审查，不进发行包
+# references/16-skill-governance-rules.md|Skill 自身变更治理，开发者侧
+# SKILL_MODULE_MAP.md|给人看的模块图，不进发行包
+# === 有意排除清单 END ===
+# 不排除：source-split-skill/（能力目录，必须进包；禁止列入 excludeDirs；目录内禁止 SKILL.md）
 
 # ── Test function ─────────────────────────────────────────
 function Test-Excluded {

@@ -7,7 +7,7 @@
 对应 governance/review-checklists/release-checklist.md 中"机器可判"检查项的
 自动化兜底。任一断言失败 → 退出码非零 → 禁止发布。
 
-断言清单（12 条）：
+断言清单：
     1. 版本六触点一致：_version.py / VERSION / skill.json version /
        SKILL.md frontmatter / README.md 标题+版本表 / README.en.md 标题+版本表
     2. skill.json blueprint.lastVersion == VERSION
@@ -28,9 +28,14 @@
        比对 README×2 与 BLUEPRINT §1 中标注的数字
    13. 双包一致性（v3.0.0 G-2）：ChronoPM-Portfolio 伴生包版本/命名/模式
        与主包一致 + 基线含双包快照
-   14. 升级残留（警告，不阻断）：上一版 upgrade-plan-v*.md；
-       planning/ 除 README.md 以外的方案草稿
-   15. 汇总：失败退出码非零；警告仍允许发布
+   14. 升级残留（阻断）：baselines/{v} 仍留 upgrade-plan-v{v}.md → FAIL；
+       高于当前 VERSION 且无基线的在研 AP 至多 1；更低版本无基线 FAIL
+   15. 模拟 pack：不得含 tests/**、SKILL_BLUEPRINT.md、16-skill-governance、
+       SKILL_MODULE_MAP.md；必须含 source-split 规则+四模板；
+       除包根外禁止 SKILL.md
+   16. 有 references 无 SKILL.md：仅当主 SKILL 未路由到该子树才 FAIL
+   17. ops / parse-log 模板单表 ≤7 列
+   18. 汇总：失败退出码非零；警告仍允许发布
 
 本脚本只读，不修改任何文件。
 """
@@ -107,6 +112,48 @@ def pack_exclusions() -> dict:
 
 def norm(rel: str) -> str:
     return rel.replace("\\", "/")
+
+
+def _ver_tuple(v: str):
+    parts = []
+    for x in re.split(r"[^\d]+", v or ""):
+        if x:
+            parts.append(int(x))
+    return tuple(parts)
+
+
+def _ver_cmp(a: str, b: str) -> int:
+    ta, tb = _ver_tuple(a), _ver_tuple(b)
+    n = max(len(ta), len(tb))
+    ta = ta + (0,) * (n - len(ta))
+    tb = tb + (0,) * (n - len(tb))
+    return (ta > tb) - (ta < tb)
+
+
+def simulated_pack_rels(skill_root: Path, ex: dict):
+    """Yield pack-relative paths as if packing skill_root with pack.ps1 rules."""
+    skip_dirs = {".git", "__pycache__", ".idea", ".qoder", "node_modules"}
+    for p in skill_root.rglob("*"):
+        if not p.is_file():
+            continue
+        rel = norm(str(p.relative_to(skill_root)))
+        if any(part in skip_dirs for part in rel.split("/")):
+            continue
+        if is_retained(rel, ex):
+            yield rel
+
+
+def table_separator_col_counts(text: str):
+    """Count columns from markdown table separator rows (|---|---|)."""
+    counts = []
+    for line in text.splitlines():
+        s = line.strip()
+        if not s.startswith("|"):
+            continue
+        cells = s.strip("|").split("|")
+        if cells and all(re.fullmatch(r"\s*:?-+:?\s*", c) for c in cells):
+            counts.append(len(cells))
+    return counts
 
 
 def is_retained(rel: str, ex: dict) -> bool:
@@ -358,33 +405,126 @@ def main() -> int:
         "; ".join(dual_bad) or f"双包均 {version}，命名/模式/双基线齐备",
     )
 
-    # 14. 升级残留（警告，不阻断）——需求四：别再留下已落地的 AP / planning 草稿
-    leftover_ap = []
+    # 14. 升级残留（阻断）：有基线仍留该版 AP → FAIL；在研 AP 至多 1
+    ap_fail = []
+    in_progress = []
     for p in sorted(SHARED.glob("upgrade-plan-v*.md")):
         m = re.search(r"upgrade-plan-v(.+)\.md$", p.name)
         ver = m.group(1) if m else ""
-        if ver != version:
-            leftover_ap.append(p.name)
-    planning_dir = SHARED / "planning"
-    leftover_plan = []
-    if planning_dir.is_dir():
-        leftover_plan = sorted(
-            x.name
-            for x in planning_dir.glob("*.md")
-            if x.name.lower() != "readme.md"
-        )
-    warn_bits = []
-    if leftover_ap:
-        warn_bits.append("上一版AP=" + ",".join(leftover_ap))
-    if leftover_plan:
-        warn_bits.append("planning草稿=" + ",".join(leftover_plan))
-    warn_check(
-        "14. 升级残留（警告，不阻断）：上一版 AP / planning 草稿",
-        not leftover_ap and not leftover_plan,
-        "; ".join(warn_bits) or f"无上一版 AP；planning/ 仅允许 README（当前 {version} 的 AP 可留待检查）",
+        if not ver:
+            ap_fail.append(p.name)
+            continue
+        has_baseline = (SHARED / "baselines" / ver).is_dir()
+        if has_baseline:
+            ap_fail.append(f"baselines/{ver} 仍留 {p.name}")
+        elif _ver_cmp(ver, version) >= 0:
+            in_progress.append(p.name)
+        else:
+            ap_fail.append(f"更低版本无基线 {p.name}")
+    if len(in_progress) > 1:
+        ap_fail.append("在研 AP 超过 1 份: " + ",".join(in_progress))
+    check(
+        "14. 升级残留 AP（有基线仍留 / 在研至多 1 / 低版本无基线）",
+        not ap_fail,
+        "; ".join(ap_fail) or (
+            f"在研 AP={in_progress[0]}" if in_progress else "无残留 AP"
+        ),
     )
 
-    # 15. 汇总
+    # 15. 模拟 pack：排除集 + 必含 source-split + 除根外禁止 SKILL.md
+    packed = list(simulated_pack_rels(PROJECT, ex))
+    packed_set = set(packed)
+    pack_fail = []
+    forbidden = []
+    for rel in packed:
+        if rel == "SKILL_BLUEPRINT.md" or rel.endswith("/SKILL_BLUEPRINT.md"):
+            forbidden.append(rel)
+        elif rel == "SKILL_MODULE_MAP.md" or rel.endswith("/SKILL_MODULE_MAP.md"):
+            forbidden.append(rel)
+        elif rel == "references/16-skill-governance-rules.md":
+            forbidden.append(rel)
+        elif rel.startswith("tests/") or rel == "tests":
+            forbidden.append(rel)
+    if forbidden:
+        pack_fail.append("不得含=" + ",".join(forbidden[:8]))
+    required = [
+        "source-split-skill/references/split-rules.md",
+        "source-split-skill/assets/templates/source-doc-meta-template.md",
+        "source-split-skill/assets/templates/source-index-template.md",
+        "source-split-skill/assets/templates/source-parse-log-template.md",
+        "source-split-skill/assets/templates/source-atoms-index-template.md",
+    ]
+    missing_req = [r for r in required if r not in packed_set]
+    if missing_req:
+        pack_fail.append("缺=" + ",".join(missing_req))
+    nested_skill = [r for r in packed if r.endswith("SKILL.md") and r != "SKILL.md"]
+    if nested_skill:
+        pack_fail.append("嵌套SKILL.md=" + ",".join(nested_skill))
+    check(
+        "15. 模拟 pack（排除 tests/BLUEPRINT/16/MODULE_MAP；含 source-split；无嵌套 SKILL.md）",
+        not pack_fail,
+        "; ".join(pack_fail) or f"保留 {len(packed)} 个文件",
+    )
+
+    # 16. 有 references 无 SKILL.md：仅当主 SKILL 未路由到该子树才 FAIL
+    skill_md_text = skill_md
+    orphan_fail = []
+    for refs_dir in PROJECT.rglob("references"):
+        if not refs_dir.is_dir():
+            continue
+        subtree = refs_dir.parent
+        if subtree == PROJECT:
+            continue
+        rel_sub = norm(str(subtree.relative_to(PROJECT)))
+        has_skill = (subtree / "SKILL.md").is_file()
+        if has_skill:
+            continue
+        if rel_sub not in skill_md_text and f"{rel_sub}/" not in skill_md_text:
+            orphan_fail.append(rel_sub)
+    check(
+        "16. 有 references 无 SKILL.md（主 SKILL 未路由才 FAIL）",
+        not orphan_fail,
+        "; ".join(orphan_fail) or "无未路由孤儿子树",
+    )
+
+    # 17. ops / parse-log 模板单表 ≤7 列
+    col_fail = []
+    col_targets = [
+        PROJECT / "assets" / "templates" / "ops-log-template.md",
+        PROJECT / "assets" / "templates" / "ops-log-index-template.md",
+        PROJECT / "assets" / "templates" / "source-parse-log-template.md",
+        PROJECT / "source-split-skill" / "assets" / "templates" / "source-parse-log-template.md",
+        PROJECT / "assets" / "templates" / "pm-decisions-template.md",
+        PROJECT / "assets" / "templates" / "requirement-index-template.md",
+    ]
+    seen = set()
+    for path in col_targets:
+        if not path.is_file():
+            continue
+        key = path.resolve()
+        if key in seen:
+            continue
+        seen.add(key)
+        counts = table_separator_col_counts(read(path))
+        over = [c for c in counts if c > 7]
+        if over:
+            col_fail.append(f"{path.relative_to(PROJECT).as_posix()} 列={over}")
+    parse_log_exists = (
+        (PROJECT / "assets" / "templates" / "source-parse-log-template.md").is_file()
+        or (PROJECT / "source-split-skill" / "assets" / "templates" / "source-parse-log-template.md").is_file()
+    )
+    ops_exists = (PROJECT / "assets" / "templates" / "ops-log-template.md").is_file()
+    if not parse_log_exists:
+        col_fail.append("缺 source-parse-log-template.md")
+    if not ops_exists:
+        col_fail.append("缺 ops-log-template.md")
+    check(
+        "17. ops/parse-log 模板单表 ≤7 列",
+        not col_fail,
+        "; ".join(col_fail) or "全部 ≤7",
+    )
+
+    # 18. 汇总
     print()
     if FAILURES:
         print(f"== 审计失败：{len(FAILURES)} 类断言未通过，禁止发布 ==")

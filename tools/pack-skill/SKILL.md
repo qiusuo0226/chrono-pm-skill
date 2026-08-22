@@ -85,8 +85,11 @@ python tools/pack-skill/scripts/pack.py --skill-root <path> --dry-run
 | 测试 | `tests/`（如存在） |
 | 架构文档 | `SKILL_BLUEPRINT.md`（开发者侧架构审查文档） |
 | 治理规则 | `references/16-skill-governance-rules.md`（Skill 自身变更治理规则，开发者侧） |
+| 模块图 | `SKILL_MODULE_MAP.md`（给人看的链路图，不进发行包） |
 | 伴生包 | `ChronoPM-Portfolio/`（仓库根打 Project 包时排除；伴生包自动单独打第二个 zip，v3.0.0 G-3） |
 
+> **缺 `tests/`、`SKILL_BLUEPRINT.md`、`references/16-skill-governance-rules.md`、`SKILL_MODULE_MAP.md` 不是 bug**——这是产品化裁剪。打包脚本会打印「有意排除」表。
+> `source-split-skill/` **必须进包**（能力目录，不是第二个 Skill）。包内除根 `SKILL.md` 外禁止再有 `SKILL.md`。不要把该目录列入 `excludeDirs`。
 > `governance/` 默认整目录排除，但 `governance/contracts/skill-contract.md`（核心契约）例外放行——因为 `references/` 中 7 个运行时规则文件引用了它第 5 条。
 > `SKILL_BLUEPRINT.md` 和 `references/16-skill-governance-rules.md` 是开发者侧架构/治理文档，PM 使用者运行时不需要。
 > `tests/` 是"如存在则排除"，不是所有 Skill 都有。

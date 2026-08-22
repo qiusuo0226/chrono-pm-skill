@@ -32,7 +32,11 @@ from pathlib import Path
 # 避免在迁移脚本内硬编码版本字符串造成与 Skill 本体版本失步。
 from _version import SKILL_VERSION as CURRENT_SKILL_VERSION
 from _version import WORKSPACE_SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from chronopm_init.config import ALL_TEMPLATE_FILES
+from chronopm_init.config import (
+    ALL_TEMPLATE_FILES,
+    RETIRED_TEMPLATE_FILES,
+    resolve_template_path,
+)
 from chronopm_init.file_registry import create_outputs_dir
 
 # ============================================================
@@ -647,6 +651,20 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.8.0（schema 0.12.0→0.13.0）：空 backup/；人员事实源改待办+_index。脚本只建空 backup/ + 升 schema，不改待办、不搬业务文件。分类清单由 AI 出、PM 确认后搬。详见 upgrade-to-3.8.0.md。",
     },
+    {
+        "version": "3.9.0",
+        "schema": "0.14.0",
+        "capabilities": [
+            "pm_decisions",
+            "requirement_index",
+            "ops_log_lazy",
+            "wp_pending_confirm",
+            "linked_todo_policy",
+        ],
+        "new_dirs": [],
+        "new_files": ["requirements/_index.md"],
+        "note": "v3.9.0（schema 0.13.0→0.14.0）：pending-changes 全文迁 pm-decisions（懒建、不预建空文件）；需求索引；ops 日志懒建。sync_templates 覆盖同步现行模板；退役模板建议搬 backup。详见 upgrade-to-3.9.0.md。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -820,7 +838,11 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
 
         template_name = template_map.get(template_key)
         if template_name:
-            src = templates_dir / template_name
+            src = resolve_template_path(template_name)
+            if not src.exists() and templates_dir:
+                fallback = templates_dir / template_name
+                if fallback.exists():
+                    src = fallback
             if src.exists():
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, target)
@@ -1325,39 +1347,280 @@ def detect_project_name(workspace_root: Path) -> str:
     return workspace_root.name
 
 
-def sync_templates(ai_dir: Path, dry_run: bool = False):
-    """同步 Skill 包模板到工作区（只补不覆盖）。
+def _extract_md_section(text: str, title_substr: str) -> str:
+    """按二级标题截取一节正文（不含标题行）。匹配失败返回空串。"""
+    pattern = re.compile(
+        r"^##[^\n]*" + re.escape(title_substr) + r"[^\n]*\n(.*?)(?=^## |\Z)",
+        re.M | re.S,
+    )
+    m = pattern.search(text)
+    return m.group(1).strip() if m else ""
 
-    与 init 的差异：init 面对全新目录（无需 dst 存在性守卫），
-    migrate 面对已有工作区，使用 if not dst.exists() 守卫保护用户自定义内容。
-    复用 ALL_TEMPLATE_FILES 单一事实源（chronopm_init/config.py），
-    未来新增模板只需更新 config.py，migrate 自动覆盖，无需双重维护。
+
+def _build_pm_decisions_from_pending(old_text: str, today: str) -> str:
+    """把 pending-changes 正文尽量映射进 pm-decisions 八块；映射失败的原文整段保留。"""
+    already = _extract_md_section(old_text, "已经写了等点头")
+    not_yet = _extract_md_section(old_text, "还没写等准许")
+    accepted = _extract_md_section(old_text, "已经认过的")
+    rejected = _extract_md_section(old_text, "不认的")
+    leftover_bits = []
+    mapped_keys = ("已经写了等点头", "还没写等准许", "已经认过的", "不认的", "还有几件")
+    for m in re.finditer(r"^##[^\n]*\n(.*?)(?=^## |\Z)", old_text, re.M | re.S):
+        heading = m.group(0).splitlines()[0]
+        if any(k in heading for k in mapped_keys):
+            continue
+        body = m.group(1).strip()
+        if body:
+            leftover_bits.append(m.group(0).strip())
+
+    if not any([already, not_yet, accepted, rejected]):
+        leftover_bits = [old_text.strip()]
+
+    empty_table_6 = (
+        "| 需求编号 | 标题 | 缺口 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_bind = (
+        "| 需求编号 | 标题 | 确认状态 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_wp = (
+        "| WP 编号 | 名称 | 关联需求 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_wp4 = (
+        "| WP 编号 | 名称 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    empty_td = (
+        "| 待办编号 | 标题 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    empty_link = (
+        "| 本单 TD | 关联 TD | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    leftover_md = "\n\n".join(leftover_bits).strip()
+    if leftover_md:
+        leftover_block = (
+            "\n\n### 迁移原文（3.9.0 从 pending-changes 迁入，禁止删行）\n\n"
+            + leftover_md
+            + "\n"
+        )
+    else:
+        leftover_block = ""
+
+    already_body = already or (
+        "| 序号 | 类型 | 改了什么 | 原来 | 现在 | 何时记下 | 出处 |\n"
+        "|---|---|---|---|---|---|---|\n"
+    )
+    not_yet_body = not_yet or (
+        "| 序号 | 类型 | 想做什么 | 现在 | 打算改成 | 何时提出 | 出处 |\n"
+        "|---|---|---|---|---|---|---|\n"
+    )
+    accepted_body = accepted or (
+        "| 序号 | 出处 | 改了什么 | 最终值 | 谁点的头 | 何时认 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    rejected_body = rejected or (
+        "| 序号 | 出处 | 改了什么 | 为啥不认 | 谁驳的 | 何时驳 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+
+    # 禁止 f-string 插入用户原文（可能含 {date} 等花括号）
+    parts = [
+        "---",
+        "doc_type: pm-decisions",
+        "migrated_from: pending-changes",
+        "migrated_at: " + today,
+        "---",
+        "",
+        "# 等你裁定的事项",
+        "",
+        "> 3.9.0 由 pending-changes 迁入。旧表映射进第 8 块；映射不上的原文整段保留在「迁移原文」，禁止删行。",
+        "",
+        "- 最后更新：" + today,
+        "",
+        "## 还有几件等你裁定",
+        "",
+        "- 合计：见下方各块（迁移后请重数开放行）",
+        "- 需求未确认：0",
+        "- 需求未绑定工作包：0",
+        "- 工作包待确认：0",
+        "- 已规划工作包无待办：0",
+        "- 待办未绑定工作包：0",
+        "- 待办缺负责人：0",
+        "- 关联待办缺处理方式：0",
+        "- 其他待裁定：见第 8 块",
+        "",
+        "## 1. 需求未确认",
+        "",
+        empty_table_6.rstrip(),
+        "",
+        "## 2. 需求未绑定工作包",
+        "",
+        empty_bind.rstrip(),
+        "",
+        "## 3. 工作包待确认",
+        "",
+        empty_wp.rstrip(),
+        "",
+        "## 4. 已规划工作包无待办",
+        "",
+        empty_wp4.rstrip(),
+        "",
+        "## 5. 待办未绑定工作包",
+        "",
+        empty_td.rstrip(),
+        "",
+        "## 6. 待办缺负责人",
+        "",
+        empty_td.rstrip(),
+        "",
+        "## 7. 关联待办缺处理方式",
+        "",
+        empty_link.rstrip(),
+        "",
+        "## 8. 其他待裁定",
+        "",
+        "### 已经写了等点头",
+        "",
+        already_body.rstrip(),
+        "",
+        "### 还没写等准许",
+        "",
+        not_yet_body.rstrip(),
+        leftover_block.rstrip(),
+        "",
+        "## 决策记录",
+        "",
+        "| 时间 | 类型 | 对象编号 | 问句摘要 | 裁定 | 影响 |",
+        "|---|---|---|---|---|---|",
+        "",
+        "## 已经认过的（最近，供追溯）",
+        "",
+        accepted_body.rstrip(),
+        "",
+        "## 不认的记录（审计，不删除）",
+        "",
+        rejected_body.rstrip(),
+        "",
+    ]
+    return "\n".join(parts) + "\n"
+
+
+def migrate_pending_changes_to_pm_decisions(ai_dir: Path, dry_run: bool = False):
+    """pending-changes → pm-decisions；原件进 backup。缺文件跳过，不致命。"""
+    today = datetime.now().strftime("%Y-%m-%d")
+    jobs = [
+        (
+            ai_dir / "pending-changes.md",
+            ai_dir / "pm-decisions.md",
+            ai_dir / "backup" / f"pending-changes.md.{today}",
+        ),
+        (
+            ai_dir / "portfolio" / "pending-changes.md",
+            ai_dir / "portfolio" / "pm-decisions.md",
+            ai_dir / "backup" / f"portfolio-pending-changes.md.{today}",
+        ),
+    ]
+    actions = []
+    for src, dst, backup in jobs:
+        rel_src = src.relative_to(ai_dir).as_posix()
+        if not src.is_file():
+            actions.append(f"  跳过（无 {rel_src}）")
+            continue
+        try:
+            old_text = src.read_text(encoding="utf-8")
+        except OSError as e:
+            actions.append(f"  ⚠️ 读 {rel_src} 失败，跳过: {e}")
+            continue
+        new_text = _build_pm_decisions_from_pending(old_text, today)
+        if dry_run:
+            actions.append(f"  [dry-run] {rel_src} → {dst.relative_to(ai_dir).as_posix()} ；原件 → {backup.relative_to(ai_dir).as_posix()}")
+            continue
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if dst.is_file():
+            try:
+                existing = dst.read_text(encoding="utf-8")
+            except OSError:
+                existing = ""
+            dst.write_text(
+                existing.rstrip()
+                + "\n\n## 迁移原文（3.9.0 追加，禁止删行）\n\n"
+                + old_text
+                + "\n",
+                encoding="utf-8",
+            )
+            actions.append(f"  目标已存在，旧文追加到 {dst.relative_to(ai_dir).as_posix()}")
+        else:
+            dst.write_text(new_text, encoding="utf-8")
+            actions.append(f"  已写入 {dst.relative_to(ai_dir).as_posix()}（旧表映射进第 8 块）")
+        if backup.exists():
+            n = 2
+            while True:
+                alt = backup.with_name(backup.name + f".{n}")
+                if not alt.exists():
+                    backup = alt
+                    break
+                n += 1
+        shutil.move(str(src), str(backup))
+        actions.append(f"  原件已搬 {backup.relative_to(ai_dir).as_posix()}")
+    return actions
+
+
+def sync_templates(ai_dir: Path, dry_run: bool = False):
+    """覆盖同步 Skill 包现行模板到工作区。
+
+    模板权威 = Skill 包，工作区 ai/templates/ 只是给人看的副本。
+    退役模板（resource-register / transfer-log）不覆盖、建议搬 backup。
+    四份 source-* 走 resolve_template_path（能力目录优先）。
     """
-    templates_dir = get_templates_dir()
     missing = []
     synced = 0
 
-    # --- 1. 同步 ai/templates/ 参考模板库 ---
     target_dir = ai_dir / "templates"
     if not dry_run:
         target_dir.mkdir(parents=True, exist_ok=True)
 
     for name in ALL_TEMPLATE_FILES:
-        src = templates_dir / name
+        src = resolve_template_path(name)
         dst = target_dir / name
-        if not dst.exists():
-            if src.exists():
-                if dry_run:
-                    missing.append(f"templates/{name}")
-                else:
-                    shutil.copy2(src, dst)
-                    synced += 1
-            else:
-                print(f"  ⚠️ Skill 包模板不存在，跳过: {name}")
+        if not src.exists():
+            print(f"  ⚠️ Skill 包模板不存在，跳过: {name} ({src})")
+            continue
+        if dry_run:
+            flag = "覆盖" if dst.exists() else "新增"
+            missing.append(f"templates/{name} ({flag})")
+        else:
+            shutil.copy2(src, dst)
+            synced += 1
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    for name in RETIRED_TEMPLATE_FILES:
+        old = target_dir / name
+        if not old.exists():
+            continue
+        backup = ai_dir / "backup" / f"{name}.{today}"
+        print(f"  SUGGEST: 退役模板 {name} 应搬 backup，不再当现行")
+        if dry_run:
+            missing.append(f"templates/{name} (退役→backup)")
+        else:
+            backup.parent.mkdir(parents=True, exist_ok=True)
+            if backup.exists():
+                n = 2
+                while True:
+                    alt = backup.with_name(backup.name + f".{n}")
+                    if not alt.exists():
+                        backup = alt
+                        break
+                    n += 1
+            shutil.move(str(old), str(backup))
+            print(f"  已搬 {backup.relative_to(ai_dir).as_posix()}")
+            synced += 1
 
     # --- 2. 补齐 ai/outputs/.templates/manifest-template.md ---
-    # 与 init 的 create_outputs_dir 行为一致（写死内容生成，非复制模板文件）
-    # v2.1.0（D-8）：outputs/ 移入 ai/ 内
     outputs_dir = ai_dir / "outputs"
     manifest_path = outputs_dir / ".templates" / "manifest-template.md"
     if not manifest_path.exists():
@@ -1382,19 +1645,19 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
     print(f"ChronoPM 工作区迁移")
     print(f"{'='*60}")
 
-    # ★ 无条件模板同步（置于版本检查之前，确保版本已匹配但模板缺失的场景也能触发）
-    print(f"\n📋 检查模板完整性...")
+    # ★ 无条件模板覆盖同步（模板权威=Skill 包；退役模板建议搬 backup）
+    print(f"\n📋 覆盖同步现行模板...")
     missing_templates, synced_templates = sync_templates(ai_dir, dry_run)
     if missing_templates:
-        print(f"  缺失模板 ({len(missing_templates)} 个):")
+        print(f"  将同步模板 ({len(missing_templates)} 个):")
         for t in missing_templates:
-            print(f"    ✗ {t}")
+            print(f"    · {t}")
         if not dry_run:
-            print(f"  ⚠️ 上述模板将在正式迁移时补齐")
+            print(f"  ⚠️ 上述模板将在正式迁移时覆盖同步")
     elif synced_templates > 0:
-        print(f"  ✓ 已补齐 {synced_templates} 个模板")
+        print(f"  ✓ 已覆盖同步 {synced_templates} 个模板")
     else:
-        print(f"  ✓ 模板完整")
+        print(f"  ✓ 模板已与 Skill 包对齐")
 
     # 1. 读取当前版本
     ws_version = read_workspace_version(ai_dir)
@@ -1543,6 +1806,20 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
         print("禁止：代迁待办正文、按 N-30/31 批量改日期进度、灌历史工时表、建历史空日目录")
         print("根级 backup-* 位址豁免，只在 migration-log 记视为 backup")
         print(f"{'='*40}")
+
+    needs_v390 = _vcmp(skill_version, "3.9.0") >= 0 and (
+        current_ws_version == "unknown"
+        or _vcmp(current_ws_version, "3.9.0") < 0
+        or _vcmp(str(current_schema), "0.14.0") < 0
+    )
+    if needs_v390:
+        print(f"\n{'='*40}")
+        print("v3.9.0（schema 0.14.0）：覆盖同步现行模板；pending-changes 全文迁 pm-decisions。")
+        print("不预建 pm-decisions / logs/ops 空实例。无旧 pending 则跳过，不致命。")
+        print("详见 ChronoPM-Project/governance/migrations/upgrade-to-3.9.0.md")
+        print(f"{'='*40}")
+        for line in migrate_pending_changes_to_pm_decisions(ai_dir, dry_run):
+            print(line)
 
     if dry_run:
         print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")

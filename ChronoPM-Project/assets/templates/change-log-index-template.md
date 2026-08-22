@@ -25,4 +25,4 @@
 
 - 近 30 天 / 活跃区：读活跃 Change Log。
 - 历史：按月份定位 `change-log/archive/YYYYMM-change-log.md`，再按 Change ID 检索。
-- 待确认：见 `pending-changes.md`（本索引不重复登记 pending）。
+- 待确认：见 `pm-decisions.md`（本索引不重复登记等你裁定的事项）。

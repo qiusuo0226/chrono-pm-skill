@@ -2,7 +2,7 @@
 
 > 按月份归档的历史 Change Log 条目，由活跃区 Change Log 超过 50 行或超过 30 天时归档生成。
 > 路径：单项目 `change-log/archive/YYYYMM-change-log.md`，项目集 `ai/portfolio/change-log/archive/YYYYMM-change-log.md`。
-> 归档后须在 `change-log/index.md` 登记；待确认条目仍记入 `pending-changes.md`，不随归档丢失。
+> 归档后须在 `change-log/index.md` 登记；待确认条目仍记入 `pm-decisions.md`，不随归档丢失。
 > 维护规则见 `references/14-self-check-rules.md` §3.1（D12）。
 
 - Skill 版本：1.12.0

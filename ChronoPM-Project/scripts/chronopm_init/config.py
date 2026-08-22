@@ -120,6 +120,18 @@ project: "{name}"
 | WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 是否里程碑 | 关联需求 | 文件路径 |
 |---|---|---|---|---|---|---|---|
 """,
+    "requirements/_index.md": """---
+doc_type: requirement-index
+project: "{name}"
+---
+
+# 需求索引
+
+> 查找加速器，不是存在性判据。正文在 requirements/requirement-register.md。
+
+| Req ID | 标题 | 确认状态 | 生命周期 | 工作包 | 来源指针 | 优先级 |
+|---|---|---|---|---|---|---|
+""",
     "requirements/sources/_index.md": """---
 doc_type: source-index
 project: "{name}"
@@ -142,12 +154,16 @@ project: "{name}"
 # ChronoPM-Portfolio 包，Project 侧不再 init 复制（模板总数 35→33）。
 # v3.5.0：+ wp-template / wp-index-template（33→35）。
 # v3.6.0：+ source-doc-meta-template / source-index-template（35→37）。
+# v3.9.0：删 pending-changes-index；+ ops-log / ops-log-index / pm-decisions /
+# requirement-index。四份 source-* 拷贝源改能力目录（见 resolve_template_path）。
+# 不预建工作区 pm-decisions.md / logs/ops 实例（懒建）。
 ALL_TEMPLATE_FILES = [
     "weekly-report-template.md",
     "meeting-template.md",
     "risk-register-template.md",
     "issue-register-template.md",
     "requirement-register-template.md",
+    "requirement-index-template.md",
     "change-log-template.md",
     "change-log-index-template.md",
     "change-log-archive-template.md",
@@ -157,7 +173,9 @@ ALL_TEMPLATE_FILES = [
     "project-brief-template.md",
     "outputs-index-template.md",
     "output-manifest-template.md",
-    "pending-changes-index-template.md",
+    "pm-decisions-template.md",
+    "ops-log-template.md",
+    "ops-log-index-template.md",
     "plan-import-template.md",
     "project-lineage-template.md",
     "legacy-sources-template.md",
@@ -182,3 +200,42 @@ ALL_TEMPLATE_FILES = [
     # 已通过 *_FACT_SOURCE_FILES 实例化，按全量副本库口径纳入
     "source-type-registry-template.md",
 ]
+
+# 拆解四模板现行拷贝源：source-split-skill/assets/templates/
+# source-type-registry 仍在 Project assets/templates（来源类型配置，不是拆文件产物）
+SOURCE_SPLIT_TEMPLATE_FILES = frozenset({
+    "source-doc-meta-template.md",
+    "source-index-template.md",
+    "source-parse-log-template.md",
+    "source-atoms-index-template.md",
+})
+
+# 工作区副本里若仍有这两份，migrate 建议搬 backup，禁止当现行覆盖源
+RETIRED_TEMPLATE_FILES = (
+    "resource-register-template.md",
+    "transfer-log-template.md",
+)
+
+
+def skill_root() -> Path:
+    """ChronoPM-Project 根目录（本文件在 scripts/chronopm_init/）。"""
+    return Path(__file__).resolve().parent.parent.parent
+
+
+def resolve_template_path(name: str) -> Path:
+    """解析 Skill 包内模板路径。
+
+    四份 source-* 优先 source-split-skill/assets/templates/；
+    文件尚未迁入时回退 Project assets/templates/，避免施工窗口断链。
+    registry 等其余模板仍在 Project assets/templates。
+    """
+    root = skill_root()
+    project_templates = root / "assets" / "templates" / name
+    if name in SOURCE_SPLIT_TEMPLATE_FILES:
+        relocated = root / "source-split-skill" / "assets" / "templates" / name
+        if relocated.is_file():
+            return relocated
+        if project_templates.is_file():
+            return project_templates
+        return relocated
+    return project_templates

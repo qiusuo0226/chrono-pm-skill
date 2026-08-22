@@ -15,7 +15,7 @@
 
 ## 模板
 
-`source-doc-meta-template.md`、`source-index-template.md`、`source-parse-log-template.md`、`source-atoms-index-template.md`、`source-type-registry-template.md`
+四份拆解模板在 `source-split-skill/assets/templates/`：`source-doc-meta-template.md`、`source-index-template.md`、`source-parse-log-template.md`、`source-atoms-index-template.md`。`source-type-registry-template.md` **仍在** Project `assets/templates/`。
 
 ## 回归
 
@@ -26,4 +26,4 @@
 1. 将上表规则段抽出为本包 references。
 2. 模板随迁。
 3. ChronoPM-Project 保留 REQ/WP 交叉点指针。
-4. 本目录 `SKILL.md` 改为真正加载入口。
+4. 本目录当前禁止 `SKILL.md`。将来抽独立包时再补 SKILL.md 作加载入口。

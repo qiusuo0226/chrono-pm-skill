@@ -16,6 +16,7 @@ from .config import (
     SINGLE_FACT_SOURCE_FILES,
     SINGLE_PROJECT_DIRS,
     SINGLE_PROJECT_INDEX_TEMPLATES,
+    resolve_template_path,
 )
 from .file_registry import (
     create_ai_log,
@@ -57,12 +58,16 @@ def create_single_project(project_root: str, project_name: str = ""):
     create_dirs(ai_dir, SINGLE_PROJECT_DIRS)
 
     # 2. 复制模板文件到 templates/
+    # 四份 source-* 走 resolve_template_path（能力目录）；其余仍在 Project templates。
+    # 不预建 pm-decisions.md / logs/ops 实例。
     print("\n复制模板文件...")
     for template_file in ALL_TEMPLATE_FILES:
-        src = templates_dir / template_file
+        src = resolve_template_path(template_file)
         dst = ai_dir / "templates" / template_file
         if src.exists():
             shutil.copy2(src, dst)
+        else:
+            print(f"  ⚠️ 模板不存在，跳过: {template_file} ({src})")
 
     # 3. 创建事实源文件
     print("\n创建事实源文件...")

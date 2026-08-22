@@ -113,6 +113,36 @@ def find_companion(skill_root: Path) -> Optional[Path]:
     return None
 
 
+def parse_intentional_exclusions(ps1_text: str) -> list:
+    """Parse the 有意排除清单 comment block from pack.ps1 (single source of truth)."""
+    m = re.search(
+        r"有意排除清单 BEGIN ===\s*(.*?)\s*# === 有意排除清单 END",
+        ps1_text,
+        re.S,
+    )
+    rows = []
+    if not m:
+        return rows
+    for line in m.group(1).splitlines():
+        line = line.strip().lstrip("#").strip()
+        if not line or "|" not in line:
+            continue
+        path, reason = line.split("|", 1)
+        rows.append((path.strip(), reason.strip()))
+    return rows
+
+
+def print_intentional_exclusions(rows: list) -> None:
+    """Print 有意排除 table on dry-run and real pack. Missing these files is not a bug."""
+    print()
+    print("有意排除（产品化裁剪，不是 bug）")
+    print("| 路径 | 理由 |")
+    print("|---|---|")
+    for path, reason in rows:
+        print(f"| {path} | {reason} |")
+    print("不排除：source-split-skill/（能力目录，必须进包；目录内禁止 SKILL.md）")
+
+
 def pack_exclusions(ps1_root: Path) -> dict:
     """Read exclusion arrays from pack.ps1 at runtime.
 
@@ -137,6 +167,7 @@ def pack_exclusions(ps1_root: Path) -> dict:
         "files": extract_array("$excludeFiles"),
         "paths": extract_array("$excludeFilePaths"),
         "exceptions": extract_array("$includeExceptions"),
+        "intentional": parse_intentional_exclusions(text),
     }
 
 
@@ -213,6 +244,7 @@ def pack_one(skill_root: Path, ps1_root: Path, output_dir: Path,
     zip_path = output_dir / zip_name
 
     print(f"Detected: {skill_name} ({brand}) v{version} at {skill_root}")
+    print_intentional_exclusions(exclusions.get("intentional") or [])
 
     # Collect files
     skip_dirs = {".git", "__pycache__", ".idea", ".qoder", "node_modules"}
