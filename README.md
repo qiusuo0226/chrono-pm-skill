@@ -1,4 +1,4 @@
-# ChronoPM — 会管项目的 AI 副手
+# ChronoPM v3.9.0 — 会管项目的 AI 副手
 
 **你负责判断，它负责记、算、盯。项目的一切事实写在 Markdown 里，跟着项目走。**
 
@@ -80,6 +80,8 @@ ChronoPM Skill/
 | 回归用例 | 443 个 |
 
 发布产物：`ChronoPM-Project-Skill-v3.9.0.zip` + `ChronoPM-Portfolio-Skill-v3.9.0.zip`。
+
+回归测试 | 443 个用例。回归测试套件（443 个用例）。
 
 升级日志：[ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 

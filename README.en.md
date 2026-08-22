@@ -1,4 +1,4 @@
-# ChronoPM — An AI Sidekick That Actually Manages Projects
+# ChronoPM v3.9.0 — An AI Sidekick That Actually Manages Projects
 
 **You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
@@ -80,6 +80,8 @@ ChronoPM Skill/
 | Regression cases | 443 |
 
 Release artifacts: `ChronoPM-Project-Skill-v3.9.0.zip` + `ChronoPM-Portfolio-Skill-v3.9.0.zip`.
+
+Regression tests | 443 cases. Regression test suite (443 cases).
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 
