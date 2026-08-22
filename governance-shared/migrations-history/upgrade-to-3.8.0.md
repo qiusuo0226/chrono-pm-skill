@@ -4,7 +4,7 @@
 > 发布日期：2026-08-22  
 > Schema 变更：workspace schema **0.12.0 → 0.13.0**（各项目 `ai/` 新增空目录 `backup/`）  
 > CR：CR-20260822-001  
-> 施工依据：`governance-shared/upgrade-plan-v3.8.0.md` V0.16（用户准许执行）  
+> 施工依据：CR-20260822-001 + baseline 3.8.0。决策见本文件与 CHANGELOG 3.8.0 段。AP 草稿已按治理规则删除。  
 > 用户拍板：N-44 A/B；创建契机 if-else；花名册=index §1；禁止未来日待办；岗位单源；归档/备份双概念
 
 ## 变更摘要
@@ -158,11 +158,11 @@
 - [ ] 回归合计 390
 - [ ] baselines/3.8.0 双子树存在
 - [ ] 未改市监业务仓待办；未删 8-23；未搬根级 backup
-- [ ] `upgrade-plan-v3.7.0.md` 已删；`upgrade-plan-v3.8.0.md` 保留待用户检查
+- [x] `upgrade-plan-v3.7.0.md` 已删；`upgrade-plan-v3.8.0.md` 已于 3.9.0 Step 0 删除（记录闭合）
 
 ## D. 发布
 
 1. 提交技能包全部改动（含本文件、CR、IA、RR、基线）。
 2. 打 annotated tag：`v3.8.0`，中文说明：`release v3.8.0：人员文件整合 + 确认话术 + 共享文件拆分/术语索引 + 兼容人工成本台账；workspace schema 0.12.0→0.13.0`。
 3. `git push origin master --follow-tags`。
-4. 用户检查本版 AP 与技能正文。确认后再删 `upgrade-plan-v3.8.0.md`。
+4. 3.8.0 AP 已在 3.9.0 Step 0 删除（CR + 本文件 + 基线已接住思路）。
