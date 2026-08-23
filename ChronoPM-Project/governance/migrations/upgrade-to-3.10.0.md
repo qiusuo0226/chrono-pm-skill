@@ -115,7 +115,7 @@
 | A8.2 | `audit_release.py` 退出码 0 |
 | A8.3 | 发行包打到 `C:\Users\qiusuo\Downloads\` |
 | A8.4 | 每完成一个节点：annotated tag（中文说明）推 origin 与 github |
-| A8.5 | AP 草稿：基线+检查清单闭合、用户审核通过后再删 |
+| A8.5 | AP 草稿：基线拍完后删除（`planning/` 仅 README） |
 
 ---
 
@@ -130,13 +130,13 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.10.0 / 0.14.0
-- [ ] audit 退出码 0
-- [ ] 回归 470
-- [ ] 未改验证仓
-- [ ] 本文件无 upgrade-plan 路径
-- [ ] 旧 ops 文件不回写
-- [ ] Portfolio 新模板不在 Project ALL_TEMPLATE_FILES
+- [x] `_version.py` 3.10.0 / 0.14.0
+- [x] audit 退出码 0
+- [x] 回归 470
+- [x] 未改验证仓
+- [x] 本文件无 upgrade-plan 路径
+- [x] 旧 ops 文件不回写
+- [x] Portfolio 新模板不在 Project ALL_TEMPLATE_FILES
 
 ## D. 发布
 
@@ -146,6 +146,6 @@
 
 收尾（用户确认核验后）：
 
-- [ ] RR 已生成
-- [ ] AP 已删；`planning/` 仅 README
-- [ ] 分发包已写入 Downloads
+- [x] RR 已生成
+- [x] AP 已删；`planning/` 仅 README
+- [x] 分发包已写入 Downloads
