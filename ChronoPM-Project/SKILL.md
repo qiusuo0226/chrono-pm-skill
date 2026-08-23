@@ -1,9 +1,9 @@
 ---
 name: chrono-pm-project
-version: 3.9.0
+version: 3.10.0
 schema_version: 0.14.0
-updated_at: 2026-08-22
-description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
+updated_at: 2026-08-23
+description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/整理记录/补全/回填/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
 ---
 # ChronoPM-Project — 单项目 Markdown 项目管理技能
 
@@ -44,7 +44,7 @@ project-root/
 | `todos/{date}/{owner}.md` | 待办与人员快照/进出组/能耗（§0 只留联系方式与负责模块） |
 | `todos/{date}/_index.md` | 花名册 §1 + 结转 §2 + 当日参与 §3 + TD 缩写 §6 |
 | `pm-decisions.md` | 等你裁定的事项（分块 + 决策记录） |
-| `logs/ops/_index.md` | 过程日志索引（懒建） |
+| `logs/ops/_index.md` | 对话过程留痕索引（懒建；不是进度事实源） |
 | `requirements/_index.md` | 需求检索 |
 | `risks/` `issues/` `decisions/` | 风险/问题/决策 |
 | `plans/PLAN-*.md` `progress-plan.md` `budget.md` | 计划/进度/预算（PLAN §3 = WP 引用简表） |
@@ -91,6 +91,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 源文档拆解 | 00+07+06+17 + `source-split-skill/references/split-rules.md` | 14、18 |
 | 人员资源（本项目） | 00+06 | 04 |
 | 更新意图/文件入库 | 00+06+10+17 | 按类型 |
+| 投喂工时/能耗入库 | 00+01+06+10+17+22 | — |
 | 生成报告/导出 | 00+05+06+10+11 | 12 |
 | 历史衔接/快照 | 00+05+06+13/15 | — |
 | 结转/倒排 | 00+22 / 00 | 01、05 |
@@ -158,7 +159,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 版本控制文件
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | Skill 包版本号（当前 3.9.0） |
+| `VERSION` | Skill 包版本号（当前 3.10.0） |
 | `skill.json` | Skill 元数据（版本、模式、依赖；skill schemaVersion 与 supportedWorkspaceSchema 分离） |
 | `CHANGELOG.md` | 版本变更历史和升级说明 |
 | SKILL.md front matter | AI 可读的版本字段 |

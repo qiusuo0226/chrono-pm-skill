@@ -28,7 +28,7 @@
 |---|---|
 | `ai/pm-decisions.md` | PM 决策文件（八块开放项 + 决策记录；懒建，不预建实例） |
 | `requirements/_index.md` | 需求检索索引（超 50 条按模块分片；查询先读索引） |
-| `logs/ops/_index.md` | 过程日志日期指针（懒建；不是进度事实源） |
+| `logs/ops/_index.md` | 对话过程留痕日期指针（懒建；不是进度事实源） |
 
 ### requirements/ 需求领域新增事实源（v1.15.0，CR-20260813-001）
 
@@ -106,7 +106,7 @@ Skill 本体与工作区结构采用两个独立版本号，随契约 diff 联�
 | skill schemaVersion | `skill.json` 顶层 `schemaVersion` | 0.6.0 → **0.7.0** | Skill 包契约/元数据结构版本；双包拆分属架构变更，提升 Minor |
 | workspace schema | `scripts/_version.py` `WORKSPACE_SCHEMA_VERSION` | 0.8.0 → **0.9.0** | 工作区目录结构版本；RI 下沉项目级、去集层目录，联邦挂载 ChronoPM-Portfolio |
 
-**现行 workspace schema：0.14.0**（3.9.0：需求清单列、WP 待确认、`pm-decisions.md`、关联处理记录；ops 日志仍懒建）。两版本号不得混用：Skill 包升级改 schemaVersion；工作区目录结构变更改 workspace schema（硬约束 8）。
+**现行 workspace schema：0.14.0**（3.10.0：对话日志改列、全员建档、能耗回写已有日文件；目录结构不升）。两版本号不得混用：Skill 包升级改 schemaVersion；工作区目录结构变更改 workspace schema（硬约束 8）。
 
 ## ChronoPM-Portfolio 伴生包契约（v3.0.0）
 
