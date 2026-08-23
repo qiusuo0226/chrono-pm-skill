@@ -146,6 +146,9 @@
 
 收尾（用户确认核验后）：
 
-- [x] RR 已生成
+- [x] RR 已生成（`rr-20260823-3.10.0`）
+- [x] CR 已斩断 AP 草稿路径；状态 completed
 - [x] AP 已删；`planning/` 仅 README
 - [x] 分发包已写入 Downloads
+- [x] Trae（`~\.trae-cn\skills`）与 Grok（`~\.grok\skills`）已替换为 3.10.0
+- [x] C4-1 用户追认；F2 基线 README 已登记；F3 迁移历史已补 3.6.0/3.7.0

@@ -29,7 +29,8 @@ Blueprint Impact: metadata-only
 
 ### Notes
 - ⚠ 本发布不代迁市监业务仓。不升 schema。不预建 logs 实例。
-- CR-20260823-001 / upgrade-to-3.10.0 / IA-20260823-001。
+- CR-20260823-001 / upgrade-to-3.10.0 / IA-20260823-001 / rr-20260823-3.10.0。
+- 收尾：AP 已删；CR 已斩断草稿路径；upgrade-to D 清单勾齐；Trae 与 Grok 安装区已替换为 3.10.0。C4-1 用户追认。
 
 ## 3.9.0 — 2026-08-22（released）
 
