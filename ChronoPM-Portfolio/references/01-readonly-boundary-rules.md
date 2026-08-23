@@ -31,7 +31,7 @@ AUTO 级联在本包**不存在**。任何本应写入成员项目的动作一�
 | `portfolio/reports/**` | 派生产物 | 必须 `generated_from` + `updated` + stale；不得当后续查询数据源 |
 | `portfolio/resources/shared-resource-index.md` | 指针索引 | 仅姓名 + 参与项目指针 + 共享状态导航字段；禁止落盘排期/可用性数值 |
 | `portfolio/resources/transfer-index.md` | 指针索引 | 仅 Transfer ID + 方向 + 日期指针 |
-| `portfolio/logs/` | 集层操作日志 | 本包自身动作，不写成员项目 Change Log |
+| `portfolio/logs/` | 集层对话过程日志（按日懒建） | 路径 `ai/portfolio/logs/YYYY-MM-DD.md` + `_index.md`。只记集层对话与集层发出的指令出处。禁止把成员项目日志正文抄进 portfolio。无消息不预建 |
 | 建议更新清单落盘（内部 V-9） | 派生产物 | 建议本身不是事实源。对外白话，不对用户说「建议更新清单」 |
 | V-11 共享文件拆分产物 | 派生产物 | **只写 `portfolio/` 建议产物**（拆分方案 / 内部 V-9 清单），**永不写成员项目**。用户要求「直接写入」仍拒绝，提示换对应项目 ChronoPM-Project 对话 |
 

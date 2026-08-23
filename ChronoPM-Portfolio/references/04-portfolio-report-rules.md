@@ -7,7 +7,7 @@
 | 成员项目周报 | `ai/projects/{名}/ai/reports/weekly/YYYY/YYYY-Wxx.md` | ChronoPM-Project（本包只读） |
 | 项目集汇总周报 | `ai/portfolio/reports/weekly/YYYY/YYYY-Wxx.md` | 本包派生 |
 
-生成链路：**各项目周报 → 集周报**。禁止把「从各项目日报现场拼集周报」当默认路径。各项目过程日志（`logs/ops/_index.md`）只作用量/漏条款查询，**不得**当进度事实写入集周报。
+生成链路：**各项目周报 → 集周报**。禁止把「从各项目日报现场拼集周报」当默认路径。各项目过程日志（`logs/ops/_index.md`）与集层 `portfolio/logs/` 只作对话留痕查询，**不得**当进度事实写入集周报。
 
 模板：`assets/templates/portfolio-weekly-template.md`。该模板仅用于 `portfolio/reports` 派生产物，不得当作改写成员项目周报的说明书。
 

@@ -1,9 +1,9 @@
 ---
 name: chrono-pm-portfolio
-version: 3.9.0
+version: 3.10.0
 schema_version: 0.7.0
 workspace_schema: 0.14.0
-updated_at: 2026-08-22
+updated_at: 2026-08-23
 description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai 目录归集检索进度、风险、合同、周报。禁止写入成员项目事实源。触发：项目集、组合、跨项目、汇总周报、进度总览、人员排期、跨项目风险、门禁、P&L、合同去重、建议更新清单、共享文件拆分、术语索引、挂载、健康巡检、ChronoPM-Portfolio。
 ---
 # ChronoPM-Portfolio — 只读项目集归集
@@ -26,7 +26,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
     │   ├── context/glossary-index.md # 术语指针索引（V-12，只存指针）
     │   ├── reports/                 # 派生产物（须 generated_from+updated+stale）
     │   ├── resources/               # 共享人力/流转只读指针索引（可选）
-    │   └── logs/
+    │   └── logs/                    # 集层对话过程日志（按日懒建）
     └── projects/                    # 挂载区（本包只读）
         └── {项目名}/ai/             # 完整单项目工作区（可打包带走）
 ```
@@ -35,7 +35,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 
 ## 4. 只读契约（五条，安全底线）
 1. 对任何成员项目 `projects/*/ai` **只读**，禁止创建/修改/删除其中任何文件。
-2. 允许写入的**仅限** `portfolio/`（索引维护 + reports/ 派生产物）。
+2. 允许写入的**仅限** `portfolio/`（索引维护 + reports/ 派生产物 + `logs/` 集层对话懒建）。禁止抄成员日志正文。
 3. 集经理意图变更成员项目实体 → 只走内部 V-9（目标项目 + 目标文件 + 建议内容），不代写。对外白话确认，不对用户说「建议更新清单」。
 4. 聚合视图全部实时计算，禁止把聚合结果落盘为数据源；落盘仅限当期报告快照，且必须带 `generated_from:` + `updated:` + stale 失效规则。
 5. 跨项目「人的视图」实时遍历其参与项目的待办聚合，**不落盘**。
@@ -114,7 +114,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | `05-resource-shared-rules.md` | 共享人力/transfer 只读聚合 |
 | `06-version-health-rules.md` | 双包版本、反向校验、漂移比对 |
 
-模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`。
+模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`、`ops-log-template.md`、`ops-log-index-template.md`。查成员日志按 project-index 管理路径推导 `{管理路径}/logs/ops/_index.md`，不加指针列。
 
 ### 版本文件
 `VERSION` / `skill.json` / `CHANGELOG.md` / 本 front matter。集级 `ai/.skill-version.json`（skillName=`chrono-pm-portfolio`）。成员项目 `projects/{名}/ai/.skill-version.json`（skillName=`chrono-pm-project`，兼容 `chrono-pm`）。
