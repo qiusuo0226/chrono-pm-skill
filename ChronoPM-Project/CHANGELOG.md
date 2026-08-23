@@ -4,7 +4,34 @@
 
 ---
 
-## 3.9.0 — 2026-08-22（本次发布 · released）
+## 3.10.0 — 2026-08-23（本次发布 · released）
+
+> 发布归档：Minor + contract_change。对话日志改列、项目集 logs 从无到有、投喂能耗入库、全员每日建档、查询待办给 TD、待办不得超出工作包结束。workspace schema **保持 0.14.0**。
+
+Blueprint Impact: metadata-only
+
+### Added
+- 对话日志表 A：时间 / 用户摘要 / 本轮动作 / 改动文件 / 结果 / 出处 / 用量
+- 项目集 `portfolio/logs/` 按日懒建；查成员日志按管理路径推导
+- 能耗日表「异常」列；缺节插入；人+日去重待裁定
+- 当天读或写 todos 则除已出组外全员建档（§1 可空）
+- 查询待办每行必须 TD 编号
+- 待办结束 > 工作包结束须 ASK（挂起写 pm-decisions，查重键=TD）
+- 回归 27 条（合计 470）；改 OL-002 / V3-014 / PC-009
+
+### Changed
+- 旧 ops 日文件整文件冻结；当天续记用同日 p2 新列
+- 作废 N-38 休息日裁人与「不建空文件」跨 8 文件 17 触点
+- 有该日文件则能耗写该日；无则孤儿行写最新，不建空日目录
+- N-44 B 回写禁则改为受控例外（须登记 pm-decisions）
+- init 当日即为应建档全员建档
+- 空闲检测只扫曾有 §1 待办行
+
+### Notes
+- ⚠ 本发布不代迁市监业务仓。不升 schema。不预建 logs 实例。
+- CR-20260823-001 / upgrade-to-3.10.0 / IA-20260823-001。
+
+## 3.9.0 — 2026-08-22（released）
 
 > 发布归档：Minor + schema_change + contract_change + governance-change。过程日志、inbox 合并、需求/工作包/待办三层绑定、决策文件、关联处理方式。workspace schema 0.13.0 → 0.14.0。
 

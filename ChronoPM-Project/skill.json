@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -92,6 +92,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.10.0",
+      "date": "2026-08-23",
+      "summary": "对话日志改列+集层logs+能耗入库+全员建档+TD编号+WP时间盒；schema保持0.14.0；回归470。"
+    },
     {
       "version": "3.9.0",
       "date": "2026-08-22",
@@ -442,8 +447,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-22",
-    "lastVersion": "3.9.0",
+    "lastUpdated": "2026-08-23",
+    "lastVersion": "3.10.0",
     "updateRequiredOn": [
       "major",
       "minor",

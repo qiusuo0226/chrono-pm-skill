@@ -4,6 +4,18 @@
 
 ---
 
+## 3.10.0 — 2026-08-23（版本锁步 · released）
+
+> 与 Project 3.10.0 共用版本线。集层对话日志懒建于 `portfolio/logs/`。查成员日志按管理路径推导，不加指针列。跨项目待办列表每行项目名+TD。外部工时表在集层只分析+V-9。workspace schema 0.14.0。
+
+### Added
+- `ops-log-template.md` / `ops-log-index-template.md`（集层路径）
+
+### Changed
+- 只读契约：`portfolio/logs/` 可写集层对话，禁止抄成员正文
+- V-1 收编后按管理路径探测成员 ops index
+- 待办聚合每行必须项目名 + TD 编号
+
 ## 3.9.0 — 2026-08-22（版本锁步 · released）
 
 > 与 Project 3.9.0 共用版本线。只读归集各项目过程日志 index 与 pm-decisions 开放计数。禁止读成员 inbox。过程日志不当进度。workspace schema 0.14.0。

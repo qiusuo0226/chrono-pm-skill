@@ -157,6 +157,7 @@ project: "{name}"
 # v3.9.0：删 pending-changes-index；+ ops-log / ops-log-index / pm-decisions /
 # requirement-index。四份 source-* 拷贝源改能力目录（见 resolve_template_path）。
 # 不预建工作区 pm-decisions.md / logs/ops 实例（懒建）。
+# v3.10.0：不追加 energy 模板；集层 logs 模板在 Portfolio 包，不进本清单。
 ALL_TEMPLATE_FILES = [
     "weekly-report-template.md",
     "meeting-template.md",
