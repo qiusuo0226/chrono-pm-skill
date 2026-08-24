@@ -50,21 +50,29 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  NEW[新建WP 必有需求] --> PEND[待确认]
+  NEW[新建WP 必有需求] -->|实线| H7[§7状态链 只追加]
+  NEW -->|实线| H8[§8阶段+执行人]
+  NEW --> PEND[待确认]
   PEND -->|粗线| B3[决策文件块3]
   B3 --> PM[项目经理确认]
   PM --> PLANED[已规划]
   PLANED -->|实线| TD[拆待办 多对一]
   TD --> OWNER[执行人当日文件]
+  H7 -.-> CUR[当前=链尾]
+  H8 -.-> MAP[阶段映射主状态]
 ```
 
 ## G5 计划
 
 ```mermaid
 flowchart LR
-  PM[项目经理定时间盒] -->|实线| PLAN[计划文件只引用WP]
-  PLAN -.-> PROG[进度从待办按WP聚合]
-  PLAN -.-> X[不灌待办行]
+  PM[项目经理定计划] -->|实线| PLAN[5节只引用WP]
+  WP[链尾/阶段执行人/时间盒] -.-> S3[§3六列投影]
+  PLAN --> S3
+  PLAN -.-> PROG[进度按WP聚合]
+  PLAN -.-> X[不灌待办]
+  Q[读或改] --> GATE[闸1定位 闸2对账 闸3写后]
+  PLAN -->|废弃| FZ[冻结§3 去掉plan_ref]
 ```
 
 ## G6 日报
@@ -148,6 +156,9 @@ flowchart LR
   IDX -.-> FS[只读事实源]
   Q -.-> NX[不读inbox]
   Q -.-> ND[不把决策文件当进度]
+  Q --> G2[闸2先对账]
+  Q -.-> R[谁没做完/还差谁/在哪些计划/没进计划]
+  Q -.-> AB[忽略废弃]
 ```
 
 ## G14 项目集
@@ -167,4 +178,27 @@ flowchart LR
   INSP[19/14发现缺口] -->|实线| DEC[决策文件对应块]
   INSP --> T[仅本轮触碰才写]
   INSP --> X[不在对话里说完就算]
+```
+
+## G16 生成物落盘
+
+```mermaid
+flowchart LR
+  W[拟写路径] --> C{三路分类}
+  C -->|A事实源| AI[ai/入库]
+  C -->|B生成物| OUT[ai/outputs/批次]
+  C -->|C禁止| STOP[硬中止]
+  ROOT[项目根或与ai平级] --> STOP
+  W -->|写后| SCAN[扫根散落须迁走]
+```
+
+## G17 词库感应
+
+```mermaid
+flowchart LR
+  TALK[本轮用语] --> T{T1到T4}
+  T -->|声明或确认| CF[同轮confirmed]
+  T -->|重复未登记| PD[pending]
+  T -->|不是术语| X[不写]
+  NOF[无词库文件] -->|实线| CREATE[先按模板建]
 ```

@@ -22,6 +22,7 @@ Blueprint Impact: capability-change
 - PLAN §3 六列投影（当前状态=链尾阶段名；执行人=当前阶段；排期=WP 时间盒）
 - 出文件路由必载 11；xlsx 升 12；倒排必载 06
 - SKILL.md 安全底线第 13 条
+- 补 SKILL_MODULE_MAP：G4 状态链/阶段、G5 投影闸、G13 查询闸2、G16 落盘、G17 词库（不进发行包）
 
 ### Notes
 - ⚠ 本发布不代迁业务仓。不升 schema。
