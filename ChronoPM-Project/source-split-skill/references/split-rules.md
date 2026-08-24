@@ -1,6 +1,6 @@
 # 源文档拆解规则（能力目录正文）
 
-主 SKILL 仅在「源文档拆解」时加载本文件。需求/工作包绑定见 Project `07-requirement-rules.md`。
+由 P-DOC-INGEST / P-SPLIT 加载本文件（SKILL.md「源文档拆解」行）。禁止未加载本文件就声称已拆解入库。需求/工作包绑定见 Project `07-requirement-rules.md`。
 
 **工人只写** `requirements/sources/{编号}/atoms/part-NN-*.md`（或 facts 分片）。ledger、`sources/_index.md`、parse-log 收尾由协调者写。禁止工人写 `_index`。
 

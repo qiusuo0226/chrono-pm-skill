@@ -1,6 +1,6 @@
 # 需求管理约束规则
 
-本规则适用于需求的收集、分类、拆解、评审和追踪矩阵维护。需求变更管理见 `08-change-control-rules.md`。源文档拆解（提取/归并/台账/分片）正文见 `source-split-skill/references/split-rules.md`，仅拆文件时加载。
+本规则适用于需求的收集、分类、拆解、评审和追踪矩阵维护。需求变更管理见 `08-change-control-rules.md`。源文档拆解（提取/归并/台账/分片）正文见 `source-split-skill/references/split-rules.md`。命中「拆文件/拆文档/入库源文档」时 **P-DOC-INGEST 必须 CALL P-SPLIT**（加载 split-rules），禁止未加载就拆、禁止用 outputs HTML 替代 `sources/`。
 
 **硬分离**：需求 ≠ 工作包 ≠ 待办。三者编号、文件、生命周期均独立。需求只绑工作包；待办只从已规划工作包拆出；禁止把需求正文写入工作包文件。
 
@@ -115,7 +115,7 @@
             └──（WP 已规划后）拆待办（TD）
 ```
 
-删除 Epic→Feature→待办。拆解产出写入需求清单，**不落待办**。
+删除 Epic→Feature→待办。拆解产出写入需求清单，**不落待办**。本节是「把需求条目拆开」（P-REQ-DECOMP），**不是**「把一份源文件拆进 `sources/`」（P-SPLIT）。无源文件时不要建 `sources/` 目录。
 
 ### 3.2 拆解原则
 
