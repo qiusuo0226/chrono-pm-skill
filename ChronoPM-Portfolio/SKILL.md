@@ -1,6 +1,6 @@
 ---
 name: chrono-pm-portfolio
-version: 3.11.0
+version: 3.12.0
 schema_version: 0.7.0
 workspace_schema: 0.14.0
 updated_at: 2026-08-24

@@ -665,6 +665,30 @@ VERSION_CAPABILITIES = [
         "new_files": ["requirements/_index.md"],
         "note": "v3.9.0（schema 0.13.0→0.14.0）：pending-changes 全文迁 pm-decisions（懒建、不预建空文件）；需求索引；ops 日志懒建。sync_templates 覆盖同步现行模板；退役模板建议搬 backup。详见 upgrade-to-3.9.0.md。",
     },
+    {
+        "version": "3.10.0",
+        "schema": "0.14.0",
+        "capabilities": ["ops_log_columns", "energy_ingest", "full_roster_daily", "td_abbrev", "wp_timebox"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.10.0（schema 保持 0.14.0）：对话日志改列、能耗入库、全员建档、TD 编号、WP 时间盒。无新目录。",
+    },
+    {
+        "version": "3.11.0",
+        "schema": "0.14.0",
+        "capabilities": ["wp_status_history", "stage_owners", "glossary_sensing", "output_path_guard", "plan_five_sections"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.11.0（schema 保持 0.14.0）：WP 状态链与阶段执行人、词库感应、生成物落盘、计划 5 节投影闸。无新目录。",
+    },
+    {
+        "version": "3.12.0",
+        "schema": "0.14.0",
+        "capabilities": ["procedure_index", "todo_wp_card1", "dispatch_dedup", "source_split_force"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.12.0（schema 保持 0.14.0）：过程索引 23；简单查询仅 05；正式待办恰好 1 个 WP；派活查重；拆文件强制 sources/。无新目录。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），

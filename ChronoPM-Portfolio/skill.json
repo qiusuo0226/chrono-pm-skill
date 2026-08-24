@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-portfolio",
   "displayName": "ChronoPM-Portfolio — 只读项目集归集",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.9.0",
@@ -18,6 +18,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.12.0",
+      "date": "2026-08-24",
+      "summary": "锁步3.12.0：待办WP Ref单值聚合；缺/多值当脏数据不双计。"
+    },
     {
       "version": "3.11.0",
       "date": "2026-08-24",
@@ -88,6 +93,6 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-24",
-    "lastVersion": "3.11.0"
+    "lastVersion": "3.12.0"
   }
 }

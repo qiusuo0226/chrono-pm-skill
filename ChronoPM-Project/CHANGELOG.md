@@ -4,7 +4,33 @@
 
 ---
 
-## 3.11.0 — 2026-08-24（本次发布 · released）
+## 3.12.0 — 2026-08-24（本次发布 · released）
+
+> 发布归档：Minor / contract_change + capability_change。过程索引 + 简单查询仅 05（迁走轻量能力后删除 QODER 特例）；正式待办恰好绑 1 个已规划 WP；派活先查重；结束越界问 PM；拆文件强制 source-split 入库。workspace schema **保持 0.14.0**。
+
+Blueprint Impact: full
+
+### Added
+- `23-procedure-index.md` 过程签名索引（写入/派活/拆文件才加载）
+- SKILL.md 简单查询行（仅 05）
+- 派活入口⑦、查重、多 WP 主题可分自动拆
+- 回归模块 65–67（合计 552）
+- 示例 `19-派活与拆文件入库.md`
+
+### Changed
+- 正式待办 WP Ref 恰好 1；无 WP 不落核心表
+- 结转空 WP Ref 高置信回填；低置信不带到今天，编号不变
+- 拆文件 Level 1 强制 `sources/`
+- SKILL.md / 00 / 21 加载范围：简单查询不灌 00/21/23
+
+### Removed
+- `QODER_RULES.md`（能力迁入 05 + SKILL 路由后删除）
+
+### Notes
+- ⚠ 本发布不代迁业务仓。不升 schema。
+- CR-20260824-002/003/004 / upgrade-to-3.12.0 / IA-20260824-002。
+
+## 3.11.0 — 2026-08-24（released）
 
 > 发布归档：Minor / capability_change。WP 状态链（当前=链尾）+ 阶段清单与阶段执行人；词库感应；生成物只进 `ai/outputs/`；计划清爽 5 节与投影三层闸。workspace schema **保持 0.14.0**。
 
