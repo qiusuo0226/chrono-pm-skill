@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-portfolio",
   "displayName": "ChronoPM-Portfolio — 只读项目集归集",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.9.0",
@@ -18,6 +18,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.11.0",
+      "date": "2026-08-24",
+      "summary": "锁步3.11.0：能力零改动。"
+    },
     {
       "version": "3.10.0",
       "date": "2026-08-23",
@@ -82,7 +87,7 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-23",
-    "lastVersion": "3.10.0"
+    "lastUpdated": "2026-08-24",
+    "lastVersion": "3.11.0"
   }
 }
