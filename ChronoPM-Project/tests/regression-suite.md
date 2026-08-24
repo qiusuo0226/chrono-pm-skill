@@ -966,6 +966,48 @@
 | LQ-007 | SKILL.md 相对 3.11.0 净增非空行 >20 | 失败 | negative |
 | LQ-008 | 简单查询「明天待办」 | 不加载 21 规则正文；偏好只可读 pm-profile.md | regression |
 
+## 68. WP 联动 / 生效 / 时间窗 / 技能缺口（v3.13.0）
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| WPL-001 | 待确认 WP 已入正常计划 | D38 提示推进；确认后 §7 追加；PLAN 父行=链尾 | positive |
+| WPL-002 | 已绑测试待办、链尾仍待确认 | 建议测试中；确认后追加 | positive |
+| WPL-003 | SCAN 测试待办贾星 08-24~09-10 | §8 (AI聚合)；PLAN 子行可见 | positive |
+| WPL-004 | §8 已点名，待办是另一人 | 不覆盖；块 8 | negative |
+| WPL-005 | 内部验收无待办 | 子行 `⚠️待安排人` / `— 待排期` | positive |
+| WPL-006 | 只改 PLAN 子行排期 | 失败，改走 WP | negative |
+| WPL-007 | 一包两份正常计划 | 两份父行+子行相同 | positive |
+| WPL-008 | 两份计划父行排期不同 | D38 歧义 | regression |
+| WPL-009 | PLAN §3 加空岗第 7 列 | PLT-006 失败 | negative |
+| WPL-010 | 子行 WP 编号留空 | 失败 | negative |
+| WPL-011 | 未确认 REQ 仍推进已规划 | E1 拦截 | negative |
+| WPL-012 | 废弃 WP-003 | effect=废弃；正常计划移出；§7 到状态不是废弃；index 状态=废弃 | positive |
+| WPL-013 | 给废弃 WP 派活 | 不落待办 | negative |
+| WPL-014 | 无 effect 字段 | 当正常；触碰补键 | positive |
+| WPL-015 | status: 废弃 | 不通过 | negative |
+| WPL-016 | 本轮两条同 WP 待办 | SCAN 一次 | positive |
+| WPL-017 | 闸 2 子行已一致 | 不写 PLAN | positive |
+| WPL-018 | 「展开全部」 | 对话有已过阶段；文件仍仅默认范围 | positive |
+| WPL-019 | PM 纠正误匹配 | 包级排除；下次 SCAN 不再误入 | positive |
+| WPL-020 | 双正常计划人期不同 | D38；范围=该 WP 全部正常计划 | regression |
+| WPL-021 | §3 引用失踪 WP 文件 | 先 D20，不直接移出 | positive |
+| PFA-001 | 「归纳 10-07 前计划」，三项目计划名不同 | 按窗收入，不靠同名 | positive |
+| PFA-002 | 某项目仅废弃计划在窗内 | 默认不入 | positive |
+| PFA-003 | 同项目两正常计划重叠同一 WP | 一行，来源多值 | positive |
+| PFA-004 | 集层要写成员 PLAN | 拒绝 | negative |
+| PFA-005 | 窗内有废弃 WP | 默认不输出 | positive |
+| PFA-006 | 全年计划 §1 命中但 WP 盒在窗外 | 该 WP 不出行 | positive |
+| SG-001 | 「这是 skill 的问题，记下来」 | outputs 有 `需求-*.md`，含双版本+原话+证据链 | positive |
+| SG-002 | 仅缺某 WP 日期 | 走 19，不落缺口文 | negative |
+| SG-003 | 写到 `requirements/需求-xx.md` | 失败，必须 outputs | negative |
+| SG-004 | 能力目录存在 SKILL.md | audit 失败 | negative |
+| SG-005 | 7 日内同痛点第二次 | 追加 revisions，不新批次 | positive |
+| SG-006 | 用户说不要记 | 标取消 | positive |
+| SG-007 | 仅 05 的进度追问「不对吧」 | 不落缺口文 | regression |
+| SG-008 | 「这是 skill 的问题，记下来」 | 落盘；含 sg_id | positive |
+| SG-009 | 当日已有 SG-…-001 | 下一号 002 | positive |
+| SG-010 | P-ALWAYS 第 4 步直接写文件 | 失败，须经 P-SKILL-GAP | negative |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -1037,4 +1079,5 @@
 | 派活/基数/时间盒 (DS/CO) | 13 | 6 | 7 |
 | 拆文件入库 (SF) | 6 | 2 | 4 |
 | 结构/轻量查询 (LQ) | 8 | 4 | 4 |
-| **合计** | **552** | **326** | **226** |
+| WP联动/生效/时间窗/缺口 (WPL/PFA/SG) | 37 | 23 | 14 |
+| **合计** | **589** | **349** | **240** |

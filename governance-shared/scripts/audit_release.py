@@ -453,6 +453,8 @@ def main() -> int:
         "source-split-skill/assets/templates/source-index-template.md",
         "source-split-skill/assets/templates/source-parse-log-template.md",
         "source-split-skill/assets/templates/source-atoms-index-template.md",
+        "skill-gap-skill/references/gap-capture-rules.md",
+        "skill-gap-skill/assets/templates/skill-gap-demand-template.md",
     ]
     missing_req = [r for r in required if r not in packed_set]
     if missing_req:
@@ -461,7 +463,7 @@ def main() -> int:
     if nested_skill:
         pack_fail.append("嵌套SKILL.md=" + ",".join(nested_skill))
     check(
-        "15. 模拟 pack（排除 tests/BLUEPRINT/16/MODULE_MAP；含 source-split；无嵌套 SKILL.md）",
+        "15. 模拟 pack（排除 tests/BLUEPRINT/16/MODULE_MAP；含 source-split 与 skill-gap；无嵌套 SKILL.md）",
         not pack_fail,
         "; ".join(pack_fail) or f"保留 {len(packed)} 个文件",
     )
