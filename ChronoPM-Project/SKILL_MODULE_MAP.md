@@ -56,8 +56,9 @@ flowchart LR
   PEND -->|粗线| B3[决策文件块3]
   B3 --> PM[项目经理确认]
   PM --> PLANED[已规划]
-  PLANED -->|实线| TD[拆待办 多对一]
+  PLANED -->|实线| TD[拆待办 恰好绑一个WP]
   TD --> OWNER[执行人当日文件]
+  PLANED -.-> Z[WP可暂时0条待办]
   H7 -.-> CUR[当前=链尾]
   H8 -.-> MAP[阶段映射主状态]
 ```
@@ -201,4 +202,31 @@ flowchart LR
   T -->|重复未登记| PD[pending]
   T -->|不是术语| X[不写]
   NOF[无词库文件] -->|实线| CREATE[先按模板建]
+```
+
+## G18 派活
+
+```mermaid
+flowchart LR
+  P[点名执行人做动作] --> D[查重]
+  D -->|有| U[校正时间 不新建]
+  D -->|无| S{多WP主题可分?}
+  S -->|是| M[拆成多条 各绑一个WP]
+  S -->|不清| ASK[问一次]
+  M --> W[先写后告知]
+  U --> BOX{结束超WP?}
+  W --> BOX
+  BOX -->|否| OK[不改期]
+  BOX -->|是| PM[问A拉长包/B压缩待办/C挂起]
+```
+
+## G19 拆文件入库
+
+```mermaid
+flowchart LR
+  F[拆文件/拆文档] --> SPLIT[source-split]
+  SPLIT --> SRC[sources/编号/六件套]
+  SRC --> REQ[需求清单 未确认]
+  F -->|还要对外文件| OUT[再走 outputs]
+  X[只出HTML不入库] --> BAN[禁止替代]
 ```
