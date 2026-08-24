@@ -107,7 +107,7 @@ WP 双向联动（SCAN 人期、ADVANCE 半自动推进、计划 6 列节点子�
 | A8.2 | `audit_release.py` 退出码 0 |
 | A8.3 | 每完成一个节点：annotated tag（中文）推 origin 与 github |
 | A8.4 | AP 草稿：基线拍完后删除（`planning/` 仅 README） |
-| A8.5 | 全部完成后请用户核验；不提前打断 |
+| A8.5 | 用户核验通过后：打分发包到 Downloads；替换 Grok skills 为 3.13.0（删旧目录）；Trae 不替换 |
 
 ---
 
@@ -126,14 +126,15 @@ WP 双向联动（SCAN 人期、ADVANCE 半自动推进、计划 6 列节点子�
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.13.0 / 0.14.0
-- [ ] 00 净增非空行 ≤100；无「目标未达成」
-- [ ] 23 ProcID=20；调用树含 P-CARRY-WPREF、P-RI、四新过程
-- [ ] plan-template §3 仍 6 列；wp-index 仍 8 列
-- [ ] wp-template 有 `effect`，`status` 仅四枚举
-- [ ] skill-gap-skill 无 SKILL.md；audit 含其规则+模板
-- [ ] 模块 68 已写入；PLT-006 / PWP-006 仍在
-- [ ] README / examples 09·11·14·20 / MAP 已改
-- [ ] 正式文档不引用 upgrade-plan 路径
-- [ ] audit_release 退出码 0
-- [ ] 无业务仓路径写入
+- [x] `_version.py` 3.13.0 / 0.14.0
+- [x] 00 净增非空行 ≤100；无「目标未达成」
+- [x] 23 ProcID=20；调用树含 P-CARRY-WPREF、P-RI、四新过程
+- [x] plan-template §3 仍 6 列；wp-index 仍 8 列
+- [x] wp-template 有 `effect`，`status` 仅四枚举
+- [x] skill-gap-skill 无 SKILL.md；audit 含其规则+模板
+- [x] 模块 68 已写入；PLT-006 / PWP-006 仍在
+- [x] README / examples 09·11·14·20 / MAP 已改
+- [x] 正式文档不引用 upgrade-plan 路径
+- [x] audit_release 退出码 0
+- [x] 无业务仓路径写入
+- [x] 分发包已写入 Downloads；Grok skills 已替换为 3.13.0

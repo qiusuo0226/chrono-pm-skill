@@ -26,6 +26,7 @@ Blueprint Impact: capability-change
 ### Notes
 - ⚠ 本发布不代迁业务仓。不升 schema。存量闸 2 / 触碰懒补。
 - CR-20260824-005 / upgrade-to-3.13.0 / IA-20260824-003。
+- 收尾：AP 已删；audit 通过；Grok skills 已替换为 3.13.0；发行包已写入 Downloads。
 
 ## 3.12.0 — 2026-08-24（released）
 
