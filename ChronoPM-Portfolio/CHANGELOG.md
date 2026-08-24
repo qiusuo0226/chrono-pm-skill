@@ -4,6 +4,10 @@
 
 ---
 
+## 3.13.0 — 2026-08-24（版本锁步 · released）
+
+> 与 Project 3.13.0 共用版本线。V-13 按时间窗归集各项目正常计划中的正常 WP（不按计划名）。集层技能缺口写入 `portfolio/reports/`。禁止写入成员项目。workspace schema 0.14.0。
+
 ## 3.12.0 — 2026-08-24（版本锁步 · released）
 
 > 与 Project 3.12.0 共用版本线。待办 WP Ref 按单值聚合；缺/多值当脏数据不双计。禁止写入成员项目。workspace schema 0.14.0。

@@ -4,7 +4,30 @@
 
 ---
 
-## 3.12.0 — 2026-08-24（本次发布 · released）
+## 3.13.0 — 2026-08-24（本次发布 · released）
+
+> 发布归档：Minor / capability_change。WP 待办→阶段人期聚合、半自动推进、计划 6 列节点子行、WP `effect` 正常/废弃、Portfolio V-13 时间窗归集、`skill-gap-skill` 缺口笔录进 outputs。workspace schema **保持 0.14.0**。
+
+Blueprint Impact: capability-change
+
+### Added
+- 00 §8d 联动（P-WP-SCAN / P-WP-ADVANCE）与 §8e 生效态；D38
+- PLAN §3 父行+节点子行（仍 6 列）；空岗单元格
+- `skill-gap-skill/` 能力目录（无嵌套 SKILL.md）
+- Portfolio V-13 时间窗计划归集
+- 回归模块 68（合计 589）
+- 示例 `20-技能缺口.md`
+
+### Changed
+- 闸 2 含子行、废弃 WP、缺文件先 D20
+- index 状态列可写「废弃」，不加第 9 列
+- 23 号 ProcID 16→20
+
+### Notes
+- ⚠ 本发布不代迁业务仓。不升 schema。存量闸 2 / 触碰懒补。
+- CR-20260824-005 / upgrade-to-3.13.0 / IA-20260824-003。
+
+## 3.12.0 — 2026-08-24（released）
 
 > 发布归档：Minor / contract_change + capability_change。过程索引 + 简单查询仅 05（迁走轻量能力后删除 QODER 特例）；正式待办恰好绑 1 个已规划 WP；派活先查重；结束越界问 PM；拆文件强制 source-split 入库。workspace schema **保持 0.14.0**。
 
