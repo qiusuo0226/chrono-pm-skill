@@ -71,7 +71,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 需求变更 08；结转 22（含 Step 0.5 共享人力提示）；历史计划 15。时间线报/月报（自然月）见 01 号 §4a：懒建 `reports/timeline/`，判重四案，非精确重合整段从 todos 重汇聚。
 
 ## 6. 提示词路由表（最小规则集）
-21 号在所有输出场景自动加载。WF-8 新建待办 = 00+22+21+06；04/07/08 仅关键词命中才加载。WP 状态历史查询见 00。词库感应见 17 §8.4。
+21 号：写入与复杂场景自动加载；简单查询不加载 21 规则正文（偏好格式只读 `ai/context/pm-profile.md`）。WF-8 新建待办 = 00+22+21+06+23。命中拆文件/拆文档 → 改走「源文档拆解」行，禁止只走「更新意图」。WP 状态历史见 00。词库感应见 17 §8.4。过程签名见 23（纯查询不载）。
 
 | 场景 | 必须加载 | 可选 |
 |------|----------|------|
@@ -80,17 +80,18 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 日报 | 00+01+06+17 | 04、07、10 |
 | 会议纪要 | 00+02+06+17 | 04、07、08 |
 | 需求评审/变更 | 00+07+08+06 | — |
-| 待办文件更新 | 00+06 | 10 |
-| 待办创建 WF-8 | 00+22+21+06 | 01、02、07、08、10 |
+| 待办文件更新 | 00+06+23 | 10 |
+| 待办创建 WF-8 | 00+22+21+06+23 | 01、02、07、08、10 |
 | WP 创建/查询 | 00+06 | 05、07、14 |
 | 待办状态 WF-1 | 00+01+04+06+10 | 17 |
 | 关联待办 WF-Linked | 00+22 | 01 |
 | 风险评估 | 00+04 | — |
-| 本项目查询 | 00+05+17 | 按问题 |
+| 简单查询 | 05 | — |
+| 复杂/分析类本项目查询 | 00+05+17 | 按问题 |
 | 跨源范围判定 | 00+07+05+17+06 | Step0 读本项目 contract-register |
-| 源文档拆解 | 00+07+06+17 + `source-split-skill/references/split-rules.md` | 14、18 |
+| 源文档拆解 | 00+07+06+17+23 + `source-split-skill/references/split-rules.md` | 14、18 |
 | 人员资源（本项目） | 00+06 | 04 |
-| 更新意图/文件入库 | 00+06+10+17 | 按类型 |
+| 更新意图/文件入库 | 00+06+10+17 | 按类型；拆文件改走源文档拆解 |
 | 投喂工时/能耗入库 | 00+01+06+10+17+22 | — |
 | 生成报告/导出 / 出文件 / 整理成表 / xlsx/docx/pdf | 00+05+06+10+11 | 扩展名 xlsx/csv 时 12 必载 |
 | 历史衔接/快照 | 00+05+06+13/15 | — |
@@ -132,7 +133,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ## 15. 规则索引
 | 文件 | 何时加载 |
 |------|----------|
-| `00-pm-main-rules.md` | 必须；含分级表、沟通质量、WF |
+| `00-pm-main-rules.md` | 写入与复杂场景必须；简单查询禁止加载 00 |
 | `01-daily-report-rules.md` | 日报；含归属判定 |
 | `02-meeting-rules.md` | 会议 |
 | `04-risk-issue-rules.md` | 风险问题 |
@@ -152,8 +153,9 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | `18-init-wizard-rules.md` | 初始化向导 |
 | `19-info-completeness-rules.md` | 完整性巡检 |
 | `20-workspace-version-rules.md` | 版本/反向校验 |
-| `21-pm-profile-rules.md` | PM 偏好（自动加载） |
+| `21-pm-profile-rules.md` | PM 偏好（写入与复杂场景自动加载；简单查询不加载规则正文） |
 | `22-carried-over-rules.md` | 结转 Step 0 / 0.5 |
+| `23-procedure-index.md` | 写入/派活/拆文件/更新意图时加载；纯查询不载 |
 
 **09 号已退役**，内容在 ChronoPM-Portfolio（保留退役页仅为避免历史路径 404）。
 

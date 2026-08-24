@@ -388,7 +388,6 @@ Skill 根目录只允许以下文件和一级子目录存在。白名单之外�
 | `SKILL_BLUEPRINT.md` | 文件 | 能力蓝图 |
 | `.gitignore` | 文件 | Git 忽略规则 |
 | `.git/` | 目录 | VCS 系统目录（版本控制元数据，不纳入清洁度检查） |
-| `QODER_RULES.md` | 文件 | Qoder 环境配置入口 |
 | `assets/` | 目录 | 模板、资源文件 |
 | `governance/` | 目录 | 治理归档（CR、IA、RR、基线等） |
 | `references/` | 目录 | 规则声明文件 |
