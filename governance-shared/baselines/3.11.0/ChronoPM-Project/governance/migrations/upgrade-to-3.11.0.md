@@ -128,12 +128,13 @@
 
 每完成一个节点：annotated tag（中文说明）推 origin（Gitee）与 github。
 
-完整升级后：打 `v3.11.0`，请用户审核后再替换安装区 / 打发行包。
+完整升级后：打 `v3.11.0`。用户验收通过后：发行包写入 Downloads；只替换 Grok skills；Trae 按指示不替换。
 
-收尾（施工完成；安装区与发行包待用户审核）：
+收尾（用户验收通过）：
 
 - [x] RR 已生成（`rr-20260824-3.11.0`）
 - [x] CR 已斩断 AP 草稿路径；状态 completed
 - [x] AP 已删；`planning/` 仅 README
-- [ ] 分发包已写入 Downloads（待用户审核后）
-- [ ] Trae（`~\.trae-cn\skills`）与 Grok（`~\.grok\skills`）已替换为 3.11.0（待用户审核后）
+- [x] 分发包已写入 Downloads（`ChronoPM-Project-Skill-v3.11.0.zip` 88 文件；`ChronoPM-Portfolio-Skill-v3.11.0.zip` 23 文件）
+- [x] Grok（`~\.grok\skills`）已替换为 3.11.0（双包，发行包解压覆盖）
+- [ ] Trae（`~\.trae-cn\skills`）按用户指示本次不替换
