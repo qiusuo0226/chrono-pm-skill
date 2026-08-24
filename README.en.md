@@ -32,7 +32,7 @@ Module flow diagrams (person → AI → which file → whether you decide): [Chr
 
 Conversation walkthroughs (names and numbers are fake; the way you talk is real). Written in Chinese, covering init, feeding contracts, daily reports, meetings, backward plans, portfolio, and change:
 
-Index: [examples/](examples/) (18 pieces; follow the reading order there)
+Index: [examples/](examples/) (20 pieces; follow the reading order there)
 
 ## Just talk to it
 
@@ -44,6 +44,9 @@ Index: [examples/](examples/) (18 pieces; follow the reading order there)
 | "How did this week go?" | Aggregates the weekly report from live todos — every number traceable |
 | "We launch next month — plan backwards" | Derives the plan from milestones, flagging the critical path and resource conflicts |
 | "How's the whole portfolio?" | Switch to ChronoPM-Portfolio for a read-only rollup across projects |
+| "Who is still unassigned on this plan?" | Opens the plan's node sub-rows; empty slots show as unassigned |
+| "Roll up each project's plan before 7 Oct" | Matches by date window, not plan name |
+| "The skill can't do this — file it as an upgrade need" | Writes a skill-gap note under `ai/outputs/`, not the requirement register |
 
 The full surface of day-to-day management is covered: requirements and change tracking, todos and work packages, plans and backward scheduling, milestones, risks and issues, decision records, meetings and reviews, daily and weekly reports, labor-cost ledgers, lessons learned — plus a glossary that grows with your project, so the AI gets better at your jargon over time.
 
@@ -62,7 +65,7 @@ Before release: `python governance-shared/scripts/audit_release.py` must pass.
 ChronoPM Skill/
 ├── ChronoPM-Project/     # Single-project skill pack (rules, templates, scripts, regression suite)
 ├── ChronoPM-Portfolio/   # Read-only portfolio companion
-├── examples/             # Conversation walkthroughs (init through portfolio, 18 pieces)
+├── examples/             # Conversation walkthroughs (init through portfolio, 20 pieces)
 ├── governance-shared/    # Repo-level governance: baselines / CR / impact analysis / release audit (not packed)
 ├── tools/                # Packing tools
 ├── README.md

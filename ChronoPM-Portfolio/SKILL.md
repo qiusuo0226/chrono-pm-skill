@@ -4,7 +4,7 @@ version: 3.12.0
 schema_version: 0.7.0
 workspace_schema: 0.14.0
 updated_at: 2026-08-24
-description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai 目录归集检索进度、风险、合同、周报。禁止写入成员项目事实源。触发：项目集、组合、跨项目、汇总周报、进度总览、人员排期、跨项目风险、门禁、P&L、合同去重、建议更新清单、共享文件拆分、术语索引、挂载、健康巡检、ChronoPM-Portfolio。
+description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai 目录归集检索进度、风险、合同、周报。禁止写入成员项目事实源。触发：项目集、组合、跨项目、汇总周报、进度总览、人员排期、跨项目风险、门禁、P&L、合同去重、建议更新清单、共享文件拆分、术语索引、挂载、健康巡检、汇总计划、按时间归集计划、技能缺口、ChronoPM-Portfolio。
 ---
 # ChronoPM-Portfolio — 只读项目集归集
 
@@ -48,7 +48,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 
 联邦骨架缺失时：按 `assets/templates/project-index-template.md` 创建 `portfolio/context/project-index.md` 与空 `projects/`，询问集经理后登记，不扫描即当正式成员。
 
-## 6. 能力 V-1～V-12
+## 6. 能力 V-1～V-13
 | # | 能力 | 触发 | 实时读 | 输出 |
 |---|---|---|---|---|
 | V-1 | 成员登记 + 动态感知 | 进入工作区/查询前 | `projects/` + project-index | 候选收编/失效清理提示 |
@@ -63,8 +63,9 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | V-10 | 健康巡检 | 进入工作区/定期 | 各项目 .skill-version.json + 结构抽查 | 版本/孤儿/套娃/漂移 |
 | V-11 | 跨项目共享文件拆分 | 「拆了这份文件」「分到各项目」 | 源文件 + 各项目索引 | 分析+归属建议（默认各放一份）；只写 `portfolio/` 建议产物，**永不写成员项目** |
 | V-12 | 术语指针索引 | 收编成功 / 「刷新术语索引」/ 集层查词 | 各项目 `context/domain-glossary.md` 表格行 | `portfolio/context/glossary-index.md`（只存指针，不存全文） |
+| V-13 | 时间窗计划归集 | 「归纳各项目X日前的计划」「汇总计划」「国庆各项目计划」 | 各项目正常 PLAN 头+§2 门禁+正常 WP 时间盒 | 项目×WP 切面（6 列）；不按计划名；不落事实源 |
 
-**最小读取集**：V-1～V-12 一切聚合只读索引/摘要行（project-index、status 摘要、登记册表格行、词库表格行），不读全文。全文仅集经理点名某项目细节时才读。
+**最小读取集**：V-1～V-13 一切聚合只读索引/摘要行（project-index、status 摘要、登记册表格行、词库表格行、PLAN 头与 §3 行），不读全文。全文仅集经理点名某项目细节时才读。
 
 **V-5 硬约束**：从各项目当期周报往上摘。无周报 → 提示「{项目} 周报未出，请先在该项目对话出周报」。PM **明确**指令「临时摘」才允许从该项目日报现场拼，且必须标注「临时摘要，非替代周报」。
 
@@ -78,7 +79,8 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | 场景 | 必须加载 |
 |------|----------|
 | 进入工作区 / 挂载 / 动态感知 / 收编 | 03 + 06 |
-| 进度总览 / 人×项目 / 风险 / 门禁 / P&L / 合同 | 01 + 02 |
+| 进度总览 / 人×项目 / 风险 / 门禁 / P&L / 合同 / 时间窗归集计划 | 01 + 02 |
+| 集层技能缺口 / 记成升级需求 | 01 + 02 |
 | 待办跨项目查询 | 01 + 02 |
 | 集周报 | 01 + 04 |
 | 意图变更 / 内部 V-9 | 01 |
@@ -108,13 +110,13 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | 文件 | 何时加载 |
 |------|----------|
 | `01-readonly-boundary-rules.md` | 写禁、内部 V-9、落盘规则 |
-| `02-aggregation-query-rules.md` | V-2～V-8、V-11、待办 R18、合同去重、集层查词 |
+| `02-aggregation-query-rules.md` | V-2～V-8、V-11、V-13、待办 R18、合同去重、集层查词、集层缺口 |
 | `03-mount-awareness-rules.md` | 挂载、动态感知、防套娃、自动路由、V-12 收编刷词 |
 | `04-portfolio-report-rules.md` | 集周报、缺周报降级、资源变动检测 |
 | `05-resource-shared-rules.md` | 共享人力/transfer 只读聚合 |
 | `06-version-health-rules.md` | 双包版本、反向校验、漂移比对 |
 
-模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`、`ops-log-template.md`、`ops-log-index-template.md`。查成员日志按 project-index 管理路径推导 `{管理路径}/logs/ops/_index.md`，不加指针列。
+模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`、`ops-log-template.md`、`ops-log-index-template.md`、`skill-gap-demand-template.md`。查成员日志按 project-index 管理路径推导 `{管理路径}/logs/ops/_index.md`，不加指针列。
 
 ### 版本文件
 `VERSION` / `skill.json` / `CHANGELOG.md` / 本 front matter。集级 `ai/.skill-version.json`（skillName=`chrono-pm-portfolio`）。成员项目 `projects/{名}/ai/.skill-version.json`（skillName=`chrono-pm-project`，兼容 `chrono-pm`）。
