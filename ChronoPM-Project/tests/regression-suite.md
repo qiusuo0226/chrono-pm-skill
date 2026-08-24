@@ -161,7 +161,7 @@
 
 ---
 
-## 16. Qoder Adaptation（Qoder 环境适配）
+## 16. Qoder Adaptation（轻量查询；v3.12.0 起入口为 05 全局最小读取，无宿主专用文件）
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
@@ -214,7 +214,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | SK-1A | 读取 `SKILL.md` | 行数 ≤ 300 | regression |
-| SK-1B | 检查 §6 提示词路由表 | 场景条目与修改前一致（一条不删） | regression |
+| SK-1B | 检查 §6 提示词路由表 | 不得删除安全/写入场景；允许把「本项目查询」拆成简单查询+复杂查询 | regression |
 | SK-1C | 检查 §7 安全底线 | 底线条目完整保留 | regression |
 | SK-1D | 检查 §8 ID 编码 | 编码体系完整保留 | regression |
 | SK-1E | 检查 §15 规则索引 | 00-21 共 22 条 + 版本控制文件完整 | regression |
@@ -467,7 +467,7 @@
 | BS-015 | 查询"倒排还剩几天" | 读倒排元数据（锚点日期）+ 待办文件未完成待办，输出倒计时 + 关键路径预警 | positive |
 | BS-016 | "给张三加个待办：8/19 完成接口文档确认"（命中 WP 时间窗口与语义） | WF-8 归属判定 → 落待办文件（WP Ref + Due 8/19）+ 更新绑定文件，原子清单一次呈现 | positive |
 | BS-017 | "给李四加个待办：提醒周五交周报"（无交付物） | 判定一次性提醒 → 仅在输出中呈现提示不落待办文件，且输出判定理由 | positive |
-| BS-018 | "给王五加个待办：调研竞品"（有 Owner+Deadline 但无 WP 命中） | 判定独立任务 → 落待办文件（WP Ref: none）；禁止只写绑定文件 | positive |
+| BS-018 | "给王五加个待办：调研竞品"（有 Owner+Deadline 但无 WP 命中） | **不落**正式待办；问绑哪个已有 WP 或先补需求再建 WP。禁止 WP Ref none/待绑定落核心表 | positive |
 | BS-019 | 归属证据不足（两个 WP 均语义近似命中） | 置信度阈值生效：必须追问 PM 确认归属，不得静默落库或自行拍板 | negative |
 | BS-020 | 14号自查执行 | D15 检出待办文件 WP Ref 完整性异常（指向不存在/缺失的 WP）→ 报不一致并走 WF-8 补落 | regression |
 | BS-021 | 日报"明日计划"含正式任务 | 只进当天原文；次日第一次写待办时才建；禁止当日落未来日待办 | positive |
@@ -637,7 +637,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | WP-001 | 新建待办且索引有高置信匹配 WP | 自动填 WP Ref 并输出已自动绑定 | positive |
-| WP-002 | 新建待办无匹配 WP | WP Ref=`待绑定`；DF-019 简洁清单询问；禁止猜填 | positive |
+| WP-002 | 新建待办无匹配 WP | 不落核心表；问绑哪个；禁止猜填、禁止待绑定占位落盘 | positive |
 | WP-003 | 计划文件 §3 | 仅 4 列引用简表（编号/名称/状态/里程碑），详情在 wps/WP-*.md | positive |
 | WP-004 | 新工作区 init | 预建 wps/ 与 wps/_index.md（8 列）；schema=0.10.0 | positive |
 | WP-005 | 要求把 WP 改成 WP-YYYYMMDD-NNN | 拒绝编号改制；保持 WP-NNN 短号 | regression |
@@ -924,6 +924,48 @@
 | PWP-010 | 无关键词 | 阶段执行人保持 — | regression |
 | PWP-011 | plan_ref 漏了某正常计划但 §3 仍有此 WP | 闸 1 仍投影该计划 | positive |
 
+## 65. 派活 / 基数 / 时间盒（v3.12.0）
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| DS-001 | 苏晚登录+登出测试 8.26~9.15，已有两条待办 | 不新建第三条；不询问要不要建；两条各绑一个 WP | positive |
+| DS-002 | 同上但无已有待办 | 自动建两条，各一 WP，先写后告知 | positive |
+| DS-003 | 一条待办试图写两个 WP Ref | 拦截并提示拆分 | negative |
+| DS-003b | 正式待办 WP Ref 空/待绑定/none | 禁止落核心表；问绑哪个 WP | negative |
+| DS-004 | 只改 WP 时间盒、未点名执行人动作 | 不新建待办 | regression |
+| DS-005 | 待办时间完全在新 WP 窗内 | 不改待办时间 | positive |
+| DS-006 | 待办结束 > 新 WP 结束 | 问 A/B/C，不自动改期 | positive |
+| DS-007 | AI 输出「要不要给苏晚建测试待办」 | 失败 | negative |
+| DS-008 | 多 WP 主题不清 | 问一次，不静默 | positive |
+| CO-001 | 结转空 WP Ref + 高置信 | 回填恰好 1 个已规划 WP；编号不变 | positive |
+| CO-002 | 结转已有合法单值 WP Ref | 不改归属 | regression |
+| CO-003 | 结转多值 WP Ref | 不完成态；pm-decisions | negative |
+| CO-004 | 结转空 WP Ref 且低置信 | 不把无 WP 行写入今天核心表；TD 编号不变 | negative |
+
+## 66. 拆文件入库（v3.12.0）
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| SF-001 | 「拆文件」+ 需求规格 | 加载 split-rules；写 sources/{编号}/ 六件套；不落待办 | positive |
+| SF-002 | 「拆解需求」（无源文件） | 走 07 §3，不建 sources | negative |
+| SF-003 | 「整理成 HTML 报告」（无拆文件） | 走 11 outputs，不进 sources | regression |
+| SF-004 | 「先拆文件再出 HTML」 | 先 sources 再 outputs | positive |
+| SF-005 | 仅走 html-report、不加载 split-rules | 失败 | negative |
+| SF-006 | 指纹相同再拆 | 禁止二次拆解 | regression |
+
+## 67. 结构 / 轻量查询（v3.12.0）
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| ST-001 | 简单查询「明天待办」 | 只加载 05，不加载 00/23/07/21 规则正文；只读 1–2 个数据文件 | regression |
+| ST-002 | 派活写入 | 加载 23；Calls 含 P-WF8-DEDUP；已加载 §7 | positive |
+| ST-003 | 包内无 QODER_RULES.md；16 白名单无该行 | 仅当 ST-001/004/005/006 口径已满足 | positive |
+| ST-004 | 5 类查询数据来源声明 | 05 §7 仍生效 | regression |
+| ST-005 | 「今天谁没交日报」 | 读 _index + 日志覆盖，不读 references | positive |
+| ST-006 | 简单查询中途改口「给张三加待办」 | 立即离开最小读取，加载写入行 + §7 | positive |
+| ST-007 | SKILL.md 相对 3.11.0 净增非空行 >20 | 失败 | negative |
+| ST-008 | 简单查询「明天待办」 | 不加载 21 规则正文；偏好只可读 pm-profile.md | regression |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -992,4 +1034,7 @@
 | Output Path Guard (OPG) | 7 | 4 | 3 |
 | Plan Template (PLT) | 10 | 6 | 4 |
 | Plan/WP Projection (PWP) | 11 | 7 | 4 |
-| **合计** | **525** | **314** | **211** |
+| 派活/基数/时间盒 (DS/CO) | 13 | 6 | 7 |
+| 拆文件入库 (SF) | 6 | 2 | 4 |
+| 结构/轻量查询 (ST) | 8 | 4 | 4 |
+| **合计** | **552** | **326** | **226** |
