@@ -452,9 +452,9 @@
 |---|---|---|---|
 | BS-001 | 用户说"根据 8/28 做倒排计划" | AI 识别为倒排意图（00号 §2.7），进入 WF-7，不误判为普通任务记录 | positive |
 | BS-002 | 倒排流程执行 | 澄清目标/截止日/资源 → 查重 → 反向 WBS + 关键路径 + 缓冲 → 输出草案待 PM 确认 | positive |
-| BS-003 | 倒排草案确认后 | PLAN 文件 `plans/PLAN-NNN-{name}.md` 写入 WP 粗规划表 + 倒排元数据；待办落待办文件（WP Ref + Due Date）；同一建议清单原子呈现 | positive |
+| BS-003 | 倒排草案确认后 | PLAN 按 5 节落盘（无 TD、无需求列、无按状态分章）；§3 投影从 WP 填；待办不灌计划；同一建议清单原子呈现 | positive |
 | BS-004 | 倒排 Task 与既有 Task 重复 | 查重阶段检测（Owner+时间+语义）→ SUGGEST 提示 PM 确认，不重复建任务 | positive |
-| BS-005 | 某 WP 下所有待办已完成 | 00号级联规则：聚合 WP 进度 100% → SUGGEST WP 状态改为已完成；不另存进度值 | positive |
+| BS-005 | 某 WP 下所有待办已完成 | 00号级联：SUGGEST WP→已完成（入口⑤落块 8「还没写等准许」）；采纳时同文件追加 §7 | positive |
 | BS-006 | 查询"PLAN-001 进度" | 05号 §6.7：读 PLAN 文件 WP 表 + 待办文件按 WP Ref 聚合，输出分层进度 | positive |
 | BS-007 | 查询"今天做什么" | 优先读待办文件 + 绑定文件；按 Due Date = 今天过滤待办文件，含 WP 归属 | positive |
 | BS-008 | 查询"本周计划" | 待办文件按本周切片按 WP 归集；PM 微调仅走 WP 日期变更链路 | positive |
@@ -647,7 +647,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| WC-001 | 新增 WP-001 文件 | 同步 _index.md 行 + 所属计划 §3 简表；输出 §8c.2 验证 | positive |
+| WC-001 | 新增 WP-001 文件 | 同步 _index.md 行 + 所属计划 §3 简表；§8c.2 含「§7 已追加」与计划投影行 | positive |
 | WC-002 | 改待办 WP Ref | 校验引用的 WP 文件存在；**不回写** WP 文件 §4 | positive |
 | WC-003 | 索引缺行但 wps/WP-002.md 存在 | 文件有效；D20 补行；不判死、不删除 | regression |
 
@@ -907,4 +907,89 @@
 | v3.8.0 Personnel/Confirm/Cost (PC) | 10 | 6 | 4 |
 | v3.9.0 过程日志/分片/映射/需求链路/打包 | 53 | 19 | 34 |
 | v3.10.0 对话日志/能耗入库/全员建档/TD/时间盒 | 27 | 13 | 14 |
-| **合计** | **470** | **278** | **192** |
+| WP Status History & Stage (SH) | 18 | 13 | 5 |
+| Glossary Sensing (GL) | 9 | 6 | 3 |
+| Output Path Guard (OP) | 7 | 4 | 3 |
+| Plan Template (PT) | 10 | 6 | 4 |
+| Plan/WP Projection (PS) | 11 | 7 | 4 |
+| **合计** | **525** | **314** | **211** |
+
+## 60. WP Status History & Stage (SH)
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| SH-001 | 新建 WP | 自带 §7 建包行（5 列，从=—，到=待确认） | positive |
+| SH-002 | 确认切法/块 3 待确认→已规划 | 同一文件一次写回 §7+头；镜像索引/正常计划 §3 | positive |
+| SH-003 | 只改头不记历史 | 级联验证不通过 | negative |
+| SH-004 | 问几号变什么状态 | 00 读包 §7 直答 | positive |
+| SH-005 | 旧包无 §7 | 降级报头+「状态链未建」，不报错 | regression |
+| SH-006 | 末行与头矛盾 | D33 P2；查询仍报链尾 | regression |
+| SH-007 | 同日多次转移 | 多行追加 | positive |
+| SH-008 | 通用回填算法 | 清单覆盖+抽样核链尾=头 | positive |
+| SH-009 | 要求改写已有历史行 | 拒绝，只允许追加更正行 | negative |
+| SH-010 | 阶段「开发中」 | 头=进行中；「上线」→头=已完成 | positive |
+| SH-011 | 问 WP 进度 | 绑定待办进度求和；无绑定=0% | positive |
+| SH-012 | 阶段跳步/回退 | 正常记录，不强制逐级 | positive |
+| SH-013 | 未知阶段名 | 登记待确认，不拒绝不静默改清单 | regression |
+| SH-014 | 入口⑤ 从待办推导 | 只登块 8「还没写等准许」；确认后落链 | positive |
+| SH-015 | §8 自定义阶段名 | §7 可引用 | positive |
+| SH-016 | 问现在什么状态；头≠链尾 | 报链尾并 D33，不改旧行 | positive |
+| SH-017 | 更正错误当前态 | 追加接链，旧行不变 | positive |
+| SH-018 | 默认 11 阶段 | 均能映射到四枚举 | positive |
+
+## 61. Glossary Sensing (GL)
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| GL-001 | 「个体户指的是个体工商户」 | 同轮 confirmed | positive |
+| GL-002 | AI 问「是不是」、PM「对」 | confirmed，不要求 G 号 | positive |
+| GL-003 | 口头抱歉但不写词库 | 不通过 | negative |
+| GL-004 | 无词库文件 + 首次 T1 | 必须按模板创建再写 | positive |
+| GL-005 | 已 confirmed 再声明 | 只更新命中次数 | regression |
+| GL-006 | 未登记原词出现 2 次 | pending+SUGGEST | positive |
+| GL-007 | WP 查询场景出现 T1 | 00 钩子仍入库 | positive |
+| GL-008 | 日报多个缩写 | 攒批一次；确认后 T2 | positive |
+| GL-009 | 「对，待办今天完成」 | 不写词库 | negative |
+
+## 62. Output Path Guard (OP)
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| OP-001 | 整理工时成 xlsx | `ai/outputs/{ts}/files/` + manifest + index | positive |
+| OP-002 | 写到工作区根或与 ai 平级 | 硬中止不写 | negative |
+| OP-003 | 宿主 final workspace folder=项目根 | 仍映射到 ai/outputs/ | positive |
+| OP-004 | 未载 11 的场景出表 | 00 钩子仍走 B 路 | positive |
+| OP-005 | 写后根上出现本轮新文件 | 报缺陷并给迁移，不留 | regression |
+| OP-006 | 扩展名 xlsx/csv | 12 必载；批次+index | positive |
+| OP-007 | 写 todos/{date}/{owner}.md | 不被误判为生成物 | negative |
+
+## 63. Plan Template (PT)
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| PT-001 | 新建计划 | 5 节 + status 正常 + PLAN-NNN 文件名 | positive |
+| PT-002 | 倒排落库 | 仍 5 节；§2 有门禁；无每日矩阵/TD/需求列 | positive |
+| PT-003 | 上线纳入 | §3 一张表，不按状态分章 | positive |
+| PT-004 | 自创章节或按状态分章 | 不落库 | negative |
+| PT-005 | 计划含 TD | 级联失败 | negative |
+| PT-006 | 表 >7 列 | 不通过 | negative |
+| PT-007 | upgrade-to 扫 plans/ | 清单覆盖全部非 PLAN-NNN-*.md | positive |
+| PT-008 | 落库前 | 已读 plan-template | positive |
+| PT-009 | 国庆式按状态分章 | 不通过 | negative |
+| PT-010 | 计划改为废弃 | §3 冻结；plan_ref 去掉；排期走 superseded_by | positive |
+
+## 64. Plan/WP Projection (PS)
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| PS-001 | WP 链尾变测试中 | 同轮所有正常 PLAN §3 当前状态已变 | positive |
+| PS-002 | 待办含预演且阶段为空 | §8 写入；链尾=预演则 PLAN 执行人同步 | positive |
+| PS-003 | 只改 PLAN §3 排期 | 不通过，必须改走 WP 时间盒 | negative |
+| PS-004 | §3 状态旧、链尾新 | 闸 2 先修再答 | positive |
+| PS-005 | 一包两个正常计划 | plan_ref 两号，两份 §3 都更新 | positive |
+| PS-006 | 废弃计划 | 闸 2 不改冻结 §3 | regression |
+| PS-007 | 索引 plan_ref 与正常 §3 不一致 | D37 | regression |
+| PS-008 | 增删 WP 未写 §5 | 级联验证失败 | negative |
+| PS-009 | 点名执行人后自动推导 | 不覆盖 | positive |
+| PS-010 | 无关键词 | 阶段执行人保持 — | regression |
+| PS-011 | plan_ref 漏了某正常计划但 §3 仍有此 WP | 闸 1 仍投影该计划 | positive |
