@@ -66,7 +66,8 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 6. 导出为指定文件格式 → `files/`
 7. 询问是否归档到 `ai/` 事实源
 
-**默认不得在用户未确认前生成正式版本文件。**
+**默认不得在用户未确认前生成正式版本文件。**  
+**例外 `skill_gap`**：一次写成 `{批次}/需求-{短标题}.md` 作主文件，跳过 3–5 与第 7 步；先写后告知路径。
 
 ### 5.2 格式确认规则
 
@@ -105,6 +106,8 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 |---|---|---|---|---|---|---|
 | 20260809165540 | 2026-08-09 16:55:40 | 帮我生成周报 | weekly_report | draft | ai/outputs/20260809165540/draft.md | pending |
 
+`Type=skill_gap`：主文件必须是 `{批次}/需求-{短标题}.md`，**不走** draft.md→final.md。登记后禁止问是否归档进事实源。7 日同痛点追加 `revisions/`。编号 `SG-YYYYMMDD-NNN` 取当日本 Type 最大号 +1。
+
 每次创建、修改、导出或归档输出物时，必须同步更新 `ai/outputs/index.md`。
 
 ---
@@ -125,7 +128,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 > v2.1.0 起 `outputs/` 位于 `ai/` 目录内（`ai/outputs/`），但其性质仍是生成物而非事实源：生成物不得作为任何查询/聚合的数据源。
 
-**生成报告 ≠ 更新事实源。** 默认先生成 `ai/outputs/` 草稿，用户确认后再询问是否归档到 `ai/` 事实源目录。
+**生成报告 ≠ 更新事实源。** 默认先生成 `ai/outputs/` 草稿，用户确认后再询问是否归档到 `ai/` 事实源目录。**例外**：`Type=skill_gap` 禁止询问归档进事实源，永不写入 requirements/wps/plans。
 
 ---
 

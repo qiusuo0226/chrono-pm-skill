@@ -211,6 +211,7 @@ Issue 创建 →
 Issue 状态 → 已解决/已关闭 →
   关联待办（问题 Ref 指向本问题）的状态更新走 inbox→C'，禁止 04 直写 `{owner}.md`；AUTO 不授权直写待办事实源
   [SUGGEST] 检查被阻塞的 task → 建议恢复为进行中
+  [SUGGEST] 关联 WP 若 `effect=正常` 且链尾仍停在阻塞阶段 → 提示可 P-WP-ADVANCE；已废弃 WP 不再提示推进
   [CHECK] 若由 Risk 转化而来 → 检查原 Risk 状态是否需要同步
 
 Issue Owner 变更 →

@@ -206,6 +206,7 @@
 Requirement 确认状态 / 生命周期变更 →
   [CHECK] 检查关联 WP 编号双向一致（需求清单「工作包」列 ↔ WP 关联需求编号）
   [CHECK] 未确认或已否决的需求未进入已规划 WP、未拆待办
+  [CHECK] P-WP-ADVANCE 到已规划时：绑定 REQ 若仍未确认 → 不得推进（00 §8d）
   [AUTO] 更新 `requirements/_index.md` 衍生索引
 
 Requirement 优先级变更 →
