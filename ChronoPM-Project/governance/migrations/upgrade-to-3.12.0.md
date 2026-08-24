@@ -125,9 +125,9 @@
 ## C. 验证检查
 
 - [x] `_version.py` 3.12.0 / 0.14.0
-- [ ] SKILL.md 相对 3.11.0 净增非空行 ≤20
-- [ ] 包内无 `QODER_RULES.md`；16 白名单无该行
-- [ ] 简单查询路由仅 05
-- [ ] 回归模块 65–67 已写入
-- [ ] audit_release 退出码 0
-- [ ] 正式文档不引用 upgrade-plan 路径
+- [x] SKILL.md 相对 3.11.0 净增非空行 ≤20（+2）
+- [x] 包内无 `QODER_RULES.md`；16 白名单无该行
+- [x] 简单查询路由仅 05
+- [x] 回归模块 65–67 已写入
+- [x] audit_release 退出码 0
+- [x] 正式文档不引用 upgrade-plan 路径
