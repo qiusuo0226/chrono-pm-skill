@@ -106,7 +106,7 @@ Skill 本体与工作区结构采用两个独立版本号，随契约 diff 联�
 | skill schemaVersion | `skill.json` 顶层 `schemaVersion` | 0.6.0 → **0.7.0** | Skill 包契约/元数据结构版本；双包拆分属架构变更，提升 Minor |
 | workspace schema | `scripts/_version.py` `WORKSPACE_SCHEMA_VERSION` | 0.8.0 → **0.9.0** | 工作区目录结构版本；RI 下沉项目级、去集层目录，联邦挂载 ChronoPM-Portfolio |
 
-**现行 workspace schema：0.14.0**（3.10.0：对话日志改列、全员建档、能耗回写已有日文件；目录结构不升）。两版本号不得混用：Skill 包升级改 schemaVersion；工作区目录结构变更改 workspace schema（硬约束 8）。
+**现行 workspace schema：0.15.0**（3.14.0：新增 `ai/project-info/`，budget/progress-plan 迁出 plans/）。两版本号不得混用：Skill 包升级改 schemaVersion；工作区目录结构变更改 workspace schema（硬约束 8）。
 
 ## ChronoPM-Portfolio 伴生包契约（v3.0.0）
 

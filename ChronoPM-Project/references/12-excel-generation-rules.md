@@ -78,7 +78,7 @@ Excel 文件生成到 `ai/outputs/{batch_id}/files/` 目录下（v2.1.0 起 outp
 | Q | 来源 | 下拉：contract/document/meeting/implied |
 | R | 状态 | 下拉：已提议/已确认/进行中/已交付/已验收/已变更/已取消 |
 | S | 关联任务 | TD-xxx（待办编号） |
-| T | 关联里程碑 | 里程碑型 WP（WP-NNN） |
+| T | 关联里程碑 | 含关键阶段的 WP 编号 |
 | U | 实现视图 | 面向开发的实现摘要（可选，07 号 §8.10 双视图）；导出时与 Markdown 模板"实现视图"列对应 |
 | V | 原型/文档链接 | 原型图/设计稿/接口文档指针（可选）；导出时与 Markdown 模板"原型/文档链接"列对应 |
 
@@ -444,7 +444,7 @@ Excel 文件生成后必须：
 | 风险登记册 | risks/risk-register.md | Excel 额外有条件格式 |
 | 问题跟踪表 | issues/issue-register.md | Excel 额外有延期公式和条件格式 |
 | 计划表 | todos/{date}/ 待办文件 | Excel 按 WP 分 Sheet |
-| 成本测算表 | plans/budget.md | Excel 有人力成本明细 Sheet 和公式 |
+| 成本测算表 | project-info/budget.md | Excel 有人力成本明细 Sheet 和公式 |
 | 周报 | reports/weekly/当前周.md | Excel 用 key-value 格式 |
 | 经验教训记录单 | reviews/lessons-learned.md | 列结构完全对应 |
 | 项目基本信息 | context/project-context.md | Excel 用 key-value 格式 |

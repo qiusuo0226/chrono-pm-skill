@@ -41,7 +41,7 @@ source: todos（不可变留档）
 ## 4. 复盘索引
 
 ```
-| Date | Event | 关联里程碑（WP-NNN） | File | Key Lessons |
+| Date | Event | 关联里程碑（WP 编号） | File | Key Lessons |
 |---|---|---|---|---|
 ```
 

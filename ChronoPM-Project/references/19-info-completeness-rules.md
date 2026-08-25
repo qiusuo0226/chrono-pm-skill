@@ -184,7 +184,7 @@
 
 ### 3.7 里程碑层
 
-检查文件：`plans/progress-plan.md`
+检查文件：`project-info/progress-plan.md`
 
 | 字段 | 缺失影响 | 默认严重程度 |
 |------|----------|-------------|

@@ -65,8 +65,8 @@
 | 重拆 / 二次拆解 | "再拆一下这份" | WF-SD-2（07 §8.6）；指纹未变则跳过 |
 | 风险/问题历史 | "某风险怎么演变的" | `risks/index.md` 或 `issues/index.md` → 活跃册条目时间线表；必要时按索引读归档册（归档=活历史，索引受控可读；禁止遍历 `backup/`） |
 | 查词义 / 查词库条目 | "这个词是什么意思？""查一下农专" | 本项目 `context/domain-glossary.md`（N-27）。只返回词库条目；`confirmed` 给标准词+释义，`pending` 标注候选。跨项目查词请用 Portfolio glossary-index 指针，本包不代查他项目 |
-| 成本查询 | "预算执行情况？" | `plans/budget.md`（项目预算/P&L）。**不得**与人员能耗混读 |
-| 某人能耗 / 成本损耗 / 能效 | "张三能耗""某人成本损耗""看一下能效" | 该人**最新**待办文件 `todos/{最新合法日}/{owner}.md` **§0.6**；按日并置同日文件 **§1 待办** 与 **§3 工作日志**。禁止伪造任务分摊。预算成本仍走 `plans/budget.md`，两路不得混（N-44） |
+| 成本查询 | "预算执行情况？" | `project-info/budget.md`（项目预算/P&L）。**不得**与人员能耗混读 |
+| 某人能耗 / 成本损耗 / 能效 | "张三能耗""某人成本损耗""看一下能效" | 该人**最新**待办文件 `todos/{最新合法日}/{owner}.md` **§0.6**；按日并置同日文件 **§1 待办** 与 **§3 工作日志**。禁止伪造任务分摊。预算成本仍走 `project-info/budget.md`，两路不得混（N-44） |
 | 决策查询 | "上次为什么决定用A方案？" | decisions/decision-log.md |
 | 里程碑查询 | “M02什么时候能过？” | PLAN 文件（WP 所属阶段）, todos/{date}/ 待办文件 |
 | 周报查询 | "本周周报呢？" | 已完结周直读 `reports/weekly/YYYY/YYYY-Wxx.md` 存根；本周实时从 todos 汇聚（01 号 §3.1） |
@@ -143,7 +143,7 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 | 当前问题 | `issues/issue-register.md`（未关闭） | `todos/{date}/` 待办文件（已阻塞） | 全量扫描历史日报 |
 | 资源情况 | 最新合法日 `_index.md` §1 花名册 + 当日 §3 参与表 | 个人待办 §0 / §0.5 | 读 `resource-register` / `transfer-log` / `backup/` |
 | 查词义 / 这个词什么意思 | `context/domain-glossary.md` | — | 编造释义；扫描 `backup/` |
-| 某人能耗 / 成本损耗 / 能效 | 该人最新待办 **§0.6**，按日并置同日 §1 / §3 | `project-context` 计量单位（折金额仅查询时用可选单价临时算，不落表） | 与 `plans/budget.md` 混读；伪造任务分摊；为回填建历史空目录 |
+| 某人能耗 / 成本损耗 / 能效 | 该人最新待办 **§0.6**，按日并置同日 §1 / §3 | `project-context` 计量单位（折金额仅查询时用可选单价临时算，不落表） | 与 `project-info/budget.md` 混读；伪造任务分摊；为回填建历史空目录 |
 | 变更了几次/延期了几次 | `todos/{date}/` 待办文件（计划变更次数/延期次数） | Change Log（计数缺失时） | 扫描快照/日报 |
 | 现在哪些任务超期 | `todos/{date}/` 待办文件 | 最近日报索引 | 扫描日报原文 |
 | 某需求在不在合同/招投标/立项范围内（范围判定） | `contract-register.md`（Step0 前置路由）→ `requirements/atoms/atom-index.md`(L1) → 目标 `{category}-index.md`(L2) → 命中 ATOM 全文(L3) → `requirements/canonical/canonical-index.md` | 命中 ATOM 全文(L3) → `canonical-index.md` | 全量扫描所有 ATOM/category 文件 |
@@ -297,8 +297,8 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 
 | 维度 | 评估指标 | 数据来源 |
 |------|----------|----------|
-| 进度健康 | 里程碑型 WP 偏差、待办延期率 | PLAN 文件（WP is_milestone）, todos/{date}/ 待办文件 |
-| 成本健康 | CPI、预算执行率 | plans/budget.md |
+| 进度健康 | 关键阶段偏差、待办延期率 | PLAN 文件（WP §8 关键阶段）, todos/{date}/ 待办文件 |
+| 成本健康 | CPI、预算执行率 | project-info/budget.md |
 | 风险健康 | 高/极高风险数量 | risks/risk-register.md |
 | 质量健康 | 未解决问题数、P0/P1问题数 | issues/issue-register.md |
 | 范围健康 | 需求变更次数、未确认需求数 | requirements/ |
@@ -373,7 +373,7 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 | 项目概况 | 本项目 `context/project-brief.md` | 不读 SKILL.md、不读 06-file-rules |
 | 人员状态 | 最新合法日 `_index.md` **§1 花名册**（六态） | 不读 SKILL.md、不读已退役 resource-register / transfer-log、不读 09 号 |
 | 查词义 | `context/domain-glossary.md` | 不读 SKILL.md、不编造释义 |
-| 某人能耗/能效 | 该人最新待办 §0.6 + 同日 §1/§3 | 不读 `plans/budget.md`、不伪造分摊 |
+| 某人能耗/能效 | 该人最新待办 §0.6 + 同日 §1/§3 | 不读 `project-info/budget.md`、不伪造分摊 |
 | 变更/延期计数 | `todos/{date}/` 待办文件 | 不读 SKILL.md、不扫快照/日报 |
 | 过程日志 / token / 漏条款 | `logs/ops/_index.md`（再按日打开表 A/表 B） | 不读 inbox/claim/runs；不把日志当进度 |
 | 等你裁定 | `pm-decisions.md`（按需；简单查询可不加载全文） | 本会话已读过则仍须提醒 |
@@ -419,9 +419,9 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 
 | 查询场景 | 数据访问 | 输出 |
 |---|---|---|
-| 计划整体进度（PLAN-NNN） | 先闸 2（正常计划）：§3 父行+子行与 WP 链尾/执行人/时间盒/阶段人期对账，不一致先修。废弃计划告知已废弃+`superseded_by`，不投影。默认只列 `effect=正常` 的 WP。读 `wps/_index.md` + `wps/WP-*.md` + PLAN §3；**计划进度只聚合 WP，禁止从 PLAN 正文待办行统计**；待办按 WP Ref 实时聚合（不回写 PLAN）。排期查询**只读 status=正常** 的计划 | 父行 + 默认子行（空岗醒目）+ 各 WP 进度 |
-| 某 WP 进度/状态（WP-NNN） | 先定位 `wps/WP-NNN.md`；**当前状态=§7 链尾**；报 `effect`。废弃包告知+后继，不投影进正常计划。待办按 WP Ref 过滤（实时聚合，不回写 WP §4） | 当前=链尾 + 生效 + 变化线 + 进度 |
-| 这计划谁没做完 / 还差谁 / 谁没排 | 闸 2 后读正常计划 §3 父行+子行 | 链尾未完成的 WP；执行人=`⚠️待安排人` 或排期=`— 待排期` 的子行 |
+| 计划整体进度 / 看一下 XXX 计划 | 先闸 2（正常计划）：§3/§4 与 WP §8 对账，不一致**先写回盘上**。然后**原样输出完整 PLAN 文件**（含已落盘 §3+§4）。禁止用 todos 或现场拼 WP 列表代替文件。废弃计划告知已废弃+`superseded_by`，不投影。默认只列 `effect=正常` 的 WP。排期查询**只读 status=正常** 的计划 | 完整 PLAN MD |
+| 某 WP 进度/状态（WP-NNN） | 先定位 `wps/WP-*.md`；**当前状态=§7 链尾**；报 `effect`。废弃包告知+后继，不投影进正常计划。待办按 WP Ref 过滤（实时聚合，不回写 WP §4；查看/谁参与过含已办结） | 当前=链尾 + 生效 + 变化线 + 进度 |
+| 这计划谁没做完 / 还差谁 / 谁没排 | 闸 2 后读盘上 §4 的 ⏳ / `⚠️待安排人` | 未安排阶段与空岗 |
 | WP 在哪些计划 | 读 WP `plan_ref`（正常）；问历史再扫废弃 §3 | 正常计划列表 |
 | 哪些包没进任何正常计划 | 有 WP 文件、`effect=正常`、plan_ref 为空或不含任何正常 PLAN | 未入包清单 |
 | 今天做什么 | 当日待办文件 `todos/{date}/`（入口为绑定文件 `_index.md`）；溯源时按 Due Date = 今天过滤待办文件 | 当日待办列表（含 WP 归属） |
@@ -445,7 +445,7 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 - 若待办文件无 WP Ref 列 → 行按 Owner、格按待办 Title，WP 列标注“（未关联 WP）”
 - 降级场景下矩阵仍可生成，仅缺少 WP 归属信息
 
-**性能约束**：WP 进度一律为待办文件实时聚合（不建进度索引文件，不回写 WP §4）；日/周查询直接读待办文件（绑定文件 `_index.md` 为当日入口，索引优先原则见 §6）；WP 查找先读 `wps/_index.md`，PLAN 文件只读 §3 引用简表，不扫描其他段。
+**性能约束**：WP 进度一律为待办文件实时聚合（不建进度索引文件，不回写 WP §4）；日/周查询直接读待办文件（绑定文件 `_index.md` 为当日入口，索引优先原则见 §6）；WP 查找先读 `wps/_index.md`。查看计划输出盘上全文，不从 todos 重聚。
 
 ---
 

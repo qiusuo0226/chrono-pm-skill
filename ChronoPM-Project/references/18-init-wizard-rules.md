@@ -157,11 +157,11 @@ AI 进入工作区
 （如暂无可回答"跳过"）
 ```
 
-**目标文件**：`plans/progress-plan.md`
+**目标文件**：`project-info/progress-plan.md`
 
 **规则**：
 - M01-M12 默认体系已预置，用户只需补充计划日期。
-- 如有额外里程碑，后续在 PLAN 文件中追加里程碑型 WP（is_milestone=true）。
+- 如有额外门禁，后续在 PLAN §2 手写；WP §8 将对应阶段标关键阶段=是。
 
 ---
 
@@ -274,7 +274,7 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 | Step 4 需求层 | `requirements/requirement-register.md` | 需求数量、需求ID列表字段 |
 | Step 5 资源层 | 当天 `todos/{today}/_index.md` | §1 花名册 + §6 TD 缩写；不创建 resource-register |
 | Step 5 资源层 | 待办文件 §0（仅首次出现有待办的人引导填写） | 联系方式/负责模块（岗位与在组状态读花名册 §1） |
-| Step 6 里程碑层 | `plans/progress-plan.md` | 计划日期 |
+| Step 6 里程碑层 | `project-info/progress-plan.md` | 计划日期 |
 
 ---
 

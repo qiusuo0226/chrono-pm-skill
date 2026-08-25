@@ -115,7 +115,7 @@ status: 草稿
 | 已发生问题 | 识别判定卡 →（确认后）`issues/issue-register.md` | 先出判定卡再 SUGGEST |
 | 关键决策 | `decisions/decision-log.md` | 建议新增决策记录 |
 | 需求变更 | `requirements/change-log.md` | 建议新增变更请求（submitted 状态） |
-| 里程碑调整 | `plans/progress-plan.md` | 建议更新里程碑状态 |
+| 里程碑调整 | `project-info/progress-plan.md` | 建议更新里程碑状态 |
 
 正式行动项自动落待办（inbox→C'），不等人点头。其余同步项走确认后执行。对外处理类列出改动文件路径，禁止章节号。
 

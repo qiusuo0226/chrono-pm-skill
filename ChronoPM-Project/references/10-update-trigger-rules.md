@@ -137,7 +137,7 @@
 #### 计划文件信号
 倒排、上线计划、建个计划、纳入工作包
 
-→ 触发：先读 `plan-template.md`，按 5 节落 `plans/PLAN-NNN-*.md`。
+→ 触发：先读 `plan-template.md`，按 6 节落 `plans/PLAN-*.md`。
 
 #### 源文档拆解信号
 拆文件、拆文档、拆解这份、把…拆进工作区、拆解合同、拆招标文件、拆立项、拆需求规格、入库源文档、提取需求条款、源文档台账
@@ -185,7 +185,7 @@
 #### 工时表 / 日志量 / 能耗投喂信号
 工时表、填写量、日志量、能耗、人日、人时、成本损耗、能效、投喂工时
 
-→ 触发：`01-daily-report-rules.md` **§1.6**（写入该人待办 **§0.6**）。**禁止改走 `plans/budget.md`**。单位取 project-context；表头对不上就问；AI 禁止凭空编数。
+→ 触发：`01-daily-report-rules.md` **§1.6**（写入该人待办 **§0.6**）。**禁止改走 `project-info/budget.md`**。单位取 project-context；表头对不上就问；AI 禁止凭空编数。
 
 #### 待办/计划生成信号
 生成 PM 待办、生成周计划、处理日报实际完成
@@ -314,9 +314,9 @@ AI 在处理任何用户输入前，必须先读取本项目 `context/project-br
 | 跨项目决策 | 本项目相关部分写入 `decisions/decision-log.md`；集层索引请到 ChronoPM-Portfolio |
 | 人员流转 | 有待办者 `todos/{date}/{owner}.md` **§0.5**；无待办者只改 `_index` §1 |
 | 当前资源分配 | 最新合法日 `_index.md` **§1 花名册**（跨项目时提示用 ChronoPM-Portfolio 包） |
-| 工时表 / 日志量 / 能耗投喂 | 该人待办 **§0.6**（走 01 号 §1.6）；禁止写入 `plans/budget.md` |
-| 本项目预算/P&L | `plans/budget.md`；跨项目汇总请用 ChronoPM-Portfolio |
-| 本项目里程碑 | `plans/PLAN-NNN-{name}.md`（里程碑 WP）；跨项目聚合请用 ChronoPM-Portfolio |
+| 工时表 / 日志量 / 能耗投喂 | 该人待办 **§0.6**（走 01 号 §1.6）；禁止写入 `project-info/budget.md` |
+| 本项目预算/P&L | `project-info/budget.md`；跨项目汇总请用 ChronoPM-Portfolio |
+| 本项目里程碑 | `plans/PLAN-*.md`（WP §8 关键阶段）；跨项目聚合请用 ChronoPM-Portfolio |
 
 ---
 

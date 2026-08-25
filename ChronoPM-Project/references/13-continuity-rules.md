@@ -118,8 +118,8 @@ ai/context/
 | 未关闭风险 | `carryover_open_only` | `risks/risk-register.md` |
 | 未关闭问题 | `carryover_open_only` | `issues/issue-register.md` |
 | 历史决策 | `summarize_reference` | `decisions/decision-log.md` |
-| 里程碑 | `selective_import` | `plans/progress-plan.md` |
-| 预算/P&L | `selective_import` | `plans/budget.md` |
+| 里程碑 | `selective_import` | `project-info/progress-plan.md` |
+| 预算/P&L | `selective_import` | `project-info/budget.md` |
 | 人员资源 | `selective_import` | 当天/最新合法日 `todos/{date}/_index.md` **§1 花名册**（本项目待办体系；导入后应建档名单若当日读/写 todos 则建档，§1 可空；已出组不建） |
 | 人员流转 | `selective_import` | 有待办者个人 **§0.5**；无待办者只记花名册状态/备注（本项目；跨项目流转请到 ChronoPM-Portfolio） |
 | 经验教训 | `summarize_merge` | `reviews/lessons-learned.md` |

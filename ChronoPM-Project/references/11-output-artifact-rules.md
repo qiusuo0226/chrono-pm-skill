@@ -142,7 +142,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 | 跨项目会议纪要 | 本项目相关部分归档到 `meetings/{year}/`；跨项目汇总请到 ChronoPM-Portfolio |
 | 需求评审纪要 | `meetings/{year}/` 或 `reviews/` |
 | 设计评审纪要 | `reviews/` |
-| P&L 导出 | `ai/outputs/`（必要时更新本项目 `plans/budget.md`） |
+| P&L 导出 | `ai/outputs/`（必要时更新本项目 `project-info/budget.md`） |
 
 归档时必须询问用户确认，给出目标路径（如 `reports/weekly/2026/2026-W33-项目周报.md`）。
 

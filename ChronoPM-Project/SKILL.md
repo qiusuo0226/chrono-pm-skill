@@ -10,7 +10,7 @@ description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、
 ## 1. 概述
 本技能以项目文件夹下的 `ai/` 目录为载体，以 Markdown 为项目记忆，以 AI 为副手，以人工确认为最终控制点。
 **核心理念**：事实源文件是唯一真相；日报/纪要是输入，不能替代事实源。
-**待办单一数据源**：执行状态 = `todos/{date}/{owner}.md`（一人一天一份；写入经 inbox 再合并）。PLAN = 唯一计划编排事实源（只引用 WP，不列待办）。WP 独立文件 = `wps/WP-NNN.md`（须有需求编号；待确认不拆待办）。需求只绑工作包，待办只绑工作包。
+**待办单一数据源**：执行状态 = `todos/{date}/{owner}.md`（一人一天一份；写入经 inbox 再合并）。PLAN = 唯一计划编排事实源（只引用 WP，不列待办）。WP 独立文件 = `wps/WP-*.md`（须有需求编号；待确认不拆待办）。需求只绑工作包，待办只绑工作包。
 **v3.0.0**：本包仅单项目。旧 portfolio 录入口废弃。跨项目只读归集见 ChronoPM-Portfolio。
 
 ## 2. 工作模式
@@ -26,7 +26,7 @@ project-root/
     ├── templates/
     ├── todos/{date}/{owner}.md
     ├── requirements/     # 登记册 + sources/{编号}/ 拆解产物（本项目一套）
-    ├── plans/  wps/  risks/  issues/  decisions/
+    ├── plans/  project-info/  wps/  risks/  issues/  decisions/
     ├── backup/           # 升级垃圾封存（禁读；3.8.0 空目录）
     ├── resources/        # 退役：register/transfer-log 迁 backup；人员读 todos/_index
     ├── reports/          # 项目日报按需生成（存根，可能不存在）+ 周报；个人日报在 todos
@@ -47,7 +47,8 @@ project-root/
 | `logs/ops/_index.md` | 对话过程留痕索引（懒建；不是进度事实源） |
 | `requirements/_index.md` | 需求检索 |
 | `risks/` `issues/` `decisions/` | 风险/问题/决策 |
-| `plans/PLAN-*.md` `progress-plan.md` `budget.md` | 计划/进度/预算（PLAN §3 = WP 引用简表） |
+| `plans/PLAN-*.md` | 计划（§3 = WP 引用简表；§4 = 阶段列表投影） |
+| `project-info/progress-plan.md` `project-info/budget.md` | 进度框架/预算 |
 | `wps/WP-*.md` `wps/_index.md` | 独立 WP 文件 + 查找加速器（存在性以文件为准） |
 | `requirements/requirement-register.md` `change-log.md` `contract-register.md` `source-type-registry.md` | 需求与合同（本项目） |
 | `requirements/sources/` `_index.md` | 源文档级拆解（加速器；存在性以 sources/*/meta.md 为准） |
@@ -125,11 +126,12 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | Risk/Issue | R-NNN / I-NNN | v3.7.0 短号（只读 index 求最大）；存量时间戳号保留不重编 |
 | Decision | D-{YYYYMMDD}-{HHmmss} | 不变；同秒 -02 |
 | Contract/IMP/簇/PF/G | 同上时间戳制 | 旧号不重编 |
-| WP/PLAN/REQ/CAN/CR/PRJ/DF/SRC | 短号或固定号 | SRC-NNN 仅项目内；共享用簇固定号 |
+| WP/PLAN | 新号 `WP/PLAN-YYYYMMDD-NNN`（ASCII，当日序号）；存量短号与中文名不重编 | 文件名=编号 |
+| REQ/CAN/CR/PRJ/DF/SRC | 短号或固定号 | SRC-NNN 仅项目内；共享用簇固定号 |
 | Meeting | MTG-YYYYMMDD-NNN | 不变 |
 
 ## 9–14. 状态 / 瘦身 / 输出 / 优先级 / 里程碑 / 容忍度
-同 v2.1.0：全中文枚举见 00 §5a；瘦身 300 行/30 条；优先级 Level 0–4；里程碑=WP `is_milestone`；容忍度见 00 §5c。
+同 v2.1.0：全中文枚举见 00 §5a；瘦身 300 行/30 条；优先级 Level 0–4；里程碑=WP §8 关键阶段；容忍度见 00 §5c。
 
 ## 15. 规则索引
 | 文件 | 何时加载 |
