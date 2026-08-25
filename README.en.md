@@ -1,10 +1,12 @@
-# ChronoPM v3.14.0 — An AI Sidekick That Actually Manages Projects
+# ChronoPM v3.15.0 — An AI Sidekick That Actually Manages Projects
 
 **You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
 ChronoPM is a project-management methodology packaged as an AI skill: talk the way you already do — paste a daily report, share meeting minutes, ask about progress — and it files the facts into a clean set of Markdown files. Anything that matters takes effect only after you nod. People leave, AI tools change; the project's memory stays in the folder.
 
 > **Two packs:** day-to-day entry with **ChronoPM-Project** (single project — every write happens here); cross-project progress / risk / contract / weekly rollups with **ChronoPM-Portfolio** (read-only — it never writes member projects).
+>
+> **Python:** init / migrate / verify scripts need Python **≥3.9** (3.10+ recommended). Daily todos and queries do not.
 
 ## Why you need it
 
@@ -83,7 +85,7 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.14.0 |
+| Skill version | 3.15.0 |
 | Workspace schema | 0.15.0 |
 | Rule files | 23 |
 | Document templates | 35 |

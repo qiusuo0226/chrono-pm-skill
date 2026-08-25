@@ -1,13 +1,18 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.14.0",
+  "version": "3.15.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
-    "current": "0.15.0"
+    "current": "0.16.0"
   },
   "migrations": [
+    {
+      "from": "0.15.0",
+      "to": "0.16.0",
+      "description": "v3.15.0：pm-profile current_operator；存量数据受控迁移（默认 dry-run）；四套 verify 脚本。"
+    },
     {
       "from": "0.14.0",
       "to": "0.15.0",
@@ -97,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.15.0",
+      "date": "2026-08-25",
+      "summary": "存量受控迁移；§4模板人期；skill_gap单文件；current_operator；日报载22；四套verify；init README转义。schema 0.15.0→0.16.0。双包同版本。"
+    },
     {
       "version": "3.14.0",
       "date": "2026-08-25",
@@ -473,7 +483,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-25",
-    "lastVersion": "3.14.0",
+    "lastVersion": "3.15.0",
     "updateRequiredOn": [
       "major",
       "minor",

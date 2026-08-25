@@ -91,6 +91,7 @@ AI 在每次会话**首次进入工作区**时（而非每次请求），必须�
 | 3.7.0+ / schema 0.12.0 | ① 存量 `{type}-source/` / 平铺 atoms/canonical **零清门禁**：未完成零清前禁止新拆解/对账/RI 判定（upgrade-to-3.7.0.md）；已建 `sources/{编号}/` 不删。② 发现未迁 `context/entity-registry.md` → 门禁阻断并输出分流清单。③ 登记册旧 15 列/缺时间线 → D26 限期迁移 |
 | 3.9.0+ / schema 0.14.0 | ① 有 `pending-changes.md` → 全文迁 `pm-decisions.md`，原件进 backup。② 缺需求索引不致命，触碰时按模板建。③ ops 日志懒建 |
 | 3.14.0+ / schema 0.15.0 | 应有 `project-info/`。`plans/budget.md` / `plans/progress-plan.md` 仍在旧路径 → 提示迁到 `project-info/`（清单→PM 确认）。PLAN 新建用 6 节、无子行 |
+| 3.15.0+ / schema 0.16.0 | `pm-profile.md` 应有 `current_operator`（可空）。存量迁移默认 dry-run，`--migrate-business` 写回 |
 | 3.8.0+ / schema 0.13.0 | ① 缺 `backup/` → **建空目录**（脚本只建空目录 + 升 schema，不改业务文件）。② 人员仍读 `resource-register` / `transfer-log` → 提示改读待办体系（最新合法 `_index` §1 花名册 + 个人 §0 / §0.5 / §0.6）。③ `v1-legacy` 等升级垃圾应由分类器建议搬出 archive 进 backup，本包不代搬 |
 
 3b. 检查 `ai/templates/` 参考模板库完整性：对比工作区 `ai/templates/` 下的文件与 Skill 包 `assets/templates/` 目录中的模板清单（`ALL_TEMPLATE_FILES`），如有缺失模板，在健康报告的“缺失能力”表中列出并建议执行迁移补齐。同时检查 `ai/outputs/.templates/manifest-template.md` 是否存在。

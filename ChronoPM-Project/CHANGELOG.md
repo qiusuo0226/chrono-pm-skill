@@ -4,7 +4,30 @@
 
 ---
 
-## 3.14.0 — 2026-08-25（本次发布 · released）
+## 3.15.0 — 2026-08-25（本次发布 · released）
+
+> 发布归档：Minor / contract_change + capability_change。存量受控迁移；计划 §4 模板含执行人排期；skill_gap 单文件；current_operator（空则 ASK）；AP/examples 治理；Python ≥3.9 引导；四套只读 verify；日报路由载 22 + 全员结转；init README `{编号}` 转义。workspace schema **0.15.0 → 0.16.0**。双包同版本。
+
+Blueprint Impact: full
+
+### Added
+- `current_operator` 与「我」推导拆分
+- `verify_projection.py` / `verify_todo_continuity.py` / `verify_requirement_wp.py` / `verify_contract_ri.py`
+- migrate `--migrate-business`（默认只检测）
+- 16 号 §21 AP 约束、§22 examples 质量；release-checklist C-1～C-4
+
+### Changed
+- skill_gap 不建 manifest（仅该 Type）
+- 日报必须加载 22 号；投喂先全员 Step 0
+- examples 01=初始化、02=升级
+- plan-template §4 含 `｜执行人｜排期`
+
+### Fixed
+- init README f-string `{编号}` 未转义导致崩溃
+
+---
+
+## 3.14.0 — 2026-08-25（released）
 
 > 发布归档：Minor / contract_change + capability_change。计划 §3 去子行、新增 §4 阶段列表（6 节）；WP §8 改为 13 标准阶段；新 PLAN/WP 编号 `YYYYMMDD-NNN`（存量不重编）；`budget.md`/`progress-plan.md` 迁到 `project-info/`；删除 `is_milestone`，改为 §8 关键阶段；P-WP-SCAN 增量+冻结；查看计划输出完整 MD。workspace schema **0.14.0 → 0.15.0**。双包同版本。
 

@@ -4,6 +4,10 @@
 
 ---
 
+## 3.15.0 — 2026-08-25（版本锁步 · released）
+
+> 与 Project 3.15.0 共用版本线。操作人声明走 V-9，禁止写子项目 pm-profile。skill-gap 模板单文件。workspace schema 0.16.0。
+
 ## 3.14.0 — 2026-08-25（版本锁步 · released）
 
 > 与 Project 3.14.0 共用版本线。各项目 `project-info/budget.md`；里程碑口径改为 WP §8 关键阶段。禁止写入成员项目。workspace schema 0.15.0。
