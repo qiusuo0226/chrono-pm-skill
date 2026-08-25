@@ -1,7 +1,8 @@
 ---
 doc_type: pm-profile
 project: "[项目名或项目集名]"
-pm_name: "[PM 姓名或常用称呼/缩写]"
+pm_name: "[项目经理，1～2 位：张三 或 张三 / 李四]"
+current_operator: ""
 version: v1.0
 date: YYYY-MM-DD
 status: 活跃
@@ -11,7 +12,8 @@ status: 活跃
 
 > 本文件由 ChronoPM 技能自动维护。AI 在每次交互中被动观察用户行为，自动写入 pending 偏好，经用户确认后升为 confirmed。
 >
-> **pm_name**：PM 姓名或常用称呼/缩写。AI 用它推导对话中的"我"是谁（如待办 Owner 匹配、"我的待办"查询），也用于 TD 编号中的人名缩写段。可留空，留空时按默认行为处理，不做身份假设。
+> **pm_name**：项目基本信息里的项目经理（1～2 位，斜杠分隔）。不是「我」。禁止按 todos 岗位自动填充。
+> **current_operator**：当前操作人。查「我的待办」只认此字段。空则 ASK「请问您是？」，禁止回退 pm_name。
 >
 > 用户也可手动编辑本文件。手动编辑后，AI 会在下次加载时检测格式一致性。
 

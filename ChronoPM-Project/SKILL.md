@@ -53,6 +53,7 @@ project-root/
 | `requirements/requirement-register.md` `change-log.md` `contract-register.md` `source-type-registry.md` | 需求与合同（本项目） |
 | `requirements/sources/` `_index.md` | 源文档级拆解（加速器；存在性以 sources/*/meta.md 为准） |
 | （人员） | 权威=最新合法日 `_index.md` §1；进出组=个人 §0.5；能耗=个人最新文件 §0.6。退役 register/transfer-log 见 `backup/` |
+| `context/pm-profile.md` | `pm_name`=项目经理（1～2 位，基本信息）；`current_operator`=当前操作人。「我的待办」只认后者；空则 ASK，禁止回退 pm_name |
 
 过程记录：`reports/daily/project/**`、`reports/weekly/**`、`meetings/**` 不能当事实源结论。
 
