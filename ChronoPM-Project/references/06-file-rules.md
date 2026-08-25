@@ -28,7 +28,7 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 
 | 目录 | 是否允许创建AI文件 | 说明 |
 |---|---|---|
-| `ai/` 下本项目目录（todos/wps/risks/issues/plans/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7）。过程日志=`logs/ops/`；决策文件=`pm-decisions.md`（懒建） |
+| `ai/` 下本项目目录（todos/wps/risks/issues/plans/project-info/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`project-info/` 放 budget/progress-plan。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7）。过程日志=`logs/ops/`；决策文件=`pm-decisions.md`（懒建） |
 | 业务代码目录 / 需求文档目录 / 交付物目录 / **工作区根下除 `ai/` 外的一切（含与 `ai/` 平级）** | ❌ 禁止 | AI 不得在此创建或修改任何文件。生成物只进 `ai/outputs/{timestamp}/`。宿主 final workspace folder / cwd 若等于项目根，忽略并改映射到 outputs |
 | 他项目 `ai/` | ❌ 禁止 | 不得代写；跨项目可见性由 ChronoPM-Portfolio 只读聚合 |
 
@@ -40,12 +40,13 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 
 直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
-ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├── plans/ ├── requirements/ ├── decisions/
+ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├── plans/ ├── project-info/ ├── requirements/ ├── decisions/
    ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ops/ ├── backup/
    └── pm-decisions.md（懒建，不预建）
 ```
 > v2.1.0：原 `continuity/` 目录合并入 `context/`（4 个文件：carryover-register/import-log/legacy-sources/project-lineage）；原工作区根目录 `outputs/` 移入 `ai/outputs/`，工作区根目录只留一个 `ai/` 顶层目录。
-> v3.11.0：写任何文件前走 00 P-ALWAYS 三路分类。生成物禁止落到项目根。PLAN 文件必为 `plans/PLAN-NNN-{name}.md`，5 节，`status: 正常|废弃`。WP 文件必含 §7 状态历史（缺=待补全不判死）。
+> v3.11.0：写任何文件前走 00 P-ALWAYS 三路分类。生成物禁止落到项目根。
+> v3.14.0：PLAN 文件必为 `plans/PLAN-YYYYMMDD-NNN-{name}.md`（存量 `PLAN-NNN-*.md` 不重编），**6 节**，`status: 正常|废弃`。`budget.md`/`progress-plan.md` 在 `project-info/`。WP 文件必含 §7 状态历史（缺=待补全不判死）。新 WP 编号 `WP-YYYYMMDD-NNN`。
 完整树见 `SKILL.md` §3.2。
 
 ### 1.4 更新权限分级
@@ -118,11 +119,11 @@ logs/ops/YYYY-MM-DD.md
 risks/risk-register.md
 issues/issue-register.md
 decisions/decision-log.md
-plans/progress-plan.md
-plans/PLAN-NNN-{name}.md
-plans/budget.md
+plans/PLAN-YYYYMMDD-NNN-{name}.md
+project-info/progress-plan.md
+project-info/budget.md
 wps/_index.md
-wps/WP-NNN.md
+wps/WP-YYYYMMDD-NNN.md
 requirements/_index.md
 requirements/requirement-register.md
 requirements/change-log.md
@@ -274,8 +275,8 @@ author: AI辅助生成
 | 风险登记册 | 超过30条时按类别或时间段拆分，保留 index |
 | 需求登记册 | 超过 **50** 条时按模块拆分 + `requirements/_index.md` 检索索引；查询先读索引再打开命中分片，禁止默认通读整册 |
 | 待办文件 | 按人按日天然拆分（`todos/{date}/{执行人}.md`），无需再拆；绑定文件 `_index.md` 与待办文件同日同目录 |
-| PLAN 文件 | 每计划一文件（`plans/PLAN-NNN-{name}.md`）天然拆分；必含 5 节；头 `status: 正常\|废弃`；§3 六列（编号/名称/当前状态/执行人/排期/是否里程碑），**父行+节点子行**（子行编号列重复 WP-NNN，名称列 `└ ` 阶段名；空岗写在执行人/排期格，禁止第 7 列），禁止 TD、禁止需求列、禁止按状态分章。只纳入 `effect=正常` 的 WP。投影列不得当独立事实改 |
-| WP 文件 | 每 WP 一文件（`wps/WP-NNN.md`）；必含 §7 状态历史（缺=待补全）；§8 阶段清单可跟执行人与排期（列表，不改宽表）；YAML `effect: 正常\|废弃`（缺省=正常），废弃必填 `superseded_by`；头 `status` 仅四枚举；`plan_ref` 多值用 ` / `；索引 `wps/_index.md` 一行/WP 仍 8 列；下辖待办不落盘 |
+| PLAN 文件 | 每计划一文件（`plans/PLAN-YYYYMMDD-NNN-{name}.md`，存量 `PLAN-NNN-*.md` 不重编）天然拆分；必含 **6 节**；头 `status: 正常\|废弃`；§3 六列（编号/名称/当前状态/执行人/排期/关键阶段），**每 WP 一行、无子行**（空岗写在执行人/排期格，禁止第 7 列）；§4 各 WP 阶段列表（WP §8 投影落盘）；禁止 TD、禁止需求列、禁止按状态分章。只纳入 `effect=正常` 的 WP。投影列不得当独立事实改。升级只处理 `PLAN-*.md` |
+| WP 文件 | 每 WP 一文件（`wps/WP-YYYYMMDD-NNN.md`，存量短号/中文名不重编）；必含 §7 状态历史（缺=待补全）；§8 13 标准阶段表（可增删）含执行人/排期/关键阶段；YAML `effect: 正常\|废弃`（缺省=正常），废弃必填 `superseded_by`；**无 is_milestone**；头 `status` 仅四枚举；`plan_ref` 多值用 ` / `；索引 `wps/_index.md` 一行/WP 仍 8 列（是否里程碑→关键阶段）；下辖待办不落盘，查看/谁参与过含已办结 |
 | decision-log | 超过30条或文件超300行时按季度拆分到 `decisions/archive/YYYY-QN-decision-log.md`，保留 index |
 | issue-register | 超过30条时按状态拆分（`已解决`/`已关闭` 归档，主体保留活跃），保留 index |
 | 过程日志 ops | 按日 `logs/ops/YYYY-MM-DD.md`；超 **300 行**拆 `-p2`（不是去月归档）；跨月整包归档到 `logs/archive/YYYYMM-ops.md` |
@@ -302,7 +303,7 @@ author: AI辅助生成
 必须包含列：`Week | Date Range | File | Status | Key Highlights`
 ### 7.4 WP 索引（v3.5.0）
 
-`wps/_index.md` 必须包含 8 列：`WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 是否里程碑 | 关联需求 | 文件路径`。
+`wps/_index.md` 必须包含 8 列：`WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径`。关键阶段列取 WP §8 标记为「是」的阶段名（无则 —）。
 
 **状态**合法值：`待确认` / `已规划` / `进行中` / `已完成` / `废弃`。前四值镜像头进度；`effect=废弃` 时本列写 `废弃`（不加第 9 列）。待确认不拆待办、不进计划时间盒。废弃 WP 禁止新待办、不进正常计划。
 

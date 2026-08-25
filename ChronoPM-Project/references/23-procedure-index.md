@@ -24,7 +24,7 @@
 | P-REQ-WP | REQ↔WP | 07 | — | — | 登记册工作包列 / WP §2 | 需求正文抄进 WP |
 | P-OUTPUT | 生成物 | 11 | P-ALWAYS 三路 | — | `ai/outputs/{批次}/` | 当事实源；替代 P-SPLIT |
 | P-RI | 跨源范围判定 | 07 §8 | — | 可读 sources 索引 | 不新建源目录 | 把范围判定当成拆文件 |
-| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划子行 | WP §8 (AI聚合) | 覆盖点名；全库扫；改 WP 整包窗 |
+| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划 §3 行+§4 该 WP 段 | WP §8 (AI聚合)+备注区阶段 | 覆盖点名；全库扫；改 WP 整包窗；清空已冻结 ✅ 人期 |
 | P-WP-ADVANCE | 建议推进链 | 00 §8d | PM 确认 | SCAN 可选 | §7 只追加 | 改旧链行；自动写链；effect=废弃仍推 |
 | P-WP-RETIRE | 废弃 WP | 00 §8e | PM 确认+superseded_by | 移出正常计划 | YAML effect+§6+index | §7 到状态=废弃；删文件；自动改待办 |
 | P-SKILL-GAP | 技能缺口笔录 | skill-gap-skill/references/gap-capture-rules.md | 闸 1=B；已载 11 | **必须 CALL P-OUTPUT** | outputs/需求-*.md | 写事实源；问要不要记；简单查询瞎记 |
