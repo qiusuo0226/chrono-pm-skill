@@ -92,4 +92,4 @@ stale_after: YYYY-MM-DD   # 或规则名，见下
 - 共享人力可用性、排期冲突、人力配置率 = 动态视图，禁止写入 shared-resource-index。
 - 跨项目风险完整实体在主归属项目 risk-register；集层不存风险实体。
 - 合同/招投标/立项拆解产物在各项目 `requirements/sources/{编号}/`（未迁完可读 `{type}-source/`）；集层不另存登记册事实源。
-- 里程碑 = 各项目 PLAN 中 `is_milestone: true` 的 WP；集层不存里程碑板。
+- 里程碑 = 各项目 WP §8 关键阶段=是的阶段；集层不存里程碑板。

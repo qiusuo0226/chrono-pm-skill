@@ -156,7 +156,7 @@ stale_after: YYYY-MM-DD
   - ai/projects/{子项目}/ai/todos/{date}/{姓名}.md §0.5 进出组
   - ai/portfolio/resources/shared-resource-index.md（跨项目共享人员索引，只读指针）
 - 成本文件：
-  - ai/projects/{子项目}/ai/plans/budget.md
+  - ai/projects/{子项目}/ai/project-info/budget.md
 
 ## 不确定项与待补充信息
 - [不确定项1]
