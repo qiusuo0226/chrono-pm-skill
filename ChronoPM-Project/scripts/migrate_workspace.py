@@ -705,6 +705,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.14.0（schema 0.14.0→0.15.0）：project-info/；budget/progress-plan 迁出 plans/。脚本只建空目录，不搬业务文件。清单→PM 确认后由 AI 移动。",
     },
+    {
+        "version": "3.15.0",
+        "schema": "0.16.0",
+        "capabilities": ["business_migrate", "current_operator", "verify_scripts", "daily_load_22"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.15.0（schema 0.15.0→0.16.0）：pm-profile current_operator；存量数据受控迁移（默认 dry-run，--migrate-business 写回）。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -1673,7 +1681,83 @@ def sync_templates(ai_dir: Path, dry_run: bool = False):
     return missing, synced
 
 
-def migrate_workspace(project_root: str, dry_run: bool = False, target_version: str = None, index_mode: str = "structure-only"):
+STAGE13 = [
+    "需求登记", "需求调研", "需求规划", "需求评审", "需求确认",
+    "方案设计", "用例设计", "开发", "预演", "测试", "内部验收", "试运行", "上线",
+]
+STAGE_MAP = {
+    "待确认": "需求登记",
+    "需求已规划": "需求规划",
+    "已需求评审": "需求评审",
+    "已设计评审": "方案设计",
+    "已测试用例评审": "用例设计",
+    "开发中": "开发",
+    "测试中": "测试",
+    "内部验收中": "内部验收",
+}
+
+
+def _strip_stage(name: str) -> str:
+    return re.sub(r"（完成）|（当前）", "", name or "").strip()
+
+
+def _map_stage(name: str) -> str:
+    n = _strip_stage(name)
+    if n in STAGE13:
+        return n
+    return STAGE_MAP.get(n, n)
+
+
+def migrate_business_data(ai_dir: Path, dry_run: bool = True):
+    """存量业务数据受控迁移。默认 dry-run。开发仓无 wps/ 则跳过。"""
+    print(f"\n{'='*40}")
+    print("存量业务数据（默认只检测；写回请加 --migrate-business）")
+    print(f"{'='*40}")
+    if not (ai_dir / "wps").exists():
+        print("  无 wps/，跳过（开发仓或未建工作区）。")
+        return []
+    actions = []
+    profile = ai_dir / "context" / "pm-profile.md"
+    if profile.exists():
+        text = profile.read_text(encoding="utf-8")
+        if "current_operator:" not in text:
+            actions.append(("pm-profile", "补空 current_operator", str(profile)))
+            if not dry_run:
+                text = text.replace("pm_name:", "current_operator: \"\"\npm_name:", 1)
+                if "current_operator:" not in text:
+                    text = "---\ncurrent_operator: \"\"\n" + text
+                profile.write_text(text, encoding="utf-8")
+    for name in ("budget.md", "progress-plan.md"):
+        src = ai_dir / "plans" / name
+        dst = ai_dir / "project-info" / name
+        if src.exists() and not dst.exists():
+            actions.append(("move", f"plans/{name} → project-info/{name}", str(src)))
+            if not dry_run:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(src), str(dst))
+    wp_dir = ai_dir / "wps"
+    for wp in sorted(wp_dir.glob("WP-*.md")):
+        raw = wp.read_text(encoding="utf-8")
+        new = raw
+        for old, canon in STAGE_MAP.items():
+            new = re.sub(re.escape(old), canon, new)
+        if new != raw:
+            actions.append(("wp-stage", f"阶段名映射 {wp.name}", str(wp)))
+            if not dry_run:
+                wp.write_text(new, encoding="utf-8")
+    if dry_run:
+        print(f"  待校准 {len(actions)} 处（未写盘）")
+        for a in actions[:40]:
+            print(f"    · {a[0]}: {a[1]}")
+        if len(actions) > 40:
+            print(f"    …另 {len(actions) - 40} 处")
+        print("  确认后加 --migrate-business 写回（写前会做 backup/migration-snapshot-*）")
+    else:
+        print(f"  已写回 {len(actions)} 处")
+    return actions
+
+
+def migrate_workspace(project_root: str, dry_run: bool = False, target_version: str = None, index_mode: str = "structure-only", migrate_business: bool = False):
     """执行工作区迁移"""
     ai_dir = Path(project_root) / "ai"
 
@@ -1876,6 +1960,7 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
     if dry_run:
         print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")
         print(f"如需执行迁移，请去掉 --dry-run 参数")
+        migrate_business_data(ai_dir, dry_run=True)
         return
 
     if not missing_dirs and not missing_files:
@@ -1883,6 +1968,9 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
         old_version = update_version_file(ai_dir, mode, skill_version)
         append_migration_log(ai_dir, old_version, [], [], skill_version)
         print(f"\n✅ 版本已更新到 {skill_version}")
+        migrate_business_data(ai_dir, dry_run=not migrate_business)
+        if migrate_business:
+            print("  （未建快照：目录已完整路径；需要快照请对有 wps 的业务仓使用 --migrate-business）")
         return
 
     # 5. 执行迁移
@@ -1939,6 +2027,19 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
     print(f"\n下一步:")
     print(f"  1. 检查新增文件并填写内容")
     print(f"  2. 如有 YYYY/MM 旧目录，建议迁移到 YYYYMM")
+
+    biz_dry = not migrate_business
+    if migrate_business and not dry_run:
+        snap = ai_dir / "backup" / f"migration-snapshot-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        snap.mkdir(parents=True, exist_ok=True)
+        for rel in ("wps", "plans", "project-info", "context"):
+            src = ai_dir / rel
+            if src.exists():
+                shutil.copytree(src, snap / rel, dirs_exist_ok=True)
+        print(f"  回滚快照: {snap}")
+        migrate_business_data(ai_dir, dry_run=False)
+    else:
+        migrate_business_data(ai_dir, dry_run=True)
     print(f"  3. 在 project-brief.md 中更新项目信息")
 
 
@@ -2097,6 +2198,12 @@ if __name__ == "__main__":
         default=False,
         help="为旧工作区创建 PM 偏好档案模板，AI 将在交互中被动学习用户习惯",
     )
+    parser.add_argument(
+        "--migrate-business",
+        action="store_true",
+        default=False,
+        help="写回存量业务数据（阶段名映射/文件移动/补 current_operator）。默认只检测。写前生成 backup/migration-snapshot-*",
+    )
 
     args = parser.parse_args()
     if args.create_glossary:
@@ -2104,4 +2211,10 @@ if __name__ == "__main__":
     elif args.create_profile:
         create_pm_profile_for_existing(args.project_root)
     else:
-        migrate_workspace(args.project_root, args.dry_run, args.target_version, args.index_mode)
+        migrate_workspace(
+            args.project_root,
+            args.dry_run,
+            args.target_version,
+            args.index_mode,
+            migrate_business=getattr(args, "migrate_business", False),
+        )

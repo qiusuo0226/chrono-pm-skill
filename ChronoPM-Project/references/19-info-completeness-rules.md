@@ -21,6 +21,21 @@
 
 > **v3.4.0**：`reports/timeline/` 为懒建目录，**不得**因该目录不存在报 P0/P1。未生成过时间线报 = 正常空缺。
 
+### 1.2 断言脚本旁路（v3.15.0）
+
+完整性巡检开始时，若本机有 Python ≥3.9，先只读跑 P0 脚本（不写盘），用退出码替代「模型自述无遗漏」：
+
+```bash
+python scripts/verify_projection.py --root <项目根>
+python scripts/verify_todo_continuity.py --root <项目根>
+```
+
+0=一致，1=差异，2=不可判。无 Python 则跳过脚本，仍做本文件其余人工巡检。
+
+**不自动跑** `verify_requirement_wp.py` / `verify_contract_ri.py`（P1，用户明示再跑）。
+
+本旁路 **不替代** 22 号全员结转。日报投喂仍走规则 Step 0。
+
 ---
 
 ## 2. 触发场景

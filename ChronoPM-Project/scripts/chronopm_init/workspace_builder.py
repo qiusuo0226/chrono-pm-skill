@@ -130,7 +130,10 @@ def create_single_project(project_root: str, project_name: str = ""):
     # 11. 创建 README.md
     print("\n创建 README.md...")
     readme_path = ai_dir / "README.md"
-    readme_path.write_text(generate_single_readme(project_name), encoding="utf-8")
+    if readme_path.exists():
+        print("  README.md 已存在，跳过（不覆盖）")
+    else:
+        readme_path.write_text(generate_single_readme(project_name), encoding="utf-8")
 
     # 完成
     print(f"\n{'='*60}")
