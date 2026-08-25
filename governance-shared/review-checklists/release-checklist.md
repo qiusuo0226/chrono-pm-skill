@@ -183,3 +183,34 @@ powershell -ExecutionPolicy Bypass -File tools/pack-skill/scripts/pack.ps1 -Skil
 | P-04 | Python 构建缓存 | 1.11.0 | `__pycache__/`，运行脚本时自动生成 |
 | P-05 | 幽灵引用 | 1.11.0 | 正式文档引用了不存在的文件或非标准产物（如引用 RELEASE-NOTES、A-升级方案） |
 | P-06 | 陈旧版本号 | 1.11.0 | SKILL.md 版本控制表未随版本更新而刷新 |
+
+---
+
+## C-1. README 一致性检查（v3.15.0）
+
+- [ ] VERSION = skill.json version = SKILL.md frontmatter（双包）
+- [ ] SKILL.md 版本控制表最新条目正确
+- [ ] SKILL_BLUEPRINT.md §1 版本号正确
+- [ ] skill.json blueprint.lastVersion 正确
+- [ ] CHANGELOG.md 最新版本段存在
+- [ ] 根 README.md / README.en.md 版本表与 skill.json 不矛盾
+
+## C-2. SKILL_MODULE_MAP.md 一致性检查（v3.15.0）
+
+- [ ] 模块图与本版能力一致（含 current_operator / 日报载 22 / verify 旁路若已画）
+- [ ] 不演示未实现能力
+
+## C-3. examples 正确性检查（v3.15.0）
+
+- [ ] 编号：01 初始化 → 02 升级 → … → 20 技能缺口
+- [ ] examples/README.md mermaid 与表格链接正确
+- [ ] 跨引用已更新（03→02 升级，17→01 初始化）
+
+## C-4. examples 质量标准检查（v3.15.0：存量豁免场景/mermaid）
+
+本版强制：
+- [ ] 编号与 README 一致
+- [ ] 跨引用正确
+- [ ] 不演示未实现能力
+
+本版豁免：存量示例可以没有独立场景段、可以没有 mermaid。
