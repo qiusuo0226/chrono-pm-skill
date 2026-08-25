@@ -32,6 +32,7 @@ baselines/{version}/
 | **3.12.0** | 全包快照（过程索引/简单查询仅05/删QODER/待办恰好1 WP/派活查重/拆文件强制sources；schema 仍 0.14.0） | 与发布包逐文件一致 |
 | **3.13.0** | 全包快照（WP联动/effect/节点子行/V-13/skill-gap-skill；schema 仍 0.14.0） | 与发布包逐文件一致 |
 | **3.14.0** | 全包快照（计划6节/13阶段/ASCII编号/project-info/删is_milestone/SCAN冻结；schema 0.15.0） | 与发布包逐文件一致 |
+| **3.15.0** | 全包快照（存量迁移/current_operator/verify脚本/日报载22；schema 0.16.0） | 与发布包逐文件一致 |
 
 **规范（自 3.5.0 起）**：发布新版本时，baseline 必须是该版本包内容的**全量快照**（含 scripts/ 与 tests/），与发布包逐文件一致；audit 与回归以当前版基线为对照基准。
 
