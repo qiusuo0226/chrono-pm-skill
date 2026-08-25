@@ -11,7 +11,7 @@
 | ProcID | P-SKILL-GAP |
 | Home | 本文件 |
 | Pre | 闸 1 = B 路；已载 11 |
-| Calls | 必须 CALL P-OUTPUT（建 `ai/outputs/{YYYYMMDDHHMMSS}/` + manifest + 登记 outputs/index.md） |
+| Calls | 必须 CALL P-OUTPUT（建 `ai/outputs/{YYYYMMDDHHMMSS}/` + 登记 outputs/index.md）。**Type=skill_gap 不建 manifest.md**，元数据写在需求文件 front matter |
 | Writes | `{批次}/需求-{短标题}.md`（主文件，不走 draft.md） |
 | Forbidden | 写 requirements/wps/plans/todos；当 REQ/待办；嵌套 SKILL.md；数据缺失走本过程；未达触发阈值落盘；问「要不要记」 |
 
@@ -49,7 +49,7 @@ P-ALWAYS 第 4 步只检测，不写文件。写文件只走 P-ROUTE → 本过�
 
 `sg_id: SG-{今天}-NNN`。NNN = 当日 Type=skill_gap 已有最大号 +1，无则 001。读 `ai/outputs/index.md`，禁止猜。
 
-YAML 必填：doc_type=skill-gap-demand；skill_name；skill_version_installed（本包 VERSION）；workspace_skill_version 与 workspace_schema（`ai/.skill-version.json`）；project；created_at；priority（AI 建议）。两行版本不一致须在正文写「版本差」。
+YAML 必填：doc_type=skill-gap-demand；sg_id；skill_name；skill_version_installed（本包 VERSION）；workspace_skill_version 与 workspace_schema（`ai/.skill-version.json`）；project；created_at；priority（AI 建议）；batch_id。建议：source_files。两行版本不一致须在正文写「版本差」。不另写 manifest.md。
 
 短标题 ≤20 字，来自一句话痛点。
 
@@ -62,4 +62,4 @@ YAML 必填：doc_type=skill-gap-demand；skill_name；skill_version_installed�
 
 ## 7. 与 P-OUTPUT
 
-先 P-OUTPUT 建批次与 manifest（Type=skill_gap，Main File=需求-*.md），再写主文件，再更新 index。缺任一步 = 级联未完成。宿主默认目录落到项目根 → 仍映射本批次（闸 1）。
+先 P-OUTPUT 建批次（Type=skill_gap，Main File=需求-*.md，**不建 manifest**），再写主文件，再更新 index。缺任一步 = 级联未完成。宿主默认目录落到项目根 → 仍映射本批次（闸 1）。

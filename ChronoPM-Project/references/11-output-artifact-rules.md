@@ -67,7 +67,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 7. 询问是否归档到 `ai/` 事实源
 
 **默认不得在用户未确认前生成正式版本文件。**  
-**例外 `skill_gap`**：一次写成 `{批次}/需求-{短标题}.md` 作主文件，跳过 3–5 与第 7 步；先写后告知路径。
+**例外 `skill_gap`**：一次写成 `{批次}/需求-{短标题}.md` 作主文件，跳过 3–5 与第 7 步；先写后告知路径。**不建 `manifest.md`**；来源写在该需求文件 front matter 的 `source_files`。其它 Type 仍按 §3 建 manifest。
 
 ### 5.2 格式确认规则
 
@@ -106,7 +106,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 |---|---|---|---|---|---|---|
 | 20260809165540 | 2026-08-09 16:55:40 | 帮我生成周报 | weekly_report | draft | ai/outputs/20260809165540/draft.md | pending |
 
-`Type=skill_gap`：主文件必须是 `{批次}/需求-{短标题}.md`，**不走** draft.md→final.md。登记后禁止问是否归档进事实源。7 日同痛点追加 `revisions/`。编号 `SG-YYYYMMDD-NNN` 取当日本 Type 最大号 +1。
+`Type=skill_gap`：主文件必须是 `{批次}/需求-{短标题}.md`，**不走** draft.md→final.md，**不建 manifest.md**。登记后禁止问是否归档进事实源。7 日同痛点可在需求文件 front matter `revisions` 追加，或按用户要求另开批次。编号 `SG-YYYYMMDD-NNN` 取当日本 Type 最大号 +1。
 
 每次创建、修改、导出或归档输出物时，必须同步更新 `ai/outputs/index.md`。
 
@@ -114,7 +114,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 ## 8. 来源追溯
 
-所有生成物必须在 `manifest.md` 中记录来源文件（如本项目周报来自本项目日报/待办/风险/问题等）。跨项目汇总周报请到 ChronoPM-Portfolio 对话生成，本包不以其为归档目标。**不得生成无来源记录的正式文件。**
+除 `Type=skill_gap` 外，所有生成物必须在 `manifest.md` 中记录来源文件（如本项目周报来自本项目日报/待办/风险/问题等）。skill_gap 的来源写在需求文件 YAML `source_files`。跨项目汇总周报请到 ChronoPM-Portfolio 对话生成，本包不以其为归档目标。**不得生成无来源记录的正式文件。**
 
 ---
 

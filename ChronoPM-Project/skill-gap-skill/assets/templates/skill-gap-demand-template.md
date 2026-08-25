@@ -1,13 +1,15 @@
 ---
 doc_type: skill-gap-demand
 sg_id: SG-YYYYMMDD-NNN
+batch_id: YYYYMMDDHHMMSS
 skill_name: chrono-pm-project
 skill_version_installed: x.y.z
 workspace_skill_version: x.y.z
-workspace_schema: 0.14.0
+workspace_schema: 0.16.0
 project: [项目名]
 created_at: YYYY-MM-DD
 priority: 中
+source_files: []
 ---
 
 # Skill 升级需求：{一句话标题}
