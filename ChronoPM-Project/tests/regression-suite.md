@@ -640,7 +640,7 @@
 | WP-002 | 新建待办无匹配 WP | 不落核心表；问绑哪个；禁止猜填、禁止待绑定占位落盘 | positive |
 | WP-003 | 计划文件 §3 | 仅 4 列引用简表（编号/名称/状态/里程碑），详情在 wps/WP-*.md | positive |
 | WP-004 | 新工作区 init | 预建 wps/ 与 wps/_index.md（8 列）；schema=0.10.0 | positive |
-| WP-005 | 要求把 WP 改成 WP-YYYYMMDD-NNN | 拒绝编号改制；保持 WP-NNN 短号 | regression |
+| WP-005 | 新建 WP | 编号 WP-YYYYMMDD-NNN（ASCII，当日序号）；存量短号/中文名不重编 | positive |
 
 
 ## 49. WP 数据一致性（v3.5.0 CR-E）
@@ -897,8 +897,8 @@
 
 | ID | 输入 | 预期 | 类型 |
 |---|---|---|---|
-| PLT-001 | 新建计划 | 5 节 + status 正常 + PLAN-NNN 文件名 | positive |
-| PLT-002 | 倒排落库 | 仍 5 节；§2 有门禁；无每日矩阵/TD/需求列 | positive |
+| PLT-001 | 新建计划 | 6 节 + status 正常 + PLAN-YYYYMMDD-NNN 文件名；§3 无子行 | positive |
+| PLT-002 | 倒排落库 | 仍 6 节；§2 有门禁；§4 阶段列表；无每日矩阵/TD/需求列 | positive |
 | PLT-003 | 上线纳入 | §3 一张表，不按状态分章 | positive |
 | PLT-004 | 自创章节或按状态分章 | 不落库 | negative |
 | PLT-005 | 计划含 TD | 级联失败 | negative |
@@ -919,7 +919,7 @@
 | PWP-005 | 一包两个正常计划 | plan_ref 两号，两份 §3 都更新 | positive |
 | PWP-006 | 废弃计划 | 闸 2 不改冻结 §3 | regression |
 | PWP-007 | 索引 plan_ref 与正常 §3 不一致 | D37 | regression |
-| PWP-008 | 增删 WP 未写 §5 | 级联验证失败 | negative |
+| PWP-008 | 增删 WP 未写 §6 | 级联验证失败 | negative |
 | PWP-009 | 点名执行人后自动推导 | 不覆盖 | positive |
 | PWP-010 | 无关键词 | 阶段执行人保持 — | regression |
 | PWP-011 | plan_ref 漏了某正常计划但 §3 仍有此 WP | 闸 1 仍投影该计划 | positive |
@@ -972,22 +972,22 @@
 |---|---|---|---|
 | WPL-001 | 待确认 WP 已入正常计划 | D38 提示推进；确认后 §7 追加；PLAN 父行=链尾 | positive |
 | WPL-002 | 已绑测试待办、链尾仍待确认 | 建议测试中；确认后追加 | positive |
-| WPL-003 | SCAN 测试待办贾星 08-24~09-10 | §8 (AI聚合)；PLAN 子行可见 | positive |
+| WPL-003 | SCAN 测试待办贾星 08-24~09-10 | §8 (AI聚合)；PLAN §4 该 WP 段可见 | positive |
 | WPL-004 | §8 已点名，待办是另一人 | 不覆盖；块 8 | negative |
-| WPL-005 | 内部验收无待办 | 子行 `⚠️待安排人` / `— 待排期` | positive |
-| WPL-006 | 只改 PLAN 子行排期 | 失败，改走 WP | negative |
-| WPL-007 | 一包两份正常计划 | 两份父行+子行相同 | positive |
+| WPL-005 | 内部验收无待办 | §4 该阶段 ⏳ / `⚠️待安排人` / `— 待排期` | positive |
+| WPL-006 | 只改 PLAN §4 排期 | 失败，改走 WP | negative |
+| WPL-007 | 一包两份正常计划 | 两份 §3 行 + §4 列表相同 | positive |
 | WPL-008 | 两份计划父行排期不同 | D38 歧义 | regression |
 | WPL-009 | PLAN §3 加空岗第 7 列 | PLT-006 失败 | negative |
-| WPL-010 | 子行 WP 编号留空 | 失败 | negative |
+| WPL-010 | §3 插入 `└ ` 子行 | 失败；改走 §4 列表 | negative |
 | WPL-011 | 未确认 REQ 仍推进已规划 | E1 拦截 | negative |
 | WPL-012 | 废弃 WP-003 | effect=废弃；正常计划移出；§7 到状态不是废弃；index 状态=废弃 | positive |
 | WPL-013 | 给废弃 WP 派活 | 不落待办 | negative |
 | WPL-014 | 无 effect 字段 | 当正常；触碰补键 | positive |
 | WPL-015 | status: 废弃 | 不通过 | negative |
 | WPL-016 | 本轮两条同 WP 待办 | SCAN 一次 | positive |
-| WPL-017 | 闸 2 子行已一致 | 不写 PLAN | positive |
-| WPL-018 | 「展开全部」 | 对话有已过阶段；文件仍仅默认范围 | positive |
+| WPL-017 | 闸 2 §4 已一致 | 不写 PLAN | positive |
+| WPL-018 | 查看计划 | 闸 2 后输出完整 PLAN MD（盘上 §3+§4） | positive |
 | WPL-019 | PM 纠正误匹配 | 包级排除；下次 SCAN 不再误入 | positive |
 | WPL-020 | 双正常计划人期不同 | D38；范围=该 WP 全部正常计划 | regression |
 | WPL-021 | §3 引用失踪 WP 文件 | 先 D20，不直接移出 | positive |
@@ -1007,6 +1007,23 @@
 | SKG-008 | 「这是 skill 的问题，记下来」 | 落盘；含 sg_id | positive |
 | SKG-009 | 当日已有 SG-…-001 | 下一号 002 | positive |
 | SKG-010 | P-ALWAYS 第 4 步直接写文件 | 失败，须经 P-SKILL-GAP | negative |
+
+## 69. 阶段体系 / 目录 / 编号 / 看计划（v3.14.0）
+
+| ID | 输入 | 预期 | 类型 |
+|---|---|---|---|
+| STP-001 | 新建 WP | §8 含 13 标准阶段表；无 is_milestone；编号 WP-YYYYMMDD-NNN | positive |
+| STP-002 | 派活「给张三安排测试」 | 备注区 `阶段：测试`；SCAN 写 §8 测试行；不反问要不要建 | positive |
+| STP-003 | 待办标题含「测试用例」 | 命中用例设计，不命中测试 | positive |
+| STP-004 | 开发阶段全部已办结后再 SCAN | §8 开发仍 ✅ 且人期不被清空 | regression |
+| STP-005 | 「看一下 PLAN-001 计划」 | 闸 2 后输出完整 PLAN MD；不从 todos 实时聚合 | positive |
+| STP-006 | init 新工作区 | 存在 `project-info/`；budget/progress-plan 在该目录不在 plans/ | positive |
+| STP-007 | 写入 project-info/budget.md | P-ALWAYS 允许（06 §1.1 含 project-info） | positive |
+| STP-008 | plans/ 下 `国庆上线计划.md` | 升级只出清单，不插入 §4 | regression |
+| STP-009 | WP §8 阶段名 `开发中（完成）` | 剥后缀后映射到「开发」 | positive |
+| STP-010 | §8 已点名张三，待办是李四 | 不覆盖点名；进块 8 | negative |
+| STP-011 | 需求登记阶段落待办、WP 仍待确认 | 拦截；须先 ADVANCE 到已规划 | negative |
+| STP-012 | 混合引用 WP-新设名称申报 与 WP-20260825-001 | 允许；旧号不重编 | positive |
 
 ## 回归用例统计
 
@@ -1080,4 +1097,5 @@
 | 拆文件入库 (SF) | 6 | 2 | 4 |
 | 结构/轻量查询 (LQ) | 8 | 4 | 4 |
 | WP联动/生效/时间窗/缺口 (WPL/PFA/SG) | 37 | 23 | 14 |
-| **合计** | **589** | **349** | **240** |
+| 阶段/目录/编号/看计划 (STP) | 12 | 8 | 4 |
+| **合计** | **601** | **357** | **244** |

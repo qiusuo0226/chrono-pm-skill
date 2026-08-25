@@ -689,6 +689,22 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.12.0（schema 保持 0.14.0）：过程索引 23；简单查询仅 05；正式待办恰好 1 个 WP；派活查重；拆文件强制 sources/。无新目录。",
     },
+    {
+        "version": "3.13.0",
+        "schema": "0.14.0",
+        "capabilities": ["wp_scan_advance", "wp_effect", "plan_subrows", "v13_time_window", "skill_gap"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.13.0（schema 保持 0.14.0）：WP 联动 SCAN/ADVANCE、effect、计划子行、V-13、skill-gap。无新目录。",
+    },
+    {
+        "version": "3.14.0",
+        "schema": "0.15.0",
+        "capabilities": ["plan_six_sections", "stage13", "ascii_ids", "project_info_dir", "scan_freeze"],
+        "new_dirs": ["project-info"],
+        "new_files": [],
+        "note": "v3.14.0（schema 0.14.0→0.15.0）：project-info/；budget/progress-plan 迁出 plans/。脚本只建空目录，不搬业务文件。清单→PM 确认后由 AI 移动。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -1844,6 +1860,18 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
         print(f"{'='*40}")
         for line in migrate_pending_changes_to_pm_decisions(ai_dir, dry_run):
             print(line)
+
+    needs_v314 = _vcmp(skill_version, "3.14.0") >= 0 and (
+        current_ws_version == "unknown"
+        or _vcmp(current_ws_version, "3.14.0") < 0
+        or _vcmp(str(current_schema), "0.15.0") < 0
+    )
+    if needs_v314:
+        print(f"\n{'='*40}")
+        print("v3.14.0（schema 0.15.0）：脚本只建空 project-info/，不搬业务文件。")
+        print("若 plans/budget.md 或 plans/progress-plan.md 仍在：清单→PM确认→移到 project-info/。")
+        print("计划升级只处理 PLAN-*.md。详见 upgrade-to-3.14.0.md")
+        print(f"{'='*40}")
 
     if dry_run:
         print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")

@@ -232,8 +232,8 @@ author: AI辅助生成
 | 风险识别 | `risks/risk-register.md` |
 | 问题 / 阻塞 | `issues/issue-register.md` |
 | 决策 / 结论 | `decisions/decision-log.md` |
-| 里程碑变更 | `plans/PLAN-NNN-{{name}}.md`（里程碑 = WP，is_milestone=true）|
-| 成本 / 预算变动 | `plans/budget.md` |
+| 里程碑变更 | `plans/PLAN-*.md`（关键阶段 = WP §8 标记为是的阶段）|
+| 成本 / 预算变动 | `project-info/budget.md` |
 | 个人工作汇报 / 日报内容归档 | `todos/{{日期}}/{{执行人}}.md`（§2 存档 + §3 工作日志） |
 | 项目日报（按需生成的存根，可能不存在） | `reports/daily/project/YYYYMM/` |
 | 会议纪要 | `meetings/`（跨项目汇总周报请换用 ChronoPM-Portfolio）|
@@ -541,13 +541,14 @@ ai/
 │   └── sources/                   # 源文档级拆解（v3.6.0 / schema 0.11.0）
 │       ├── _index.md              # 台账加速器
 │       └── {编号}/                # 一源文档一目录
-├── plans/                         # 计划类事实源
-│   ├── PLAN-NNN-{{name}}.md      # PLAN 计划文件（§3 = WP 引用简表，AI 按需创建）
+├── plans/                         # 计划类事实源（只放 PLAN-*.md）
+│   └── PLAN-YYYYMMDD-NNN-{{name}}.md  # PLAN（§3 简表 + §4 阶段列表）
+├── project-info/                  # 项目基本情况（v3.14.0 / schema 0.15.0）
 │   ├── progress-plan.md
 │   └── budget.md
 ├── wps/                           # WP 独立文件（v3.5.0 / schema 0.10.0）
 │   ├── _index.md                  # WP 索引（查找加速器，非存在性判据）
-│   └── WP-NNN.md                  # 独立 WP 文件（短号）
+│   └── WP-YYYYMMDD-NNN.md         # 独立 WP 文件（存量短号/中文名不重编）
 ├── todos/                         # 待办（执行状态唯一事实源）
 │   └── {{YYYY-MM-DD}}/            # 每日一目录
 │       ├── _index.md              # 绑定文件（当日参与人员索引）
@@ -567,14 +568,14 @@ ai/
 ## 事实源文件
 
 - `todos/{{YYYY-MM-DD}}/{{执行人}}.md` - 待办文件（执行状态唯一事实源）
-- `plans/PLAN-NNN-{{name}}.md` - PLAN 计划文件（WP 引用简表，唯一计划编排事实源）
-- `wps/WP-NNN.md` - 独立 WP 文件（短号；下辖待办纯派生）
+- `plans/PLAN-YYYYMMDD-NNN-{{name}}.md` - PLAN 计划文件（WP 引用简表 + 阶段列表，唯一计划编排事实源）
+- `wps/WP-YYYYMMDD-NNN.md` - 独立 WP 文件（存量短号/中文名不重编；下辖待办纯派生）
 - `wps/_index.md` - WP 索引（查找加速器，文件存在性以 WP 文件为准）
 - `risks/risk-register.md` - 风险登记册
 - `issues/issue-register.md` - 问题登记册
 - `decisions/decision-log.md` - 决策记录
-- `plans/progress-plan.md` - 进度计划
-- `plans/budget.md` - 预算与 P&L
+- `project-info/progress-plan.md` - 进度计划
+- `project-info/budget.md` - 预算与 P&L
 - `requirements/requirement-register.md` - 需求登记册
 - `requirements/change-log.md` - 需求变更记录
 - `requirements/contract-register.md` - 合同登记册（RI 合同作用域范围判定入口，CR-20260813-002）

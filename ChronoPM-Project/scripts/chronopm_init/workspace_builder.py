@@ -143,5 +143,5 @@ def create_single_project(project_root: str, project_name: str = ""):
     print(f"  2. AI 将引导你录入合同、项目、计划、需求、资源信息")
     print(f"  3. 录入完成后，AI 会自动填充 project-context、project-brief、")
     print(f"     project-index、PLAN 计划文件等")
-    print(f"  4. 也可手动填写 context/project-context.md、plans/budget.md、")
+    print(f"  4. 也可手动填写 context/project-context.md、project-info/budget.md、")
     print(f"     prompts/project-rules.md")
