@@ -58,6 +58,22 @@ project-root/
 过程记录：`reports/daily/project/**`、`reports/weekly/**`、`meetings/**` 不能当事实源结论。
 
 ## 5. 核心工作流
+### 5.0 环境检测（首次跑脚本前）
+
+初始化 / 升级迁移 / verify 脚本需要 **Python ≥3.9**（与 skill.json `"python": ">=3.9"` 一致；推荐 3.10+）。
+
+```bash
+python --version
+```
+
+若输出 `Python 3.9` 及以上 → 继续。若报「不是内部或外部命令」/ `command not found`：
+
+- Windows：`winget install Python.Python.3.12 --silent` 或 `py -3 --version`
+- Mac：`brew install python3`
+- Linux：`sudo apt update && sudo apt install python3`
+
+装完再跑脚本。日常记待办、查进度、投喂日报 **不依赖** Python；日报结转按 22 号规则执行，禁止因无 Python 跳过全员结转。
+
 ### 5.1 初始化
 ```bash
 python "scripts/init_workspace.py" --project-root <根目录> --mode single --project-name "项目名称"
@@ -79,7 +95,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 |------|----------|------|
 | 初始化向导 | 00+06+18 | — |
 | 完整性巡检 | 00+06+19 | 01/02/04-08 |
-| 日报 | 00+01+06+17 | 04、07、10 |
+| 日报 | 00+01+06+17+22 | 04、07、10 |
 | 会议纪要 | 00+02+06+17 | 04、07、08 |
 | 需求评审/变更 | 00+07+08+06 | — |
 | 待办文件更新 | 00+06+23 | 10 |

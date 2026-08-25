@@ -778,7 +778,7 @@ YAML：`effect: 正常|废弃`（缺省=正常）；废弃必填 `superseded_by`
 
 | 阶段 | 动作 | 强度 |
 |------|------|------|
-| Step 0 前置结转检查（HARD BLOCK，N-43） | 碰今天任一待办 md 或今天 `_index` → 按 22 号时机 0 if-else：index 缺失或 `carryover_done_for_today` 不是恰好 true（含「部分」）则先按最新合法日 §1 全员 Step 0，再改点名的人。未完成前禁止写入任何待办文件（§4c） | MANDATORY |
+| Step 0 前置结转检查（HARD BLOCK，N-43） | 碰今天任一待办 md 或今天 `_index`（含日报投喂）→ **按 22 号时机 0 if-else**（不在此重复算法）：index 缺失或 `carryover_done_for_today` 不是恰好 true（含「部分」）或应建档缺文件则先按最新合法日 §1 全员 Step 0（人人一份，§1 可空），再改点名的人。未完成前禁止写入任何待办文件（§4c）。不调用 verify 脚本 | MANDATORY |
 | 抽取门禁 | 本项目尚未完成计划内嵌 WP → `wps/` 一次性抽取时，**禁止**新建待办/生成周报；输出抽取清单待 PM 确认（§8b.0） | MANDATORY |
 | 归属判定① | **先读** `wps/_index.md` 加速定位，再打开 `wps/WP-*.md`；抽取未完成 fallback 读 PLAN 嵌入清单。按 Owner + 当前计划阶段时间窗口预筛候选 WP（最小读取） | MANDATORY |
 | 归属判定② | 候选 WP 名称语义匹配（§8b.1）：**高置信**才自动绑定；中/低置信转追问，不得自行拍板。选包（1/2/3）时若已能算出待办结束 > WP 结束，**同一轮**附带 A/B/C（拉长 WP / 压缩待办 / 挂起），禁止选完包再弹第二次 | MANDATORY |
