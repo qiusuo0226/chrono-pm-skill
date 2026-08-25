@@ -129,14 +129,16 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.15.0 / 0.16.0
-- [ ] plan-template §4 含 `｜`
-- [ ] 11 号 §3 仍有 manifest.md；skill_gap 例外
-- [ ] 21 号空则 ASK；模板无「用 pm_name 推导我」
-- [ ] SKILL 日报行含 22
-- [ ] init 临时目录 README 含字面 `{编号}/`
-- [ ] examples 01=初始化工作区
-- [ ] 16 号 §14 指向 governance-shared/review-checklists/
-- [ ] audit 退出码 0
-- [ ] 无业务仓路径写入
-- [ ] 正式文档不引用 upgrade-plan 路径（本文件除外的禁引用）
+- [x] `_version.py` 3.15.0 / 0.16.0
+- [x] plan-template §4 含 `｜`
+- [x] 11 号 §3 仍有 manifest.md；skill_gap 例外
+- [x] 21 号空则 ASK；模板无「用 pm_name 推导我」
+- [x] SKILL 日报行含 22
+- [x] init 临时目录 README 含字面 `{编号}/`
+- [x] examples 01=初始化工作区
+- [x] 16 号 §14 指向 governance-shared/review-checklists/
+- [x] audit 退出码 0
+- [x] 无业务仓路径写入
+- [x] 正式文档不引用 upgrade-plan 路径（本文件除外的禁引用）
+- [x] planning/ 仅留 README；本版 AP 已删
+- [x] 分发包已写入 Downloads（未替换安装区，待用户核验）
