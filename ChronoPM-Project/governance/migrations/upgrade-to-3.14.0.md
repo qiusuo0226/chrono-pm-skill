@@ -169,20 +169,20 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.14.0 / 0.15.0
-- [ ] 06 §1.1 允许目录含 project-info
-- [ ] plan-template 6 节、§3 无子行、§4 阶段列表
-- [ ] wp-template 无 is_milestone；§2 仍为关联需求；§8 13 阶段
-- [ ] wp-index 仍 8 列，关键阶段列
-- [ ] 待办模板备注含 `阶段：`
-- [ ] 23 P-WP-SCAN 无「子行」
-- [ ] grep `plans/budget.md` 双包 = 0（升级文档除外）
-- [ ] grep `is_milestone` 规则/模板 = 0（升级文档除外）
-- [ ] WP-005 预期=新号合法
-- [ ] PLT-001 预期=6 节
-- [ ] audit_release 退出码 0
-- [ ] 无业务仓路径写入
-- [ ] 正式文档不引用 upgrade-plan 路径
+- [x] `_version.py` 3.14.0 / 0.15.0
+- [x] 06 §1.1 允许目录含 project-info
+- [x] plan-template 6 节、§3 无子行、§4 阶段列表
+- [x] wp-template 无 is_milestone；§2 仍为关联需求；§8 13 阶段
+- [x] wp-index 仍 8 列，关键阶段列
+- [x] 待办模板备注含 `阶段：`
+- [x] 23 P-WP-SCAN 无「子行」
+- [x] grep `plans/budget.md` 双包 = 0（升级文档除外）
+- [x] grep `is_milestone` 规则/模板 = 0（升级文档除外）
+- [x] WP-005 预期=新号合法
+- [x] PLT-001 预期=6 节
+- [x] audit_release 退出码 0
+- [x] 无业务仓路径写入
+- [x] 正式文档不引用 upgrade-plan 路径
 
 ## 发布收尾（强制）
 
