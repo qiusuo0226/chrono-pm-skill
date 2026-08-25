@@ -32,7 +32,7 @@ author: AI辅助生成
 
 ## 3. 计划概览
 
-> 仅放一行摘要，明细见各子项目 `plans/PLAN-NNN-{name}.md` 计划文件。
+> 仅放一行摘要，明细见各子项目 `plans/PLAN-*.md` 计划文件。
 
 - [子项目1]：0 个计划阶段 / 0 个需求 / 0 名资源
 - [子项目2]：0 个计划阶段 / 0 个需求 / 0 名资源
@@ -75,8 +75,8 @@ author: AI辅助生成
 | 风险识别 | `risks/risk-register.md` |
 | 问题 / 阻塞 | `issues/issue-register.md` |
 | 决策 / 结论 | `decisions/decision-log.md` |
-| 里程碑变更 | `plans/PLAN-NNN-{{name}}.md`（里程碑 = WP，is_milestone=true） |
-| 成本 / 预算变动 | `plans/budget.md` |
+| 里程碑变更 | `plans/PLAN-YYYYMMDD-NNN-{{name}}.md`（关键阶段 = WP §8 标记为是的阶段） |
+| 成本 / 预算变动 | `project-info/budget.md` |
 | 个人工作汇报 / 日报内容归档 | `todos/{date}/{owner}.md`（§2 存档 + §3 工作日志） |
 | 项目日报（按需生成的存根，可能不存在） | `reports/daily/project/YYYYMM/` |
 | 会议纪要 | `meetings/`（跨项目汇总周报请换用 ChronoPM-Portfolio） |
