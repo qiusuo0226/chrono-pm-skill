@@ -4,6 +4,10 @@
 
 ---
 
+## 3.14.0 — 2026-08-25（版本锁步 · released）
+
+> 与 Project 3.14.0 共用版本线。各项目 `project-info/budget.md`；里程碑口径改为 WP §8 关键阶段。禁止写入成员项目。workspace schema 0.15.0。
+
 ## 3.13.0 — 2026-08-24（版本锁步 · released）
 
 > 与 Project 3.13.0 共用版本线。V-13 按时间窗归集各项目正常计划中的正常 WP（不按计划名）。集层技能缺口写入 `portfolio/reports/`。禁止写入成员项目。workspace schema 0.14.0。

@@ -4,7 +4,32 @@
 
 ---
 
-## 3.13.0 — 2026-08-24（本次发布 · released）
+## 3.14.0 — 2026-08-25（本次发布 · released）
+
+> 发布归档：Minor / contract_change + capability_change。计划 §3 去子行、新增 §4 阶段列表（6 节）；WP §8 改为 13 标准阶段；新 PLAN/WP 编号 `YYYYMMDD-NNN`（存量不重编）；`budget.md`/`progress-plan.md` 迁到 `project-info/`；删除 `is_milestone`，改为 §8 关键阶段；P-WP-SCAN 增量+冻结；查看计划输出完整 MD。workspace schema **0.14.0 → 0.15.0**。双包同版本。
+
+Blueprint Impact: full
+
+### Added
+- 计划 §4 各 WP 阶段列表（WP §8 投影落盘）
+- `ai/project-info/`（budget / progress-plan）
+- 待办备注区 `阶段：`
+- 回归模块 69（STP；合计 601）
+
+### Changed
+- 闸 2 对账 §3/§4，查看计划输出盘上全文
+- SCAN 增量 + 已完成阶段冻结；同义词最长匹配
+- 新编号 ASCII；WP-005 翻盘
+- Portfolio V-7 读 `project-info/budget.md`
+
+### Removed
+- PLAN §3 子行；WP YAML `is_milestone`
+
+### Notes
+- ⚠ 本发布不代迁业务仓。脚本只建空 `project-info/`。存量闸 2 / 触碰懒补。
+- CR-20260825-001 / upgrade-to-3.14.0 / IA-20260825-001。
+
+## 3.13.0 — 2026-08-24（released）
 
 > 发布归档：Minor / capability_change。WP 待办→阶段人期聚合、半自动推进、计划 6 列节点子行、WP `effect` 正常/废弃、Portfolio V-13 时间窗归集、`skill-gap-skill` 缺口笔录进 outputs。workspace schema **保持 0.14.0**。
 

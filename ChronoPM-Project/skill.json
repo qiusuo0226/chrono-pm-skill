@@ -1,13 +1,18 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.13.0",
+  "version": "3.14.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
-    "current": "0.14.0"
+    "current": "0.15.0"
   },
   "migrations": [
+    {
+      "from": "0.14.0",
+      "to": "0.15.0",
+      "description": "v3.14.0：新增 ai/project-info/；budget.md 与 progress-plan.md 迁出 plans/。脚本只建空目录。"
+    },
     {
       "from": "0.13.0",
       "to": "0.14.0",
@@ -92,6 +97,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.14.0",
+      "date": "2026-08-25",
+      "summary": "计划§3去子行+§4阶段列表（6节）；WP§8改为13标准阶段；新PLAN/WP编号YYYYMMDD-NNN（存量不重编）；budget/progress-plan迁project-info/；删除is_milestone改为关键阶段；SCAN增量冻结；查看计划输出完整MD。workspace schema 0.14.0→0.15.0。双包同版本。Module 69（总计601）。"
+    },
     {
       "version": "3.13.0",
       "date": "2026-08-24",
@@ -462,8 +472,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-24",
-    "lastVersion": "3.13.0",
+    "lastUpdated": "2026-08-25",
+    "lastVersion": "3.14.0",
     "updateRequiredOn": [
       "major",
       "minor",

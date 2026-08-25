@@ -68,11 +68,11 @@ flowchart LR
 ```mermaid
 flowchart LR
   PM[项目经理定计划] -->|实线| PLAN[5节只引用WP]
-  WP[链尾/阶段执行人排期/时间盒] -.-> S3[§3六列父行加子行]
+  WP[链尾/阶段执行人排期/时间盒] -.-> S3[§3六列无子行加§4阶段列表]
   PLAN --> S3
   PLAN -.-> PROG[进度按WP聚合]
   PLAN -.-> X[不灌待办]
-  Q[读或改] --> GATE[闸1定位 闸2对账含子行 闸3写后]
+  Q[读或改] --> GATE[闸1定位 闸2对账§3§4 闸3写后]
   PLAN -->|废弃| FZ[冻结§3 去掉plan_ref]
   WP -->|effect废弃| RM[正常计划移出]
 ```
@@ -227,7 +227,7 @@ flowchart LR
 flowchart LR
   TD[写执行待办] -->|实线| SCAN[P-WP-SCAN 聚人期]
   SCAN -->|虚线| S8[WP §8 AI聚合]
-  S8 -->|虚线| S3[正常计划子行]
+  S8 -->|虚线| S3[正常计划§3行与§4列表]
   PEND[待确认已入计划或已有执行待办] -->|粗线| ADV[P-WP-ADVANCE]
   ADV -->|确认后只追加| H7[§7]
 ```
