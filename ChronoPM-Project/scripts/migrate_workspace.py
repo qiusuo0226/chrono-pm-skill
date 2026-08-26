@@ -713,6 +713,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.15.0（schema 0.15.0→0.16.0）：pm-profile current_operator；存量数据受控迁移（默认 dry-run，--migrate-business 写回）。",
     },
+    {
+        "version": "3.16.0",
+        "schema": "0.16.0",
+        "capabilities": ["date_format", "wp_field_boundary", "plan_section4_verify", "related_wps", "mermaid_derived"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.16.0（schema 保持 0.16.0）：日期格式；WP §8 字段边界；§4 verify 分通道；related_wps；Mermaid 仅对话。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），

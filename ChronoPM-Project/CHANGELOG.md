@@ -4,7 +4,33 @@
 
 ---
 
-## 3.15.0 — 2026-08-25（本次发布 · released）
+## 3.16.0 — 2026-08-26（本次发布 · released）
+
+> 发布归档：Minor / contract_change + capability_change。日期字段完整 YYYY-MM-DD；WP §8 执行人/排期字段边界；计划 §4 由 verify_projection.py 分通道校验；版本/模板权威源 + skill_gap 禁 manifest；WP 可选 related_wps（index 末尾加两列）；Mermaid 派生图仅对话。workspace schema **保持 0.16.0**。双包同版本。
+
+Blueprint Impact: full
+
+### Added
+- 00 §5.1b 日期字段/区间两端完整 `YYYY-MM-DD`
+- WP YAML `related_wps`（upstream/downstream，SSOT）与 index 上游/下游列
+- 11 号 §17 Index 派生 Mermaid 图（仅对话）
+- `verify_projection.py --check-plan-section4`
+- 回归模块 70（FMT-001～019；合计 620）
+
+### Changed
+- WP §8 执行人/排期填值边界（放行点名/AI聚合/待安排人）
+- 计划多人分隔符统一为「、」
+- §4a 模板权威源=Skill 包 `assets/templates/`
+- skill_gap 批次出现 manifest = 级联失败
+- 画图意图归查询，路由必须加载 05+11
+- index 8 列→10 列（只追加末尾；生效不成列）
+
+### Fixed
+- 计划 §4 为控篇幅压缩时，落盘前可被脚本拦截
+
+---
+
+## 3.15.0 — 2026-08-25（released）
 
 > 发布归档：Minor / contract_change + capability_change。存量受控迁移；计划 §4 模板含执行人排期；skill_gap 单文件；current_operator（空则 ASK）；AP/examples 治理；Python ≥3.9 引导；四套只读 verify；日报路由载 22 + 全员结转；init README `{编号}` 转义。workspace schema **0.15.0 → 0.16.0**。双包同版本。
 

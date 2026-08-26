@@ -1025,6 +1025,30 @@
 | STP-011 | 需求登记阶段落待办、WP 仍待确认 | 拦截；须先 ADVANCE 到已规划 | negative |
 | STP-012 | 混合引用 WP-新设名称申报 与 WP-20260825-001 | 允许；旧号不重编 | positive |
 
+## 70. 格式 / 责任链 / 派生图（FMT，v3.16.0）
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| FMT-001 | 日期字段写入 `07-17` | 标记 `⚠️ 日期格式待纠正` | positive |
+| FMT-002 | 日期字段写入 `2026-07-17` | 通过 | positive |
+| FMT-003 | 叙事中出现 `07-17` | 不误伤 | negative |
+| FMT-004 | ID 含 `20260717` | 不误伤 | negative |
+| FMT-005 | WP §8 执行人 `王欢欢（2026-06-29~2026-08-20）` | `⚠️ 字段边界待纠正` | positive |
+| FMT-006 | 执行人 `王欢欢`，排期 `2026-06-29~2026-08-20` | 通过 | positive |
+| FMT-007 | PLAN §4 某 WP 缺阶段；`verify --check-plan-section4` | 退出 1 | positive |
+| FMT-008 | PLAN §4 完整；带开关 | 退出 0 | positive |
+| FMT-009 | 存量 PLAN §4 压缩；默认巡检无开关 | exit 2 UNJUDGED，不 P0 | negative |
+| FMT-010 | skill_gap 手写 3.14.0 | 纠正为 3.16.0 | positive |
+| FMT-011 | skill_gap 批次含 manifest.md | 级联失败 | negative |
+| FMT-012 | WP-002 前置=WP-001 | YAML+§2b+index 同步 | positive |
+| FMT-013 | 废弃 WP-001 | WP-002 upstream 被清理 | positive |
+| FMT-014 | related_wps 自指 | 拒绝 | negative |
+| FMT-015 | 请求「画 WP 结构图」 | 对话 Mermaid；不落盘 | positive |
+| FMT-016 | 未请求画图 | 不生成图 | negative |
+| FMT-017 | 正常日报处理 | 行为不变 | regression |
+| FMT-018 | 正常待办创建 WF-8 | 行为不变 | regression |
+| FMT-019 | 正常计划生成（无 §4 压缩） | 行为不变 | regression |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -1098,4 +1122,5 @@
 | 结构/轻量查询 (LQ) | 8 | 4 | 4 |
 | WP联动/生效/时间窗/缺口 (WPL/PFA/SG) | 37 | 23 | 14 |
 | 阶段/目录/编号/看计划 (STP) | 12 | 8 | 4 |
-| **合计** | **601** | **357** | **244** |
+| 格式/责任链/派生图 (FMT) | 19 | 10 | 9 |
+| **合计** | **620** | **367** | **253** |

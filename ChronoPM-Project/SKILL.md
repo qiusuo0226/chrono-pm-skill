@@ -1,9 +1,9 @@
 ---
 name: chrono-pm-project
-version: 3.15.0
+version: 3.16.0
 schema_version: 0.16.0
-updated_at: 2026-08-25
-description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/整理记录/补全/回填/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
+updated_at: 2026-08-26
+description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/整理记录/补全/回填/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好、画图、责任链图。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
 ---
 # ChronoPM-Project — 单项目 Markdown 项目管理技能
 
@@ -106,6 +106,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 关联待办 WF-Linked | 00+22 | 01 |
 | 风险评估 | 00+04 | — |
 | 简单查询 | 05 | — |
+| 画图 / 责任链图 / 排布图 / Mermaid | **05+11** | — |
 | 复杂/分析类本项目查询 | 00+05+17 | 按问题 |
 | 跨源范围判定 | 00+07+05+17+06 | Step0 读本项目 contract-register |
 | 源文档拆解 | 00+07+06+17+23 + `source-split-skill/references/split-rules.md` | 14、18 |
@@ -182,7 +183,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 版本控制文件
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | Skill 包版本号（当前 3.15.0） |
+| `VERSION` | Skill 包版本号（当前 3.16.0） |
 | `skill.json` | Skill 元数据（版本、模式、依赖；skill schemaVersion 与 supportedWorkspaceSchema 分离） |
 | `CHANGELOG.md` | 版本变更历史和升级说明 |
 | SKILL.md front matter | AI 可读的版本字段 |

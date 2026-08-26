@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.15.0",
+  "version": "3.16.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -102,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.16.0",
+      "date": "2026-08-26",
+      "summary": "日期格式；WP§8字段边界；§4 verify分通道；版本/模板权威源；related_wps；Mermaid仅对话。schema保持0.16.0。双包同版本。Module 70（总计620）。"
+    },
     {
       "version": "3.15.0",
       "date": "2026-08-25",
@@ -482,8 +487,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-25",
-    "lastVersion": "3.15.0",
+    "lastUpdated": "2026-08-26",
+    "lastVersion": "3.16.0",
     "updateRequiredOn": [
       "major",
       "minor",

@@ -1,9 +1,9 @@
 ---
 name: chrono-pm-portfolio
-version: 3.15.0
+version: 3.16.0
 schema_version: 0.7.0
 workspace_schema: 0.16.0
-updated_at: 2026-08-25
+updated_at: 2026-08-26
 description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai 目录归集检索进度、风险、合同、周报。禁止写入成员项目事实源。触发：项目集、组合、跨项目、汇总周报、进度总览、人员排期、跨项目风险、门禁、P&L、合同去重、建议更新清单、共享文件拆分、术语索引、挂载、健康巡检、汇总计划、按时间归集计划、技能缺口、ChronoPM-Portfolio。
 ---
 # ChronoPM-Portfolio — 只读项目集归集

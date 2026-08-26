@@ -33,6 +33,7 @@ baselines/{version}/
 | **3.13.0** | 全包快照（WP联动/effect/节点子行/V-13/skill-gap-skill；schema 仍 0.14.0） | 与发布包逐文件一致 |
 | **3.14.0** | 全包快照（计划6节/13阶段/ASCII编号/project-info/删is_milestone/SCAN冻结；schema 0.15.0） | 与发布包逐文件一致 |
 | **3.15.0** | 全包快照（存量迁移/current_operator/verify脚本/日报载22；schema 0.16.0） | 与发布包逐文件一致 |
+| **3.16.0** | 全包快照（日期格式/字段边界/§4 verify分通道/related_wps/Mermaid仅对话；schema 仍 0.16.0） | 与发布包逐文件一致 |
 
 **规范（自 3.5.0 起）**：发布新版本时，baseline 必须是该版本包内容的**全量快照**（含 scripts/ 与 tests/），与发布包逐文件一致；audit 与回归以当前版基线为对照基准。
 

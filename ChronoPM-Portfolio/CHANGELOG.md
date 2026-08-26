@@ -4,6 +4,10 @@
 
 ---
 
+## 3.16.0 — 2026-08-26（版本锁步 · released）
+
+> 与 Project 3.16.0 共用版本线。同号对齐，能力变更见 Project。禁止写入成员项目。workspace schema 0.16.0。
+
 ## 3.15.0 — 2026-08-25（版本锁步 · released）
 
 > 与 Project 3.15.0 共用版本线。操作人声明走 V-9，禁止写子项目 pm-profile。skill-gap 模板单文件。workspace schema 0.16.0。
