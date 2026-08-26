@@ -125,3 +125,5 @@
 - [x] 无业务仓路径写入
 - [x] 正式文档不引用 upgrade-plan 路径
 - [x] 双包 3.16.0
+- [x] planning/ 仅留 README；本版 AP 已删
+- [x] 分发包已写入 Downloads（用户核验通过后同步 Grok 安装区）
