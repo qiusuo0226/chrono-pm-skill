@@ -7,6 +7,9 @@ status: 待确认
 effect: 正常
 superseded_by: —
 created_at: YYYY-MM-DD
+related_wps:
+  upstream: []    # 前置 WP 编号；SSOT。改链须待确认 + pm-decisions
+  downstream: []  # 后继 WP 编号
 ---
 
 # WP-YYYYMMDD-NNN - {WP 名称}
@@ -38,6 +41,15 @@ created_at: YYYY-MM-DD
 | REQ-xxx | requirements/requirement-register.md / sources/SRC-NNN / — |
 
 > 只写编号，可选路径指针。禁止把功能描述、验收标准抄进本表。搜不到需求 → 禁止建包，进决策文件。存量空值不强制回填。
+
+## 2b. 关联工作包（可选，v3.16.0）
+
+> 表达 WP 间前置/后继。**SSOT = front matter `related_wps`**；本表为展示投影。index「上游 WP / 下游 WP」为加速器。建链/改链须待确认并登记 pm-decisions。禁止自指。环 → pm-decisions。缺文件走 D20，不建幽灵 WP。改 upstream 必须在对端 downstream 互指（反之亦然）。废弃时走 P-WP-RETIRE 清对端。
+
+| 关系类型 | 关联 WP 编号 |
+|---|---|
+| 前置 WP（本 WP 依赖） | WP-xxx / — |
+| 后继 WP（依赖本 WP） | WP-aaa / — |
 
 ## 3. 阶段明细（可选，复杂 WP 展开）
 
