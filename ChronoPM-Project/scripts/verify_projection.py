@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""只读：C1–C8 计划投影 + D-TODO-WP + D-PLAN-REF + D-EFFECT。退出 0/1/2。"""
+"""只读：C1–C8 计划投影 + D-TODO-WP + D-PLAN-REF + D-EFFECT + 可选 C9 §4。退出 0/1/2。"""
 import argparse
 import re
 import sys
@@ -92,9 +92,66 @@ def _split_refs(s: str):
     return [p.strip() for p in s.split(" / ") if p.strip()]
 
 
+def _plan_sec4_stages(text):
+    """PLAN §4 → {wp_id: set(stage names)}。小节标题 `### WP-xxx`，阶段行 `- 名 →`。"""
+    m = re.search(r"^##\s*4[\.．、]?\s*", text, re.M)
+    if not m:
+        return {}
+    start = m.end()
+    nxt = re.search(r"^##\s+", text[start:], re.M)
+    body = text[start: start + nxt.start()] if nxt else text[start:]
+    out = {}
+    current = None
+    for line in body.splitlines():
+        hm = re.match(r"^###\s+(WP-\S+)", line)
+        if hm:
+            current = hm.group(1)
+            out.setdefault(current, set())
+            continue
+        sm = re.match(r"^-\s+(.+?)\s*→", line)
+        if sm and current:
+            out[current].add(sm.group(1).strip())
+    return out
+
+
+def _check_plan_section4(plans, wps):
+    """比较对象=该 WP §8 实际行阶段名。STAGE13 只作缺标准名 HINT，不当失败条件。"""
+    bucket_msgs = []
+    for pf, pt, pfm in plans:
+        sec4 = _plan_sec4_stages(pt)
+        for cells in _table_rows(pt):
+            if not cells:
+                continue
+            wpid = cells[0]
+            if not str(wpid).startswith("WP-"):
+                continue
+            if wpid not in wps:
+                continue
+            _, wt, fm = wps[wpid]
+            if (fm.get("effect") or "正常") == "废弃":
+                continue
+            stages8 = {r[0] for r in _wp_sec8(wt) if r}
+            got = sec4.get(wpid)
+            if got is None:
+                bucket_msgs.append(f"C9 {wpid} @{pf.name} §4 无独立小节")
+            elif got != stages8:
+                bucket_msgs.append(
+                    f"C9 {wpid} @{pf.name} §4阶段 {sorted(got)!r} ≠ §8 {sorted(stages8)!r}"
+                )
+            missing_std = STAGE13 - stages8
+            if missing_std:
+                print(f"HINT {wpid} §8 缺标准阶段名 {sorted(missing_std)}（可增删，非失败）")
+    return bucket_msgs
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--root", required=True)
+    p.add_argument(
+        "--check-plan-section4",
+        action="store_true",
+        help="写入/生成 PLAN 落盘前：§4 不全则 exit 1。默认巡检不加本开关，§4 问题 UNJUDGED exit 2。",
+    )
     args = p.parse_args()
     ai = _ai(Path(args.root))
     diffs = []
@@ -204,6 +261,11 @@ def main():
     for wid, cells in idx_rows.items():
         if len(cells) > 2 and cells[2] not in ("待确认", "已规划", "进行中", "已完成", "废弃"):
             unjudged.append(f"C7 {wid} 状态列 {cells[2]!r} 非四枚举/废弃")
+    c9 = _check_plan_section4(plans, wps)
+    if args.check_plan_section4:
+        diffs.extend(c9)
+    else:
+        unjudged.extend(c9)
     for d in diffs:
         print("DIFF", d)
     for u in unjudged:
