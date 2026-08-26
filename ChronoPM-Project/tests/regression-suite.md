@@ -1049,6 +1049,33 @@
 | FMT-018 | 正常待办创建 WF-8 | 行为不变 | regression |
 | FMT-019 | 正常计划生成（无 §4 压缩） | 行为不变 | regression |
 
+## 71. 工作包记录 / 图 / 查询 / 盖章 / 功能点阶段（WPR，v3.17.0）
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| WPR-001 | 「WP-006 什么状态」 | 摘要 + 指向 `wps/WP-*.md` 的链接；正文不是该文件逐字全文 | positive |
+| WPR-002 | 「完整记录」 | 更完整摘要（含实时待办）+ 同一原件链接 | positive |
+| WPR-003 | 「把 WP-006 原文贴出来」 | 逐字全文 + 链接 | positive |
+| WPR-004 | 「画总览」且无 related_wps | 竖排三行节点、无连线、提示未填；不编造 | negative |
+| WPR-005 | 已有 006→002 边时画总览 | 仅该边 | positive |
+| WPR-006 | 改 related_wps | index 更新且 `_wp-chart.md` 重画；SSOT 仍 YAML | positive |
+| WPR-007 | 只改工作包备注 | 图指纹不变不重写 | regression |
+| WPR-008 | 办结一条待办 | 绑定 WP §4b 有一行；确认清单含待办文件+该 WP | positive |
+| WPR-009 | 同一结论再次办结 | 不出现两行相同一句话 | regression |
+| WPR-010 | 写 I-xxx 不回写待办/WP | 级联失败 | negative |
+| WPR-011 | 全部功能点阶段=预演 | 整包预演 ✅、状态历史追加、变更来源 AUTO-全齐、无 pm-decisions 新项 | positive |
+| WPR-012 | 五行中一行不是预演 | 整包不自动变 | negative |
+| WPR-013 | 记升级需求 | 只在 outputs；未写 pm-decisions；有 〇·五节 | positive |
+| WPR-014 | 新建 WP §3b | 无阶段归属列；有「阶段」列和固定说明 | positive |
+| WPR-015 | 把图写到 outputs 当本能力落点 | 禁止 | regression |
+| WPR-016 | 一条待办两个 WP Ref | 仍拦截 | regression |
+| WPR-017 | dry-run 含 `未评审` 与 `—` 的存量 WP | 清单覆盖这两值；`已评审`进待落位、不静默填阶段名 | positive |
+| WPR-018 | `wps/` 下无 `_wp-chart.md` 时首次改 related_wps | 懒建且节点/边正确 | positive |
+| WPR-019 | 非图形类 skill-gap | 有 〇·五标题，节内无目标产出形态图；未写 pm-decisions | positive |
+| WPR-020 | 未迁移旧 WP 仍含「评审状态」列 | 原样展示，不翻译成十三阶段、不报错 | regression |
+| WPR-021 | 功能点表仅 1 行且阶段=预演 | 仍 AUTO，来源 AUTO-全齐 | positive |
+| WPR-022 | 任一行阶段为 `—` | 不改整包 | negative |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -1123,4 +1150,5 @@
 | WP联动/生效/时间窗/缺口 (WPL/PFA/SG) | 37 | 23 | 14 |
 | 阶段/目录/编号/看计划 (STP) | 12 | 8 | 4 |
 | 格式/责任链/派生图 (FMT) | 19 | 10 | 9 |
-| **合计** | **620** | **367** | **253** |
+| 工作包记录/图/查询/盖章/阶段 (WPR) | 22 | 13 | 9 |
+| **合计** | **642** | **380** | **262** |

@@ -4,7 +4,35 @@
 
 ---
 
-## 3.16.0 — 2026-08-26（本次发布 · released）
+## 3.17.0 — 2026-08-26（本次发布 · released）
+
+> 发布归档：Minor / contract_change + capability_change。工作包关联记录盖章；Mermaid 默认全包竖排总览、连线只认前后置、懒建派生 `wps/_wp-chart.md`（**反转 3.16.0 A6「仅对话禁落盘」的唯一例外**）；WP 查询摘要+原件链接；skill-gap 不进 pm-decisions 且强制示例图节；功能点列「阶段」、全齐 AUTO。workspace schema **保持 0.16.0**。双包同版本。
+>
+> 16 号 §4 例外：本版 8 条一 CR 多节点，经用户裁决；后续不得当常态。
+
+Blueprint Impact: full
+
+### Added
+- WP §4b 关联记录（只追加，一行一句+编号）
+- 待办 §1.3 决策 Ref
+- `wps/_wp-chart.md` 派生总览图 + `wp-chart-template.md`
+- skill-gap 〇·五示例图节
+- 回归模块 71（WPR-001～022；合计 642）
+- 过程 P-WP-STAMP / P-WP-CHART / P-WP-ALIGN
+
+### Changed
+- 11 §17：默认一张全包总览；边只认 related_wps；允许派生落盘
+- 契约 #1/#2 与 SKILL 底线 13：派生图例外
+- 05：WP 查询默认摘要+链接；「贴原文」才全文；旧评审状态列原样展示
+- skill-gap 禁止写入/提议 pm-decisions；落盘前撞号失败
+- WP §3b：删除阶段归属；「评审状态」改为「阶段」；全齐自动推进整包（来源 AUTO-全齐）
+
+### Fixed
+- 功能点两档/三值无法表达走到哪一站（存量已评审不静默填站）
+
+---
+
+## 3.16.0 — 2026-08-26（released）
 
 > 发布归档：Minor / contract_change + capability_change。日期字段完整 YYYY-MM-DD；WP §8 执行人/排期字段边界；计划 §4 由 verify_projection.py 分通道校验；版本/模板权威源 + skill_gap 禁 manifest；WP 可选 related_wps（index 末尾加两列）；Mermaid 派生图仅对话。workspace schema **保持 0.16.0**。双包同版本。
 

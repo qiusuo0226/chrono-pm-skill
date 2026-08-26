@@ -721,6 +721,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.16.0（schema 保持 0.16.0）：日期格式；WP §8 字段边界；§4 verify 分通道；related_wps；Mermaid 仅对话。",
     },
+    {
+        "version": "3.17.0",
+        "schema": "0.16.0",
+        "capabilities": ["wp_stamp", "wp_chart_file", "wp_query_link", "skill_gap_aux", "fp_stage_align"],
+        "new_dirs": [],
+        "new_files": ["wps/_wp-chart.md"],
+        "note": "v3.17.0（schema 保持 0.16.0）：关联记录盖章；图形态+派生落盘；查询摘要+链接；skill-gap 辅助；功能点阶段全齐 AUTO。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
