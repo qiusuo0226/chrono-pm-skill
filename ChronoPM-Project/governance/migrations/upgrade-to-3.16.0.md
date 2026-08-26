@@ -114,14 +114,14 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.16.0 / schema 0.16.0
-- [ ] wp-template §8 五列 + 字段边界 + related_wps
-- [ ] wp-index 10 列，只追加末尾
-- [ ] 11 号 §9 仍是事实源边界；§17 为 Mermaid
-- [ ] 19 号 §1.2 无 `--check-plan-section4`
-- [ ] SKILL 路由画图行 = 05+11
-- [ ] 不改 23 号
-- [ ] audit 退出码 0
-- [ ] 无业务仓路径写入
-- [ ] 正式文档不引用 upgrade-plan 路径
-- [ ] 双包 3.16.0
+- [x] `_version.py` 3.16.0 / schema 0.16.0
+- [x] wp-template §8 五列 + 字段边界 + related_wps
+- [x] wp-index 10 列，只追加末尾
+- [x] 11 号 §9 仍是事实源边界；§17 为 Mermaid
+- [x] 19 号 §1.2 无 `--check-plan-section4`
+- [x] SKILL 路由画图行 = 05+11
+- [x] 不改 23 号
+- [x] audit 退出码 0
+- [x] 无业务仓路径写入
+- [x] 正式文档不引用 upgrade-plan 路径
+- [x] 双包 3.16.0
