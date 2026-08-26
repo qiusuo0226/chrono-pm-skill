@@ -224,3 +224,27 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 `ai/outputs/index.md` 自身瘦身：
 - >200 行时，将 >180 天的已归档条目移至 `ai/outputs/archive/index-archive.md`
+
+---
+
+## 17. Index 派生 Mermaid 图（v3.16.0）
+
+### 17.1 定位
+
+派生视图，非事实源。由 `wps/_index.md` + 必要时 `todos/{date}/_index.md` + PLAN §3 实时聚合。**仅对话输出**（Markdown 里的 Mermaid 代码块）。
+
+**硬禁**：禁止写成任何文件（含 `ai/outputs/`）。不走 P-OUTPUT，不建批次，不登记 `outputs/index`。
+
+### 17.2 可派生图类型
+
+| 图类型 | 数据源 | Mermaid 类型 | 说明 |
+|---|---|---|---|
+| 计划→WP 结构图 | PLAN §3 + wps/_index | graph TD | 计划→WP 概览 |
+| 人员×待办排布图 | todos/_index §1 + §3 | graph LR | 人员→WP→待办分布 |
+| WP 责任链图 | wps/_index 上游/下游列（或 YAML related_wps） | graph LR | 字段空则跳过该子图，不编造边 |
+
+### 17.3 触发
+
+用户显式请求（「画图 / 排布图 / 责任链图 / Mermaid」）。不自动触发。生成时读最新 index，不缓存。
+
+路由：SKILL.md「画图」行必须加载 **05+11**；05 命中后按本节输出。不改 23 号（纯查询不载 23）。
