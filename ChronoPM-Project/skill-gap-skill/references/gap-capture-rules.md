@@ -49,7 +49,9 @@ P-ALWAYS 第 4 步只检测，不写文件。写文件只走 P-ROUTE → 本过�
 
 `sg_id: SG-{今天}-NNN`。NNN = 当日 Type=skill_gap 已有最大号 +1，无则 001。读 `ai/outputs/index.md`，禁止猜。
 
-YAML 必填：doc_type=skill-gap-demand；sg_id；skill_name；skill_version_installed（本包 VERSION）；workspace_skill_version 与 workspace_schema（`ai/.skill-version.json`）；project；created_at；priority（AI 建议）；batch_id。建议：source_files。两行版本不一致须在正文写「版本差」。不另写 manifest.md。
+YAML 必填：doc_type=skill-gap-demand；sg_id；skill_name；skill_version_installed（**只抄本包 `VERSION`，禁止手写/猜测**）；workspace_skill_version 与 workspace_schema（**只抄 `ai/.skill-version.json`**）；project；created_at；priority（AI 建议）；batch_id。建议：source_files。两行版本不一致须在正文写「版本差」。不另写 manifest.md。**读模板只读 Skill 包 `skill-gap-skill/assets/templates/` 与 `assets/templates/`，禁止以工作区 `ai/templates/` 为权威。**
+
+落盘后检查：批次目录若出现 `manifest.md` = **级联失败**，删除该 manifest 并重写主文件 front matter。
 
 短标题 ≤20 字，来自一句话痛点。
 
@@ -62,4 +64,4 @@ YAML 必填：doc_type=skill-gap-demand；sg_id；skill_name；skill_version_ins
 
 ## 7. 与 P-OUTPUT
 
-先 P-OUTPUT 建批次（Type=skill_gap，Main File=需求-*.md，**不建 manifest**），再写主文件，再更新 index。缺任一步 = 级联未完成。宿主默认目录落到项目根 → 仍映射本批次（闸 1）。
+先 P-OUTPUT 建批次（Type=skill_gap，Main File=需求-*.md，**不建 manifest**），再写主文件，再更新 index。缺任一步 = 级联未完成。批次内出现 `manifest.md` = 级联失败。宿主默认目录落到项目根 → 仍映射本批次（闸 1）。

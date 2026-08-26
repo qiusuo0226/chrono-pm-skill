@@ -150,9 +150,10 @@ AI 在处理任何用户输入时，必须先完成 PM Profile 加载，再判�
 
 AI 在执行任何写入操作前，必须先读取并确认当前版本规则，执行自检清单：
 
-1. 当前 Skill 版本是多少？（读 `VERSION` / `.skill-version.json`，确认规则版本与工作区版本一致，见 `20-workspace-version-rules.md`）
-2. 目标路径是否在当前版本的允许写入列表中？（见 `06-file-rules.md` 路径表，废弃路径禁止写入）
-3. 是否存在历史遗留文件干扰判断？若目标路径下存在历史文件，必须警觉"这可能是低版本遗留，需先确认规则"，不得照历史文件格式直接创建新文件。
+1. 当前 Skill 版本是多少？读 Skill 包 `VERSION`（或 `SKILL.md` front matter version）与工作区 `ai/.skill-version.json`，取出版本号与 schema。**禁止手写/猜测版本号。** 生成 skill_gap、计划或本台账前，front matter 的 `skill_version_installed` / `workspace_schema` 必须与事实源一致；不一致则以事实源重写。见 `20-workspace-version-rules.md`。
+2. **模板权威源（v3.16.0）**：读模板只读 Skill 包 `assets/templates/`。工作区 `ai/templates/` 与 `ai/outputs/.templates/` 仅为参考库，禁止当权威。skill_gap 批次若出现 `manifest.md` = 级联失败。
+3. 目标路径是否在当前版本的允许写入列表中？（见 `06-file-rules.md` 路径表，废弃路径禁止写入）
+4. 是否存在历史遗留文件干扰判断？若目标路径下存在历史文件，必须警觉"这可能是低版本遗留，需先确认规则"，不得照历史文件格式直接创建新文件。
 
 自检任一项存疑时，先读取对应规则文件确认后再写入，不得凭惯性执行。
 
