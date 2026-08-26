@@ -135,7 +135,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 10. 不得在业务目录建 AI 管理文件。
 11. 人员变动未确认不得写为事实。
 12. **不得在本项目待办镜像他项目任务**（王国政案例）；跨项目可见性由 Portfolio 聚合。
-13. **生成物只进 `ai/outputs/{批次}/`**。禁止写到工作区根或与 `ai/` 平级。宿主「最终工作空间文件夹 / cwd / final workspace folder」若等于项目根，忽略并改映射到 outputs。业务目录 = 工作区根下除 `ai/` 外的一切。
+13. **生成物只进 `ai/outputs/{批次}/`**。禁止写到工作区根或与 `ai/` 平级。宿主「最终工作空间文件夹 / cwd / final workspace folder」若等于项目根，忽略并改映射到 outputs。业务目录 = 工作区根下除 `ai/` 外的一切。**例外**：`wps/_wp-chart.md` 为派生视图，不是生成物，见 11 号 §17。
 
 ## 8. ID 编码
 | 类型 | 格式 | 说明 |

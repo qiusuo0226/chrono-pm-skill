@@ -227,24 +227,43 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 ---
 
-## 17. Index 派生 Mermaid 图（v3.16.0）
+## 17. Index 派生 Mermaid 图（v3.17.0）
 
 ### 17.1 定位
 
-派生视图，非事实源。由 `wps/_index.md` + 必要时 `todos/{date}/_index.md` + PLAN §3 实时聚合。**仅对话输出**（Markdown 里的 Mermaid 代码块）。
+派生视图，非事实源、非生成物。数据源：`wps/_index.md` + 各 `wps/WP-*.md`（名称/负责人/related_wps/§8 执行人）+ 必要时未办结待办 owner。
 
-**硬禁**：禁止写成任何文件（含 `ai/outputs/`）。不走 P-OUTPUT，不建批次，不登记 `outputs/index`。
+**3.16 A6 反转（唯一例外）**：允许懒建 **一份** `wps/_wp-chart.md`。禁止写入 `ai/outputs/`，不走 P-OUTPUT，不建批次，不登记 `outputs/index`。禁止手改当真相（下次按数据覆盖）。
 
-### 17.2 可派生图类型
+对话仍可输出 Mermaid 代码块。盘上有图则顺带给文件链接。
 
-| 图类型 | 数据源 | Mermaid 类型 | 说明 |
-|---|---|---|---|
-| 计划→WP 结构图 | PLAN §3 + wps/_index | graph TD | 计划→WP 概览 |
-| 人员×待办排布图 | todos/_index §1 + §3 | graph LR | 人员→WP→待办分布 |
-| WP 责任链图 | wps/_index 上游/下游列（或 YAML related_wps） | graph LR | 字段空则跳过该子图，不编造边 |
+### 17.2 默认输出（全包总览）
 
-### 17.3 触发
+未点名其它图时，只出这一张：
 
-用户显式请求（「画图 / 排布图 / 责任链图 / Mermaid」）。不自动触发。生成时读最新 index，不缓存。
+- `graph TD`，单一 `subgraph`，节点按 WP 编号排序。
+- 节点三行 `<br/>`：包编号 / 包名 / 涉及人员。人员用「、」分隔。人员 = §1 负责人 ∪ §8 执行人 ∪ 未办结待办 owner，去重。禁止状态/排期。
+- 边 **只** 来自 YAML `related_wps`（upstream/downstream）。无则该包不连线。禁止推断、禁止示意边。全空 → 无连线总览并提示未填关联。
+- 只纳入 `effect=正常` 的 WP。废弃包不入图。
+- 竖排同框。Mermaid 不保证像素级左对齐。
 
-路由：SKILL.md「画图」行必须加载 **05+11**；05 命中后按本节输出。不改 23 号（纯查询不载 23）。
+点名才出（同样禁止编造边）：
+
+| 图类型 | 数据源 | Mermaid 类型 |
+|---|---|---|
+| 计划→WP 结构图 | PLAN §3 + wps/_index | graph TD |
+| 人员×待办排布图 | todos/_index §1 + §3 | graph LR |
+
+### 17.3 落盘与指纹
+
+模板：`assets/templates/wp-chart-template.md`。缺文件则懒建。
+
+指纹（字段集合相等则不重写）：每个正常 WP 的 `(编号, 名称, 负责人, §8 执行人去重排序, upstream 排序, downstream 排序, effect)`。改备注/关联记录/状态历史不在指纹内。
+
+触发：改 related_wps、包名、负责人、§8 执行人、增删/废弃 WP，且指纹变化。同回合先 index 后图。
+
+### 17.4 触发
+
+用户显式请求（「画图 / 排布图 / 责任链图 / Mermaid / 工作包总览」）。写入联动按 17.3，不靠用户再喊画图。生成时读最新 index，不缓存。
+
+路由：SKILL.md「画图」行必须加载 **05+11**。写入场景图联动走 00 §8c + 23 P-WP-CHART。

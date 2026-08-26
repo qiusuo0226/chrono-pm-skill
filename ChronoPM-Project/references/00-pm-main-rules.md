@@ -75,7 +75,7 @@ AI 在处理任何用户输入时，必须先完成 PM Profile 加载，再判�
 | 意图类型 | 说明 | 处理方式 |
 |---|---|---|
 | 查询 | 用户想了解项目状态 | 按 `05-query-rules.md` 处理，不输出更新清单 |
-| 画图 / 责任链图 / 排布图 / Mermaid | 由 index 派生图 | **查询**，不是生成。按 05 + 11 §17，仅对话输出 Mermaid 代码块。**禁止写成任何文件**（含 `ai/outputs/`）。不走 P-OUTPUT |
+| 画图 / 责任链图 / 排布图 / Mermaid | 由 index 派生图 | **查询**，不是生成。按 05 + 11 §17。对话输出 Mermaid。允许懒建派生 `wps/_wp-chart.md`。禁止 `ai/outputs/`，不走 P-OUTPUT |
 | 生成 | 用户要求生成文档 | 按对应场景规则处理 |
 | 分析 | 用户要求分析材料 | 输出分析结论 + 建议事项 |
 | 更新 | 用户要求更新事实源 | 按 `10-update-trigger-rules.md` 处理 |
@@ -591,6 +591,7 @@ AI **必须**：
 | 修改计划 §2 门禁 | 不回写 WP 关键阶段 | 关键阶段只从 WP §8 投影到 §3 第 6 列 |
 | 修改 WP 的关联需求 | `_index.md` 关联需求列 | 与 WP 文件 §2 强制一致 |
 | 修改 WP `related_wps`（v3.16.0） | 对端 YAML + 本 WP §2b + `_index.md` 上游/下游列 | YAML 为 SSOT。改 upstream 必须在对端 downstream 互指（反之亦然）。自指拒绝。环 → pm-decisions。对端文件不存在 → D20，不建幽灵 WP。建链/改链待确认 |
+| 修改 WP 的 related_wps / 名称 / 负责人 / §8 执行人，或增删/废弃 WP（v3.17.0） | `wps/_wp-chart.md` | 派生图。先 index 再比指纹（编号+名称+负责人+§8 人+上下游+effect）。变化或文件缺失 → 按 11 §17 重写/懒建。指纹相同不写。不走 P-OUTPUT |
 | 修改 WP §2 关联需求 / REQ 工作包列 | 对方字段 + `wps/_index.md` | 双向编号一致（07 号）；不一致写入 pm-decisions |
 | 新增/修改/删除 `sources/{编号}/` | `requirements/sources/_index.md` | 索引行同步；存在性以 meta.md 为准 |
 
