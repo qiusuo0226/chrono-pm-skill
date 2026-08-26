@@ -123,13 +123,13 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.17.0 / schema 0.16.0
-- [ ] 11 §17 默认总览 + `_wp-chart.md` 派生例外
-- [ ] 05 WP 查询摘要+链接
-- [ ] wp-template 无阶段归属、有 §4b、「阶段」列
-- [ ] gap-capture 禁 pm-decisions；有 〇·五
-- [ ] 待办恰好 1 个 WP 未改
-- [ ] audit 退出码 0
-- [ ] 无业务仓路径写入
-- [ ] 正式文档不引用 upgrade-plan 路径
-- [ ] 双包 3.17.0
+- [x] `_version.py` 3.17.0 / schema 0.16.0
+- [x] 11 §17 默认总览 + `_wp-chart.md` 派生例外
+- [x] 05 WP 查询摘要+链接
+- [x] wp-template 无阶段归属、有 §4b、「阶段」列
+- [x] gap-capture 禁 pm-decisions；有 〇·五
+- [x] 待办恰好 1 个 WP 未改
+- [x] audit 退出码 0
+- [x] 无业务仓路径写入
+- [x] 正式文档不引用 upgrade-plan 路径
+- [x] 双包 3.17.0
