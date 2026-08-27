@@ -1,0 +1,2351 @@
+#!/usr/bin/env python3
+"""
+ChronoPM 工作区迁移脚本
+
+当 Skill 包升级后，已有的 ai/ 工作区可能缺少新版本所需的目录和文件。
+本脚本检测差距并自动创建缺失内容。
+
+用法:
+    python migrate_workspace.py --project-root /path/to/project
+    python migrate_workspace.py --project-root /path/to/project --dry-run
+    python migrate_workspace.py --project-root /path/to/project --target-version 1.2.0
+
+v3.0.0 存量兼容声明（P-14/P-30 配套）：init 侧 portfolio 分支已删除，
+但本脚本内的 is_portfolio 分支与 PORTFOLIO_050_DIRS / PORTFOLIO_060_DIRS
+等旧结构常量为**有意保留**——存量 portfolio 工作区（如市监重构项目管理，
+用户已定界本次不迁移）日后按 upgrade-to-3.0.0.md 原地升级（D-13/D-21）时，
+依赖本脚本读取旧结构并下沉/补建。删除将导致存量工作区无法迁移。
+"""
+
+import argparse
+import json
+import os
+import re
+import shutil
+from datetime import datetime
+from pathlib import Path
+
+# ============================================================
+# 版本常量（单一版本源：scripts/_version.py）
+# ============================================================
+# 从同一目录的 _version.py 导入（本脚本运行于 scripts/，scripts/ 天然在 sys.path[0]），
+# 避免在迁移脚本内硬编码版本字符串造成与 Skill 本体版本失步。
+from _version import SKILL_VERSION as CURRENT_SKILL_VERSION
+from _version import WORKSPACE_SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
+from chronopm_init.config import (
+    ALL_TEMPLATE_FILES,
+    RETIRED_TEMPLATE_FILES,
+    resolve_template_path,
+)
+from chronopm_init.file_registry import create_outputs_dir
+
+# ============================================================
+# Schema 版本对应的目录结构定义
+# ============================================================
+
+SCHEMA_010_DIRS = [
+    "context", "requirements", "plans", "milestones",
+    "tasks", "risks", "issues", "decisions",
+    "reports/daily/personal", "reports/daily/project",
+    "reports/weekly", "reports/monthly",
+    "meetings", "reviews", "templates", "logs", "prompts",
+]
+
+SCHEMA_020_DIRS = [
+    "context", "requirements", "plans", "milestones",
+    "tasks", "risks", "issues", "decisions",
+    "reports/daily/personal", "reports/daily/project",
+    "reports/weekly", "reports/monthly",
+    "meetings", "reviews", "templates", "logs", "prompts",
+]
+
+SCHEMA_030_DIRS = SCHEMA_020_DIRS + ["continuity"]
+
+SCHEMA_040_DIRS = SCHEMA_030_DIRS + [
+    # portfolio 模式新增
+]
+
+# Schema 0.5.0 新增的 portfolio 模式目录
+PORTFOLIO_050_DIRS = [
+    "context", "reports/weekly", "risks", "plans",
+    "resources", "meetings", "logs",
+    "todos", "todos/snapshots/daily", "todos/snapshots/weekly",
+    "todos/actuals/daily", "todos/actuals/weekly",
+]
+
+# 子项目目录（schema 0.5.0）
+SUB_PROJECT_050_DIRS = [
+    "context", "requirements", "plans", "milestones",
+    "tasks", "risks", "issues", "decisions",
+    "reports/daily/personal/summaries",
+    "meetings", "reviews", "logs", "prompts",
+    "continuity",
+]
+
+# Schema 0.6.0 新增的 change-log 分层归档目录（single 模式在 ai/ 下）
+SCHEMA_060_DIRS = [
+    "change-log/archive",
+]
+
+# Schema 0.6.0 项目集模式新增目录（portfolio 模式下，change-log 在 portfolio 层）
+PORTFOLIO_060_DIRS = [
+    "change-log/archive",
+]
+
+# ============================================================
+# 每个版本新增的能力检测清单
+# ============================================================
+
+VERSION_CAPABILITIES = [
+    {
+        "version": "0.1.0",
+        "schema": "0.1.0",
+        "capabilities": ["basic_workspace"],
+        "new_dirs": [],
+        "new_files": [],
+    },
+    {
+        "version": "0.2.0",
+        "schema": "0.1.0",
+        "capabilities": ["template_rewrite"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v0.2.0 根据实际云文档结构重写 8 个模板，新增 lessons-learned 与 project-context 模板；无目录结构变更。",
+    },
+    {
+        "version": "0.3.0",
+        "schema": "0.2.0",
+        "capabilities": ["portfolio_mode", "resource_management"],
+        "new_dirs": ["portfolio/resources"],
+        "new_files": ["portfolio/resources/resource-register.md", "portfolio/resources/transfer-log.md"],
+    },
+    {
+        "version": "0.4.0",
+        "schema": "0.2.0",
+        "capabilities": ["update_trigger", "project_brief"],
+        "new_dirs": [],
+        "new_files": ["context/project-brief.md", "portfolio/context/project-brief.md"],
+    },
+    {
+        "version": "0.5.0",
+        "schema": "0.3.0",
+        "capabilities": ["output_artifact"],
+        "new_dirs": [],
+        "new_files": [],
+        # v2.1.0（D-8）：outputs/ 已移入 ai/ 内，由 2.1.0 条目 new_dirs 承载；
+        # 原 external_dirs: ["outputs"]（工作区根目录）不再检测，避免误建根级旧路径。
+    },
+    {
+        "version": "0.6.0",
+        "schema": "0.3.0",
+        "capabilities": ["excel_generation"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v0.6.0 Excel 生成规范（12 号规则）；无工作区结构变更。",
+    },
+    {
+        "version": "0.7.0",
+        "schema": "0.3.0",
+        "capabilities": ["personal_progress", "monthly_index"],
+        "new_dirs": ["reports/daily/personal/summaries"],
+        "new_files": [],
+        "note": "目录从 YYYY/MM 改为 YYYYMM（建议性迁移）",
+    },
+    {
+        "version": "0.7.1",
+        "schema": "0.3.0",
+        "capabilities": ["daily_merge_idempotency"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v0.7.1 日报合并幂等性约束（同人同日多提交合并追加不覆盖）；规则层变更，无工作区结构变更。",
+    },
+    {
+        "version": "0.8.0",
+        "schema": "0.4.0",
+        "capabilities": ["continuity"],
+        "new_dirs": ["continuity"],
+        "new_files": [
+            "continuity/project-lineage.md",
+            "continuity/legacy-sources.md",
+            "continuity/carryover-register.md",
+            "continuity/import-log.md",
+        ],
+    },
+    {
+        "version": "0.9.0",
+        "schema": "0.4.0",
+        "capabilities": ["quick_query", "todo_index"],
+        "new_dirs": ["portfolio/todos"],
+        "new_files": [],
+    },
+    {
+        "version": "1.0.0",
+        "schema": "0.4.0",
+        "capabilities": ["self_check"],
+        "new_dirs": [],
+        "new_files": [],
+    },
+    {
+        "version": "1.0.1",
+        "schema": "0.4.0",
+        "capabilities": ["pm_todo_output_spec"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.0.1 PM 待办查询输出规范（全景视图，禁止只列 PM 个人任务）；规则层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.1.0",
+        "schema": "0.5.0",
+        "capabilities": ["todo_snapshot"],
+        "new_dirs": [
+            "portfolio/todos/snapshots/daily",
+            "portfolio/todos/snapshots/weekly",
+            "portfolio/todos/actuals/daily",
+            "portfolio/todos/actuals/weekly",
+        ],
+        "new_files": ["portfolio/todos/history-index.md"],
+    },
+    {
+        "version": "1.2.0",
+        "schema": "0.5.0",
+        "capabilities": ["skill_governance"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "governance/ 和 tests/ 只在 Skill 包，不进入工作区",
+    },
+    {
+        "version": "1.3.0",
+        "schema": "0.4.0",
+        "capabilities": ["workspace_upgrade_awareness"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.3.0 工作区升级感知（20 号规则：健康检查+功能触发检查+兼容模式+迁移模式）；.workspace-health.md 等由运行时按需生成，不预建。",
+    },
+    {
+        "version": "1.3.1",
+        "schema": "0.4.0",
+        "capabilities": ["upgrade_review_constraint"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.3.1 升级方案审查约束（16 号规则 AP 审查文档）；治理层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.4.0",
+        "schema": "0.4.0",
+        "capabilities": ["blueprint_external_review"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.4.0 SKILL_BLUEPRINT 架构蓝图 + 发布检查清单；仅 Skill 包层，无工作区结构变更。",
+    },
+    {
+        "version": "1.5.0",
+        "schema": "0.5.0",
+        "capabilities": ["qoder_entry"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.5.0 QODER_RULES 轻量入口 + 最小读取原则；规则层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.6.0",
+        "schema": "0.5.0",
+        "capabilities": ["domain_glossary"],
+        "new_dirs": [],
+        "new_files": ["portfolio/context/domain-glossary.md", "context/domain-glossary.md"],
+        "note": "词库文件按工作区模式创建：portfolio 模式创建 portfolio/context/domain-glossary.md，single 模式创建 context/domain-glossary.md。不自动抽取历史术语。",
+    },
+    {
+        "version": "1.6.1",
+        "schema": "0.5.0",
+        "capabilities": ["resource_source_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.6.1 资源事实源一致性修复（05 号 §5.4a、01 号、09 号 §5.6 等规则修正）；规则层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.7.0",
+        "schema": "0.5.0",
+        "capabilities": ["init_wizard", "iteration_register"],
+        "new_dirs": [],
+        "new_files": ["plans/iteration-register.md"],
+        "note": "迭代登记（iteration-register）为 single 子项目 plans 下新增文件；portfolio 模式不生成。",
+    },
+    {
+        "version": "1.7.1",
+        "schema": "0.5.0",
+        "capabilities": ["script_refactor"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.7.1 init_workspace.py 拆分为 chronopm_init 包（config/file_registry/template_renderer/workspace_builder/validators）；Skill 包层重构，无工作区结构变更。",
+    },
+    {
+        "version": "1.8.0",
+        "schema": "0.5.0",
+        "capabilities": ["skill_slimming"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.0 为 SKILL.md 瘦身，无工作区层变更。",
+    },
+    {
+        "version": "1.8.1",
+        "schema": "0.5.0",
+        "capabilities": ["rule_slimming_06"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.1 06 号文件规则瘦身（587→299 行），§0 外移为 20 号规则（工作区版本规则）；规则层瘦身，无工作区结构变更。",
+    },
+    {
+        "version": "1.8.2",
+        "schema": "0.5.0",
+        "capabilities": ["rule_slimming_01"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.2 01 号日报规则瘦身（594→221 行）；规则层瘦身，无工作区结构变更。",
+    },
+    {
+        "version": "1.8.3",
+        "schema": "0.5.0",
+        "capabilities": ["rule_tabular"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.3 05/11/07 号规则表格化重构；规则层重构，无工作区结构变更。",
+    },
+    {
+        "version": "1.8.4",
+        "schema": "0.5.0",
+        "capabilities": ["upgrade_route_closeout"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.8.4 升级路线收尾与全量回归验证；治理层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.9.0",
+        "schema": "0.5.0",
+        "capabilities": ["pm_profile"],
+        "new_dirs": [],
+        "new_files": ["portfolio/context/pm-profile.md", "context/pm-profile.md"],
+        "note": "PM Profile 按工作区模式创建：portfolio 模式 portfolio/context/pm-profile.md，single 模式 context/pm-profile.md。",
+    },
+    {
+        "version": "1.10.0",
+        "schema": "0.5.0",
+        "capabilities": ["plan_import_change_tracking"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "R1-R4 历史计划导入追踪复用 v1.1.0 已建立的 portfolio/todos 目录与 history-index.md、snapshots/daily 等；imported-{date}.md 为运行时动态生成，非模板文件，故此处无新增目录/文件，避免与 v1.1.0 重复误报。",
+    },
+    {
+        "version": "1.10.1",
+        "schema": "0.5.0",
+        "capabilities": ["blueprint_stat_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.10.1 仅修复 SKILL_BLUEPRINT §5.3 成熟度统计，无工作区层变更。",
+    },
+    {
+        "version": "1.10.2",
+        "schema": "0.5.0",
+        "capabilities": ["single_version_source"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.10.2 建立 scripts/_version.py 单一版本源，sync_version.py 同步全部版本触点；Skill 包层治理，无工作区结构变更。",
+    },
+    {
+        "version": "1.11.0",
+        "schema": "0.6.0",
+        "capabilities": ["proactive_change", "pending_index", "change_log_archive"],
+        "new_dirs": ["change-log/archive"],
+        "portfolio_dirs": ["change-log/archive"],
+        "new_files": [
+            "pending-changes.md",
+            "change-log/index.md",
+            "portfolio/pending-changes.md",
+            "portfolio/change-log/index.md",
+        ],
+        "note": "v1.11.0 主动变更+人工确认（CR-20260811-002）：pending-changes.md 为 Change Log '待确认' 条目的子集视图索引（single 在 ai/pending-changes.md，portfolio 在 ai/portfolio/pending-changes.md）；change-log 分层归档（活跃区 50 行/30 天 → change-log/archive/YYYYMM-change-log.md + change-log/index.md 导航）。",
+    },
+    {
+        "version": "1.12.0",
+        "schema": "0.6.0",
+        "capabilities": ["workspace_cleanliness"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.12.0 工作空间清洁度治理（CR-20260811-003）：新增§18根目录白名单、§19交付物类型控制、§20引用完整性约束；§2流程10步→12步；release-checklist新增清洁度检查组；修复F-01~F-11历史污染；回归新增CL-001~CL-004。无工作区结构变更。",
+    },
+    {
+        "version": "1.13.0",
+        "schema": "0.6.0",
+        "capabilities": ["architecture_slimming"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.13.0 架构精简（级联嵌入 + 归档表 + sync_version.py）；新增 decision-log-template 为 Skill 包模板，无工作区预建文件。",
+    },
+    {
+        "version": "1.13.1",
+        "schema": "0.6.0",
+        "capabilities": ["version_history_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.13.1 skill.json versionHistory 排序修复并同步 updated_at；治理层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.14.0",
+        "schema": "0.6.0",
+        "capabilities": ["standard_workflows"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.14.0 定义 WF-1~WF-6 标准工作流及其数据路径；规则层定义，复用既有目录，无工作区结构变更。",
+    },
+    {
+        "version": "1.15.0",
+        "schema": "0.7.0",
+        "capabilities": ["requirement_intelligence", "project_notes"],
+        "new_dirs": [
+            "requirements/canonical",
+            "requirements/atoms",
+        ],
+        "new_files": [
+            "requirements/source-type-registry.md",
+            "requirements/canonical/canonical-index.md",
+            "requirements/atoms/atom-index.md",
+            "requirements/atoms/contractual-index.md",
+            "requirements/atoms/contractual.md",
+            "requirements/atoms/procurement-index.md",
+            "requirements/atoms/procurement.md",
+            "requirements/atoms/approval-index.md",
+            "requirements/atoms/approval.md",
+            "requirements/atoms/compliance-index.md",
+            "requirements/atoms/compliance.md",
+            "requirements/atoms/technical-index.md",
+            "requirements/atoms/technical.md",
+            "requirements/atoms/operational-index.md",
+            "requirements/atoms/operational.md",
+        ],
+        "note": "v1.15.0 跨源需求归集 RI（CR-20260813-001，schema 0.6.0→0.7.0）：在单一项目工作区 ai/requirements/ 下新增 canonical/ 与 atoms/（L1 主索引 atom-index + 6 类 L2 倒排索引 + 6 类 L3 全文 + source-type-registry.md）。project-notes 为 context 下追加式文件（项目集模式在 ai/portfolio/context/），新增目录由 0.7.0 初始化脚本创建。",
+    },
+    {
+        "version": "1.16.0",
+        "schema": "0.8.0",
+        "capabilities": ["contract_scope_ri"],
+        "new_dirs": [
+            "portfolio/requirements/canonical",
+            "portfolio/requirements/atoms",
+        ],
+        "new_files": [
+            "portfolio/requirements/contract-register.md",
+            "portfolio/requirements/source-type-registry.md",
+            "requirements/contract-register.md",
+            "portfolio/requirements/canonical/canonical-index.md",
+            "portfolio/requirements/atoms/atom-index.md",
+            "portfolio/requirements/atoms/contractual-index.md",
+            "portfolio/requirements/atoms/contractual.md",
+            "portfolio/requirements/atoms/procurement-index.md",
+            "portfolio/requirements/atoms/procurement.md",
+            "portfolio/requirements/atoms/approval-index.md",
+            "portfolio/requirements/atoms/approval.md",
+            "portfolio/requirements/atoms/compliance-index.md",
+            "portfolio/requirements/atoms/compliance.md",
+            "portfolio/requirements/atoms/technical-index.md",
+            "portfolio/requirements/atoms/technical.md",
+            "portfolio/requirements/atoms/operational-index.md",
+            "portfolio/requirements/atoms/operational.md",
+        ],
+        "sub_project_dirs": [
+            "requirements/canonical",
+            "requirements/atoms",
+        ],
+        "sub_project_files": [
+            "requirements/source-type-registry.md",
+        ],
+        "note": "v1.16.0 合同作用域（CR-20260813-002，schema 0.7.0→0.8.0）：项目集模式在 portfolio/requirements/ 新增 canonical/、atoms/、contract-register.md、source-type-registry.md（合同登记册为 RI 检索入口）；单项目模式在 ai/requirements/ 新增 contract-register.md。子项目级 on portfolio 模式补齐 RI 目录（requirements/canonical、requirements/atoms）与 source-type-registry.md（修复 CR-20260813-001 遗留缺口），仅对已含 requirements/ 的子项目执行（D10 守卫）。",
+    },
+    {
+        "version": "1.16.1",
+        "schema": "0.8.0",
+        "capabilities": ["pack_standardization"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.16.1 打包标准化（tools/pack-skill）；Skill 包层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.16.2",
+        "schema": "0.8.0",
+        "capabilities": ["ghost_reference_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.16.2 幽灵引用修复；规则层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.16.3",
+        "schema": "0.8.0",
+        "capabilities": ["cascade_enforcement_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.16.3 级联强制执行规则修复；规则层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.17.0",
+        "schema": "0.8.0",
+        "capabilities": ["pm_preference_generalization"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.17.0 PM 偏好通用化（01 号 §6/§7 等）；规则层变更，无工作区结构变更（pm-profile.md 已于 v1.9.0 建立）。",
+    },
+    {
+        "version": "1.17.1",
+        "schema": "0.8.0",
+        "capabilities": ["governance_consistency_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.17.1 治理一致性修复；治理层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.18.0",
+        "schema": "0.8.0",
+        "capabilities": ["derived_baseline"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.18.0 推导基线（00 号 §10）；规则层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.18.1",
+        "schema": "0.8.0",
+        "capabilities": ["pack_naming"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.18.1 pack.py 命名标准化；Skill 包层变更，无工作区结构变更。",
+    },
+    {
+        "version": "1.19.0",
+        "schema": "0.8.0",
+        "capabilities": ["wf7_wf8"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.19.0 WF-7 倒排计划编排 + WF-8 待办归属；规则层变更，复用 todos/ 体系，无工作区结构变更。",
+    },
+    {
+        "version": "1.19.1",
+        "schema": "0.8.0",
+        "capabilities": ["migrate_template_sync_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.19.1 修复 migrate_workspace.py 模板同步缺口；脚本层修复，无工作区结构变更。",
+    },
+    {
+        "version": "1.20.0",
+        "schema": "0.8.0",
+        "capabilities": ["requirement_dual_view"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.20.0 需求双视图（requirement-register 23→25 列）；模板列扩展，无工作区结构变更，无文件迁移。",
+    },
+    {
+        "version": "1.21.0",
+        "schema": "0.8.0",
+        "capabilities": ["reverse_daily_matrix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v1.21.0 倒排每日矩阵；零新增文件，无工作区结构变更。",
+    },
+    {
+        "version": "2.0.0",
+        "schema": "0.8.0",
+        "capabilities": ["todo_workspace_v2"],
+        "new_dirs": ["todos"],
+        "new_files": [],
+        "sub_project_dirs": ["todos"],
+        "note": "v2.0.0 待办查询体系重构（schema 保持 0.8.0）：执行状态唯一事实源切换到 todos/{date}/{owner}.md 每人每日待办文件 + todos/{date}/_index.md 绑定文件；PLAN 计划文件替代迭代登记册（AI 按需创建，不预建）；board/backlog/里程碑板/旧待办索引/快照/actuals/个人日报等旧体系文件不再创建，存量旧文件按升级方案归档保留只读；子项目级 on portfolio 模式补齐 todos/ 目录（D10 守卫）。",
+    },
+    {
+        "version": "2.1.0",
+        "schema": "0.8.0",
+        "capabilities": ["workspace_path_consolidation", "report_migration", "personal_todo_rules"],
+        "new_dirs": ["outputs"],
+        "new_files": [],
+        "note": "v2.1.0（schema 保持 0.8.0）：路径整合 continuity/*→context/（4 文件含 carryover-register，D-9）、工作区根 outputs/→ai/outputs/（D-8），由 migrate_v210_paths() 执行搬移（不覆盖合并）；旧报告结构迁移按 §7.3.2b 由 migrate_v210_reports() 执行（检测→迁移→验证→删除，空源登记跳过）；新增 22 号个人待办规则（规则层，无预建文件）。",
+    },
+    {
+        "version": "3.0.0",
+        "schema": "0.9.0",
+        "capabilities": ["federal_mount", "single_project_only", "energy_ledger"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.0.0：Skill 双包；工作区 schema 0.9.0 联邦挂载。脚本默认只更新 .skill-version.json 元数据（skillName=chrono-pm-project）。结构下沉/补建见 upgrade-to-3.0.0.md 节 B，不自动拆业务工作区。",
+    },
+    {
+        "version": "3.1.0",
+        "schema": "0.9.0",
+        "capabilities": ["daily_report_routing", "monthly_residual_cleanup"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.1.0（schema 保持 0.9.0）：路径残留纠偏 + 日报查询/更新路由补全 + 月报残留清理。无结构变更，存量工作区零迁移，重装载规则即生效。",
+    },
+    {
+        "version": "3.1.1",
+        "schema": "0.9.0",
+        "capabilities": ["dev_repo_layout"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.1.1（schema 保持 0.9.0）：开发仓三目录重组（ChronoPM-Project/ + ChronoPM-Portfolio/ + governance-shared/）。业务工作区零迁移。",
+    },
+    {
+        "version": "3.2.0",
+        "schema": "0.9.0",
+        "capabilities": ["df017_provenance", "load_scene_tags", "df018_habit_detect"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.2.0（schema 保持 0.9.0）：DF-017/018 + 加载场景分类。存量 pm-profile 零强制迁移。",
+    },
+    {
+        "version": "3.3.0",
+        "schema": "0.9.0",
+        "capabilities": ["linked_todos", "worklog_td_ref", "td_abbrev_registry"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.3.0（schema 保持 0.9.0）：关联待办 + 工作日志 TD Ref + 缩写治理小表。存量零强制迁移。",
+    },
+    {
+        "version": "3.4.0",
+        "schema": "0.9.0",
+        "capabilities": ["report_stub", "timeline_report"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.4.0（schema 保持 0.9.0）：报告存根范式 + 时间线报懒建。不预建 timeline/。",
+    },
+    {
+        "version": "3.5.0",
+        "schema": "0.10.0",
+        "capabilities": ["wp_independent_files", "wp_index_accelerator", "wp_bind_detect"],
+        "new_dirs": ["wps"],
+        "new_files": ["wps/_index.md"],
+        "note": "v3.5.0（schema 0.9.0→0.10.0）：wps/ 独立 WP 文件 + _index.md 查找加速器。脚本只建空目录和索引；计划内嵌 WP 一次性抽取由 AI 输出清单→PM 确认→先迁后验，脚本不自动删内嵌表。编号短号不变。",
+    },
+    {
+        "version": "3.5.1",
+        "schema": "0.10.0",
+        "capabilities": ["residual_path_fix"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.5.1（schema 保持 0.10.0）：project-brief §4 / 14 号月度索引停维等措辞残留修复。零迁移。",
+    },
+    {
+        "version": "3.6.0",
+        "schema": "0.11.0",
+        "capabilities": ["source_doc_dirs", "source_index_accelerator", "atom_kind_ext"],
+        "new_dirs": ["requirements/sources"],
+        "new_files": ["requirements/sources/_index.md"],
+        "note": "v3.6.0（schema 0.10.0→0.11.0）：requirements/sources/{编号}/ 文档级拆解。脚本只建空目录和索引；存量 {type}-source/ 一次性迁移由 AI 输出清单→PM 确认→先迁后验，脚本不自动删旧目录。",
+    },
+    {
+        "version": "3.7.0",
+        "schema": "0.12.0",
+        "capabilities": ["source_split_enhance", "entity_registry_retired", "risk_issue_restructure"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.7.0（schema 0.11.0→0.12.0）：拆解增强+废 entity-registry+风险登记册重构。脚本不自动改业务数据；打印零清/分流/登记册迁移指引（upgrade-to-3.7.0.md）。",
+    },
+    {
+        "version": "3.8.0",
+        "schema": "0.13.0",
+        "capabilities": ["backup_dir", "personnel_todos_ssot", "confirm_speech", "cost_ledger"],
+        "new_dirs": ["backup"],
+        "new_files": [],
+        "note": "v3.8.0（schema 0.12.0→0.13.0）：空 backup/；人员事实源改待办+_index。脚本只建空 backup/ + 升 schema，不改待办、不搬业务文件。分类清单由 AI 出、PM 确认后搬。详见 upgrade-to-3.8.0.md。",
+    },
+    {
+        "version": "3.9.0",
+        "schema": "0.14.0",
+        "capabilities": [
+            "pm_decisions",
+            "requirement_index",
+            "ops_log_lazy",
+            "wp_pending_confirm",
+            "linked_todo_policy",
+        ],
+        "new_dirs": [],
+        "new_files": ["requirements/_index.md"],
+        "note": "v3.9.0（schema 0.13.0→0.14.0）：pending-changes 全文迁 pm-decisions（懒建、不预建空文件）；需求索引；ops 日志懒建。sync_templates 覆盖同步现行模板；退役模板建议搬 backup。详见 upgrade-to-3.9.0.md。",
+    },
+    {
+        "version": "3.10.0",
+        "schema": "0.14.0",
+        "capabilities": ["ops_log_columns", "energy_ingest", "full_roster_daily", "td_abbrev", "wp_timebox"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.10.0（schema 保持 0.14.0）：对话日志改列、能耗入库、全员建档、TD 编号、WP 时间盒。无新目录。",
+    },
+    {
+        "version": "3.11.0",
+        "schema": "0.14.0",
+        "capabilities": ["wp_status_history", "stage_owners", "glossary_sensing", "output_path_guard", "plan_five_sections"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.11.0（schema 保持 0.14.0）：WP 状态链与阶段执行人、词库感应、生成物落盘、计划 5 节投影闸。无新目录。",
+    },
+    {
+        "version": "3.12.0",
+        "schema": "0.14.0",
+        "capabilities": ["procedure_index", "todo_wp_card1", "dispatch_dedup", "source_split_force"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.12.0（schema 保持 0.14.0）：过程索引 23；简单查询仅 05；正式待办恰好 1 个 WP；派活查重；拆文件强制 sources/。无新目录。",
+    },
+    {
+        "version": "3.13.0",
+        "schema": "0.14.0",
+        "capabilities": ["wp_scan_advance", "wp_effect", "plan_subrows", "v13_time_window", "skill_gap"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.13.0（schema 保持 0.14.0）：WP 联动 SCAN/ADVANCE、effect、计划子行、V-13、skill-gap。无新目录。",
+    },
+    {
+        "version": "3.14.0",
+        "schema": "0.15.0",
+        "capabilities": ["plan_six_sections", "stage13", "ascii_ids", "project_info_dir", "scan_freeze"],
+        "new_dirs": ["project-info"],
+        "new_files": [],
+        "note": "v3.14.0（schema 0.14.0→0.15.0）：project-info/；budget/progress-plan 迁出 plans/。脚本只建空目录，不搬业务文件。清单→PM 确认后由 AI 移动。",
+    },
+    {
+        "version": "3.15.0",
+        "schema": "0.16.0",
+        "capabilities": ["business_migrate", "current_operator", "verify_scripts", "daily_load_22"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.15.0（schema 0.15.0→0.16.0）：pm-profile current_operator；存量数据受控迁移（默认 dry-run，--migrate-business 写回）。",
+    },
+    {
+        "version": "3.16.0",
+        "schema": "0.16.0",
+        "capabilities": ["date_format", "wp_field_boundary", "plan_section4_verify", "related_wps", "mermaid_derived"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.16.0（schema 保持 0.16.0）：日期格式；WP §8 字段边界；§4 verify 分通道；related_wps；Mermaid 仅对话。",
+    },
+    {
+        "version": "3.17.0",
+        "schema": "0.16.0",
+        "capabilities": ["wp_stamp", "wp_chart_file", "wp_query_link", "skill_gap_aux", "fp_stage_align"],
+        "new_dirs": [],
+        "new_files": ["wps/_wp-chart.md"],
+        "note": "v3.17.0（schema 保持 0.16.0）：关联记录盖章；图形态+派生落盘；查询摘要+链接；skill-gap 辅助；功能点阶段全齐 AUTO。",
+    },
+    {
+        "version": "3.18.0",
+        "schema": "0.16.0",
+        "capabilities": [
+            "wp_chart_by_plan",
+            "wp_index_archive_sections",
+            "carryover_step0_script",
+            "reply_norm",
+            "wp_stage_people_freeze",
+        ],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.18.0（schema 保持 0.16.0）：图分章；归档三段；结转脚本；问答规范；SCAN 冻结+§8b。存量完成/废弃须 --migrate-business。",
+    },
+]
+
+# v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
+# 任意工作区版本均可被 get_capabilities_since() 精确匹配，不再存在 from_version
+# 无法命中导致返回空的结构性缺漏（原缺漏 29 个版本已按 skill.json versionHistory
+# 与 CHANGELOG 回填，见升级方案 v2.1 §7.3.1）。
+
+
+
+def get_skill_version():
+    """读取 Skill 包版本"""
+    return CURRENT_SKILL_VERSION
+
+
+def read_workspace_version(ai_dir: Path):
+    """读取工作区版本信息"""
+    version_file = ai_dir / ".skill-version.json"
+    if not version_file.exists():
+        return None
+    with open(version_file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def get_capabilities_since(from_version: str):
+    """获取从指定版本到当前版本之间新增的能力"""
+    found = False
+    new_caps = []
+    for v in VERSION_CAPABILITIES:
+        if v["version"] == from_version:
+            found = True
+            continue
+        if found:
+            new_caps.append(v)
+    return new_caps
+
+
+def _sub_projects(ai_dir: Path):
+    """遍历项目集模式下 ai/projects/*/，仅返回含 requirements/ 的子项目（D10 守卫，CR-20260813-002）。"""
+    projects_dir = ai_dir / "projects"
+    if not projects_dir.exists():
+        return []
+    return [
+        d for d in projects_dir.iterdir()
+        if d.is_dir() and (d / "requirements").is_dir()
+    ]
+
+
+def check_missing_dirs(ai_dir: Path, capabilities: list, is_portfolio: bool = False):
+    """检查缺失的目录"""
+    missing = []
+    for cap in capabilities:
+        dirs = cap.get("new_dirs", [])
+        for d in dirs:
+            full_path = ai_dir / d
+            if not full_path.exists():
+                missing.append(d)
+
+        # 0.6.0 portfolio 模式 change-log 归档目录位于 portfolio 层
+        p_dirs = cap.get("portfolio_dirs", [])
+        if is_portfolio:
+            for d in p_dirs:
+                fp = (ai_dir / "portfolio" / d)
+                if not fp.exists():
+                    missing.append(f"portfolio/{d}")
+
+        # 0.8.0 子项目级 RI 目录（遍历 projects/*/，含 guard D10）
+        sub_dirs = cap.get("sub_project_dirs", [])
+        if is_portfolio:
+            for sub in _sub_projects(ai_dir):
+                for d in sub_dirs:
+                    fp = sub / d
+                    if not fp.exists():
+                        missing.append(f"projects/{sub.name}/{d}")
+
+        # external_dirs（如 outputs/）
+        ext_dirs = cap.get("external_dirs", [])
+        for d in ext_dirs:
+            ext_path = ai_dir.parent / d
+            if not ext_path.exists():
+                missing.append(f"../{d}")
+    return missing
+
+
+def check_missing_files(ai_dir: Path, capabilities: list, is_portfolio: bool = False):
+    """检查缺失的文件"""
+    missing = []
+    for cap in capabilities:
+        files = cap.get("new_files", [])
+        for f in files:
+            # 词库文件按工作区模式过滤：portfolio 模式只检查 portfolio 路径，single 模式只检查 context 路径
+            if f == "portfolio/context/domain-glossary.md" and not is_portfolio:
+                continue
+            if f == "context/domain-glossary.md" and is_portfolio:
+                continue
+            # 0.6.0 pending/change-log 索引按工作区模式过滤
+            if f == "portfolio/pending-changes.md" and not is_portfolio:
+                continue
+            if f == "pending-changes.md" and is_portfolio:
+                continue
+            if f == "portfolio/change-log/index.md" and not is_portfolio:
+                continue
+            if f == "change-log/index.md" and is_portfolio:
+                continue
+            full_path = ai_dir / f
+            if not full_path.exists():
+                missing.append(f)
+
+        # 0.8.0 子项目级 RI 文件（遍历 projects/*/，仅 source-type-registry 需要模板，D10 守卫）
+        sub_files = cap.get("sub_project_files", [])
+        if is_portfolio:
+            for sub in _sub_projects(ai_dir):
+                for rel in sub_files:
+                    fp = sub / rel
+                    if not fp.exists():
+                        missing.append(f"projects/{sub.name}/{rel}")
+    return missing
+
+
+def get_templates_dir():
+    """获取 Skill 包中的模板目录"""
+    skill_root = Path(__file__).parent.parent
+    return skill_root / "assets" / "templates"
+
+
+def create_missing_dirs(ai_dir: Path, dirs: list):
+    """创建缺失的目录"""
+    for d in dirs:
+        clean = d.replace("../", "")
+        if d.startswith("../"):
+            target = ai_dir.parent / clean
+        else:
+            target = ai_dir / d
+        target.mkdir(parents=True, exist_ok=True)
+
+
+def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
+    """从模板创建缺失的文件"""
+    # 模板名映射
+    template_map = {
+        # v2.0.0 零数据源：人员资源事实源下放子项目（projects/{子项目}/resources/），
+        # portfolio 级 resource-register/transfer-log 不再预建模板；存量旧文件保留只读，
+        # 数据迁移由 AI/PM 按 09 号 §5 完成，项目集层只维护 shared-resource-index/transfer-index 索引。
+        "context/project-brief.md": "project-brief-template.md",
+        "portfolio/context/project-brief.md": "project-brief-template.md",
+        "continuity/project-lineage.md": "project-lineage-template.md",
+        "continuity/legacy-sources.md": "legacy-sources-template.md",
+        # v2.0.0：carryover-register / todo-history-index 模板已删除（结转字段化、历史索引砍掉），
+        # 旧版本迁移条目若命中将走 auto-migrated 空文件兜底，不影响迁移流程。
+        "continuity/import-log.md": "import-log-template.md",
+        "portfolio/context/domain-glossary.md": "domain-glossary-template.md",
+        "context/domain-glossary.md": "domain-glossary-template.md",
+        "requirements/source-type-registry.md": "source-type-registry-template.md",
+        "portfolio/requirements/contract-register.md": "contract-register-template.md",
+        "portfolio/requirements/source-type-registry.md": "source-type-registry-template.md",
+
+        "wps/_index.md": "wp-index-template.md",
+        "requirements/sources/_index.md": "source-index-template.md",
+    }
+
+    for f in files:
+        target = ai_dir / f
+        if target.exists():
+            continue
+
+        # H1：子项目文件路径剥前缀后查 template_map（CR-20260813-002）
+        #   projects/{sub}/requirements/source-type-registry.md → requirements/source-type-registry.md
+        template_key = f
+        m = re.match(r"^projects/[^/]+/(.+)$", f)
+        if m:
+            template_key = m.group(1)
+
+        template_name = template_map.get(template_key)
+        if template_name:
+            src = resolve_template_path(template_name)
+            if not src.exists() and templates_dir:
+                fallback = templates_dir / template_name
+                if fallback.exists():
+                    src = fallback
+            if src.exists():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, target)
+            else:
+                # 模板不存在，创建空文件
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(f"---\ndoc_type: auto-migrated\nmigrated_at: {datetime.now().strftime('%Y-%m-%d')}\n---\n", encoding="utf-8")
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(f"---\ndoc_type: auto-migrated\nmigrated_at: {datetime.now().strftime('%Y-%m-%d')}\n---\n", encoding="utf-8")
+
+
+def update_version_file(ai_dir: Path, mode: str, skill_version: str = None):
+    """更新 .skill-version.json
+
+    写入的 skillVersion 优先使用传入的 skill_version（即迁移目标版本），
+    缺省时回落为单一版本源 CURRENT_SKILL_VERSION。
+    """
+    # 实际写入的目标版本：显式传入优先，否则用单一版本源（skill_version 即 --target-version 或当前版本）
+    target_ver = skill_version or CURRENT_SKILL_VERSION
+    version_path = ai_dir / ".skill-version.json"
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
+
+    if version_path.exists():
+        with open(version_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        old_version = data.get("skillVersion", "unknown")
+        data["skillVersion"] = target_ver
+        data["workspaceSchemaVersion"] = CURRENT_SCHEMA_VERSION
+        data["lastMigratedAt"] = now
+    else:
+        old_version = "unknown"
+        data = {
+            "skill": "chrono-pm",
+            "skillVersion": target_ver,
+            "workspaceSchemaVersion": CURRENT_SCHEMA_VERSION,
+            "mode": mode,
+            "initializedAt": now,
+            "lastMigratedAt": now,
+        }
+
+    with open(version_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    return old_version
+
+
+def append_migration_log(ai_dir: Path, old_version: str, missing_dirs: list, missing_files: list, skill_version: str = None):
+    """追加迁移日志
+
+    记录的新版本号优先使用传入的 skill_version（即迁移目标版本），
+    缺省时回落为单一版本源 CURRENT_SKILL_VERSION。
+    """
+    target_ver = skill_version or CURRENT_SKILL_VERSION
+    log_path = ai_dir / "logs" / "migration-log.md"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+08:00")
+
+    entry = f"""
+## {today} - 迁移 {old_version} → {target_ver}
+
+### 迁移信息
+- 旧版本：{old_version}
+- 新版本：{target_ver}
+- Schema 版本：{CURRENT_SCHEMA_VERSION}
+- 迁移时间：{now}
+
+### 新增目录
+"""
+    if missing_dirs:
+        for d in missing_dirs:
+            entry += f"- {d}\n"
+    else:
+        entry += "- 无\n"
+
+    entry += "\n### 新增文件\n"
+    if missing_files:
+        for f in missing_files:
+            entry += f"- {f}\n"
+    else:
+        entry += "- 无\n"
+
+    entry += "\n### 结果\n- success\n"
+
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(entry)
+
+
+def create_workspace_health(ai_dir: Path, ws_version: dict, missing_dirs: list, missing_files: list):
+    """创建或更新 .workspace-health.md"""
+    health_path = ai_dir / ".workspace-health.md"
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d %H:%M")
+
+    skill_ver = ws_version.get("skillVersion", "unknown") if ws_version else "unknown"
+    schema_ver = ws_version.get("workspaceSchemaVersion", "unknown") if ws_version else "unknown"
+    mode = ws_version.get("mode", "single") if ws_version else "single"
+
+    is_healthy = len(missing_dirs) == 0 and len(missing_files) == 0
+    status = "healthy" if is_healthy else "needs_migration"
+
+    # 检查各能力状态
+    def cap_status(path_list):
+        for p in path_list:
+            if not (ai_dir / p).exists():
+                return "missing"
+        return "ok"
+
+    capabilities = [
+        # v2.0.0：旧体系探针（tasks/board.md、旧待办索引、快照目录、carryover-register）已删除，
+        # 改为新体系探针（todos/ 目录 + ai/outputs/，v2.1.0 起 outputs 位于 ai/ 内）
+        ("todo_workspace_v2", cap_status(["todos"])),
+        ("output_artifact", "ok" if (ai_dir / "outputs").exists() else "missing"),
+        ("self_check", "ok"),  # 规则层能力，不依赖目录
+    ]
+
+    content = f"""---
+doc_type: workspace-health
+version: v1.0
+last_checked: {now_str}
+last_prompted_upgrade_at: 
+ignored_until: 
+---
+
+# 工作区健康状态
+
+## 版本状态
+
+| Item | Value |
+|---|---|
+| Skill Version | {skill_ver} |
+| Workspace Schema | {schema_ver} |
+| Current Skill Version | {CURRENT_SKILL_VERSION} |
+| Current Schema | {CURRENT_SCHEMA_VERSION} |
+| Mode | {mode} |
+| Status | {status} |
+
+## 能力状态
+
+| Capability | Status | Notes |
+|---|---|---|
+"""
+    for cap_name, cap_stat in capabilities:
+        notes = "" if cap_stat == "ok" else "目录缺失，需迁移"
+        content += f"| {cap_name} | {cap_stat} | {notes} |\n"
+
+    content += f"""
+## 索引状态
+
+> v2.0.0 起旧待办索引（personal-todo-index/history-index）已删除，
+> 待办事实源为 todos/{{YYYY-MM-DD}}/{{执行人}}.md，绑定文件为 todos/{{YYYY-MM-DD}}/_index.md。
+
+## 推荐动作
+"""
+    if is_healthy:
+        content += "1. 工作区版本已匹配，无需迁移\n"
+    else:
+        content += f"1. 执行迁移：python scripts/migrate_workspace.py --project-root .\n"
+        content += "2. 检查新增文件并填写内容\n"
+        content += "3. 可选：对 AI 说“初始化今天的待办”创建当日待办文件与绑定文件\n"
+
+    content += f"""
+## 升级提醒控制
+
+| Field | Value |
+|---|---|
+| Last Prompted | {now_str} |
+| Ignored Until | |
+| Reminder Frequency | once_per_session |
+
+## Change Log
+
+| Date | Change Type | Description | Source | Confirmed By |
+|---|---|---|---|---|
+| {now.strftime('%Y-%m-%d')} | auto_check | 健康检查 | AI | - |
+"""
+    health_path.write_text(content, encoding="utf-8")
+
+
+def rebuild_index_recent(ai_dir: Path, days: int = 7):
+    """索引重建占位（v2.0.0 起已废弃）。
+
+    旧实现会创建 portfolio/todos/personal-todo-index.md 等旧体系索引文件，
+    这些文件在 v2.0.0 待办体系重构中已全部删除；待办事实源改为
+    todos/{date}/{owner}.md，绑定文件 _index.md 由 AI 按日按需创建，
+    无需脚本预建。此函数保留仅为兼容 --index-mode 参数，不再创建任何文件。
+    """
+    print(f"  ℹ️ v2.0.0 起待办索引由 AI 按需创建，脚本不再预建旧索引文件")
+
+
+def _vcmp(a: str, b: str) -> int:
+    """比较版本号（仅数字段），返回 -1/0/1；无法解析时返回 0。"""
+    try:
+        pa = [int(x) for x in a.split(".")]
+        pb = [int(x) for x in b.split(".")]
+    except (ValueError, AttributeError):
+        return 0
+    return (pa > pb) - (pa < pb)
+
+
+def _extract_date(path: Path):
+    """从文件名提取 YYYY-MM-DD；回退文件名 MMDD/YYYYMMDD 段；再回退父目录名（旧 YYYY/MM 结构）。"""
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", path.stem)
+    if m:
+        return m.group(1)
+    # 文件名中的 YYYYMMDD 段
+    m = re.search(r"(?<!\d)(\d{4})(\d{2})(\d{2})(?!\d)", path.stem)
+    if m:
+        return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+    # 文件名中的 MMDD 段（如 daily-0105.md，年份取目录层级）
+    year = None
+    for part in path.parts[::-1]:
+        if re.fullmatch(r"\d{4}", part):
+            year = part
+            break
+    m = re.search(r"(?<!\d)(\d{2})(\d{2})(?!\d)", path.stem)
+    if m and year and 1 <= int(m.group(1)) <= 12 and 1 <= int(m.group(2)) <= 31:
+        return f"{year}-{m.group(1)}-{m.group(2)}"
+    # 回退：YYYY/MM 两级目录，日期取当月首日（仅无法解析时的兜底）
+    if re.fullmatch(r"\d{4}", path.parent.parent.name) and re.fullmatch(r"\d{1,2}", path.parent.name):
+        return f"{path.parent.parent.name}-{int(path.parent.name):02d}-01"
+    return None
+
+
+def _scope_project_name(scope_dir: Path) -> str:
+    """读取作用域内 context/project-brief.md frontmatter 项目名；回退目录名。"""
+    brief = scope_dir / "context" / "project-brief.md"
+    if brief.exists():
+        try:
+            for line in brief.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                for key in ("project:", "portfolio:"):
+                    if stripped.startswith(key):
+                        name = stripped[len(key):].strip().strip('"')
+                        if name:
+                            return name
+        except OSError:
+            pass
+    return scope_dir.name
+
+
+def _append_import_log(log_path: Path, rows: list):
+    """向 import-log.md 追加迁移登记记录（文件不存在时先建表头）。"""
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    if not log_path.exists():
+        log_path.write_text(
+            "---\ndoc_type: import-log\n---\n\n# 导入/迁移日志\n\n"
+            "| Date | Type | Source | Target | Verify | Result |\n"
+            "|---|---|---|---|---|---|\n",
+            encoding="utf-8",
+        )
+    today = datetime.now().strftime("%Y-%m-%d")
+    with open(log_path, "a", encoding="utf-8") as f:
+        for r in rows:
+            f.write(f"| {today} | {r['type']} | {r['source']} | {r['target']} | {r['verify']} | {r['result']} |\n")
+
+
+def _remove_empty_subdirs(root: Path):
+    """自底向上删除 root 下的空子目录（保留 root 本身，v2 活跃路径）。"""
+    if not root.exists():
+        return
+    for d in sorted([p for p in root.rglob("*") if p.is_dir()], key=lambda x: len(x.parts), reverse=True):
+        try:
+            d.rmdir()
+        except OSError:
+            pass
+
+
+def migrate_v210_paths(ai_dir: Path, dry_run: bool = False) -> list:
+    """v2.1.0 路径整合（方案 §7.1，D-8/D-9）：
+    1. continuity/*.md → context/*.md（搬移，同名已存在则保留源文件并提示人工处理）
+    2. 工作区根 outputs/* → ai/outputs/*（同上）
+    不覆盖合并；搬空后删除空目录。
+    """
+    actions = []
+
+    # --- continuity/ → context/ ---
+    cont_dir = ai_dir / "continuity"
+    ctx_dir = ai_dir / "context"
+    if cont_dir.exists():
+        files = [f for f in cont_dir.iterdir() if f.is_file()]
+        if not files:
+            actions.append("continuity/ 为空目录，无数据，跳过")
+            if not dry_run:
+                try:
+                    cont_dir.rmdir()
+                except OSError:
+                    pass
+        for f in files:
+            dst = ctx_dir / f.name
+            if dst.exists():
+                actions.append(f"⚠️ context/{f.name} 已存在，continuity/{f.name} 保留原位，需人工合并")
+                continue
+            if dry_run:
+                actions.append(f"[dry-run] continuity/{f.name} → context/{f.name}")
+            else:
+                ctx_dir.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(f), str(dst))
+                actions.append(f"✓ continuity/{f.name} → context/{f.name}")
+        if not dry_run and cont_dir.exists() and not any(cont_dir.iterdir()):
+            try:
+                cont_dir.rmdir()
+                actions.append("✓ continuity/ 空目录已删除")
+            except OSError:
+                pass
+
+    # --- 工作区根 outputs/ → ai/outputs/ ---
+    root_outputs = ai_dir.parent / "outputs"
+    ai_outputs = ai_dir / "outputs"
+    if root_outputs.exists():
+        items = list(root_outputs.iterdir())
+        if not items:
+            actions.append("工作区根 outputs/ 为空目录，无数据，跳过")
+            if not dry_run:
+                try:
+                    root_outputs.rmdir()
+                except OSError:
+                    pass
+        for item in items:
+            dst = ai_outputs / item.name
+            if dst.exists():
+                actions.append(f"⚠️ ai/outputs/{item.name} 已存在，根级 outputs/{item.name} 保留原位，需人工合并")
+                continue
+            if dry_run:
+                actions.append(f"[dry-run] outputs/{item.name} → ai/outputs/{item.name}")
+            else:
+                ai_outputs.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(item), str(dst))
+                actions.append(f"✓ outputs/{item.name} → ai/outputs/{item.name}")
+        if not dry_run and root_outputs.exists() and not any(root_outputs.iterdir()):
+            try:
+                root_outputs.rmdir()
+                actions.append("✓ 根级 outputs/ 空目录已删除")
+            except OSError:
+                pass
+
+    return actions
+
+
+def migrate_v210_reports(ai_dir: Path, dry_run: bool = False, is_portfolio: bool = False) -> list:
+    """v2.1.0 历史报告数据迁移（方案 §7.3.2b，需求十二）。
+
+    严格执行“检测 → 迁移 → 验证 → 删除”：
+    - 个人日报：内容级迁移，由 AI 按 §7.3.2b 执行（合并进 todos/{date}/{owner}.md §3 工作日志段）；
+      脚本只负责检测与提示，不搬移、不删除源文件（验证通过前禁止删除，数据安全）；
+    - 项目日报：文件级规范化迁移 → reports/daily/project/YYYYMM/；
+    - 周报：文件级规范化迁移 → reports/weekly/YYYY/YYYY-Wxx.md；
+    空源登记“无数据，跳过”，不阻断其余迁移项；验证结果登记 context/import-log.md；
+    报告不进 archive；验证通过后才清理旧结构（不留任何历史缓存）。
+    """
+    if is_portfolio:
+        projects_dir = ai_dir / "projects"
+        scopes = sorted([d for d in projects_dir.iterdir() if d.is_dir()]) if projects_dir.exists() else []
+    else:
+        scopes = [ai_dir]
+
+    actions = []
+    for scope in scopes:
+        prefix = "ai/" if scope == ai_dir else f"projects/{scope.name}/"
+        import_log = scope / "context" / "import-log.md"
+        proj_name = _scope_project_name(scope)
+        rows = []
+
+        personal_dir = scope / "reports" / "daily" / "personal"
+        daily_dir = scope / "reports" / "daily" / "project"
+        weekly_dir = scope / "reports" / "weekly"
+
+        personal_files = [p for p in personal_dir.rglob("*") if p.is_file()] if personal_dir.exists() else []
+        daily_files = [p for p in daily_dir.rglob("*") if p.is_file()] if daily_dir.exists() else []
+        weekly_files = [p for p in weekly_dir.rglob("*") if p.is_file()] if weekly_dir.exists() else []
+
+        # --- 1. 个人日报：内容级迁移（AI 执行，脚本仅检测登记） ---
+        if not personal_files:
+            actions.append(f"  [{prefix}] 个人日报：源为空（无数据，跳过）")
+            rows.append({"type": "个人日报内容迁移", "source": f"{prefix}reports/daily/personal/",
+                         "target": f"{prefix}todos/{{date}}/{{owner}}.md §3", "verify": "-", "result": "无数据，跳过"})
+        else:
+            actions.append(f"  [{prefix}] ⚠️ 检测到个人日报 {len(personal_files)} 个：内容级迁移需 AI 按 §7.3.2b 执行")
+            for p in personal_files[:5]:
+                actions.append(f"      - {p.relative_to(ai_dir)}")
+            if len(personal_files) > 5:
+                actions.append(f"      - …其余 {len(personal_files) - 5} 个（清单见 governance/migrations/upgrade-to-2.1.0.md）")
+            actions.append("      AI 完成内容迁移并验证（日期×人员覆盖核对）后删除源文件；脚本不搬移、不删除个人日报源")
+
+        # --- 2. 项目日报：文件级规范化迁移 ---
+        if not daily_files:
+            actions.append(f"  [{prefix}] 项目日报：源为空（无数据，跳过）")
+            rows.append({"type": "项目日报文件迁移", "source": f"{prefix}reports/daily/project/",
+                         "target": f"{prefix}reports/daily/project/YYYYMM/", "verify": "-", "result": "无数据，跳过"})
+        else:
+            moved, conflicts = 0, []
+            for src in daily_files:
+                date = _extract_date(src)
+                if date:
+                    ym = date[:7].replace("-", "")
+                    name = src.name if re.match(r"^\d{4}-\d{2}-\d{2}-", src.name) else f"{date}-{proj_name}-项目日报{src.suffix}"
+                else:
+                    ym, name = "unknown", src.name
+                    actions.append(f"      ⚠️ 无法解析日期，保留原名: {src.relative_to(ai_dir)}")
+                dst = daily_dir / ym / name
+                if src == dst:
+                    moved += 1  # 已是 v2 标准结构与命名，计为已迁移
+                    continue
+                if dst.exists():
+                    conflicts.append(src)
+                    continue
+                if not dry_run:
+                    dst.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(str(src), str(dst))
+                moved += 1
+            ok = moved == len(daily_files) and not conflicts
+            verify_msg = f"文件数核对 {moved}/{len(daily_files)}"
+            if conflicts:
+                verify_msg += f"，冲突 {len(conflicts)} 个"
+                for c in conflicts:
+                    actions.append(f"      ⚠️ 冲突（目标已存在）: {c.relative_to(ai_dir)}")
+            rows.append({"type": "项目日报文件迁移", "source": f"{prefix}reports/daily/project/（{len(daily_files)} 个）",
+                         "target": f"{prefix}reports/daily/project/YYYYMM/", "verify": verify_msg,
+                         "result": "成功" if ok else "验证失败（保留旧结构，人工介入）"})
+            actions.append(f"  [{prefix}] 项目日报：迁移 {moved}/{len(daily_files)}，验证{'通过' if ok else '失败（保留旧结构，人工介入）'}")
+            if ok and not dry_run:
+                _remove_empty_subdirs(daily_dir)
+
+        # --- 3. 周报：文件级规范化迁移 ---
+        if not weekly_files:
+            actions.append(f"  [{prefix}] 周报：源为空（无数据，跳过）")
+            rows.append({"type": "周报文件迁移", "source": f"{prefix}reports/weekly/",
+                         "target": f"{prefix}reports/weekly/YYYY/YYYY-Wxx.md", "verify": "-", "result": "无数据，跳过"})
+        else:
+            moved, conflicts = 0, []
+            for src in weekly_files:
+                m = re.search(r"(\d{4})-W(\d{1,2})", src.stem)
+                if m:
+                    year, week = m.group(1), int(m.group(2))
+                    name = f"{year}-W{week:02d}{src.suffix}"
+                else:
+                    date = _extract_date(src)
+                    if date:
+                        iso = datetime.strptime(date, "%Y-%m-%d").isocalendar()
+                        year, week = iso[0], iso[1]
+                        name = f"{year}-W{week:02d}{src.suffix}"
+                    else:
+                        year = src.parent.name if re.fullmatch(r"\d{4}", src.parent.name) else "unknown"
+                        name = src.name
+                        actions.append(f"      ⚠️ 无法解析周号，保留原名: {src.relative_to(ai_dir)}")
+                dst = weekly_dir / year / name
+                if src == dst:
+                    moved += 1
+                    continue
+                if dst.exists():
+                    conflicts.append(src)
+                    continue
+                if not dry_run:
+                    dst.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.move(str(src), str(dst))
+                moved += 1
+            ok = moved == len(weekly_files) and not conflicts
+            verify_msg = f"文件数核对 {moved}/{len(weekly_files)}"
+            if conflicts:
+                verify_msg += f"，冲突 {len(conflicts)} 个"
+                for c in conflicts:
+                    actions.append(f"      ⚠️ 冲突（目标已存在）: {c.relative_to(ai_dir)}")
+            rows.append({"type": "周报文件迁移", "source": f"{prefix}reports/weekly/（{len(weekly_files)} 个）",
+                         "target": f"{prefix}reports/weekly/YYYY/YYYY-Wxx.md", "verify": verify_msg,
+                         "result": "成功" if ok else "验证失败（保留旧结构，人工介入）"})
+            actions.append(f"  [{prefix}] 周报：迁移 {moved}/{len(weekly_files)}，验证{'通过' if ok else '失败（保留旧结构，人工介入）'}")
+            if ok and not dry_run:
+                _remove_empty_subdirs(weekly_dir)
+
+        # --- 验证结果登记（N-3）：登记到 context/import-log.md ---
+        if rows:
+            if dry_run:
+                actions.append(f"  [{prefix}] [dry-run] 验证结果将登记: {import_log.relative_to(ai_dir)}")
+            else:
+                _append_import_log(import_log, rows)
+                actions.append(f"  [{prefix}] ✓ 验证结果已登记: {import_log.relative_to(ai_dir)}")
+
+    if not scopes:
+        actions.append("  未检测到子项目目录，跳过报告迁移")
+    return actions
+
+def detect_project_name(workspace_root: Path) -> str:
+    """从工作区读取项目名称。
+
+    优先解析 ai/context/project-brief.md 前置元数据中的
+    project / portfolio 字段；读取失败时回退为工作区目录名。
+    """
+    brief = workspace_root / "ai" / "context" / "project-brief.md"
+    if brief.exists():
+        try:
+            for line in brief.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                for key in ("project:", "portfolio:"):
+                    if stripped.startswith(key):
+                        name = stripped[len(key):].strip().strip('"')
+                        if name:
+                            return name
+        except OSError:
+            pass
+    return workspace_root.name
+
+
+def _extract_md_section(text: str, title_substr: str) -> str:
+    """按二级标题截取一节正文（不含标题行）。匹配失败返回空串。"""
+    pattern = re.compile(
+        r"^##[^\n]*" + re.escape(title_substr) + r"[^\n]*\n(.*?)(?=^## |\Z)",
+        re.M | re.S,
+    )
+    m = pattern.search(text)
+    return m.group(1).strip() if m else ""
+
+
+def _build_pm_decisions_from_pending(old_text: str, today: str) -> str:
+    """把 pending-changes 正文尽量映射进 pm-decisions 八块；映射失败的原文整段保留。"""
+    already = _extract_md_section(old_text, "已经写了等点头")
+    not_yet = _extract_md_section(old_text, "还没写等准许")
+    accepted = _extract_md_section(old_text, "已经认过的")
+    rejected = _extract_md_section(old_text, "不认的")
+    leftover_bits = []
+    mapped_keys = ("已经写了等点头", "还没写等准许", "已经认过的", "不认的", "还有几件")
+    for m in re.finditer(r"^##[^\n]*\n(.*?)(?=^## |\Z)", old_text, re.M | re.S):
+        heading = m.group(0).splitlines()[0]
+        if any(k in heading for k in mapped_keys):
+            continue
+        body = m.group(1).strip()
+        if body:
+            leftover_bits.append(m.group(0).strip())
+
+    if not any([already, not_yet, accepted, rejected]):
+        leftover_bits = [old_text.strip()]
+
+    empty_table_6 = (
+        "| 需求编号 | 标题 | 缺口 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_bind = (
+        "| 需求编号 | 标题 | 确认状态 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_wp = (
+        "| WP 编号 | 名称 | 关联需求 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    empty_wp4 = (
+        "| WP 编号 | 名称 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    empty_td = (
+        "| 待办编号 | 标题 | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    empty_link = (
+        "| 本单 TD | 关联 TD | 记下时间 | 出处 | 说明 |\n"
+        "|---|---|---|---|---|\n"
+    )
+    leftover_md = "\n\n".join(leftover_bits).strip()
+    if leftover_md:
+        leftover_block = (
+            "\n\n### 迁移原文（3.9.0 从 pending-changes 迁入，禁止删行）\n\n"
+            + leftover_md
+            + "\n"
+        )
+    else:
+        leftover_block = ""
+
+    already_body = already or (
+        "| 序号 | 类型 | 改了什么 | 原来 | 现在 | 何时记下 | 出处 |\n"
+        "|---|---|---|---|---|---|---|\n"
+    )
+    not_yet_body = not_yet or (
+        "| 序号 | 类型 | 想做什么 | 现在 | 打算改成 | 何时提出 | 出处 |\n"
+        "|---|---|---|---|---|---|---|\n"
+    )
+    accepted_body = accepted or (
+        "| 序号 | 出处 | 改了什么 | 最终值 | 谁点的头 | 何时认 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+    rejected_body = rejected or (
+        "| 序号 | 出处 | 改了什么 | 为啥不认 | 谁驳的 | 何时驳 |\n"
+        "|---|---|---|---|---|---|\n"
+    )
+
+    # 禁止 f-string 插入用户原文（可能含 {date} 等花括号）
+    parts = [
+        "---",
+        "doc_type: pm-decisions",
+        "migrated_from: pending-changes",
+        "migrated_at: " + today,
+        "---",
+        "",
+        "# 等你裁定的事项",
+        "",
+        "> 3.9.0 由 pending-changes 迁入。旧表映射进第 8 块；映射不上的原文整段保留在「迁移原文」，禁止删行。",
+        "",
+        "- 最后更新：" + today,
+        "",
+        "## 还有几件等你裁定",
+        "",
+        "- 合计：见下方各块（迁移后请重数开放行）",
+        "- 需求未确认：0",
+        "- 需求未绑定工作包：0",
+        "- 工作包待确认：0",
+        "- 已规划工作包无待办：0",
+        "- 待办未绑定工作包：0",
+        "- 待办缺负责人：0",
+        "- 关联待办缺处理方式：0",
+        "- 其他待裁定：见第 8 块",
+        "",
+        "## 1. 需求未确认",
+        "",
+        empty_table_6.rstrip(),
+        "",
+        "## 2. 需求未绑定工作包",
+        "",
+        empty_bind.rstrip(),
+        "",
+        "## 3. 工作包待确认",
+        "",
+        empty_wp.rstrip(),
+        "",
+        "## 4. 已规划工作包无待办",
+        "",
+        empty_wp4.rstrip(),
+        "",
+        "## 5. 待办未绑定工作包",
+        "",
+        empty_td.rstrip(),
+        "",
+        "## 6. 待办缺负责人",
+        "",
+        empty_td.rstrip(),
+        "",
+        "## 7. 关联待办缺处理方式",
+        "",
+        empty_link.rstrip(),
+        "",
+        "## 8. 其他待裁定",
+        "",
+        "### 已经写了等点头",
+        "",
+        already_body.rstrip(),
+        "",
+        "### 还没写等准许",
+        "",
+        not_yet_body.rstrip(),
+        leftover_block.rstrip(),
+        "",
+        "## 决策记录",
+        "",
+        "| 时间 | 类型 | 对象编号 | 问句摘要 | 裁定 | 影响 |",
+        "|---|---|---|---|---|---|",
+        "",
+        "## 已经认过的（最近，供追溯）",
+        "",
+        accepted_body.rstrip(),
+        "",
+        "## 不认的记录（审计，不删除）",
+        "",
+        rejected_body.rstrip(),
+        "",
+    ]
+    return "\n".join(parts) + "\n"
+
+
+def migrate_pending_changes_to_pm_decisions(ai_dir: Path, dry_run: bool = False):
+    """pending-changes → pm-decisions；原件进 backup。缺文件跳过，不致命。"""
+    today = datetime.now().strftime("%Y-%m-%d")
+    jobs = [
+        (
+            ai_dir / "pending-changes.md",
+            ai_dir / "pm-decisions.md",
+            ai_dir / "backup" / f"pending-changes.md.{today}",
+        ),
+        (
+            ai_dir / "portfolio" / "pending-changes.md",
+            ai_dir / "portfolio" / "pm-decisions.md",
+            ai_dir / "backup" / f"portfolio-pending-changes.md.{today}",
+        ),
+    ]
+    actions = []
+    for src, dst, backup in jobs:
+        rel_src = src.relative_to(ai_dir).as_posix()
+        if not src.is_file():
+            actions.append(f"  跳过（无 {rel_src}）")
+            continue
+        try:
+            old_text = src.read_text(encoding="utf-8")
+        except OSError as e:
+            actions.append(f"  ⚠️ 读 {rel_src} 失败，跳过: {e}")
+            continue
+        new_text = _build_pm_decisions_from_pending(old_text, today)
+        if dry_run:
+            actions.append(f"  [dry-run] {rel_src} → {dst.relative_to(ai_dir).as_posix()} ；原件 → {backup.relative_to(ai_dir).as_posix()}")
+            continue
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        if dst.is_file():
+            try:
+                existing = dst.read_text(encoding="utf-8")
+            except OSError:
+                existing = ""
+            dst.write_text(
+                existing.rstrip()
+                + "\n\n## 迁移原文（3.9.0 追加，禁止删行）\n\n"
+                + old_text
+                + "\n",
+                encoding="utf-8",
+            )
+            actions.append(f"  目标已存在，旧文追加到 {dst.relative_to(ai_dir).as_posix()}")
+        else:
+            dst.write_text(new_text, encoding="utf-8")
+            actions.append(f"  已写入 {dst.relative_to(ai_dir).as_posix()}（旧表映射进第 8 块）")
+        if backup.exists():
+            n = 2
+            while True:
+                alt = backup.with_name(backup.name + f".{n}")
+                if not alt.exists():
+                    backup = alt
+                    break
+                n += 1
+        shutil.move(str(src), str(backup))
+        actions.append(f"  原件已搬 {backup.relative_to(ai_dir).as_posix()}")
+    return actions
+
+
+def sync_templates(ai_dir: Path, dry_run: bool = False):
+    """覆盖同步 Skill 包现行模板到工作区。
+
+    模板权威 = Skill 包，工作区 ai/templates/ 只是给人看的副本。
+    退役模板（resource-register / transfer-log）不覆盖、建议搬 backup。
+    四份 source-* 走 resolve_template_path（能力目录优先）。
+    """
+    missing = []
+    synced = 0
+
+    target_dir = ai_dir / "templates"
+    if not dry_run:
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+    for name in ALL_TEMPLATE_FILES:
+        src = resolve_template_path(name)
+        dst = target_dir / name
+        if not src.exists():
+            print(f"  ⚠️ Skill 包模板不存在，跳过: {name} ({src})")
+            continue
+        if dry_run:
+            flag = "覆盖" if dst.exists() else "新增"
+            missing.append(f"templates/{name} ({flag})")
+        else:
+            shutil.copy2(src, dst)
+            synced += 1
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    for name in RETIRED_TEMPLATE_FILES:
+        old = target_dir / name
+        if not old.exists():
+            continue
+        backup = ai_dir / "backup" / f"{name}.{today}"
+        print(f"  SUGGEST: 退役模板 {name} 应搬 backup，不再当现行")
+        if dry_run:
+            missing.append(f"templates/{name} (退役→backup)")
+        else:
+            backup.parent.mkdir(parents=True, exist_ok=True)
+            if backup.exists():
+                n = 2
+                while True:
+                    alt = backup.with_name(backup.name + f".{n}")
+                    if not alt.exists():
+                        backup = alt
+                        break
+                    n += 1
+            shutil.move(str(old), str(backup))
+            print(f"  已搬 {backup.relative_to(ai_dir).as_posix()}")
+            synced += 1
+
+    # --- 2. 补齐 ai/outputs/.templates/manifest-template.md ---
+    outputs_dir = ai_dir / "outputs"
+    manifest_path = outputs_dir / ".templates" / "manifest-template.md"
+    if not manifest_path.exists():
+        if dry_run:
+            missing.append("ai/outputs/.templates/manifest-template.md")
+        else:
+            create_outputs_dir(str(ai_dir.parent), detect_project_name(ai_dir.parent))
+            synced += 1
+
+    return missing, synced
+
+
+STAGE13 = [
+    "需求登记", "需求调研", "需求规划", "需求评审", "需求确认",
+    "方案设计", "用例设计", "开发", "预演", "测试", "内部验收", "试运行", "上线",
+]
+STAGE_MAP = {
+    "待确认": "需求登记",
+    "需求已规划": "需求规划",
+    "已需求评审": "需求评审",
+    "已设计评审": "方案设计",
+    "已测试用例评审": "用例设计",
+    "开发中": "开发",
+    "测试中": "测试",
+    "内部验收中": "内部验收",
+}
+
+
+def _strip_stage(name: str) -> str:
+    return re.sub(r"（完成）|（当前）", "", name or "").strip()
+
+
+def _map_stage(name: str) -> str:
+    n = _strip_stage(name)
+    if n in STAGE13:
+        return n
+    return STAGE_MAP.get(n, n)
+
+
+def migrate_business_data(ai_dir: Path, dry_run: bool = True):
+    """存量业务数据受控迁移。默认 dry-run。开发仓无 wps/ 则跳过。"""
+    print(f"\n{'='*40}")
+    print("存量业务数据（默认只检测；写回请加 --migrate-business）")
+    print(f"{'='*40}")
+    if not (ai_dir / "wps").exists():
+        print("  无 wps/，跳过（开发仓或未建工作区）。")
+        return []
+    actions = []
+    profile = ai_dir / "context" / "pm-profile.md"
+    if profile.exists():
+        text = profile.read_text(encoding="utf-8")
+        if "current_operator:" not in text:
+            actions.append(("pm-profile", "补空 current_operator", str(profile)))
+            if not dry_run:
+                text = text.replace("pm_name:", "current_operator: \"\"\npm_name:", 1)
+                if "current_operator:" not in text:
+                    text = "---\ncurrent_operator: \"\"\n" + text
+                profile.write_text(text, encoding="utf-8")
+    for name in ("budget.md", "progress-plan.md"):
+        src = ai_dir / "plans" / name
+        dst = ai_dir / "project-info" / name
+        if src.exists() and not dst.exists():
+            actions.append(("move", f"plans/{name} → project-info/{name}", str(src)))
+            if not dry_run:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(src), str(dst))
+    wp_dir = ai_dir / "wps"
+    for wp in sorted(wp_dir.glob("WP-*.md")):
+        raw = wp.read_text(encoding="utf-8")
+        new = raw
+        for old, canon in STAGE_MAP.items():
+            new = re.sub(re.escape(old), canon, new)
+        if new != raw:
+            actions.append(("wp-stage", f"阶段名映射 {wp.name}", str(wp)))
+            if not dry_run:
+                wp.write_text(new, encoding="utf-8")
+    archive_actions = _migrate_wp_archive_index(ai_dir, dry_run=dry_run)
+    actions.extend(archive_actions)
+    if dry_run:
+        print(f"  待校准 {len(actions)} 处（未写盘）")
+        for a in actions[:40]:
+            print(f"    · {a[0]}: {a[1]}")
+        if len(actions) > 40:
+            print(f"    …另 {len(actions) - 40} 处")
+        print("  确认后加 --migrate-business 写回（写前会做 backup/migration-snapshot-*）")
+    else:
+        print(f"  已写回 {len(actions)} 处")
+    return actions
+
+
+def _front_matter_get(text, key):
+    m = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if not m:
+        return ""
+    for line in m.group(1).splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            if k.strip() == key:
+                return v.strip().strip('"').strip("'")
+    return ""
+
+
+def _completed_at_from_chain(text):
+    m = re.search(r"^## 7\..+$", text, re.M)
+    if not m:
+        return ""
+    start = m.end()
+    nxt = re.search(r"^##\s+", text[start:], re.M)
+    body = text[start: start + nxt.start()] if nxt else text[start:]
+    last = ""
+    for line in body.splitlines():
+        if line.startswith("|") and "---" not in line:
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if len(cells) >= 3 and cells[2] == "已完成":
+                last = cells[0]
+    return last if re.match(r"\d{4}-\d{2}-\d{2}$", last or "") else ""
+
+
+def _migrate_wp_archive_index(ai_dir, dry_run=True):
+    """3.18：历史完成/废弃进 index 三段。不搬 WP 文件。"""
+    actions = []
+    wpdir = ai_dir / "wps"
+    if not wpdir.exists():
+        return actions
+    active, done, retired = [], [], []
+    for wp in sorted(wpdir.glob("WP-*.md")):
+        raw = wp.read_text(encoding="utf-8")
+        fm_status = _front_matter_get(raw, "status")
+        effect = _front_matter_get(raw, "effect") or "正常"
+        wpid = _front_matter_get(raw, "wp_id") or wp.stem
+        name = ""
+        for line in raw.splitlines():
+            if line.startswith("# "):
+                name = line.lstrip("# ").split(" - ", 1)[-1].strip()
+                break
+        completed = _front_matter_get(raw, "completed_at")
+        retired_at = _front_matter_get(raw, "retired_at")
+        if completed in ("", "—"):
+            completed = _completed_at_from_chain(raw) or "—"
+        if retired_at in ("", "—"):
+            retired_at = "—"
+        if effect == "废弃":
+            bucket = retired
+            st = "废弃"
+            actions.append(("archive", f"{wpid} → 废弃归档 retired_at={retired_at}", str(wp)))
+        elif fm_status == "已完成":
+            bucket = done
+            st = "已完成"
+            actions.append(("archive", f"{wpid} → 已完成归档 completed_at={completed}", str(wp)))
+        else:
+            bucket = active
+            st = fm_status or "待确认"
+        row = (
+            f"| {wpid} | {name or wpid} | {st} | {_front_matter_get(raw, 'plan_ref') or '—'} | "
+            f"— | — | — | wps/{wp.name} | — | — | "
+            f"{completed if st != '待确认' and st != '已规划' and st != '进行中' else '—'} | "
+            f"{retired_at if st == '废弃' else '—'} |"
+        )
+        if st in ("待确认", "已规划", "进行中"):
+            row = (
+                f"| {wpid} | {name or wpid} | {st} | {_front_matter_get(raw, 'plan_ref') or '—'} | "
+                f"— | — | — | wps/{wp.name} | — | — | — | — |"
+            )
+        bucket.append(row)
+        if not dry_run and effect != "废弃" and fm_status == "已完成" and _front_matter_get(raw, "completed_at") in ("", "—") and completed != "—":
+            if raw.startswith("---"):
+                raw2 = raw.replace("---\n", f"---\ncompleted_at: {completed}\n", 1)
+                wp.write_text(raw2, encoding="utf-8")
+    idx = wpdir / "_index.md"
+    header = (
+        "---\ndoc_type: wp-index\n---\n\n# WP 索引\n\n"
+        "> 12 列；三段。存在性以 WP 文件为准。\n\n"
+        "## 1. 进行中\n\n"
+        "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    )
+    text = header + "\n".join(active) + "\n\n## 2. 已完成归档\n\n"
+    text += "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    text += "\n".join(done) + "\n\n## 3. 废弃归档\n\n"
+    text += "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    text += "\n".join(retired) + "\n"
+    if not dry_run:
+        idx.write_text(text, encoding="utf-8")
+        actions.append(("index", "重写 wps/_index.md 三段 12 列", str(idx)))
+    else:
+        actions.append(("index", f"将重写 _index 进行中{len(active)}/完成{len(done)}/废弃{len(retired)}", str(idx)))
+    return actions
+
+
+def migrate_workspace(project_root: str, dry_run: bool = False, target_version: str = None, index_mode: str = "structure-only", migrate_business: bool = False):
+    """执行工作区迁移"""
+    ai_dir = Path(project_root) / "ai"
+
+    if not ai_dir.exists():
+        print(f"错误: {ai_dir} 不存在")
+        return
+
+    print(f"{'='*60}")
+    print(f"ChronoPM 工作区迁移")
+    print(f"{'='*60}")
+
+    # ★ 无条件模板覆盖同步（模板权威=Skill 包；退役模板建议搬 backup）
+    print(f"\n📋 覆盖同步现行模板...")
+    missing_templates, synced_templates = sync_templates(ai_dir, dry_run)
+    if missing_templates:
+        print(f"  将同步模板 ({len(missing_templates)} 个):")
+        for t in missing_templates:
+            print(f"    · {t}")
+        if not dry_run:
+            print(f"  ⚠️ 上述模板将在正式迁移时覆盖同步")
+    elif synced_templates > 0:
+        print(f"  ✓ 已覆盖同步 {synced_templates} 个模板")
+    else:
+        print(f"  ✓ 模板已与 Skill 包对齐")
+
+    # 1. 读取当前版本
+    ws_version = read_workspace_version(ai_dir)
+
+    if ws_version:
+        current_ws_version = ws_version.get("skillVersion", "unknown")
+        current_schema = ws_version.get("workspaceSchemaVersion", "unknown")
+        mode = ws_version.get("mode", "single")
+        print(f"\n工作区当前版本: {current_ws_version}")
+        print(f"工作区 Schema: {current_schema}")
+        print(f"工作区模式: {mode}")
+    else:
+        current_ws_version = "unknown"
+        current_schema = "unknown"
+        mode = "single"
+        print(f"\n⚠️ 未检测到 .skill-version.json")
+        print(f"工作区可能由旧版本初始化")
+
+    # 2. 目标版本
+    skill_version = target_version or CURRENT_SKILL_VERSION
+    print(f"目标 Skill 版本: {skill_version}")
+    print(f"目标 Schema: {CURRENT_SCHEMA_VERSION}")
+
+    if current_ws_version == skill_version and current_schema == CURRENT_SCHEMA_VERSION:
+        print(f"\n✅ 版本已匹配，无需迁移")
+        return
+
+    # 3. 检测缺失能力
+    new_caps = get_capabilities_since(current_ws_version)
+
+    if not new_caps:
+        print(f"\n✅ 未检测到新增能力，仅更新版本号")
+    else:
+        print(f"\n📋 检测到以下版本新增能力:")
+        for cap in new_caps:
+            caps = ", ".join(cap["capabilities"])
+            print(f"  v{cap['version']} (schema {cap['schema']}): {caps}")
+
+    # 4. 检查缺失目录和文件
+    missing_dirs = check_missing_dirs(ai_dir, new_caps, mode == "portfolio")
+    missing_files = check_missing_files(ai_dir, new_caps, is_portfolio=(mode == "portfolio"))
+
+    print(f"\n📁 缺失目录:")
+    if missing_dirs:
+        for d in missing_dirs:
+            print(f"  ✗ {d}")
+    else:
+        print(f"  无")
+
+    print(f"\n📄 缺失文件:")
+    if missing_files:
+        for f in missing_files:
+            print(f"  ✗ {f}")
+    else:
+        print(f"  无")
+
+    # 4b. v2.1.0 专项迁移（§7.1 路径整合 + §7.3.2b 报告迁移，仅当跨 2.1.0 边界时执行）
+    needs_v210 = _vcmp(skill_version, "2.1.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "2.1.0") < 0
+    )
+    if needs_v210:
+        print(f"\n{'='*40}")
+        print("v2.1.0 专项迁移（路径整合 + 历史报告迁移）")
+        print(f"{'='*40}")
+        for line in migrate_v210_paths(ai_dir, dry_run):
+            print(f"  {line}")
+        for line in migrate_v210_reports(ai_dir, dry_run, mode == "portfolio"):
+            print(line)
+
+    # 4c. v3.0.0：默认只升元数据，不自动拆/下沉业务目录（upgrade-to-3.0.0.md 节 B）
+    needs_v300 = _vcmp(skill_version, "3.0.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.0.0") < 0
+    )
+    if needs_v300:
+        print(f"\n{'='*40}")
+        print("v3.0.0：工作区结构迁移见 governance/migrations/upgrade-to-3.0.0.md 节 B")
+        print("本次脚本不自动拆工作区、不下沉子项目。仅更新 .skill-version.json 元数据。")
+        print(f"{'='*40}")
+        sv = ai_dir / ".skill-version.json"
+        if sv.exists() and not dry_run:
+            try:
+                data = json.loads(sv.read_text(encoding="utf-8"))
+                data["skillVersion"] = CURRENT_SKILL_VERSION
+                data["schemaVersion"] = CURRENT_SCHEMA_VERSION
+                if data.get("skillName") in (None, "", "chrono-pm"):
+                    data["skillName"] = "chrono-pm-project"
+                sv.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                print("  已更新 .skill-version.json（skillName=chrono-pm-project, 3.0.0 / schema 0.9.0）")
+            except Exception as e:
+                print(f"  ⚠️ 未能改写 .skill-version.json: {e}")
+        elif dry_run:
+            print("  [dry-run] 将更新 .skill-version.json skillVersion/schemaVersion/skillName")
+
+    # 4d. v3.5.0：建 wps/ + 打印一次性抽取入口（不自动删计划内嵌表）
+    needs_v350 = _vcmp(skill_version, "3.5.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.5.0") < 0
+    )
+    if needs_v350:
+        print(f"\n{'='*40}")
+        print("v3.5.0：将创建 wps/ 与 wps/_index.md（schema 0.10.0）")
+        print("一次性抽取入口（脚本不自动执行）：")
+        print("  1. 扫描 plans/PLAN-*.md 内嵌 WP 表 → 输出抽取清单（含关联需求候选）")
+        print("  2. PM 确认 → 建 wps/WP-NNN.md + 更新 _index.md")
+        print("  3. 先迁后验（数量核对+抽样）→ 通过后才删计划内嵌表")
+        print("  截止条件：首次生成周报或新建待办前必须完成抽取")
+        print("  抽取完成前 fallback：查询仍可读 plans 嵌入清单")
+        print(f"{'='*40}")
+
+    # 4e. v3.6.0：建 requirements/sources/ + 打印一次性迁移入口
+    needs_v360 = _vcmp(skill_version, "3.6.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.6.0") < 0
+    )
+    if needs_v360:
+        print(f"\n{'='*40}")
+        print("v3.6.0：将创建 requirements/sources/ 与 _index.md（schema 0.11.0）")
+        print("一次性迁移入口（脚本不自动删旧 {type}-source/）：")
+        print("  1. 扫描 requirements/*-source/ → 按 source_doc 聚合输出映射清单（簇 ID 冻结）")
+        print("  2. PM 确认 → 建 sources/{编号}/ + 搬移 + 补 meta/_digest")
+        print("  3. 先迁后验（数量核对+抽样）→ 通过后才删旧目录")
+        print("  截止条件：首次新拆解或首次 RI 范围判定前必须完成")
+        print("  抽取完成前 fallback：查询仍可读 {type}-source/")
+        print("  基线包新 source_type 按需启用，不预灌")
+        print(f"{'='*40}")
+
+    needs_v370 = _vcmp(skill_version, "3.7.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.7.0") < 0
+    )
+    if needs_v370:
+        print(f"\n{'='*40}")
+        print("v3.7.0（schema 0.12.0）：脚本不自动改业务数据。详见 upgrade-to-3.7.0.md")
+        print("CR-H 零清：旧 {type}-source/、平铺 atoms/、canonical/ → 清单→PM确认→先归档再删；已建 sources/{编号}/ 不删")
+        print("  未零清前禁止新拆解/对账/RI 判定")
+        print("CR-I：context/entity-registry.md → 分流到 WP §3b + project-context；按模块建 WP 骨架；先归档后删")
+        print("CR-J：风险/问题登记册改为索引+条目块；短号 R-NNN/I-NNN；旧格式 D26 限期迁移")
+        print("P9：验证通过 + PM 确认后才删 ai/archive/v3.7.0-* 快照")
+        print(f"{'='*40}")
+
+    needs_v380 = _vcmp(skill_version, "3.8.0") >= 0 and (
+        current_ws_version == "unknown" or _vcmp(current_ws_version, "3.8.0") < 0
+    )
+    if needs_v380:
+        print(f"\n{'='*40}")
+        print("v3.8.0（schema 0.13.0）：脚本只建空 backup/ + 升 schema，不改业务待办。")
+        print("详见 ChronoPM-Project/governance/migrations/upgrade-to-3.8.0.md")
+        print("分类器：A 活历史留 archive；B 退役人员文件 / C 升级垃圾 → 清单→PM确认→搬 ai/backup/3.8.0/")
+        print("禁止：代迁待办正文、按 N-30/31 批量改日期进度、灌历史工时表、建历史空日目录")
+        print("根级 backup-* 位址豁免，只在 migration-log 记视为 backup")
+        print(f"{'='*40}")
+
+    needs_v390 = _vcmp(skill_version, "3.9.0") >= 0 and (
+        current_ws_version == "unknown"
+        or _vcmp(current_ws_version, "3.9.0") < 0
+        or _vcmp(str(current_schema), "0.14.0") < 0
+    )
+    if needs_v390:
+        print(f"\n{'='*40}")
+        print("v3.9.0（schema 0.14.0）：覆盖同步现行模板；pending-changes 全文迁 pm-decisions。")
+        print("不预建 pm-decisions / logs/ops 空实例。无旧 pending 则跳过，不致命。")
+        print("详见 ChronoPM-Project/governance/migrations/upgrade-to-3.9.0.md")
+        print(f"{'='*40}")
+        for line in migrate_pending_changes_to_pm_decisions(ai_dir, dry_run):
+            print(line)
+
+    needs_v314 = _vcmp(skill_version, "3.14.0") >= 0 and (
+        current_ws_version == "unknown"
+        or _vcmp(current_ws_version, "3.14.0") < 0
+        or _vcmp(str(current_schema), "0.15.0") < 0
+    )
+    if needs_v314:
+        print(f"\n{'='*40}")
+        print("v3.14.0（schema 0.15.0）：脚本只建空 project-info/，不搬业务文件。")
+        print("若 plans/budget.md 或 plans/progress-plan.md 仍在：清单→PM确认→移到 project-info/。")
+        print("计划升级只处理 PLAN-*.md。详见 upgrade-to-3.14.0.md")
+        print(f"{'='*40}")
+
+    if dry_run:
+        print(f"\n🔍 DRY RUN 模式：仅检测，不执行迁移")
+        print(f"如需执行迁移，请去掉 --dry-run 参数")
+        migrate_business_data(ai_dir, dry_run=True)
+        return
+
+    if not missing_dirs and not missing_files:
+        print(f"\n✅ 目录和文件已完整，仅更新版本号")
+        old_version = update_version_file(ai_dir, mode, skill_version)
+        append_migration_log(ai_dir, old_version, [], [], skill_version)
+        print(f"\n✅ 版本已更新到 {skill_version}")
+        migrate_business_data(ai_dir, dry_run=not migrate_business)
+        if migrate_business:
+            print("  （未建快照：目录已完整路径；需要快照请对有 wps 的业务仓使用 --migrate-business）")
+        return
+
+    # 5. 执行迁移
+    print(f"\n{'='*40}")
+    print(f"开始迁移...")
+    print(f"{'='*40}")
+
+    templates_dir = get_templates_dir()
+
+    # 创建缺失目录
+    if missing_dirs:
+        print(f"\n创建缺失目录...")
+        create_missing_dirs(ai_dir, missing_dirs)
+        for d in missing_dirs:
+            print(f"  ✓ 创建 {d}")
+
+    # 创建缺失文件
+    if missing_files:
+        print(f"\n创建缺失文件...")
+        create_missing_files(ai_dir, missing_files, templates_dir)
+        for f in missing_files:
+            print(f"  ✓ 创建 {f}")
+
+    # 索引重建（如指定）
+    if index_mode in ("recent-7-days", "current-month", "full-rebuild"):
+        print(f"\n重建待办索引（模式：{index_mode}）...")
+        rebuild_index_recent(ai_dir, days=7 if index_mode == "recent-7-days" else 30)
+        print(f"  ✓ 待办索引已重建")
+
+    # 更新版本号
+    print(f"\n更新版本号...")
+    old_version = update_version_file(ai_dir, mode, skill_version)
+    print(f"  ✓ {old_version} → {skill_version}")
+
+    # 记录迁移日志
+    print(f"\n记录迁移日志...")
+    append_migration_log(ai_dir, old_version, missing_dirs, missing_files, skill_version)
+    print(f"  ✓ logs/migration-log.md 已追加")
+
+    # 生成健康文件
+    print(f"\n生成工作区健康文件...")
+    updated_version = read_workspace_version(ai_dir)
+    create_workspace_health(ai_dir, updated_version or {}, [], [])
+    print(f"  ✓ .workspace-health.md 已生成")
+
+    # 完成
+    print(f"\n{'='*60}")
+    print(f"✅ 迁移完成!")
+    print(f"{'='*60}")
+    print(f"  旧版本: {old_version}")
+    print(f"  新版本: {skill_version}")
+    print(f"  新增目录: {len(missing_dirs)} 个")
+    print(f"  新增文件: {len(missing_files)} 个")
+    print(f"\n下一步:")
+    print(f"  1. 检查新增文件并填写内容")
+    print(f"  2. 如有 YYYY/MM 旧目录，建议迁移到 YYYYMM")
+
+    biz_dry = not migrate_business
+    if migrate_business and not dry_run:
+        snap = ai_dir / "backup" / f"migration-snapshot-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        snap.mkdir(parents=True, exist_ok=True)
+        for rel in ("wps", "plans", "project-info", "context"):
+            src = ai_dir / rel
+            if src.exists():
+                shutil.copytree(src, snap / rel, dirs_exist_ok=True)
+        print(f"  回滚快照: {snap}")
+        migrate_business_data(ai_dir, dry_run=False)
+    else:
+        migrate_business_data(ai_dir, dry_run=True)
+    print(f"  3. 在 project-brief.md 中更新项目信息")
+
+
+def create_glossary_for_existing(project_root: str):
+    """为旧工作区创建领域词库模板，内置用户已确认初始词条，不自动抽取历史术语。
+    自动检测工作区模式、扫描旧术语文件并提示是否导入（不自动导入）。"""
+    ai_dir = Path(project_root) / "ai"
+    if not ai_dir.exists():
+        print(f"错误: {ai_dir} 不存在")
+        return
+
+    # 检测模式：优先 portfolio，其次 single
+    portfolio_dir = ai_dir / "portfolio" / "context"
+    single_dir = ai_dir / "context"
+
+    if portfolio_dir.exists():
+        target_dir = portfolio_dir
+        mode_label = "项目集(portfolio)"
+    elif single_dir.exists():
+        target_dir = single_dir
+        mode_label = "单项目(single)"
+    else:
+        print(f"错误: 未找到 context 目录，无法确定工作区模式")
+        print(f"  尝试查找: {portfolio_dir}")
+        print(f"  尝试查找: {single_dir}")
+        return
+
+    print(f"检测到工作区模式: {mode_label}")
+    print(f"词库目标路径: {target_dir / 'domain-glossary.md'}")
+
+    target_path = target_dir / "domain-glossary.md"
+
+    if target_path.exists():
+        print(f"词库文件已存在，不覆盖: {target_path}")
+        return
+
+    # 扫描旧术语文件（不自动导入，仅提示）
+    old_glossary_patterns = [
+        "glossary.md",
+        "terms.md",
+        "术语表.md",
+        "term-mapping.md",
+    ]
+    found_old_files = []
+    search_dirs = [ai_dir, ai_dir / "portfolio" / "context", ai_dir / "context"]
+    for search_dir in search_dirs:
+        if not search_dir.exists():
+            continue
+        for pattern in old_glossary_patterns:
+            candidate = search_dir / pattern
+            if candidate.exists() and candidate != target_path:
+                found_old_files.append(str(candidate))
+
+    # 创建词库模板
+    templates_dir = get_templates_dir()
+    src = templates_dir / "domain-glossary-template.md"
+
+    if src.exists():
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target_path)
+        print(f"✅ 领域词库已创建: {target_path}")
+        print(f"   内置初始词条：外资→外商投资、农专→农民专业合作社")
+        print(f"   不自动抽取历史术语")
+    else:
+        print(f"错误: 模板文件不存在: {src}")
+        return
+
+    # 提示旧术语文件
+    if found_old_files:
+        print(f"\n⚠️ 检测到可能存在的旧术语文件（不自动导入）：")
+        for f in found_old_files:
+            print(f"  - {f}")
+        print(f"如需导入旧术语，请手动确认后添加到词库的术语映射表中。")
+    else:
+        print(f"未检测到旧术语文件。")
+
+
+def create_pm_profile_for_existing(project_root: str):
+    """为旧工作区创建 PM 偏好档案模板，不自动抽取历史偏好。"""
+    ai_dir = Path(project_root) / "ai"
+    if not ai_dir.exists():
+        print(f"错误: {ai_dir} 不存在")
+        return
+
+    # 检测模式：优先 portfolio，其次 single
+    portfolio_dir = ai_dir / "portfolio" / "context"
+    single_dir = ai_dir / "context"
+
+    if portfolio_dir.exists():
+        target_dir = portfolio_dir
+        mode_label = "项目集(portfolio)"
+    elif single_dir.exists():
+        target_dir = single_dir
+        mode_label = "单项目(single)"
+    else:
+        print(f"错误: 未找到 context 目录，无法确定工作区模式")
+        print(f"  尝试查找: {portfolio_dir}")
+        print(f"  尝试查找: {single_dir}")
+        return
+
+    print(f"检测到工作区模式: {mode_label}")
+    print(f"PM 偏好档案目标路径: {target_dir / 'pm-profile.md'}")
+
+    target_path = target_dir / "pm-profile.md"
+
+    if target_path.exists():
+        print(f"PM 偏好档案已存在，不覆盖: {target_path}")
+        return
+
+    # 创建 PM 偏好档案模板
+    templates_dir = get_templates_dir()
+    src = templates_dir / "pm-profile-template.md"
+
+    if src.exists():
+        target_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, target_path)
+        print(f"PM 偏好档案已创建: {target_path}")
+        print(f"   AI 将在交互中被动学习用户习惯，写入 pending 后经用户确认升为 confirmed")
+    else:
+        print(f"错误: 模板文件不存在: {src}")
+        return
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ChronoPM 工作区迁移脚本")
+    parser.add_argument(
+        "--project-root",
+        required=True,
+        help="项目根目录路径",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="仅检测不执行迁移",
+    )
+    parser.add_argument(
+        "--target-version",
+        default=None,
+        help="目标版本（默认为当前 Skill 版本）",
+    )
+    parser.add_argument(
+        "--index-mode",
+        choices=["structure-only", "recent-7-days", "current-month", "full-rebuild"],
+        default="structure-only",
+        help="索引重建模式（默认：structure-only）",
+    )
+    parser.add_argument(
+        "--create-glossary",
+        action="store_true",
+        default=False,
+        help="为旧工作区创建领域词库模板（内置用户已确认初始词条），不自动抽取历史术语",
+    )
+    parser.add_argument(
+        "--create-profile",
+        action="store_true",
+        default=False,
+        help="为旧工作区创建 PM 偏好档案模板，AI 将在交互中被动学习用户习惯",
+    )
+    parser.add_argument(
+        "--migrate-business",
+        action="store_true",
+        default=False,
+        help="写回存量业务数据（阶段名映射/文件移动/补 current_operator）。默认只检测。写前生成 backup/migration-snapshot-*",
+    )
+
+    args = parser.parse_args()
+    if args.create_glossary:
+        create_glossary_for_existing(args.project_root)
+    elif args.create_profile:
+        create_pm_profile_for_existing(args.project_root)
+    else:
+        migrate_workspace(
+            args.project_root,
+            args.dry_run,
+            args.target_version,
+            args.index_mode,
+            migrate_business=getattr(args, "migrate_business", False),
+        )

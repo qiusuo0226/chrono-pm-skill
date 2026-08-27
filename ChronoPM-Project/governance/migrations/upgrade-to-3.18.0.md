@@ -105,14 +105,14 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.18.0 / schema 0.16.0
-- [ ] 11 §17 分章；默认图无废弃/已完成
-- [ ] WP 创建载 23；8c.2 含图与 8b
-- [ ] §8d 含 S1–S6 逐步表
-- [ ] gap-capture 落盘前自检；禁旧批次范本
-- [ ] index 模板三段 12 列
-- [ ] carryover_step0.py 五函数；exit≠0 仅 E5
-- [ ] reply-norm-skill 无 SKILL.md；底线 14–16 与 05 同步
-- [ ] 回归 706；audit 0
-- [ ] 无业务仓路径写入；正式文档不引用 upgrade-plan
-- [ ] 双包 3.18.0
+- [x] `_version.py` 3.18.0 / schema 0.16.0
+- [x] 11 §17 分章；默认图无废弃/已完成
+- [x] WP 创建载 23；8c.2 含图与 8b
+- [x] §8d 含 S1–S6 逐步表
+- [x] gap-capture 落盘前自检；禁旧批次范本
+- [x] index 模板三段 12 列
+- [x] carryover_step0.py 五函数；exit≠0 仅 E5
+- [x] reply-norm-skill 无 SKILL.md；底线 14–16 与 05 同步
+- [x] 回归 706；audit 0
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.18.0
