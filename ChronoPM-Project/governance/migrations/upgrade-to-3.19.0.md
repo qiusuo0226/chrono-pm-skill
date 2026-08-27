@@ -99,14 +99,14 @@
 
 ## C. 验证检查
 
-- [ ] `_version.py` 3.19.0 / schema 0.16.0
-- [ ] 11 §17.2 横/竖 + §17.2.1 A～F；§5.3 skill_gap 例外
-- [ ] gap-capture 无 rev-NNN；有原位/废弃/定向扫描
-- [ ] wp-template 无阶段明细；`## 3.` 为功能点+留痕
-- [ ] 运行时「WP §3（功能点）」；历史 CHANGELOG 段保留 §3b
-- [ ] 00 §5.0 D9；N=0 无横幅
-- [ ] 回归 729；audit 0
-- [ ] 无业务仓路径写入；正式文档不引用 upgrade-plan
-- [ ] 双包 3.19.0
-- [ ] planning/ 仅留 README；本版 AP 已删
-- [ ] 分发包已写入 Downloads（用户核验通过后同步 Grok 安装区）
+- [x] `_version.py` 3.19.0 / schema 0.16.0
+- [x] 11 §17.2 横/竖 + §17.2.1 A～F；§5.3 skill_gap 例外
+- [x] gap-capture 无 rev-NNN；有原位/废弃/定向扫描
+- [x] wp-template 无阶段明细；`## 3.` 为功能点+留痕
+- [x] 运行时「WP §3（功能点）」；历史 CHANGELOG 段保留 §3b
+- [x] 00 §5.0 D9；N=0 无横幅
+- [x] 回归 729；audit 17/17 退出 0
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.19.0
+- [x] planning/ 仅留 README；本版 AP 已删
+- [x] 分发包已写入 Downloads（用户核验通过后同步 Grok 安装区）
