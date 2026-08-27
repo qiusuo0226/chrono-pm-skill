@@ -95,6 +95,14 @@ def _filter_notes(block: str, keep: set[str], src_date: str) -> str:
     return "\n".join(out)
 
 
+def _mark_s5(block: str, src_date: str) -> str:
+    marker = f"未变（结转自 {src_date}）"
+    body = block.lstrip("\n")
+    if "未变（结转自" in body:
+        return "\n" + body
+    return f"\n> {marker}\n" + body
+
+
 def _trim_energy(block: str, today: str) -> str:
     cum = re.search(r"累计总能耗：[^\n]+", block)
     line = cum.group(0) if cum else f"累计总能耗：— [能耗单位]（截至 {today}）"
@@ -132,6 +140,9 @@ def _apply_trim(text: str, today: str, src_date: str) -> tuple[str, set[str]]:
     text = _replace_body(text, r"^### 1\.4.+$", "\n" + _filter_notes(_body(text, r"^### 1\.4.+$"), keep, src_date) + "\n")
     text = _replace_body(text, r"^### 1\.5.+$", "\n" + _filter_table(_body(text, r"^### 1\.5.+$"), keep, 0) + "\n")
     text = _replace_body(text, r"^## 0\.6.+$", _trim_energy(_body(text, r"^## 0\.6.+$", H2), today), H2)
+    text = _replace_body(
+        text, r"^## 5\..*$", _mark_s5(_body(text, r"^## 5\..*$", H2), src_date), H2
+    )
     text = _replace_body(text, r"^## 2\. 日报存档.*$", "\n", H2)
     text = _replace_body(text, r"^## 3\. 工作日志.*$", "\n", H2)
     text = _replace_body(text, r"^## 6\. 变更日志.*$", "\n| 时间 | 变更内容 | 原因 |\n|---|---|---|\n", H2)
