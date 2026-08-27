@@ -1056,9 +1056,9 @@
 | WPR-001 | 「WP-006 什么状态」 | 摘要 + 指向 `wps/WP-*.md` 的链接；正文不是该文件逐字全文 | positive |
 | WPR-002 | 「完整记录」 | 更完整摘要（含实时待办）+ 同一原件链接 | positive |
 | WPR-003 | 「把 WP-006 原文贴出来」 | 逐字全文 + 链接 | positive |
-| WPR-004 | 「画总览」且无 related_wps | 竖排三行节点、无连线、提示未填；不编造 | negative |
-| WPR-005 | 已有 006→002 边时画总览 | 仅该边 | positive |
-| WPR-006 | 改 related_wps | index 更新且 `_wp-chart.md` 重画；SSOT 仍 YAML | positive |
+| WPR-004 | 「画总览」且无 related_wps | 按计划分章 mermaid（非竖排三人）；节点编号/名/日期/阶段图标、无人员行；无连线、提示未填；不编造 | negative |
+| WPR-005 | 已有 006→002 边时画总览 | 仅该边（两端同章才画） | positive |
+| WPR-006 | 改 related_wps | index 更新且 `_wp-chart.md` 按新形态重画；SSOT 仍 YAML | positive |
 | WPR-007 | 只改工作包备注 | 图指纹不变不重写 | regression |
 | WPR-008 | 办结一条待办 | 绑定 WP §4b 有一行；确认清单含待办文件+该 WP | positive |
 | WPR-009 | 同一结论再次办结 | 不出现两行相同一句话 | regression |
@@ -1070,11 +1070,82 @@
 | WPR-015 | 把图写到 outputs 当本能力落点 | 禁止 | regression |
 | WPR-016 | 一条待办两个 WP Ref | 仍拦截 | regression |
 | WPR-017 | dry-run 含 `未评审` 与 `—` 的存量 WP | 清单覆盖这两值；`已评审`进待落位、不静默填阶段名 | positive |
-| WPR-018 | `wps/` 下无 `_wp-chart.md` 时首次改 related_wps | 懒建且节点/边正确 | positive |
+| WPR-018 | `wps/` 下无 `_wp-chart.md` 时首次改 related_wps | 懒建且分章节点/边正确 | positive |
 | WPR-019 | 非图形类 skill-gap | 有 〇·五标题，节内无目标产出形态图；未写 pm-decisions | positive |
 | WPR-020 | 未迁移旧 WP 仍含「评审状态」列 | 原样展示，不翻译成十三阶段、不报错 | regression |
 | WPR-021 | 功能点表仅 1 行且阶段=预演 | 仍 AUTO，来源 AUTO-全齐 | positive |
 | WPR-022 | 任一行阶段为 `—` | 不改整包 | negative |
+
+## 72. 图分章 / 结构闸 / 归档 / 结转脚本 / 问答规范（v3.18.0）
+
+施工只认合计 **706**。禁止沿用 691/692/700。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| WPC-001 | 新建 WP 进 PLAN-001 | 同回合 `_wp-chart.md` 该章出现新节点；8c.2 含图行 | positive |
+| WPC-002 | 建包后不喊画图 | 图仍更新 | positive |
+| WPC-003 | 指纹未变 | 不重写 generated_at | regression |
+| WPC-004 | 两计划；一包两个 plan_ref | 两章都有该节点 | positive |
+| WPC-005 | 无 plan_ref | 仅「未绑定计划」章 | positive |
+| WPC-006 | effect=废弃 | 任何章都没有 | negative |
+| WPC-007 | 已完成归档 | 默认图没有 | negative |
+| WPC-008 | 5 个节点同一章 | 两行 subgraph LR，非 5 行竖排 | positive |
+| WPC-009 | 节点无人员行，有日期与阶段图标 | 通过 | positive |
+| WPC-010 | related_wps 对端不在本章 | 本章无该边 | negative |
+| WPC-011 | 日期非规范 | 图上格式化为 YYYY-MM-DD 或不改 WP 文件 | positive |
+| WPS-001 | 有 R- 无 §5 行 | WARN / 8c.2 未完成 | positive |
+| WPS-002 | 自定义「关联/依赖」混排 | 判违规，拆到 §5+§3b | positive |
+| WPS-003 | 待办标题含「全模块」只挂一行 | 回填适用功能点或 8c.2 缺失 | positive |
+| WPS-004 | 普通待办未写全模块 | 不猜全表回填 | negative |
+| WPS-005 | §4 仍派生不落盘 | regression | regression |
+| WPS-006 | 无 §3b 的包，待办备注阶段=测试 | §8 测试行 UNION 该 Owner；(AI聚合) | positive |
+| WPS-007 | 两功能点各挂不同人、阶段都=开发 | §8 开发行两个人名「、」分隔；§3b 无执行人列 | positive |
+| WPS-008 | 功能点关联待办全 — | §8 对应站 `⚠️待安排人`，不填包负责人 | negative |
+| WPS-009 | §8 测试已点名，待办另一人 | 不覆盖点名 | regression |
+| WPS-010 | 开发待办办结，测试已排人 | §8 开发行仍保留开发执行人且为 ✅；测试行 🔄 为测试人；开发人不被清空 | positive |
+| WPS-011 | 同上 | 同回合 §8b 至少两行：开发=冻结（含办结 TD）、测试=聚合；缺任一行级联失败 | positive |
+| WPS-012 | 改了 §8 人期但不写 §8b | 不得称级联完成 | negative |
+| SKG-011 | 生成时省略 〇·五 | 不得登记 index | negative |
+| SKG-012 | 模仿缺 〇·五的旧批次 | 仍以当前模板为准，有 〇·五 | positive |
+| ARC-001 | 头→已完成 | 行进 §2；`completed_at` 与 §7 日期一致；进行中段无此行 | positive |
+| ARC-002 | P-WP-RETIRE | 行进 §3；`retired_at` 有值；图无此包 | positive |
+| ARC-003 | 「完成的工作包」 | 只列 §2 段 | positive |
+| ARC-004 | 「工作包清单」默认 | 只有进行中段 | positive |
+| ARC-005 | 先完成再废弃 | 在废弃段；两列时间都有 | positive |
+| ARC-006 | 新 init | `_index` 三段 12 列，无「是否里程碑」 | positive |
+| ARC-007 | 不搬 WP 文件 | glob 仍 `wps/WP-*.md` | regression |
+| ARC-008 | 已完成段 WP 头改回进行中 | 行从 §2 移回 §1；`completed_at` 保留不删；可再入默认图 | positive |
+| ARC-H01 | 存量头=已完成、effect=正常、单表 index | dry-run 列入已完成归档并拟 `completed_at`；确认后行只在 §2；默认图无此节点 | positive |
+| ARC-H02 | 存量 effect=废弃 | 列入废弃归档并拟 `retired_at`；默认图无此节点；文件仍在 `wps/` | positive |
+| ARC-H03 | 已完成后又废弃 | 只进 §3；两列时间都有（能推导的） | positive |
+| ARC-H04 | §7 无已完成行且头不是已完成 | 不进已完成归档 | negative |
+| ARC-H05 | 推不出日期 | 时间列 `—` + ⚠️，不写今天 | negative |
+| ARC-H06 | 开发仓无 wps/ | skip，不失败 | regression |
+| ARC-H07 | 已三段再跑 | 幂等，不复制行 | regression |
+| CO-S01 | 有 Python；今日未结转；花名册 3 人 | 3 份个人文件；未办结 TD 编号不变；标记 true；stdout 有报告 | positive |
+| CO-S02 | 无 Python | AI 按 22 全文做完；不跳过 | regression |
+| CO-S03 | 已 true 且文件齐 | 脚本退出 0 不写 | regression |
+| CO-S04 | 昨日未办结 TD-A | 今日仍 TD-A，不是新号 | positive |
+| CO-S05 | 空 WP Ref 且项目仅 1 个已规划 WP | 回填该 WP | positive |
+| CO-S06 | 空 WP Ref 且多个已规划 WP | 不进今天核心表；ASK 行 | negative |
+| CO-S07 | 同时参与≥2 | 文件仍结转；ASK 含 0.5 提示材料 | positive |
+| CO-S08 | `--date` 未来日 | 拒绝写盘 | negative |
+| CO-S09 | 当天个人文件已有日报 §2 | 不覆盖 §2；只补缺失未办结 | regression |
+| CO-S10 | 有 Python 但 AI 手搓全员、不跑脚本 | 级联失败 | negative |
+| CO-S11 | 源日 §2 有日报 | 今天 §2 空（或已有今天日报则不覆盖） | negative |
+| CO-S12 | 源日核心表全已完成 | 仍建今天文件；§1 可空；不跳过该人 | positive |
+| CO-S13 | 源日有已完成 + 未办结 | 今天只有未办结；已完成留在源日 | positive |
+| CO-S14 | 源日无未办结且无日报 | 标空闲 + ASK:IDLE；**花名册不是已出组** | negative |
+| CO-S15 | 周一，周五有文件，周六日无目录 | 源=周五文件，不因「昨天无 md」失败 | positive |
+| CO-S16 | 今天该人文件已在（已投喂日报） | 不重建；只补缺失未办结；§2 不动 | regression |
+| CO-S17 | 花名册今日已出组 | 不建今天个人文件 | negative |
+| CO-S18 | 源日 §1.5 有生效处理方式 | 今天 1.5 仍有该行，办结不问第二遍 | positive |
+| CO-S19 | 脚本 exit 1，报告仅张三失败 | AI 只给张三走 E5；其余用脚本结果；**不算**手搓全员 | positive |
+| RN-001 | 用户中文问进度 | 中文结论；无英文思考段 | positive |
+| RN-002 | 模型内部英文推理 | 用户可见正文不得出现 I now have / Let me | negative |
+| RN-003 | 「电子签名和实名进度」（纯查询） | **不准**问是否执行方案/是否基于文档继续 | negative |
+| RN-004 | 本回合已写待确认变更 | 才允许 §5.0；必须白话说出改了哪些文件 | positive |
+| REG-001 | 正常日报 / WF-8 / 画人员图点名 | 行为不变（日报前先脚本结转） | regression |
 
 ## 回归用例统计
 
@@ -1151,4 +1222,5 @@
 | 阶段/目录/编号/看计划 (STP) | 12 | 8 | 4 |
 | 格式/责任链/派生图 (FMT) | 19 | 10 | 9 |
 | 工作包记录/图/查询/盖章/阶段 (WPR) | 22 | 13 | 9 |
-| **合计** | **642** | **380** | **262** |
+| 图分章/结构闸/归档/结转/问答 (WPC/WPS/ARC/CO-S/RN) | 64 | 36 | 28 |
+| **合计** | **706** | **416** | **290** |

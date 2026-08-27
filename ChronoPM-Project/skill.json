@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.17.0",
+  "version": "3.18.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -102,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.18.0",
+      "date": "2026-08-27",
+      "summary": "图按计划分章；结构闸/SCAN冻结/§8b；归档三段；结转脚本；reply-norm。schema保持0.16.0。双包同版本。Module 72（总计706）。"
+    },
     {
       "version": "3.17.0",
       "date": "2026-08-26",
@@ -492,8 +497,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-26",
-    "lastVersion": "3.17.0",
+    "lastUpdated": "2026-08-27",
+    "lastVersion": "3.18.0",
     "updateRequiredOn": [
       "major",
       "minor",

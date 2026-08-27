@@ -4,7 +4,34 @@
 
 ---
 
-## 3.17.0 — 2026-08-26（本次发布 · released）
+## 3.18.0 — 2026-08-27（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。工作包图按计划分章并建包联动重建；WP 结构闸 + SCAN 冻结 + §8b 人期溯源；skill-gap 落盘前自检；完成/废弃 index 三段归档且升级 B 节强制处理历史项目；结转 Step 0 拷贝后裁剪脚本；对外问答规范能力目录。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **706**。
+
+Blueprint Impact: full
+
+### Added
+- WP §8b 人期来源（只追加）
+- `wps/_index.md` 三段 12 列（进行中 / 已完成归档 / 废弃归档）与 YAML `completed_at` / `retired_at`
+- `scripts/carryover_step0.py`（拷贝后裁剪；exit≠0 仅 E5 失败人）
+- `reply-norm-skill/` 能力目录（禁止嵌套 SKILL.md）
+- 回归模块 72（WPC/WPS/SKG-011+/ARC/CO-S/RN；合计 **706**）
+- 过程 P-REPLY；SKILL 底线 14–16
+
+### Changed
+- 11 §17：默认图按计划分章 + 未绑定计划章；节点无人员行；同章才连线
+- 建包 / 完成归档 / 废弃须同回合重建 `_wp-chart.md`
+- SCAN S1–S6 逐步冻结；✅ 行禁止扫空
+- 结转：有 Python 则优先脚本；无 Python 禁止跳过；不自动离组
+- 05 简单查询短条与底线 14–16 同文
+
+### Fixed
+- init `_index` 与模板列漂移（8 列「是否里程碑」→ 三段 12 列）
+- 简单查询漏挡英文思考段 / 假「是否执行此方案」
+
+---
+
+## 3.17.0 — 2026-08-26（released）
 
 > 发布归档：Minor / contract_change + capability_change。工作包关联记录盖章；Mermaid 默认全包竖排总览、连线只认前后置、懒建派生 `wps/_wp-chart.md`（**反转 3.16.0 A6「仅对话禁落盘」的唯一例外**）；WP 查询摘要+原件链接；skill-gap 不进 pm-decisions 且强制示例图节；功能点列「阶段」、全齐 AUTO。workspace schema **保持 0.16.0**。双包同版本。
 >
