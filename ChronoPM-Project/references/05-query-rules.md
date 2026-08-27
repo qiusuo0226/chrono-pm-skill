@@ -154,7 +154,7 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 | 当前风险 | `risks/risk-register.md`（开放/监控中） | 最近周报 | 全量扫描历史周报 |
 | 当前问题 | `issues/issue-register.md`（未关闭） | `todos/{date}/` 待办文件（已阻塞） | 全量扫描历史日报 |
 | 资源情况 | 最新合法日 `_index.md` §1 花名册 + 当日 §3 参与表 | 个人待办 §0 / §0.5 | 读 `resource-register` / `transfer-log` / `backup/` |
-| 画图 / 责任链图 / 排布图 / Mermaid | `wps/_index.md`（+ todos `_index` / PLAN §3，见 11 号 §17） | — | 写入 outputs 或走 P-OUTPUT；编造 WP 边；把 `_wp-chart.md` 当事实源 |
+| 画图 / 责任链图 / 排布图 / Mermaid | `wps/_index.md`（+ todos `_index` / PLAN §3，排列见 11 号 §17.2） | — | 写入 outputs 或走 P-OUTPUT；编造 WP 边；把 `_wp-chart.md` 当事实源；无关联横折三列 |
 | 查词义 / 这个词什么意思 | `context/domain-glossary.md` | — | 编造释义；扫描 `backup/` |
 | 某人能耗 / 成本损耗 / 能效 | 该人最新待办 **§0.6**，按日并置同日 §1 / §3 | `project-context` 计量单位（折金额仅查询时用可选单价临时算，不落表） | 与 `project-info/budget.md` 混读；伪造任务分摊；为回填建历史空目录 |
 | 变更了几次/延期了几次 | `todos/{date}/` 待办文件（计划变更次数/延期次数） | Change Log（计数缺失时） | 扫描快照/日报 |
@@ -445,7 +445,7 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 | 倒排倒计时 | 读 PLAN 文件倒排元数据（锚点日期/关键路径）+ 待办文件未完成待办 | 距截止日剩余天数 + 未完成 WP + 关键路径预警 |
 | 哪些任务超期 | 复用 §6.6 B 类判定（含 WP Ref 归属标注） | 超期清单 |
 | 倒排每日矩阵 | 读本项目 `ai/todos/{date}/` 待办文件 + PLAN 文件（若存在）；如需岗位标注辅读 `_index` §1 花名册。跨项目矩阵由 ChronoPM-Portfolio 聚合 | 人员×日期矩阵（行=Owner，列=工作日，格=待办简述） |
-| 画图 / 责任链图 / 人员排布图 / Mermaid / 工作包总览（v3.18.0） | 读最新 `wps/_index.md` 进行中段 + 各 WP YAML `related_wps`/plan_ref/§1 日期/§8 当前阶段。须加载 11 号 §17 | **默认**按正常计划分章、每章独立 mermaid（编号/名称/yyyy-MM-DD 区间/阶段图标；不显示人员；同章才连线）。对话输出 Mermaid；若已有 `wps/_wp-chart.md` 附链接。禁止 P-OUTPUT、禁止编造边。废弃/已完成不入默认图。人员图仅点名才出 |
+| 画图 / 责任链图 / 人员排布图 / Mermaid / 工作包总览（v3.19.0） | 读最新 `wps/_index.md` 进行中段 + 各 WP YAML `related_wps`/plan_ref/§1 日期/§8 当前阶段。须加载 11 号 §17 | **默认**按正常计划分章、每章独立 mermaid。**排列规则只认 11 §17.2 / §17.2.1**（有关联横排、无关联 `rInd` 竖排；禁止在本行复述 A～F）。节点编号/名称/yyyy-MM-DD 区间/阶段图标；不显示人员；同章才连线。对话输出 Mermaid；若已有 `wps/_wp-chart.md` 附链接。禁止 P-OUTPUT、禁止编造边。废弃/已完成不入默认图。人员图仅点名才出 |
 
 **工作包查询输出（v3.17.0）**：默认不把工作包 md 全文贴进对话框（计划查询「原样输出完整 PLAN」不变）。
 
