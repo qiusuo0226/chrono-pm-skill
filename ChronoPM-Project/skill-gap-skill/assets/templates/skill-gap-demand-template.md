@@ -8,6 +8,9 @@ workspace_skill_version: x.y.z
 workspace_schema: 0.16.0
 project: [项目名]
 created_at: YYYY-MM-DD
+updated_at: YYYY-MM-DD
+status: draft
+resolved_in_skill: ~
 priority: 中
 source_files: []
 ---
@@ -133,3 +136,11 @@ flowchart LR
 
 1. {口令或步骤}
 2. {预期撞上的现象}
+
+---
+
+## 八、迭代记录
+
+| 轮次 | 日期 | 触发（用户原话摘要） | 主文档变更 | 证据 |
+|---|---|---|---|---|
+| R1 | YYYY-MM-DD | {摘要} | {本节变更} | assets/… / — |

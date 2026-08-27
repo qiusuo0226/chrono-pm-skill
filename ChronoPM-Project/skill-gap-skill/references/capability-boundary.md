@@ -17,7 +17,7 @@
 
 ## 回归
 
-`tests/regression-suite.md` 模块 68 SKG-001~010
+`tests/regression-suite.md` 模块 68 SKG-001~010；模块 73 SKG-013~018（原位/废弃；SKG-005 改写）
 
 ## 示例
 

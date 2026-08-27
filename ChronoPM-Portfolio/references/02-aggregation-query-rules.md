@@ -150,4 +150,4 @@ project-index **不加日志指针列**。查询时：
 
 ## 11. 集层技能缺口
 
-集层对话命中「技能做不到 / 记成升级需求」：拷贝 `assets/templates/skill-gap-demand-template.md` 结构，写入 `ai/portfolio/reports/{YYYYMMDDHHMMSS}/需求-{短标题}.md`（须 generated_from）。禁止写成员项目。禁止建 `skill-gap-skill/` 目录。权威规则在 ChronoPM-Project 能力目录；本包只落盘。
+集层对话命中「技能做不到 / 记成升级需求」：拷贝 `assets/templates/skill-gap-demand-template.md` 结构（含 status / 迭代记录节），写入 `ai/portfolio/reports/{YYYYMMDDHHMMSS}/需求-{短标题}.md`（须 generated_from）。同指纹原位更新；禁止 `rev-NNN`。禁止写成员项目。禁止建 `skill-gap-skill/` 目录。权威规则在 ChronoPM-Project 能力目录；本包只落盘。

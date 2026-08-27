@@ -28,7 +28,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 ├── draft.md          # 草稿
 ├── final.md          # 用户确认后的最终版
 ├── manifest.md       # 来源追溯清单
-├── revisions/        # 修改记录
+├── revisions/        # 修改记录（**仅非 skill_gap Type**；skill_gap 禁止本目录）
 │   └── rev-NNN.md
 └── files/            # 导出文件
 ```
@@ -77,9 +77,11 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 同一次生成请求的多轮修改**必须复用同一个批次目录**。例如"帮我生成周报"创建 `ai/outputs/20260809165540/`，后续"压缩风险部分""调整结构"等修改均写入 `ai/outputs/20260809165540/revisions/rev-NNN.md`。**不得为普通修改创建新的时间戳批次目录**；仅当用户明确说"重新生成"或"另出一版"时才新建批次目录。
 
+**例外 `Type=skill_gap`**：禁止 `revisions/rev-NNN.md`。同指纹原位更新主文档 + 文内「八、迭代记录」。见 `skill-gap-skill/references/gap-capture-rules.md`。
+
 ### 5.4 修改时的文件处理
 
-- 修改草稿阶段：只更新 `draft.md` + 追加 `revisions/rev-NNN.md`，不重新生成 `files/` 下文件。
+- 修改草稿阶段（**非 skill_gap**）：只更新 `draft.md` + 追加 `revisions/rev-NNN.md`，不重新生成 `files/` 下文件。
 - 用户确认后：写入 `final.md`，再生成/覆盖 `files/` 下文件。
 
 ---
@@ -106,7 +108,7 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 |---|---|---|---|---|---|---|
 | 20260809165540 | 2026-08-09 16:55:40 | 帮我生成周报 | weekly_report | draft | ai/outputs/20260809165540/draft.md | pending |
 
-`Type=skill_gap`：主文件必须是 `{批次}/需求-{短标题}.md`，**不走** draft.md→final.md，**不建 manifest.md**。登记后禁止问是否归档进事实源。7 日同痛点可在需求文件 front matter `revisions` 追加，或按用户要求另开批次。编号 `SG-YYYYMMDD-NNN` 取当日本 Type 最大号 +1。
+`Type=skill_gap`：主文件必须是 `{批次}/需求-{短标题}.md`，**不走** draft.md→final.md，**不建 manifest.md**，**禁止 `revisions/rev-NNN.md`**。登记后禁止问是否归档进事实源。同指纹未并入 → 原位更新主文档 + 第八节迭代记录（无 7 日窗）；用户另出一版才新开批次。Status 取值可含「已废弃」。编号 `SG-YYYYMMDD-NNN` 取当日本 Type 最大号 +1。细则只认 gap-capture-rules。
 
 每次创建、修改、导出或归档输出物时，必须同步更新 `ai/outputs/index.md`。
 

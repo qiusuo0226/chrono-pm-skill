@@ -149,7 +149,7 @@
 #### 技能缺口信号
 技能做不到、做不了、这是 skill 的问题、这是技能的问题、记成升级需求、记成技能缺口、记一份技能需求、当前技能没有这个能力、规则里没有、技能升级需求
 
-→ 触发：加载 `skill-gap-skill/references/gap-capture-rules.md`（P-SKILL-GAP → P-OUTPUT）。产物 `ai/outputs/{批次}/需求-{短标题}.md`。先读 `outputs/index.md` 做 7 日去重。
+→ 触发：加载 `skill-gap-skill/references/gap-capture-rules.md`（P-SKILL-GAP → P-OUTPUT）。产物 `ai/outputs/{批次}/需求-{短标题}.md`。先定向扫描已装 Skill + 读 `outputs/index.md` 做指纹匹配（无 7 日窗）；同指纹原位更新，禁止 `rev-NNN`。
 → **不是**本信号：完整性巡检缺字段（19）；等确认（pm-decisions）；拆文件（源文档信号）；换 Portfolio 能做的跨项目查询；废弃工作包（P-WP-RETIRE）；**画图/责任链图/排布图/Mermaid**（查询，走 05+11 §17，禁止当更新意图、禁止 P-OUTPUT；派生图按 11 §17）。
 → 一句既像抱怨项目进度又像技能缺口：先完成项目侧合法路径；仍无路径再走本信号。
 

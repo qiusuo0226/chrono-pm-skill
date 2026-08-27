@@ -24,7 +24,7 @@ status: 草稿
 | Created At | 创建时间 | YYYY-MM-DD HH:MM:SS |
 | Request | 用户原始请求 | [文本] |
 | Type | 生成类型 | weekly_report / meeting_minutes / requirement_review / design_review / export_excel / export_word / export_pdf / skill_gap（集周报归 ChronoPM-Portfolio，本包不写）。skill_gap 的 Main File=`需求-{短标题}.md`，无 manifest |
-| Status | 当前状态 | draft / pending_confirmation / revising / final / exported / archived / cancelled |
+| Status | 当前状态 | draft / pending_confirmation / revising / final / exported / archived / cancelled / **已废弃**（仅 Type=skill_gap，Skill 已并入） |
 | Main File | 主文件路径 | outputs/{batch_id}/draft.md 或 files/xxx.xlsx |
 | Related AI File | 关联的事实源文件（归档后填写） | reports/weekly/YYYY/... 或 pending |
 
