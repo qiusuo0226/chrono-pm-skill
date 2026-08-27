@@ -72,7 +72,7 @@ python --version
 - Mac：`brew install python3`
 - Linux：`sudo apt update && sudo apt install python3`
 
-装完再跑脚本。日常记待办、查进度、投喂日报 **不依赖** Python；日报结转按 22 号规则执行，禁止因无 Python 跳过全员结转。
+装完再跑脚本。日常记待办、查进度 **可不依赖** Python。结转：有 Python 则优先 `scripts/carryover_step0.py`；无 Python 仍按 22 号全员结转，**禁止跳过**。
 
 ### 5.1 初始化
 ```bash

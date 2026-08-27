@@ -16,7 +16,7 @@
 | P-BOX | 时间盒 | 00 WF-8 时间盒门禁 | — | — | 不自动改日期；结束越界问 A/B/C | 静默改期 |
 | P-WP-BOX-CHK | WP 窗变检查 | 00 §8c.1 | — | 越界才 P-BOX | pm-decisions（选 C） | 在窗内仍改待办时间 |
 | P-PLAN-SYNC | 计划→WP | 00 §4b | — | — | WP 时间盒+计划投影 | 灌 todos |
-| P-CARRY | 结转 | 22 | — | P-CARRY-WPREF | 当日文件 | 改编号、改历史行 |
+| P-CARRY | 结转 | 22 | — | 有 Python 则先 `carryover_step0.py`；再 P-CARRY-WPREF（脚本已高置信回填则跳过） | 当日文件 | 改编号、改历史行；exit 0 后手搓全员 |
 | P-CARRY-WPREF | 结转 WP Ref | 22 §5 | — | P-WF8-CARD | 仅空值高置信回填 | 猜填；改已有合法归属；无 WP 结转到今天核心表 |
 | P-SPLIT | 源文档拆解 | `source-split-skill/references/split-rules.md` | 指纹查重 | 07 REQ 上提（不落待办） | `requirements/sources/{编号}/` 六件套 | 用 outputs HTML 替代；二次拆解 |
 | P-DOC-INGEST | 拆文件分发 | 10 源文档信号 + SKILL 路由 | 读 project-brief | **必须 CALL P-SPLIT**；若还要报告再 P-OUTPUT | sources/ | 只出报告不入库 |

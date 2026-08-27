@@ -36,7 +36,7 @@ python scripts/verify_todo_continuity.py --root <项目根>
 
 **不自动跑** `verify_requirement_wp.py` / `verify_contract_ri.py`（P1，用户明示再跑）。
 
-本旁路 **不替代** 22 号全员结转。日报投喂仍走规则 Step 0。
+本旁路 **不替代** 22 号全员结转。日报投喂仍走规则 Step 0（有 Python 则 `carryover_step0.py`，不是本旁路的 verify）。
 
 ### 1.3 日期格式与字段边界扫描（v3.16.0，P2）
 
