@@ -4,7 +4,31 @@
 
 ---
 
-## 3.18.0 — 2026-08-27（本次发布）
+## 3.19.0 — 2026-08-27（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。工作包图按 related_wps 横/竖排列（A～F）；skill-gap 废 rev-NNN、原位迭代与废弃；WP 删阶段明细，§3b 改名为 WP §3（功能点）并加留痕；确认落地后不回放已裁定。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **729**。
+
+Blueprint Impact: full
+
+### Added
+- 11 §17.2.1 超长链换行 A～F；独立子图 `rInd` 竖排
+- skill-gap `status/updated_at/resolved_in_skill` 与第八节迭代记录
+- WP §3（功能点）阶段推进留痕（含来源 TD）
+- 回归模块 73（WPC-012～019 / SKG-013～018 / WPS-013～016 / RN-005～009；合计 **729**）
+
+### Changed
+- 默认图：有关联横向、无关联竖排；禁止无关联 3 个一行
+- P-SKILL-GAP：定向扫描 + 原位更新；禁止 skill_gap 的 `rev-NNN`
+- 00 §5.0：落地后不回放已裁定；N=0 无横幅
+- 运行时用词 WP §3（功能点）；历史 CHANGELOG 段保留 §3b
+
+### Fixed
+- 11 与 gap-capture 对 skill_gap revisions 两套说法
+- WPC-008 / SKG-005 把旧错误写成正例
+
+---
+
+## 3.18.0 — 2026-08-27（released）
 
 > 发布归档：Minor / contract_change + capability_change。工作包图按计划分章并建包联动重建；WP 结构闸 + SCAN 冻结 + §8b 人期溯源；skill-gap 落盘前自检；完成/废弃 index 三段归档且升级 B 节强制处理历史项目；结转 Step 0 拷贝后裁剪脚本；对外问答规范能力目录。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **706**。
 

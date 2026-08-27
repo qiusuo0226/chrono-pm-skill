@@ -743,6 +743,19 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.18.0（schema 保持 0.16.0）：图分章；归档三段；结转脚本；问答规范；SCAN 冻结+§8b。存量完成/废弃须 --migrate-business。",
     },
+    {
+        "version": "3.19.0",
+        "schema": "0.16.0",
+        "capabilities": [
+            "wp_chart_topology",
+            "skill_gap_inplace_deprecate",
+            "wp_fp_stage_trace",
+            "confirm_no_replay",
+        ],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.19.0（schema 保持 0.16.0）：图按关联横竖排；skill-gap 原位/废弃；WP §3 功能点留痕；确认落地不回放。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
