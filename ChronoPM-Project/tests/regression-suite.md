@@ -665,7 +665,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| PU-001 | pending total_pending>0 的普通查询 | 正文前输出「存在 N 项待确认变更」 | positive |
+| PU-001 | 开放行之和 N>0 的普通查询 | 横幅「有 N 件事等你裁定」=仍开放行；不含本轮已移出项 | positive |
 | PU-002 | 未绑定 WP 的 pending 提醒 | DF-019 句式：编号清单直问，无长段落解释 | positive |
 | PU-003 | 05 §6.3 简单查询且本会话未读 pending | 不加载 pending 全文；不因此漏答主问题 | regression |
 
@@ -712,13 +712,13 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| ER-101 | 无 entity-registry 的新项目做实体枚举 | 从 WP §3b 聚合，不报缺失 | positive |
-| ER-102 | 日报检出终态事件 | SUGGEST 更新 WP §3b 对应实体行 | positive |
+| ER-101 | 无 entity-registry 的新项目做实体枚举 | 从 WP §3（功能点）聚合，不报缺失 | positive |
+| ER-102 | 日报检出终态事件 | SUGGEST 更新 WP §3（功能点）对应实体行并追加留痕 | positive |
 | ER-103 | project-context 推导链覆盖 | 按覆盖表执行，与旧 registry 行为等价 | regression |
 | ER-104 | 存量 registry 迁移（无 WP / 列漂移 / 旧 T 号） | 分流清单正确、归档后删、数量核对通过 | positive |
 | ER-105 | 未迁移项目触发推导 | 门禁阻断 + 迁移清单 | regression |
 | ER-106 | Portfolio 实体进度聚合 | 只读聚合不落地 | positive |
-| ER-107 | D14 巡检 | 查 WP §3b↔待办终态，不查已废 registry | regression |
+| ER-107 | D14 巡检 | 查 WP §3（功能点）↔待办终态，不查已废 registry | regression |
 
 ## 56. 风险问题体系重构（v3.7.0 CR-J）
 
@@ -1001,7 +1001,7 @@
 | SKG-002 | 仅缺某 WP 日期 | 走 19，不落缺口文 | negative |
 | SKG-003 | 写到 `requirements/需求-xx.md` | 失败，必须 outputs | negative |
 | SKG-004 | 能力目录存在 SKILL.md | audit 失败 | negative |
-| SKG-005 | 7 日内同痛点第二次 | 追加 revisions，不新批次 | positive |
+| SKG-005 | 同痛点第二次 | 原位更新主文档 + 迭代记录一行；无 `revisions/rev-NNN.md` | positive |
 | SKG-006 | 用户说不要记 | 标取消 | positive |
 | SKG-007 | 仅 05 的进度追问「不对吧」 | 不落缺口文 | regression |
 | SKG-008 | 「这是 skill 的问题，记下来」 | 落盘；含 sg_id | positive |
@@ -1056,7 +1056,7 @@
 | WPR-001 | 「WP-006 什么状态」 | 摘要 + 指向 `wps/WP-*.md` 的链接；正文不是该文件逐字全文 | positive |
 | WPR-002 | 「完整记录」 | 更完整摘要（含实时待办）+ 同一原件链接 | positive |
 | WPR-003 | 「把 WP-006 原文贴出来」 | 逐字全文 + 链接 | positive |
-| WPR-004 | 「画总览」且无 related_wps | 按计划分章 mermaid（非竖排三人）；节点编号/名/日期/阶段图标、无人员行；无连线、提示未填；不编造 | negative |
+| WPR-004 | 「画总览」且无 related_wps | 按计划分章 mermaid；无关联 WP 装入 `rInd` 子图竖排（每行 1 个）；节点编号/名/日期/阶段图标；无人员行；无连线；提示未填关联则提示未填；不编造 | positive |
 | WPR-005 | 已有 006→002 边时画总览 | 仅该边（两端同章才画） | positive |
 | WPR-006 | 改 related_wps | index 更新且 `_wp-chart.md` 按新形态重画；SSOT 仍 YAML | positive |
 | WPR-007 | 只改工作包备注 | 图指纹不变不重写 | regression |
@@ -1066,7 +1066,7 @@
 | WPR-011 | 全部功能点阶段=预演 | 整包预演 ✅、状态历史追加、变更来源 AUTO-全齐、无 pm-decisions 新项 | positive |
 | WPR-012 | 五行中一行不是预演 | 整包不自动变 | negative |
 | WPR-013 | 记升级需求 | 只在 outputs；未写 pm-decisions；有 〇·五节 | positive |
-| WPR-014 | 新建 WP §3b | 无阶段归属列；有「阶段」列和固定说明 | positive |
+| WPR-014 | 新建 WP | 标题 `## 3.` 功能点；无「阶段明细」；无 `## 3b.`；无阶段归属列；有「阶段」列 | positive |
 | WPR-015 | 把图写到 outputs 当本能力落点 | 禁止 | regression |
 | WPR-016 | 一条待办两个 WP Ref | 仍拦截 | regression |
 | WPR-017 | dry-run 含 `未评审` 与 `—` 的存量 WP | 清单覆盖这两值；`已评审`进待落位、不静默填阶段名 | positive |
@@ -1078,7 +1078,7 @@
 
 ## 72. 图分章 / 结构闸 / 归档 / 结转脚本 / 问答规范（v3.18.0）
 
-施工只认合计 **706**。禁止沿用 691/692/700。
+施工只认合计 **729**（本模块 64 + 模块 73 新增 23）。禁止沿用 706。
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
@@ -1089,17 +1089,17 @@
 | WPC-005 | 无 plan_ref | 仅「未绑定计划」章 | positive |
 | WPC-006 | effect=废弃 | 任何章都没有 | negative |
 | WPC-007 | 已完成归档 | 默认图没有 | negative |
-| WPC-008 | 5 个节点同一章 | 两行 subgraph LR，非 5 行竖排 | positive |
+| WPC-008 | 同章 5 个无 related_wps | 一个 `rInd` 竖堆；不是 3+2 两行横折 | positive |
 | WPC-009 | 节点无人员行，有日期与阶段图标 | 通过 | positive |
 | WPC-010 | related_wps 对端不在本章 | 本章无该边 | negative |
 | WPC-011 | 日期非规范 | 图上格式化为 YYYY-MM-DD 或不改 WP 文件 | positive |
 | WPS-001 | 有 R- 无 §5 行 | WARN / 8c.2 未完成 | positive |
-| WPS-002 | 自定义「关联/依赖」混排 | 判违规，拆到 §5+§3b | positive |
+| WPS-002 | 自定义「关联/依赖」混排 | 判违规，拆到 §5+WP §3（功能点） | positive |
 | WPS-003 | 待办标题含「全模块」只挂一行 | 回填适用功能点或 8c.2 缺失 | positive |
 | WPS-004 | 普通待办未写全模块 | 不猜全表回填 | negative |
 | WPS-005 | §4 仍派生不落盘 | regression | regression |
-| WPS-006 | 无 §3b 的包，待办备注阶段=测试 | §8 测试行 UNION 该 Owner；(AI聚合) | positive |
-| WPS-007 | 两功能点各挂不同人、阶段都=开发 | §8 开发行两个人名「、」分隔；§3b 无执行人列 | positive |
+| WPS-006 | 无 WP §3（功能点）的包，待办备注阶段=测试 | §8 测试行 UNION 该 Owner；(AI聚合) | positive |
+| WPS-007 | 两功能点各挂不同人、阶段都=开发 | §8 开发行两个人名「、」分隔；WP §3（功能点）当前表无执行人列 | positive |
 | WPS-008 | 功能点关联待办全 — | §8 对应站 `⚠️待安排人`，不填包负责人 | negative |
 | WPS-009 | §8 测试已点名，待办另一人 | 不覆盖点名 | regression |
 | WPS-010 | 开发待办办结，测试已排人 | §8 开发行仍保留开发执行人且为 ✅；测试行 🔄 为测试人；开发人不被清空 | positive |
@@ -1146,6 +1146,36 @@
 | RN-003 | 「电子签名和实名进度」（纯查询） | **不准**问是否执行方案/是否基于文档继续 | negative |
 | RN-004 | 本回合已写待确认变更 | 才允许 §5.0；必须白话说出改了哪些文件 | positive |
 | REG-001 | 正常日报 / WF-8 / 画人员图点名 | 行为不变（日报前先脚本结转） | regression |
+
+## 73. 图拓扑 / skill-gap 生命周期 / 功能点留痕 / 确认后不回放（v3.19.0）
+
+施工只认合计 **729**。禁止沿用 706。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| WPC-012 | 同章 3 节点链 | `chain1` LR 横排；无行间边 | positive |
+| WPC-013 | 同章 4 节点链 | 3+1；子图级边标签含 WP-003→WP-004；源码无跨子图节点边 | positive |
+| WPC-014 | A→B 且 A→C | 单子图内两条节点边 | positive |
+| WPC-015 | 一章内 1 条链 + 2 独立 | 链子图+`rInd`；组间无边 | positive |
+| WPC-016 | 换行图出现 `C --> D` | 判违规 | negative |
+| WPC-017 | 使用 `~~~` | 判违规 | negative |
+| WPC-018 | 子图缺隐形 style | 判违规 | negative |
+| WPC-019 | 仅子图级边变化 | 指纹不变、不因排版边重写 generated_at | regression |
+| SKG-013 | Skill 已包含该能力且旧文档在 | `status=deprecated`；index 已废弃；不新开当新缺口 | positive |
+| SKG-014 | Skill 已包含且用户已删旧文档 | 不动作、不重建 | negative |
+| SKG-015 | 落盘/原位后回复 | 一句话含路径+记了什么+历史是否在文中 | positive |
+| SKG-016 | 90 日前同指纹未并入 | 原位迭代，不因超 7 日新开 | positive |
+| SKG-017 | 周报多轮修改 | 仍可 `revisions/rev-NNN.md` | regression |
+| SKG-018 | 新缺口文 | 有 status/updated_at/第八节 | positive |
+| WPS-013 | 功能点 预演→测试 | 当前行阶段=测试；留痕追加一行；含执行人与来源 TD | positive |
+| WPS-014 | 功能点当前表出现执行人列 | 违规（S6） | negative |
+| WPS-015 | 问「谁做过预演」 | 读留痕 | positive |
+| WPS-016 | 存量 `## 3b.` | 运行时视为 WP §3（功能点） | positive |
+| RN-005 | PM 本轮已裁定并落地 | 对外不列出已裁定事项表；一句「已按你说的做完」 | negative |
+| RN-006 | 落地后仍有 4 条未绑定 | 「等你裁定」只含这 4 条，整轮一次；不与已办结混表 | positive |
+| RN-007 | 同一轮输出两份「等你裁定」 | 失败 | negative |
+| RN-008 | 用户问「改了哪些文件」 | 才给路径清单 | positive |
+| RN-009 | 开放行之和 N=0 | 不输出「等你裁定」横幅 | negative |
 
 ## 回归用例统计
 
@@ -1223,4 +1253,5 @@
 | 格式/责任链/派生图 (FMT) | 19 | 10 | 9 |
 | 工作包记录/图/查询/盖章/阶段 (WPR) | 22 | 13 | 9 |
 | 图分章/结构闸/归档/结转/问答 (WPC/WPS/ARC/CO-S/RN) | 64 | 36 | 28 |
-| **合计** | **706** | **416** | **290** |
+| 图拓扑/缺口生命周期/留痕/确认对外 (73) | 23 | 14 | 9 |
+| **合计** | **729** | **430** | **299** |
