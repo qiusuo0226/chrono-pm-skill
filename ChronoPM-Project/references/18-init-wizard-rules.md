@@ -312,11 +312,11 @@ init_wizard_completed: "YYYY-MM-DD HH:MM:SS"
 **触发条件**：向导 Step 3 完成后，若检测到 ≥2 个模块或 ≥3 个计划阶段，提示：
 
 ```
-【可选】复杂项目建议：WP 按模块/实体拆分，在 WP §3b 维护实体行；
+【可选】复杂项目建议：WP 按模块/实体拆分，在 WP §3（功能点） 维护实体行；
 在 project-context「项目级推导规则」填写推导链覆盖与终态事件扩展。
 ```
 
-**引导**：① WP 按模块拆分并填 §3b；② 维护 project-context 模块表与推导规则段。不预灌空 registry。sources/ 已预建，本步不新增拆解预灌文件。
+**引导**：① WP 按模块拆分并填 WP §3（功能点）；② 维护 project-context 模块表与推导规则段。不预灌空 registry。sources/ 已预建，本步不新增拆解预灌文件。
 
 ---
 

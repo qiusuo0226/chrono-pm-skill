@@ -48,7 +48,7 @@
 - `context/pm-profile.md`
 - `context/domain-glossary.md`
 
-> v3.7.0：`entity-registry.md` 已废。成员侧缺失该文件**不判异常**。实体进度从各项目 WP §3b 聚合。
+> v3.7.0：`entity-registry.md` 已废。成员侧缺失该文件**不判异常**。实体进度从各项目 WP §3（功能点） 聚合。
 
 巡检比对（最小读取：编号行 / 词条键 / 实体清单表，不读全文）：
 
