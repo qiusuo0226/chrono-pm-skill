@@ -29,7 +29,7 @@
 | P-WP-RETIRE | 废弃 WP | 00 §8e | PM 确认+superseded_by | 移出正常计划 | YAML effect+§6+index | §7 到状态=废弃；删文件；自动改待办 |
 | P-SKILL-GAP | 技能缺口笔录 | skill-gap-skill/references/gap-capture-rules.md | 闸 1=B；已载 11 | **必须 CALL P-OUTPUT**（skill_gap **不建 manifest**） | outputs/需求-*.md | 写事实源；写/提议 pm-decisions；问要不要记；简单查询瞎记；省 〇·五 |
 | P-WP-STAMP | 待办结论盖章 | 00 WF-1 18.8 | 正式待办 WP Ref=1 | — | WP §4b 一行 | 多文件复制正文；漏盖称办结完成；猜相关包 |
-| P-WP-CHART | 派生总览图 | 11 §17 | effect=正常 | 先 index | `wps/_wp-chart.md` | P-OUTPUT；编造边；指纹未变仍重写 |
+| P-WP-CHART | 派生总览图 | 11 §17 | effect=正常 且 头≠已完成 | 先 index | `wps/_wp-chart.md` | P-OUTPUT；编造边；指纹未变仍重写；废弃/已完成入默认图 |
 | P-WP-ALIGN | 功能点全齐推进 | 00 §8d | 功能点 ≥1 行且阶段全同且非 — | — | WP §8 + §7 追加 + §6 来源 AUTO-全齐 | 问准不准；进 pm-decisions；改旧链行；无表仍推 |
 
 调用（无环）：
@@ -46,7 +46,7 @@ P-ROUTE
  ├─ 废弃 WP → P-WP-RETIRE
  ├─ 扫 WP 人期 → P-WP-SCAN →（若待确认）P-WP-ADVANCE
  ├─ 待办办结/敲定 → P-WP-STAMP
- ├─ 改 WP 图字段 → P-WP-CHART
+ ├─ 新建/改/完成归档/废弃 WP → P-WP-CHART
  ├─ 功能点阶段全齐 → P-WP-ALIGN
  └─ 技能缺口 → P-SKILL-GAP → P-OUTPUT
 ```

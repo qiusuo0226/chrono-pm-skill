@@ -100,7 +100,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 需求评审/变更 | 00+07+08+06 | — |
 | 待办文件更新 | 00+06+23 | 10 |
 | 待办创建 WF-8 | 00+22+21+06+23 | 01、02、07、08、10 |
-| WP 创建/查询 | 00+06 | 05、07、14 |
+| WP 创建/查询 | 00+06+23 | 05、07、14、11 |
 | 技能缺口 / 技能做不到 / 记升级需求 | 00+11+23 + `skill-gap-skill/references/gap-capture-rules.md` | — |
 | 待办状态 WF-1 | 00+01+04+06+10 | 17 |
 | 关联待办 WF-Linked | 00+22 | 01 |

@@ -592,7 +592,7 @@ AI **必须**：
 | 修改计划 §2 门禁 | 不回写 WP 关键阶段 | 关键阶段只从 WP §8 投影到 §3 第 6 列 |
 | 修改 WP 的关联需求 | `_index.md` 关联需求列 | 与 WP 文件 §2 强制一致 |
 | 修改 WP `related_wps`（v3.16.0） | 对端 YAML + 本 WP §2b + `_index.md` 上游/下游列 | YAML 为 SSOT。改 upstream 必须在对端 downstream 互指（反之亦然）。自指拒绝。环 → pm-decisions。对端文件不存在 → D20，不建幽灵 WP。建链/改链待确认 |
-| 修改 WP 的 related_wps / 名称 / 负责人 / §8 执行人，或增删/废弃 WP（v3.17.0） | `wps/_wp-chart.md` | 派生图。先 index 再比指纹（编号+名称+负责人+§8 人+上下游+effect）。变化或文件缺失 → 按 11 §17 重写/懒建。指纹相同不写。不走 P-OUTPUT |
+| 修改 WP 的 related_wps / 名称 / plan_ref / §1 日期 / §8 当前阶段，或增删/废弃/完成归档 WP（v3.18.0） | `wps/_wp-chart.md` | 派生图。先 index 再比指纹（编号+名称+plan_ref+日期+当前阶段+上下游+effect）。变化或文件缺失 → 按 11 §17 重写/懒建。指纹相同不写。不走 P-OUTPUT。属 AUTO |
 | 修改 WP §2 关联需求 / REQ 工作包列 | 对方字段 + `wps/_index.md` | 双向编号一致（07 号）；不一致写入 pm-decisions |
 | 新增/修改/删除 `sources/{编号}/` | `requirements/sources/_index.md` | 索引行同步；存在性以 meta.md 为准 |
 
@@ -609,6 +609,7 @@ AI **必须**：
 - WP plan_ref 已与正常计划 §3 互指
 - 计划 §6 已记本次增删 WP（若有成员变动）
 - 下辖待办已检查：N 条待办 WP Ref 一致（纯派生校验，未回写 WP 文件）
+- wps/_wp-chart.md 已按指纹处理（重建或未变跳过）
 ```
 
 跳过任一步必须标注 `⚠️ 级联完整性验证未完成：- [缺失] …`。缺一个正常 PLAN 的投影 = 未完成，当场补，禁止只交 WP 文件。

@@ -276,7 +276,7 @@ author: AI辅助生成
 | 需求登记册 | 超过 **50** 条时按模块拆分 + `requirements/_index.md` 检索索引；查询先读索引再打开命中分片，禁止默认通读整册 |
 | 待办文件 | 按人按日天然拆分（`todos/{date}/{执行人}.md`），无需再拆；绑定文件 `_index.md` 与待办文件同日同目录 |
 | PLAN 文件 | 每计划一文件（`plans/PLAN-YYYYMMDD-NNN-{name}.md`，存量 `PLAN-NNN-*.md` 不重编）天然拆分；必含 **6 节**；头 `status: 正常\|废弃`；§3 六列（编号/名称/当前状态/执行人/排期/关键阶段），**每 WP 一行、无子行**（空岗写在执行人/排期格，禁止第 7 列）；§4 各 WP 阶段列表（WP §8 投影落盘）；禁止 TD、禁止需求列、禁止按状态分章。只纳入 `effect=正常` 的 WP。投影列不得当独立事实改。升级只处理 `PLAN-*.md` |
-| WP 文件 | 每 WP 一文件（`wps/WP-YYYYMMDD-NNN.md`，存量短号/中文名不重编）；必含 §7 状态历史（缺=待补全）；§8 13 标准阶段表（可增删）含执行人/排期/关键阶段；YAML `effect: 正常\|废弃`（缺省=正常），废弃必填 `superseded_by`；可选 `related_wps`（upstream/downstream，SSOT）；**无 is_milestone**；头 `status` 仅四枚举；`plan_ref` 多值用 ` / `；索引 `wps/_index.md` 一行/WP **10 列**（末尾上游 WP/下游 WP；生效不成列）；下辖待办不落盘，查看/谁参与过含已办结；允许懒建派生 `wps/_wp-chart.md`（不进 index 行，见 11 §17） |
+| WP 文件 | 每 WP 一文件（`wps/WP-YYYYMMDD-NNN.md`，存量短号/中文名不重编）；必含 §7 状态历史（缺=待补全）；§8 13 标准阶段表（可增删）含执行人/排期/关键阶段；YAML `effect: 正常\|废弃`（缺省=正常），废弃必填 `superseded_by`；可选 `related_wps`（upstream/downstream，SSOT）；**无 is_milestone**；头 `status` 仅四枚举；`plan_ref` 多值用 ` / `；索引 `wps/_index.md` 一行/WP **10 列**（末尾上游 WP/下游 WP；生效不成列）；下辖待办不落盘，查看/谁参与过含已办结；允许懒建派生 `wps/_wp-chart.md`（不进 index 行；v3.18.0 按计划分章，见 11 §17） |
 | decision-log | 超过30条或文件超300行时按季度拆分到 `decisions/archive/YYYY-QN-decision-log.md`，保留 index |
 | issue-register | 超过30条时按状态拆分（`已解决`/`已关闭` 归档，主体保留活跃），保留 index |
 | 过程日志 ops | 按日 `logs/ops/YYYY-MM-DD.md`；超 **300 行**拆 `-p2`（不是去月归档）；跨月整包归档到 `logs/archive/YYYYMM-ops.md` |
