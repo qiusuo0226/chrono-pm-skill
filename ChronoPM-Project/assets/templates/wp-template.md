@@ -7,6 +7,8 @@ status: 待确认
 effect: 正常
 superseded_by: —
 created_at: YYYY-MM-DD
+completed_at: —
+retired_at: —
 related_wps:
   upstream: []    # 前置 WP 编号；SSOT。改链须待确认 + pm-decisions
   downstream: []  # 后继 WP 编号

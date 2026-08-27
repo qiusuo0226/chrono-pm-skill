@@ -729,6 +729,20 @@ VERSION_CAPABILITIES = [
         "new_files": ["wps/_wp-chart.md"],
         "note": "v3.17.0（schema 保持 0.16.0）：关联记录盖章；图形态+派生落盘；查询摘要+链接；skill-gap 辅助；功能点阶段全齐 AUTO。",
     },
+    {
+        "version": "3.18.0",
+        "schema": "0.16.0",
+        "capabilities": [
+            "wp_chart_by_plan",
+            "wp_index_archive_sections",
+            "carryover_step0_script",
+            "reply_norm",
+            "wp_stage_people_freeze",
+        ],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.18.0（schema 保持 0.16.0）：图分章；归档三段；结转脚本；问答规范；SCAN 冻结+§8b。存量完成/废弃须 --migrate-business。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -1761,6 +1775,8 @@ def migrate_business_data(ai_dir: Path, dry_run: bool = True):
             actions.append(("wp-stage", f"阶段名映射 {wp.name}", str(wp)))
             if not dry_run:
                 wp.write_text(new, encoding="utf-8")
+    archive_actions = _migrate_wp_archive_index(ai_dir, dry_run=dry_run)
+    actions.extend(archive_actions)
     if dry_run:
         print(f"  待校准 {len(actions)} 处（未写盘）")
         for a in actions[:40]:
@@ -1770,6 +1786,105 @@ def migrate_business_data(ai_dir: Path, dry_run: bool = True):
         print("  确认后加 --migrate-business 写回（写前会做 backup/migration-snapshot-*）")
     else:
         print(f"  已写回 {len(actions)} 处")
+    return actions
+
+
+def _front_matter_get(text, key):
+    m = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if not m:
+        return ""
+    for line in m.group(1).splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            if k.strip() == key:
+                return v.strip().strip('"').strip("'")
+    return ""
+
+
+def _completed_at_from_chain(text):
+    m = re.search(r"^## 7\..+$", text, re.M)
+    if not m:
+        return ""
+    start = m.end()
+    nxt = re.search(r"^##\s+", text[start:], re.M)
+    body = text[start: start + nxt.start()] if nxt else text[start:]
+    last = ""
+    for line in body.splitlines():
+        if line.startswith("|") and "---" not in line:
+            cells = [c.strip() for c in line.strip("|").split("|")]
+            if len(cells) >= 3 and cells[2] == "已完成":
+                last = cells[0]
+    return last if re.match(r"\d{4}-\d{2}-\d{2}$", last or "") else ""
+
+
+def _migrate_wp_archive_index(ai_dir, dry_run=True):
+    """3.18：历史完成/废弃进 index 三段。不搬 WP 文件。"""
+    actions = []
+    wpdir = ai_dir / "wps"
+    if not wpdir.exists():
+        return actions
+    active, done, retired = [], [], []
+    for wp in sorted(wpdir.glob("WP-*.md")):
+        raw = wp.read_text(encoding="utf-8")
+        fm_status = _front_matter_get(raw, "status")
+        effect = _front_matter_get(raw, "effect") or "正常"
+        wpid = _front_matter_get(raw, "wp_id") or wp.stem
+        name = ""
+        for line in raw.splitlines():
+            if line.startswith("# "):
+                name = line.lstrip("# ").split(" - ", 1)[-1].strip()
+                break
+        completed = _front_matter_get(raw, "completed_at")
+        retired_at = _front_matter_get(raw, "retired_at")
+        if completed in ("", "—"):
+            completed = _completed_at_from_chain(raw) or "—"
+        if retired_at in ("", "—"):
+            retired_at = "—"
+        if effect == "废弃":
+            bucket = retired
+            st = "废弃"
+            actions.append(("archive", f"{wpid} → 废弃归档 retired_at={retired_at}", str(wp)))
+        elif fm_status == "已完成":
+            bucket = done
+            st = "已完成"
+            actions.append(("archive", f"{wpid} → 已完成归档 completed_at={completed}", str(wp)))
+        else:
+            bucket = active
+            st = fm_status or "待确认"
+        row = (
+            f"| {wpid} | {name or wpid} | {st} | {_front_matter_get(raw, 'plan_ref') or '—'} | "
+            f"— | — | — | wps/{wp.name} | — | — | "
+            f"{completed if st != '待确认' and st != '已规划' and st != '进行中' else '—'} | "
+            f"{retired_at if st == '废弃' else '—'} |"
+        )
+        if st in ("待确认", "已规划", "进行中"):
+            row = (
+                f"| {wpid} | {name or wpid} | {st} | {_front_matter_get(raw, 'plan_ref') or '—'} | "
+                f"— | — | — | wps/{wp.name} | — | — | — | — |"
+            )
+        bucket.append(row)
+        if not dry_run and effect != "废弃" and fm_status == "已完成" and _front_matter_get(raw, "completed_at") in ("", "—") and completed != "—":
+            if raw.startswith("---"):
+                raw2 = raw.replace("---\n", f"---\ncompleted_at: {completed}\n", 1)
+                wp.write_text(raw2, encoding="utf-8")
+    idx = wpdir / "_index.md"
+    header = (
+        "---\ndoc_type: wp-index\n---\n\n# WP 索引\n\n"
+        "> 12 列；三段。存在性以 WP 文件为准。\n\n"
+        "## 1. 进行中\n\n"
+        "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n"
+        "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    )
+    text = header + "\n".join(active) + "\n\n## 2. 已完成归档\n\n"
+    text += "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    text += "\n".join(done) + "\n\n## 3. 废弃归档\n\n"
+    text += "| WP 编号 | WP 名称 | 状态 | plan_ref | 负责人 | 关键阶段 | 关联需求 | 文件路径 | 上游 WP | 下游 WP | 完成时间 | 废弃时间 |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    text += "\n".join(retired) + "\n"
+    if not dry_run:
+        idx.write_text(text, encoding="utf-8")
+        actions.append(("index", "重写 wps/_index.md 三段 12 列", str(idx)))
+    else:
+        actions.append(("index", f"将重写 _index 进行中{len(active)}/完成{len(done)}/废弃{len(retired)}", str(idx)))
     return actions
 
 
