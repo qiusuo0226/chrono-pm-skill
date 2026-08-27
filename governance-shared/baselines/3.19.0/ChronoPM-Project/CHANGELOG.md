@@ -26,6 +26,10 @@ Blueprint Impact: full
 - 11 与 gap-capture 对 skill_gap revisions 两套说法
 - WPC-008 / SKG-005 把旧错误写成正例
 
+### 收尾补记（2026-08-27，不另起版本）
+- Portfolio skill-gap **有意不建** `skill-gap-skill/`；锁步文件仅 `ChronoPM-Portfolio/assets/templates/skill-gap-demand-template.md`
+- AP 已删；audit 17/17 复跑通过；回归报告已写；分发包重打入 Downloads
+
 ---
 
 ## 3.18.0 — 2026-08-27（released）

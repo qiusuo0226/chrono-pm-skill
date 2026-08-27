@@ -6,7 +6,7 @@
 
 ## 3.19.0 — 2026-08-27（版本锁步）
 
-> 与 Project 3.19.0 共用版本线。skill-gap 模板锁步（status / 迭代记录）。成员实体行用语 WP §3（功能点）。禁止写入成员项目。workspace schema 0.16.0。回归 **729**。
+> 与 Project 3.19.0 共用版本线。skill-gap 只锁步 `assets/templates/skill-gap-demand-template.md`（status / 迭代记录）；**不建** `skill-gap-skill/`（集层只拷模板）。成员实体行用语 WP §3（功能点）。禁止写入成员项目。workspace schema 0.16.0。回归 **729**。
 
 ## 3.18.0 — 2026-08-27（版本锁步 · released）
 

@@ -67,7 +67,7 @@
 | A6.2 | `sync_version.py` | 双包触点 |
 | A6.3 | CHANGELOG 双包 + BLUEPRINT + 根 README×2 | 3.19.0；回归 **729**；历史段 §3b 不改 |
 | A6.4 | `migrate_workspace.py` VERSION_CAPABILITIES | 3.19.0 schema 0.16.0 |
-| A6.5 | Portfolio 锁步模板字段 + 02/06 用词 |
+| A6.5 | Portfolio：`assets/templates/skill-gap-demand-template.md` 字段锁步 + 02/06 用词。**禁止**建 `ChronoPM-Portfolio/skill-gap-skill/`（有意省略：集层只拷模板，规则权威在 Project） |
 
 ### A7. 基线与发布（节点7）
 
