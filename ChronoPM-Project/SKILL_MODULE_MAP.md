@@ -232,6 +232,19 @@ flowchart LR
   ADV -->|确认后只追加| H7[§7]
 ```
 
+## G21 对外问答（能力目录，不是独立 Skill）
+
+```mermaid
+flowchart LR
+  U[用户提问] --> R{简单查询?}
+  R -->|是| S[SKILL底线14-16 + 05短条]
+  R -->|写入/确认/方案/复杂| RN[reply-norm-skill reply-rules]
+  RN --> C{真确认?}
+  C -->|是| S50[00 5.0]
+  C -->|纯查询| BAN[禁止问是否执行方案]
+  X[reply-norm SKILL.md] --> BAN2[禁止误注册]
+```
+
 ## G20 技能缺口
 
 ```mermaid

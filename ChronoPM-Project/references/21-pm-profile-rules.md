@@ -168,8 +168,8 @@ version: 1.0
 | DF-002 | P-CFM | 可关闭项确认关闭（编号+佐证+PM 确认） | P-ALWAYS | `04-risk-issue-rules.md` 关闭规则 |
 | DF-003 | P-WRK | PM 同步进度自动记日报（白天同步+晚间合并） | P-WF-2 | `01-daily-report-rules.md` §1.3a |
 | DF-004 | P-WRK | 查询必须实读文件 | P-ALWAYS | `00-pm-main-rules.md` CQ-5 强化 |
-| DF-005 | P-STY | 禁止内部文件术语（说人话）；范围=**全部对外正文**（提问+处理汇报+推导），不仅确认提问 | P-REPLY | `00-pm-main-rules.md` 对外表达专节（本文件不复述词典） |
-| DF-006 | P-STY | 操作建议说人话 | P-REPLY | `00-pm-main-rules.md` 对外确认专节（本文件不复述正文） |
+| DF-005 | P-STY | 禁止内部文件术语（说人话）；范围=**全部对外正文**（提问+处理汇报+推导），不仅确认提问 | P-REPLY | `reply-norm-skill/references/reply-rules.md` + `00-pm-main-rules.md` 对外表达专节（本文件不复述词典） |
+| DF-006 | P-STY | 操作建议说人话 | P-REPLY | `reply-norm-skill/references/reply-rules.md` + `00-pm-main-rules.md` 对外确认专节（本文件不复述正文） |
 | DF-007 | P-WRK | PM 待办只记本人动作，不自动生成跟进条 | P-WF-1+WF-8 | `00-pm-main-rules.md` WF-1（已删 18.6）+ WF-8 |
 | DF-008 | P-WRK | 日报更新联动待办文件（`todos/{date}/{owner}.md`）与需求登记册、本项目日报；**不要** `tasks/board.md`（v2.0.0 已删） | P-WF-2 | `01-daily-report-rules.md` §5 |
 | DF-009 | P-WRK | 日报核对联动提醒（计划日期/问题/风险对照；紧急项每轮对话提醒一次） | P-WF-2 | `01-daily-report-rules.md` §6/§7 |

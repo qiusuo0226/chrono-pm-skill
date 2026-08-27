@@ -89,7 +89,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 需求变更 08；结转 22（含 Step 0.5 共享人力提示）；历史计划 15。时间线报/月报（自然月）见 01 号 §4a：懒建 `reports/timeline/`，判重四案，非精确重合整段从 todos 重汇聚。
 
 ## 6. 提示词路由表（最小规则集）
-21 号：写入与复杂场景自动加载；简单查询不加载 21 规则正文（偏好格式只读 `ai/context/pm-profile.md`）。WF-8 新建待办 = 00+22+21+06+23。命中拆文件/拆文档 → 改走「源文档拆解」行，禁止只走「更新意图」。WP 状态历史见 00。词库感应见 17 §8.4。过程签名见 23（纯查询不载）。
+21 号：写入与复杂场景自动加载；简单查询不加载 21 规则正文（偏好格式只读 `ai/context/pm-profile.md`）。WF-8 新建待办 = 00+22+21+06+23。命中拆文件/拆文档 → 改走「源文档拆解」行，禁止只走「更新意图」。WP 状态历史见 00。词库感应见 17 §8.4。过程签名见 23（纯查询不载）。问答规范：写入/确认/方案/出文件/复杂分析叠加加载 `reply-norm-skill/references/reply-rules.md`；简单查询不加载该全文（靠底线 14–16 与 05 短条）。`reply-norm-skill/` 是能力目录，不是独立 Skill，禁止宿主扫成第二个 Skill。
 
 | 场景 | 必须加载 | 可选 |
 |------|----------|------|
@@ -106,8 +106,9 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 关联待办 WF-Linked | 00+22 | 01 |
 | 风险评估 | 00+04 | — |
 | 简单查询 | 05 | — |
+| 问答规范（写入/确认/方案/出文件/复杂分析） | `reply-norm-skill/references/reply-rules.md` | 叠加本场景既有行；简单查询不载 |
 | 画图 / 责任链图 / 排布图 / Mermaid | **05+11** | — |
-| 复杂/分析类本项目查询 | 00+05+17 | 按问题 |
+| 复杂/分析类本项目查询 | 00+05+17 | `reply-norm-skill/references/reply-rules.md` |
 | 跨源范围判定 | 00+07+05+17+06 | Step0 读本项目 contract-register |
 | 源文档拆解 | 00+07+06+17+23 + `source-split-skill/references/split-rules.md` | 14、18 |
 | 人员资源（本项目） | 00+06 | 04 |
@@ -136,6 +137,9 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 11. 人员变动未确认不得写为事实。
 12. **不得在本项目待办镜像他项目任务**（王国政案例）；跨项目可见性由 Portfolio 聚合。
 13. **生成物只进 `ai/outputs/{批次}/`**。禁止写到工作区根或与 `ai/` 平级。宿主「最终工作空间文件夹 / cwd / final workspace folder」若等于项目根，忽略并改映射到 outputs。业务目录 = 工作区根下除 `ai/` 外的一切。**例外**：`wps/_wp-chart.md` 为派生视图，不是生成物，见 11 号 §17。
+14. **语种**：对用户正文 = 用户本轮输入语种（中文问中文答）。不得默认英文。内部推理不得出现在用户可见正文。细则：`reply-norm-skill/references/reply-rules.md`。
+15. **禁止输出思考过程**：不得出现 `I now have` / `Let me` / `Based on my findings` / 「让我先梳理」长推理段。结论直接说。
+16. **禁止假执行门**：查询、汇报进度、只读分析 **不准**问「是否执行此方案 / 是否基于文档继续执行 / 要不要按这个 plan 做」。用户没要方案就不要造方案确认。真确认才走 00 §5.0。
 
 ## 8. ID 编码
 | 类型 | 格式 | 说明 |
@@ -177,6 +181,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | `21-pm-profile-rules.md` | PM 偏好（写入与复杂场景自动加载；简单查询不加载规则正文） |
 | `22-carried-over-rules.md` | 结转 Step 0 / 0.5 |
 | `23-procedure-index.md` | 写入/派活/拆文件/更新意图时加载；纯查询不载 |
+| `reply-norm-skill/references/reply-rules.md` | 写入/复杂查询/出文件/确认/方案；简单查询不加载全文（靠底线 14–16 与 05 短条）。能力目录，不是独立 Skill |
 
 **09 号已退役**，内容在 ChronoPM-Portfolio（保留退役页仅为避免历史路径 404）。
 

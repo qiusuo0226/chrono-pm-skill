@@ -31,6 +31,7 @@
 | P-WP-STAMP | 待办结论盖章 | 00 WF-1 18.8 | 正式待办 WP Ref=1 | — | WP §4b 一行 | 多文件复制正文；漏盖称办结完成；猜相关包 |
 | P-WP-CHART | 派生总览图 | 11 §17 | effect=正常 且 头≠已完成 | 先 index | `wps/_wp-chart.md` | P-OUTPUT；编造边；指纹未变仍重写；废弃/已完成入默认图 |
 | P-WP-ALIGN | 功能点全齐推进 | 00 §8d | 功能点 ≥1 行且阶段全同且非 — | — | WP §8 + §7 追加 + §6 来源 AUTO-全齐 | 问准不准；进 pm-decisions；改旧链行；无表仍推 |
+| P-REPLY | 对外问答 | `reply-norm-skill/references/reply-rules.md` | — | 真确认才 00 §5.0 | 对话正文 | 英文思考段当正文；查询后问是否执行方案；简单查询加载本目录全文 |
 
 调用（无环）：
 
@@ -48,7 +49,8 @@ P-ROUTE
  ├─ 待办办结/敲定 → P-WP-STAMP
  ├─ 新建/改/完成归档/废弃 WP → P-WP-CHART
  ├─ 功能点阶段全齐 → P-WP-ALIGN
- └─ 技能缺口 → P-SKILL-GAP → P-OUTPUT
+ ├─ 技能缺口 → P-SKILL-GAP → P-OUTPUT
+ └─ 对外回复（写入/确认/方案/出文件/复杂分析） → P-REPLY
 ```
 
 P-ALWAYS 第 4 步只检测是否 CALL 本树「技能缺口」分支，不写文件。
