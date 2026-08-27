@@ -24,10 +24,10 @@
 | P-REQ-WP | REQ↔WP | 07 | — | — | 登记册工作包列 / WP §2 | 需求正文抄进 WP |
 | P-OUTPUT | 生成物 | 11 | P-ALWAYS 三路 | — | `ai/outputs/{批次}/` | 当事实源；替代 P-SPLIT |
 | P-RI | 跨源范围判定 | 07 §8 | — | 可读 sources 索引 | 不新建源目录 | 把范围判定当成拆文件 |
-| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划 §3 行+§4 该 WP 段 | WP §8 (AI聚合)+备注区阶段 | 覆盖点名；全库扫；改 WP 整包窗；清空已冻结 ✅ 人期 |
+| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划 §3 行+§4 该 WP 段；同回合 §8b | WP §8 (AI聚合)+§8b | 覆盖点名；全库扫；改 WP 整包窗；清空已冻结 ✅ 人期；改人期不写 8b |
 | P-WP-ADVANCE | 建议推进链 | 00 §8d | PM 确认 | SCAN 可选 | §7 只追加 | 改旧链行；自动写链；effect=废弃仍推 |
 | P-WP-RETIRE | 废弃 WP | 00 §8e | PM 确认+superseded_by | 移出正常计划 | YAML effect+§6+index | §7 到状态=废弃；删文件；自动改待办 |
-| P-SKILL-GAP | 技能缺口笔录 | skill-gap-skill/references/gap-capture-rules.md | 闸 1=B；已载 11 | **必须 CALL P-OUTPUT**（skill_gap **不建 manifest**） | outputs/需求-*.md | 写事实源；写/提议 pm-decisions；问要不要记；简单查询瞎记；省 〇·五 |
+| P-SKILL-GAP | 技能缺口笔录 | skill-gap-skill/references/gap-capture-rules.md | 闸 1=B；已载 11 | **必须 CALL P-OUTPUT**（skill_gap **不建 manifest**）；写主文件后、登记 index 前对照当前模板逐必选节自检 | outputs/需求-*.md | 写事实源；写/提议 pm-decisions；问要不要记；简单查询瞎记；省 〇·五；以历史批次为范本 |
 | P-WP-STAMP | 待办结论盖章 | 00 WF-1 18.8 | 正式待办 WP Ref=1 | — | WP §4b 一行 | 多文件复制正文；漏盖称办结完成；猜相关包 |
 | P-WP-CHART | 派生总览图 | 11 §17 | effect=正常 且 头≠已完成 | 先 index | `wps/_wp-chart.md` | P-OUTPUT；编造边；指纹未变仍重写；废弃/已完成入默认图 |
 | P-WP-ALIGN | 功能点全齐推进 | 00 §8d | 功能点 ≥1 行且阶段全同且非 — | — | WP §8 + §7 追加 + §6 来源 AUTO-全齐 | 问准不准；进 pm-decisions；改旧链行；无表仍推 |

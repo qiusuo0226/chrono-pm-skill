@@ -57,12 +57,16 @@ YAML 必填：doc_type=skill-gap-demand；sg_id；skill_name；skill_version_ins
 
 ## 6. 正文
 
-落盘前必读 `skill-gap-skill/assets/templates/skill-gap-demand-template.md`。节号 〇、〇·五、一～七，不得跳号、不得省 〇·五。单表 ≤6 列。流图用 mermaid。
+落盘前必读 `skill-gap-skill/assets/templates/skill-gap-demand-template.md`。**当前模板为唯一范本**。禁止以 `ai/outputs/**/需求-*.md` 历史批次为范本（旧批次可能缺 〇·五）。
+
+节号 〇、〇·五、一～七，不得跳号、不得省 〇·五。单表 ≤6 列。流图用 mermaid。
 
 必选：文首痛点、元信息、〇开场、〇·五示例图、一现象原话后果、二为何（含现状 vs 应有）、三定位、四时间证据链、七复现。
 可选：五全景、六建议补丁（禁止完整 AP）。
 
 〇·五：形态/图形/可视化类必须贴目标产出图（Mermaid/示意）。其它类节标题必须在，节内写「本条无目标产出形态图」。第二节数据流图不能代替 〇·五。
+
+**落盘前结构自检（强制）**：对照模板节标题逐项打勾。缺节当场补全后再写文件、再登记 `outputs/index.md`。缺节仍落盘 = 级联失败。CALL P-OUTPUT 建批次后、更新 index 前完成自检。
 
 ## 7. 与 P-OUTPUT
 

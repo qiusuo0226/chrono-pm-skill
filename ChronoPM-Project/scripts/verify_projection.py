@@ -152,6 +152,11 @@ def main():
         action="store_true",
         help="写入/生成 PLAN 落盘前：§4 不全则 exit 1。默认巡检不加本开关，§4 问题 UNJUDGED exit 2。",
     )
+    p.add_argument(
+        "--check-wp-structure",
+        action="store_true",
+        help="WP 内部结构：R-/I- 无 §5 行、自定义混排节 → WARN（本开关下进 DIFF exit 1；默认 UNJUDGED）。",
+    )
     args = p.parse_args()
     ai = _ai(Path(args.root))
     diffs = []
@@ -266,6 +271,22 @@ def main():
         diffs.extend(c9)
     else:
         unjudged.extend(c9)
+    wp_struct = []
+    for wpid, (fp, t, fm) in wps.items():
+        if (fm.get("effect") or "正常") == "废弃":
+            continue
+        sec5 = _section(t, "5.")
+        refs5 = set(re.findall(r"\b([RI]-\d+)\b", sec5))
+        body_refs = set(re.findall(r"\b([RI]-\d+)\b", t))
+        missing = body_refs - refs5
+        if missing:
+            wp_struct.append(f"WP-STRUCT {wpid} 引用 {sorted(missing)} 未落 §5")
+        if re.search(r"^##\s*.*关联\s*/\s*依赖", t, re.M):
+            wp_struct.append(f"WP-STRUCT {wpid} 自定义关联/依赖混排节")
+    if args.check_wp_structure:
+        diffs.extend(wp_struct)
+    else:
+        unjudged.extend(wp_struct)
     for d in diffs:
         print("DIFF", d)
     for u in unjudged:
