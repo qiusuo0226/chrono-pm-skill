@@ -20,7 +20,7 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 3.19.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 3.20.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
 | 最后更新 | 2026-08-20（v3.6.0 CR-F：sources/ 文档级拆解 + schema 0.11.0）；2026-08-20（v3.5.0 CR-E：wps/ 独立 WP + schema 0.10.0）；2026-08-20（v3.4.0 CR-D：报告存根 + 时间线报）；2026-08-20（v3.3.0 CR-C：关联待办 + TD Ref + 缩写治理）；2026-08-20（v3.2.0 CR-B：DF-017/018 + 加载场景分类）；2026-08-20（v3.1.1 CR-G：开发仓三目录重组 ChronoPM-Project/ + governance-shared/，schema 仍 0.9.0）；2026-08-20（v3.1.0 CR-A：路径残留清理 + 日报查询/更新路由补全 + 月报残留清理，workspace schema 仍 0.9.0）；2026-08-19（v3.0.0 双包拆分：09 号整文件迁 ChronoPM-Portfolio）；2026-08-18 (v2.1.0 个人待办体系与工作区路径整合：新增 22 号个人待办规则（§0 六字段+T+1 沿用+冲突仲裁+Step 0 结转）+ 18 号向导 Step 5 §0 引导 + 04 号 DF-002 关闭门禁 + 09 号双层数据流微调/可用性聚合动态视图硬约束 + 11/12/13/20 号 outputs/→ai/outputs/ 与 continuity/→context/ 路径迁移 + 待办模板进度列/§2 日报存档段 + 升级文件体系 governance/migrations（版本链 0.1.0→2.1.0 权威执行源）+ VERSION_CAPABILITIES 补齐 29 个历史缺口；v1.21.0 倒排每日矩阵查询视图：05号 §6.7 新增倒排每日矩阵（人员×日期，portfolio 多 board 遍历+存量降级）+ 00号 WF-7 草案输出规范（contract_change）+ 10号查询附带提示 + Module 38 回归；v1.20.0 需求双视图与开发文档关联：07号 §8.10 双视图机制（view_business 派生/view_dev+原型链接挂 REQ 层）+ scope_scope 聚合排除硬约束 + WF-2 需求上下文加载 + 开发侧 source_type 扩展 + 词库开发侧分类/预筛懒加载 + Module 37 回归；v1.17.1 治理一致性修复：分发包幽灵引用根治 + 版本失步修正 + audit_release.py 自动断言 + 基线补档；v1.17.0 PM 偏好通用化升级：5 能力模块（日报集成审查/跨实体联动/关闭佐证/委派跟踪/沟通质量）；v1.16.3 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现；v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
@@ -28,7 +28,7 @@
 | 入口文件 | `SKILL.md` |
 | 元数据 | `skill.json` |
 | 核心契约 | `governance/contracts/skill-contract.md` |
-| 文件总数 | 约 140 个（23 份规则 + 36 个模板 + 5 个脚本 + 包内当前 upgrade + 共享历史链归档 + 1 个回归套件 + 版本/蓝图文件） |
+| 文件总数 | 约 142 个（23 份规则 + 38 个模板 + 5 个脚本 + 包内当前 upgrade + 共享历史链归档 + 1 个回归套件 + 版本/蓝图文件） |
 
 ---
 
@@ -222,6 +222,7 @@ ChronoPM 建立在三层信任模型之上：
 | CAP-027 | Personal Todo System | stable | L3 | `22-carried-over-rules.md`（结转机制），`00-pm-main-rules.md` §4d（T+1/仲裁/人员双层身份，v3.0.0 自 09 号 §1.3 承接），`01-daily-report-rules.md`（D-26 双轨仲裁） | personal-daily-todo | v2.1.0：§0 人员信息六字段录入规范（岗位/姓名/联系方式/负责模块/进组日期/离组日期）+ T+1 沿用 + 冲突仲裁（以 resource-register 为准）+ 结转入口 Step 0（创建待办前 MANDATORY 扫描前日 _index.md）；v3.0.0：§0.5 进出组记录/§0.6 能耗 |
 | —（CAP 扩展） | Requirement Intelligence (RI) | stable | L3 | `07` + `05` + `17` + `06` | requirements/atoms/(L1/L2/L3)+canonical + contract-register（项目级）；v3.0.0 起 RI 全部下沉项目级，跨项目检索归 Portfolio | v1.15.0：跨源需求拆词/归并/范围判定/三级索引检索；v1.16.0 扩展合同作用域（contract-register + scope_level 路由 + contract_refs 判定，CR-20260813-002）；v3.0.0：废除集层存储，各项目一套 + {type}-source/ledger 台账（§8.9.5）；归属现有 CAP 扩展（非独立 CAP），CR-20260813-001/002 |
 | —（CAP 扩展） | Reasoning Baseline（推导基线） | stable | L3 | `00` §10 + `05` §3(3)a + `01` §6.2 + `00` §9 级联 | WP §3（功能点）+ project-context 项目级推导规则 | v1.18.0 引入；v3.7.0 废 entity-registry，实体状态唯一载体现称 WP §3（功能点） |
+| —（CAP 扩展） | 点名分工 / 挂包先验 / 完整表 / 弱结构投喂 | stable | L3 | `00` 8c/WF-8 + `01` §1.5 + `05` §6.7–6.9 + `10` L2/L3；Portfolio `01`/`02` V-14 | wp-template §3c/§4c；personal §0.7；ingest-map；daily-dispatch | v3.20.0：§3c 非进度 SSOT；C(P) 挂包；进度默认完整表；集层不代写；乙案落盘 |
 | —（CAP 扩展） | Backward Scheduling & Unified Intake（倒排计划与统一归属路由） | stable | L3 | `00` §9 WF-7/WF-8 + `01` §5.6 + `02` §3 + `07` §3.2 + `08` §6.1 + `05` §6.7 | `wps/WP-NNN.md` + `wps/_index.md`（v3.5.0）、plans/PLAN-NNN-{name}.md（§3 引用简表+倒排元数据）、todos/{date}/ 待办文件（WP Ref 字段） | v1.19.0：倒排 = 计划编排方式。v3.5.0：WP 独立文件 + 索引加速器；计划只留 4 列简表；schema 0.10.0 |
 
 > **WF 标准工作流数据路径（v1.14.0 新增）**：WF-1~WF-8 不是独立 CAP，而是 CAP-002/003/004/005/009/010/017 的**执行效率优化层与统一入口约束层**，集中声明于 `00-pm-main-rules.md` §9。它将高频操作场景的读/写文件顺序预定义，判断性推导（状态判定、匹配逻辑、关闭条件）仍保留在判断阶段不弱化（§9.1）。v1.19.0 新增 WF-7（倒排计划编排）与 WF-8（待办创建归属排布，所有任务创建入口的 MANDATORY 前置路由）。Quick Update 路由表（`05-query-rules.md` §2.5）为 CAP-005 的对称扩展（查询→更新）。不新增独立能力 ID、规则文件、ID 前缀（WP Ref 为待办文件可选字段）。
@@ -577,6 +578,7 @@ ChronoPM 建立在三层信任模型之上：
 | 3.17.0 | 关联记录盖章+图形态/派生落盘+查询摘要链接+skill-gap辅助+功能点阶段全齐AUTO；schema 保持 0.16.0；Module 71（总计 642） | CR-20260826-002 / upgrade-to-3.17.0.md |
 | 3.18.0 | 图按计划分章+结构闸/SCAN冻结/§8b+归档三段+结转脚本+reply-norm；schema 保持 0.16.0；Module 72（总计 706） | CR-20260827-001～005 / upgrade-to-3.18.0.md |
 | 3.19.0 | 图按关联横竖排+skill-gap原位废弃+WP§3功能点留痕+确认不回放；schema 保持 0.16.0；Module 73（总计 729） | CR-20260827-006～009 / upgrade-to-3.19.0.md |
+| 3.20.0 | 可选§3c分工+C(P)挂包+§0.7/§4c+无感知投喂+V-14+弱结构投喂乙案+进度完整表；schema 保持 0.16.0；Module 74（总计 777） | CR-20260829-001～003 / upgrade-to-3.20.0.md |
 
 ---
 

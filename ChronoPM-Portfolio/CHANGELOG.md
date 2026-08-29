@@ -4,7 +4,21 @@
 
 ---
 
-## 3.19.0 — 2026-08-27（版本锁步）
+## 3.20.0 — 2026-08-29（版本锁步）
+
+> 与 Project 3.20.0 共用版本线。V-14 混报拆分 + 弱结构投喂（乙案：原件落 `reports/ingest/`，映射落 `context/ingest-maps.md`）。禁止写入成员项目。workspace schema 0.16.0。回归 **777**。
+
+### Added
+- V-14 打分分发稿
+- 弱结构投喂槽位+ingest-map
+- `daily-dispatch-template.md` / `ingest-map-template.md`
+
+### Changed
+- SKILL 能力表 V-1～V-14；01 §2 白名单扩 ingest 两处
+
+---
+
+## 3.19.0 — 2026-08-27（版本锁步 · released）
 
 > 与 Project 3.19.0 共用版本线。skill-gap 只锁步 `assets/templates/skill-gap-demand-template.md`（status / 迭代记录）；**不建** `skill-gap-skill/`（集层只拷模板）。成员实体行用语 WP §3（功能点）。禁止写入成员项目。workspace schema 0.16.0。回归 **729**。
 

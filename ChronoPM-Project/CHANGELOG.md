@@ -4,7 +4,34 @@
 
 ---
 
-## 3.19.0 — 2026-08-27（本次发布）
+## 3.20.0 — 2026-08-29（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。可选 §3c 分工矩阵；C(P) 日报挂包；§0.7 派生负责视图；§4c 办结档案；无感知投喂+落点回执；卡点高置信先记。集层 V-14 混报拆分 + 弱结构投喂（乙案落盘）。读侧进度默认完整表。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **777**。
+
+Blueprint Impact: full
+
+### Added
+- WP 可选 `## 3c. 分工矩阵（可选）`；改表同回合 §6（8c.1/8c.2）
+- C(P)/E(P) 挂包先验（01 §1.5 + WF-8 归属①）
+- 个人待办派生 §0.7；WP §4c 已办结档案只追加
+- 10 号 L2/L3 默认入库+回执；04 卡点高置信先记问题待确认
+- Portfolio V-14；弱结构投喂槽位+ingest-map；分发稿/映射档模板
+- 05 §6.8 人查询；§6.7/§6.9 进度完整表
+- `source_code` / `weak_ingest` 源类型；sources 枚举 original+rows.md
+- 回归模块 74（合计 **777**）
+
+### Changed
+- 撤销 v3.17 WP 进度摘要当唯一正文
+- 06 L279：10 列→12 列；P-WP-STAMP Writes=§4b+§4c
+- Portfolio 01 L11/§2 乙案例外（`reports/ingest/` + `context/ingest-maps.md`）
+- T+1 不拷 §0.7
+
+### Fixed
+- 无（本版能力增量，非残留修复单开）
+
+---
+
+## 3.19.0 — 2026-08-27（released）
 
 > 发布归档：Minor / contract_change + capability_change。工作包图按 related_wps 横/竖排列（A～F）；skill-gap 废 rev-NNN、原位迭代与废弃；WP 删阶段明细，§3b 改名为 WP §3（功能点）并加留痕；确认落地后不回放已裁定。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **729**。
 
