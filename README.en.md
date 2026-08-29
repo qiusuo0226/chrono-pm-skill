@@ -77,7 +77,7 @@ ChronoPM Skill/
 
 ## Engineering quality
 
-- **729 regression cases** guarding every update against breaking existing behavior;
+- **777 regression cases** guarding every update against breaking existing behavior;
 - **Two-layer versioning:** the skill version and the workspace schema evolve independently, with compatibility checks and migration guidance on upgrade;
 - **Governance built in:** change requests, impact analysis, and release audits are formal flows in the repo, not verbal agreements.
 
@@ -89,11 +89,11 @@ ChronoPM Skill/
 | Workspace schema | 0.16.0 |
 | Rule files | 23 |
 | Document templates | 36 |
-| Regression cases | 729 |
+| Regression cases | 777 |
 
 Release artifacts: `ChronoPM-Project-Skill-v3.18.0.zip` + `ChronoPM-Portfolio-Skill-v3.18.0.zip`.
 
-Regression tests | 729 cases. Regression test suite (729 cases).
+Regression tests | 777 cases. Regression test suite (777 cases).
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 
