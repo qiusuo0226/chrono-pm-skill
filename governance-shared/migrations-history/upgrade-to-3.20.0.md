@@ -115,4 +115,10 @@ WP 增加可选 **§3c 分工矩阵**（点名责任，不是进度人）；C(P)
 - [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
 - [x] 双包 3.20.0
 - [x] planning/ 仅留 README；本版 AP 已删
-- [x] 分发包已写入 Downloads（用户核验通过后同步 Grok 安装区）
+- [x] 分发包已写入 Downloads。用户核验通过；**Grok 安装区不代更**（用户 2026-08-29 明示）
+
+### 收尾补记（2026-08-29，不另起版本）
+
+- B2 独立审核：`governance-shared/review-checklists/review-20260829-3.20.0.md`，结论 **通过-升级成功**
+- 三 CR Status=completed；planning/ 仅 README
+- 业务仓未代迁（B 节 skip）

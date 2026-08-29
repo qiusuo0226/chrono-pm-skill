@@ -26,3 +26,7 @@
 ## 高置信（文本混报）
 
 最高分 ≥5，比第二名 ≥2，且 C(P) 非空；或正文项目名精确命中。表内已绑 `project` 槽走弱结构投喂，不走本打分。
+
+## 收尾
+
+用户 2026-08-29 核验通过。Grok 安装区不代更。主包见 `ChronoPM-Project/governance/migrations/upgrade-to-3.20.0.md`。
