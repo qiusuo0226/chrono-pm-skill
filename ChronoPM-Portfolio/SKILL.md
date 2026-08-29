@@ -24,7 +24,9 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
     ├── portfolio/                   # 唯一集级区（本包可写）
     │   ├── context/project-index.md # 成员登记（指针，权威索引）
     │   ├── context/glossary-index.md # 术语指针索引（V-12，只存指针）
+    │   ├── context/ingest-maps.md   # 弱结构投喂列映射（指纹+槽位）
     │   ├── reports/                 # 派生产物（须 generated_from+updated+stale）
+    │   │   └── ingest/{batch}/      # 投喂原件+抽出行（v3.20.0）
     │   ├── resources/               # 共享人力/流转只读指针索引（可选）
     │   └── logs/                    # 集层对话过程日志（按日懒建）
     └── projects/                    # 挂载区（本包只读）
@@ -48,7 +50,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 
 联邦骨架缺失时：按 `assets/templates/project-index-template.md` 创建 `portfolio/context/project-index.md` 与空 `projects/`，询问集经理后登记，不扫描即当正式成员。
 
-## 6. 能力 V-1～V-13
+## 6. 能力 V-1～V-14
 | # | 能力 | 触发 | 实时读 | 输出 |
 |---|---|---|---|---|
 | V-1 | 成员登记 + 动态感知 | 进入工作区/查询前 | `projects/` + project-index | 候选收编/失效清理提示 |
@@ -64,8 +66,9 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | V-11 | 跨项目共享文件拆分 | 「拆了这份文件」「分到各项目」 | 源文件 + 各项目索引 | 分析+归属建议（默认各放一份）；只写 `portfolio/` 建议产物，**永不写成员项目** |
 | V-12 | 术语指针索引 | 收编成功 / 「刷新术语索引」/ 集层查词 | 各项目 `context/domain-glossary.md` 表格行 | `portfolio/context/glossary-index.md`（只存指针，不存全文） |
 | V-13 | 时间窗计划归集 | 「归纳各项目X日前的计划」「汇总计划」「国庆各项目计划」 | 各项目正常 PLAN 头+§2 门禁+正常 WP 时间盒 | 项目×WP 切面（6 列）；不按计划名；不落事实源 |
+| V-14 | 混报拆分 + 弱结构投喂 | 「这份日报分到各项目」/ 无表头进度表 / 跨项目清单 | project-index、花名册、进行中 index；点名才开 C(P) | 只写 `portfolio/reports/` 分发稿 + `reports/ingest/` 原件；**永不写成员项目** |
 
-**最小读取集**：V-1～V-13 一切聚合只读索引/摘要行（project-index、status 摘要、登记册表格行、词库表格行、PLAN 头与 §3 行），不读全文。全文仅集经理点名某项目细节时才读。
+**最小读取集**：V-1～V-14 一切聚合只读索引/摘要行（project-index、status 摘要、登记册表格行、词库表格行、PLAN 头与 §3 行），不读全文。全文仅集经理点名某项目细节时才读。
 
 **V-5 硬约束**：从各项目当期周报往上摘。无周报 → 提示「{项目} 周报未出，请先在该项目对话出周报」。PM **明确**指令「临时摘」才允许从该项目日报现场拼，且必须标注「临时摘要，非替代周报」。
 
@@ -88,6 +91,7 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | 健康巡检 / 版本 / 防套娃 / 配置漂移 | 03 + 06 |
 | 共享文件拆分 / 分到各项目 | 01 + 02 |
 | 术语索引 / 集层查词 | 02 + 03 |
+| 混报分发 / 弱结构投喂 / 进度表入库 | 01 + 02 |
 | 任意写入 portfolio/ | 01 |
 
 细则不得跨包引用 Project `references/`。成员项目字段语义以该项目文件为准；本包只聚合。
@@ -110,13 +114,13 @@ description: 给项目集/组合经理用的只读 Skill。跨多个项目 ai �
 | 文件 | 何时加载 |
 |------|----------|
 | `01-readonly-boundary-rules.md` | 写禁、内部 V-9、落盘规则 |
-| `02-aggregation-query-rules.md` | V-2～V-8、V-11、V-13、待办 R18、合同去重、集层查词、集层缺口 |
+| `02-aggregation-query-rules.md` | V-2～V-8、V-11、V-13、V-14、待办 R18、合同去重、集层查词、集层缺口、弱结构投喂 |
 | `03-mount-awareness-rules.md` | 挂载、动态感知、防套娃、自动路由、V-12 收编刷词 |
 | `04-portfolio-report-rules.md` | 集周报、缺周报降级、资源变动检测 |
 | `05-resource-shared-rules.md` | 共享人力/transfer 只读聚合 |
 | `06-version-health-rules.md` | 双包版本、反向校验、漂移比对 |
 
-模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`、`ops-log-template.md`、`ops-log-index-template.md`、`skill-gap-demand-template.md`。查成员日志按 project-index 管理路径推导 `{管理路径}/logs/ops/_index.md`，不加指针列。
+模板：`project-index-template.md`、`portfolio-weekly-template.md`、`suggested-update-list-template.md`、`shared-file-split-template.md`、`glossary-index-template.md`、`ops-log-template.md`、`ops-log-index-template.md`、`skill-gap-demand-template.md`、`daily-dispatch-template.md`、`ingest-map-template.md`。查成员日志按 project-index 管理路径推导 `{管理路径}/logs/ops/_index.md`，不加指针列。
 
 ### 版本文件
 `VERSION` / `skill.json` / `CHANGELOG.md` / 本 front matter。集级 `ai/.skill-version.json`（skillName=`chrono-pm-portfolio`）。成员项目 `projects/{名}/ai/.skill-version.json`（skillName=`chrono-pm-project`，兼容 `chrono-pm`）。

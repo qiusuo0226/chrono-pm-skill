@@ -8,7 +8,7 @@
 |------|------|------|
 | `ai/projects/*/ai/**` | **只读** | 成员项目事实源。禁止创建、修改、删除、重命名、移动 |
 | 业务目录（project-index「业务路径」） | **只读引用** | 不侵入，不建 `ai/` |
-| `ai/portfolio/**` | 可写 | 仅索引指针与派生产物 |
+| `ai/portfolio/**` | 可写 | 仅索引指针与派生产物。例外（v3.20.0）：投喂原件副本与抽出行允许落 `portfolio/reports/ingest/{batch}/`；列映射档允许落 `portfolio/context/ingest-maps.md`。仍禁止在 portfolio 写成员项目进度/待办实体 |
 | `ai/.skill-version.json` | 可写（集级） | 不得改成员项目 `.skill-version.json` |
 | `ai/projects/` 一级目录名 | 不由本包创建 | 挂载由集经理解压完成；本包只发现与提示登记 |
 
@@ -28,7 +28,9 @@ AUTO 级联在本包**不存在**。任何本应写入成员项目的动作一�
 |------|------|------|
 | `portfolio/context/project-index.md` | 指针索引 | 登记须确认；不含进度/成本/待办实体 |
 | `portfolio/context/glossary-index.md` | 指针索引 | V-12：只存术语指针，不存全文/释义 |
+| `portfolio/context/ingest-maps.md` | 指针类 | 弱结构投喂：指纹 + 列→槽位 + `fill_down`。不含进度/人名事实 |
 | `portfolio/reports/**` | 派生产物 | 必须 `generated_from` + `updated` + stale；不得当后续查询数据源 |
+| `portfolio/reports/ingest/**` | 投喂过程产物 | 原件副本 + 全表 `rows.md`。YAML 含 `generated_from` + `updated` + `stale_after`。进度 SSOT 仍是成员 WP/待办；「这份材料记了什么」可读本批次 `rows.md` |
 | `portfolio/resources/shared-resource-index.md` | 指针索引 | 仅姓名 + 参与项目指针 + 共享状态导航字段；禁止落盘排期/可用性数值 |
 | `portfolio/resources/transfer-index.md` | 指针索引 | 仅 Transfer ID + 方向 + 日期指针 |
 | `portfolio/logs/` | 集层对话过程日志（按日懒建） | 路径 `ai/portfolio/logs/YYYY-MM-DD.md` + `_index.md`。只记集层对话与集层发出的指令出处。禁止把成员项目日志正文抄进 portfolio。无消息不预建 |
@@ -67,6 +69,7 @@ V-11 拆分方案确认后，也走本条：只把建议产物写在 `portfolio/
 |----------|----------|------|
 | 人的视图、进度总览、门禁、P&L、风险聚合、合同全景、待办矩阵 | **禁止** | 查询时现算 |
 | 集周报、专项报告快照 | 允许 | 仅当期报告 |
+| `reports/ingest/{batch}/rows.md` | 允许（例外） | 只答「这份材料记了什么」；过期则重抽或标注过期快照。进度/现在怎样仍读成员项目 |
 | project-index / 指针索引 | 允许 | 不含聚合数值 |
 
 落盘报告 YAML 头或文首必须含：
