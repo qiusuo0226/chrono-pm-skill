@@ -1177,6 +1177,65 @@
 | RN-008 | 用户问「改了哪些文件」 | 才给路径清单 | positive |
 | RN-009 | 开放行之和 N=0 | 不输出「等你裁定」横幅 | negative |
 
+## 74. 分工矩阵 / 挂包先验 / 完整表 / 弱结构投喂（v3.20.0）
+
+施工只认合计 **777**（729+48）。表中 WPS-007/014/015/016 为既有引用不另加。阻断项：WPS-014/015/016/007、WPR-023/024/027/031、IDX-12、BIND-001/002/004、FILL-001、DSP-002、ING-005、ING-006。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| WPR-023 | 点名多实体×角色 | 写入 §3c；当前表仍无执行人列；同回合 §6 有行 | positive |
+| WPR-024 | 简单包未点名 | 无 §3c | negative |
+| WPR-025 | 问「内资谁负责」且有 3c | 读矩阵（走 §6.8） | positive |
+| WPR-026 | 问「内资当前谁在做」 | 仍 TD Owner | regression |
+| WPS-014 | 当前表出现执行人列 | 仍违规 | regression |
+| WPS-015 | 问谁做过预演 | 仍读留痕 | regression |
+| WPS-016 | 存量 `## 3b.` | 仍当功能点，不当分工矩阵 | regression |
+| WPS-007 | 两功能点不同人、阶段=开发 | §8 聚合；当前表无人名列；3c 不参与 SCAN | regression |
+| WPR-027 | SCAN 后 3c 人名被改成 Owner | 违规 | negative |
+| WPR-028 | 存量 `## 3c. 分工矩阵` 含测试列、无确认人列 | 改正式标题；测试列保留；**不补确认人列** | positive |
+| WPR-029 | 角色列增「运维负责人」 | 允许 | positive |
+| WPR-030 | 无 3c 问「谁负责」 | 说明无点名分工；降级 TD 须标进度口径 | positive |
+| WPR-031 | 改 3c 人名不写 §6 | 8c.2 标未完成，不得只交表 | negative |
+| WPR-032 | 存量 3c 标题含分工、仅前端/后端两列 | 认迁；不补测试/产品/确认人 | positive |
+| WPR-033 | `## 3c. 其它附表`（标题无分工/RACI/负责人） | 不改标题 | negative |
+| IDX-12 | 读 06 L279 与 §7.4 | 均写 12 列 | regression |
+| BIND-001 | 周贤虎日报「内资预演过了」；仅一包 3c 前端=周贤虎 | 高置信绑该 WP；映射或新建恰好 1 条；备注阶段优先预演 | positive |
+| BIND-002 | 同上但 3c 里周贤虎在 14 实体且句子无实体名 | 不得猜实体；问一次或待归属；禁止建 14 条 | negative |
+| BIND-003 | 无 3c，§8 开发🔄含周贤虎仅一包 | 仍可绑该包（降级 §8） | positive |
+| BIND-004 | 日报把周贤虎写进 3c | 违规 | negative |
+| BIND-005 | C(P) 两个包均命中「注销」 | 问一次，不自动挑 | positive |
+| FILL-001 | 映射要求把 §8 13 站全填 | 违规 | negative |
+| FILL-002 | C(P) 空、汇报够正式 | SUGGEST 最小一格一次问；禁止请填 13 站 | positive |
+| LEARN-001 | 已确认 3c 周贤虎=内资前端，再报「内资」 | 自动绑，不再问补表 | positive |
+| OWN-001 | 3c 前端=周贤虎、功能点阶段=预演 | 其当日 §0.7 有该行，阶段=预演 | positive |
+| OWN-002 | 只改个人 §0.7 阶段为测试 | 违规；须改 WP §3 | negative |
+| OWN-003 | T+1 新日文件 | §0.7 重算不拷昨日表 | positive |
+| OBS-001 | 投喂「周贤虎内资预演过了」 | 回执含人/事项/文件路径/WP 或 TD | positive |
+| OBS-002 | 问「国庆包现在怎样」 | 功能点全表+阶段+上一站；不得只给三句摘要 | positive |
+| OBS-003 | 确认落地后 N=0 | 仍不回放已裁定表（D9 保留） | regression |
+| ISS-001 | 「张三卡在预演过不了」 | 先写问题待确认+回执请认 | positive |
+| ISS-002 | 「担心以后可能延期」 | 判定卡，不静默登风险册 | negative |
+| MIG-B2 | 存量 ## 3c 分工矩阵无确认人列 | 只改标题不补列 | positive |
+| HIST-001 | 待办办结 | WP §4c 追加一行含 TD/Owner/阶段 | positive |
+| HIST-002 | 问「这包以前谁推过」且 §4c 有行 | 读档案，不扫全年 todos | positive |
+| FEED-001 | 只贴日报无「记录一下」 | 入库+回执，不问要不要记住 | positive |
+| FEED-002 | 「先别写，这包现在怎样」 | 不入库，出完整进度表 | negative |
+| AMB-001 | 仅有 ## 3b. 无 ## 3. | 仍当功能点读，并提示/迁标题 | positive |
+| DSP-001 | 集层一份混报，两人各一项目、花名册+项目名命中 | 拆成两段高置信；只写 portfolio 分发稿 | positive |
+| DSP-002 | 用户要集层直接改两个项目 todos | 拒绝 | negative |
+| DSP-003 | 一句同时像两个项目且分差 <2 | 必问，不双写 | positive |
+| ING-001 | 集层丢无完整表头的进度 xlsx | 入库+回执；不问要不要记住；原件落 `ai/portfolio/reports/ingest/{batch}/` | positive |
+| ING-002 | 首行有岗位/角色词；某列值能撞 project-index；空格可 fill-down | 角色槽自动认；空格继承后仍归该项目 | positive |
+| ING-003 | 第二次列序不同但指纹命中且行键相同 | 只更新备注/角色人，不新建 WP | positive |
+| ING-004 | 单元格值既不像目录名也不在 scope=project 别名 | 回执未挂项目，一次选项 | negative |
+| ING-005 | 集层要求直接改成员 todos | 拒绝 | negative |
+| ING-006 | 集层投无表头跨项目表 | 原件+全表 rows.md 仅落 `reports/ingest/{batch}/`；映射落 `context/ingest-maps.md`；成员 sources 须「收下」才写；禁止 `portfolio/batches/`；禁止 Portfolio 直写 `projects/*/ai` | positive |
+| MAP-001 | 首次槽位确认后同指纹再投 | 不问列 | positive |
+| CODE-001 | 投仓库路径 | 建 source_code 指针；不刷 REQ 实现视图 | positive |
+| ING-007 | 一列高重复不像 WP 名，另一列能最长命中 index | 用能命中的当 wp/feature，分组列不当 WP | positive |
+| ING-008 | 领域词库「甲/乙」表示从属 | 不得把乙行并进甲项目 | negative |
+| ING-009 | 项目单元格与 index 差一字 | 建议最近成员+一次别名，不拆成多个项目 | positive |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -1254,4 +1313,5 @@
 | 工作包记录/图/查询/盖章/阶段 (WPR) | 22 | 13 | 9 |
 | 图分章/结构闸/归档/结转/问答 (WPC/WPS/ARC/CO-S/RN) | 64 | 36 | 28 |
 | 图拓扑/缺口生命周期/留痕/确认对外 (73) | 23 | 14 | 9 |
-| **合计** | **729** | **430** | **299** |
+| 分工矩阵/挂包/完整表/弱结构投喂 (74) | 48 | 31 | 17 |
+| **合计** | **777** | **461** | **316** |
