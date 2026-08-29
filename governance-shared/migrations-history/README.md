@@ -5,8 +5,8 @@
 
 ## 当前执行源（包内）
 
-- Project：`ChronoPM-Project/governance/migrations/upgrade-to-3.14.0.md`
-- Portfolio：`ChronoPM-Portfolio/governance/migrations/upgrade-to-3.14.0.md`（指针，主包为准）
+- Project：`ChronoPM-Project/governance/migrations/upgrade-to-3.20.0.md`
+- Portfolio：`ChronoPM-Portfolio/governance/migrations/upgrade-to-3.20.0.md`（V-14 + 弱结构投喂；主包为准）
 
 ## 版本链（0.1.0 → 3.1.1，连续无断点）
 
