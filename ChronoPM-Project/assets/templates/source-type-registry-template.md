@@ -46,6 +46,7 @@
 | api_spec | technical | 接口文档 | L3 | 否 | 开发侧 |
 | prototype | technical | 交互原型 | L3 | 否 | 存指针（§8.10.3） |
 | ui_spec | technical | UI 标注/视觉规范 | L3 | 否 | 开发侧 |
+| source_code | technical | 代码仓库指针/指纹/摘录 | L3 | 否 | 本版不做指纹刷新链（劈 3.21）；禁止静默新建 REQ |
 | meeting_directive | operational | 甲方指令性纪要 | L3 | 是（→L2） | 甲方高层签发 |
 | milestone_clause | operational | 工期/里程碑条款 | L5 | 否 | 权威 L5 |
 | wbs | operational | WBS | L3 | 否 | 开发实施 |
@@ -67,6 +68,7 @@
 | archive_list | operational | 归档清单 | L3 | 否 | 售后结项 |
 | change_order | contractual | 变更单 | L1 | 否 | 贯穿全周期 |
 | correspondence | operational | 函件 | L3 | 否 | 贯穿全周期 |
+| weak_ingest | operational | 弱结构投喂表（进度/清单等） | L5 | 否 | 只作 original+rows.md 容器；**禁止**进 ATOM / canonical / scope_scope |
 | signoff | operational | 签字单 | L3 | 否 | 贯穿全周期 |
 | supervision_plan | operational | 监理规划 | L3 | 否 | 簇前缀 SUP- |
 | supervision_monthly | operational | 监理月报 | L3 | 否 | 监理 |

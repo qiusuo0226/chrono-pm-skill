@@ -9,7 +9,7 @@
 | ProcID | 名称 | Home | Pre | Calls | Writes | Forbidden |
 |---|---|---|---|---|---|---|
 | P-ROUTE | 场景分发 | SKILL.md §6 | — | 命中行必须加载 | — | 用其他 Skill 替代本包过程 |
-| P-WF8 | 待办创建 | 00 §9 WF-8 | P-CARRY | P-WF8-DEDUP → P-WF8-SPLIT? → P-WF8-CARD → P-BOX | inbox→`todos/{date}/{owner}.md` | 问「要不要建待办」；无 WP 落核心表；直写个人文件 |
+| P-WF8 | 待办创建 | 00 §9 WF-8 | P-CARRY | 先算 C(P)；P-WF8-DEDUP → P-WF8-SPLIT? → P-WF8-CARD → P-BOX | inbox→`todos/{date}/{owner}.md` | 问「要不要建待办」；无 WP 落核心表；直写个人文件；日报回写 3c |
 | P-WF8-DEDUP | 查重 | 00 WF-8 查重步 | — | — | 不新建同主题 | 不查重就建第二条 |
 | P-WF8-SPLIT | 多 WP 拆 | 00 归属④ | — | 每条 P-WF8-CARD | 多条待办 | 一条待办多个 WP Ref |
 | P-WF8-CARD | 基数恰好 1 | 00 §8b | WP 已规划且 effect=正常 | — | WP Ref=一个存在的 WP-NNN | 空/`待绑定`/none/多值落盘；绑废弃 WP |
@@ -24,11 +24,11 @@
 | P-REQ-WP | REQ↔WP | 07 | — | — | 登记册工作包列 / WP §2 | 需求正文抄进 WP |
 | P-OUTPUT | 生成物 | 11 | P-ALWAYS 三路 | — | `ai/outputs/{批次}/` | 当事实源；替代 P-SPLIT |
 | P-RI | 跨源范围判定 | 07 §8 | — | 可读 sources 索引 | 不新建源目录 | 把范围判定当成拆文件 |
-| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划 §3 行+§4 该 WP 段；同回合 §8b | WP §8 (AI聚合)+§8b | 覆盖点名；全库扫；改 WP 整包窗；清空已冻结 ✅ 人期；改人期不写 8b |
+| P-WP-SCAN | 待办聚人期 | 00 §8d | effect=正常 | 投影正常计划 §3 行+§4 该 WP 段；同回合 §8b | WP §8 (AI聚合)+§8b | 覆盖点名；全库扫；改 WP 整包窗；清空已冻结 ✅ 人期；改人期不写 8b；**写 §3c** |
 | P-WP-ADVANCE | 建议推进链 | 00 §8d | PM 确认 | SCAN 可选 | §7 只追加 | 改旧链行；自动写链；effect=废弃仍推 |
 | P-WP-RETIRE | 废弃 WP | 00 §8e | PM 确认+superseded_by | 移出正常计划 | YAML effect+§6+index | §7 到状态=废弃；删文件；自动改待办 |
 | P-SKILL-GAP | 技能缺口笔录 | skill-gap-skill/references/gap-capture-rules.md | 闸 1=B；已载 11 | **必须 CALL P-OUTPUT**（skill_gap **不建 manifest、不建 rev-NNN**）；扫描已装 Skill；原位或新建；登记 index 前对照当前模板（含第八节） | outputs/需求-*.md | 写事实源；写/提议 pm-decisions；问要不要记；简单查询瞎记；省 〇·五/八；以历史批次为范本；追加 rev-NNN |
-| P-WP-STAMP | 待办结论盖章 | 00 WF-1 18.8 | 正式待办 WP Ref=1 | — | WP §4b 一行 | 多文件复制正文；漏盖称办结完成；猜相关包 |
+| P-WP-STAMP | 待办结论盖章 | 00 WF-1 18.8 | 正式待办 WP Ref=1 | — | WP §4b 一行 + **§4c 一行** | 多文件复制正文；漏盖称办结完成；猜相关包；办结不追加 §4c |
 | P-WP-CHART | 派生总览图 | 11 §17 | effect=正常 且 头≠已完成 | 先 index；结构闸见 11 §17.2 | `wps/_wp-chart.md` | P-OUTPUT；编造边；指纹未变仍重写；废弃/已完成入默认图；无关联横折三列；跨行节点级边；`~~~`；行间零连线 |
 | P-WP-ALIGN | 功能点全齐推进 | 00 §8d | 功能点 ≥1 行且阶段全同且非 — | — | WP §8 + §7 追加 + §6 来源 AUTO-全齐 | 问准不准；进 pm-decisions；改旧链行；无表仍推 |
 | P-REPLY | 对外问答 | `reply-norm-skill/references/reply-rules.md` | — | 真确认才 00 §5.0 | 对话正文 | 英文思考段当正文；查询后问是否执行方案；简单查询加载本目录全文；回放本轮已裁定；已确认与未裁定混节；同一轮两份等你裁定；N=0 仍出横幅 |
