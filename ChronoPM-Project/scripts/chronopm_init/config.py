@@ -206,6 +206,7 @@ ALL_TEMPLATE_FILES = [
     "daily-todo-binding-template.md",
     "wp-template.md",
     "wp-index-template.md",
+    "journal-entry-template.md",
     "source-doc-meta-template.md",
     "source-index-template.md",
     # AI 运行时格式参考副本（非 FACT_SOURCE 实例化模板）
