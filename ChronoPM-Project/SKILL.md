@@ -30,9 +30,11 @@ project-root/
     ├── backup/           # 升级垃圾封存（禁读；3.8.0 空目录）
     ├── resources/        # 退役：register/transfer-log 迁 backup；人员读 todos/_index
     ├── reports/          # 项目日报按需生成（存根，可能不存在）+ 周报；个人日报在 todos
-    ├── meetings/  reviews/  logs/ops/  outputs/
+    ├── meetings/  reviews/  logs/ops/  logs/journal/  outputs/
     ├── pm-decisions.md      # 等你裁定（分块）；旧 pending-changes 升级迁入
-    └── .skill-version.json
+    ├── context/brain.md     # 懒建派生快照（refresh_views.py）
+    ├── context/active-entities.json  # 懒建活实体表
+    └── .skill-version.json  # 另：ai/.state.json 懒建指纹
 ```
 联邦集工作区（Portfolio 使用，本包不创建）：`ai/portfolio/` + `ai/projects/{名}/ai/`（内部即上图）。项目 ai 内禁止再出现 `portfolio/` 或 `projects/`。
 
@@ -81,10 +83,11 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 无 `--mode portfolio`。向导见 `18-init-wizard-rules.md`（含成本核算方式必填）。
 ### 5.1b 版本检查（进入工作区先做）
 读 `ai/.skill-version.json` → 比 Skill `VERSION`。Skill < 工作区版本 → 提示升级 Skill + 只读降级。见 `20-workspace-version-rules.md`。
+随后 **P-VIEWS**：有 Python 则 `python scripts/refresh_views.py --project-root <根> --all`（指纹未变不写盘）。无 Python / 无 `.state.json` / 脚本失败 → 不阻断；查询读事实原文并声明 as-of。缺 `context/brain.md` 不致命。
 ### 5.2 日报
 先判定是否本项目 → 原文进 inbox → 合并进当天一人一份个人文件 → 映射待办（够正式的未匹配进展自动建待办）。禁止写入 `reports/daily/`。明日计划留在当天原文，次日才落待办。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
 ### 5.3 查询
-本项目事实源。跨项目用 Portfolio。待办清单输出见 05 号新节（默认未办结；未确认终态仍可见）。日报内容（含「昨天日报风险点/问题」）默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`；仅用户明确要项目日报文件时才读 `reports/daily/project/`（目录不存在=未生成，不报错）。
+本项目事实源。跨项目用 Portfolio。有 `brain.md` 且 facts 指纹一致 → 先读 brain，再最多打开 1～3 个事实文件。简单查询仍只载 05。横幅只实时读 `pm-decisions.md`。待办清单输出见 05（默认未办结；未确认终态仍可见）。日报内容默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`。
 ### 5.4 其他
 需求变更 08；结转 22（含 Step 0.5 共享人力提示）；历史计划 15。时间线报/月报（自然月）见 01 号 §4a：懒建 `reports/timeline/`，判重四案，非精确重合整段从 todos 重汇聚。
 
@@ -140,6 +143,8 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 14. **语种**：对用户正文 = 用户本轮输入语种（中文问中文答）。不得默认英文。内部推理不得出现在用户可见正文。细则：`reply-norm-skill/references/reply-rules.md`。
 15. **禁止输出思考过程**：不得出现 `I now have` / `Let me` / `Based on my findings` / 「让我先梳理」长推理段。结论直接说。
 16. **禁止假执行门**：查询、汇报进度、只读分析 **不准**问「是否执行此方案 / 是否基于文档继续执行 / 要不要按这个 plan 做」。用户没要方案就不要造方案确认。真确认才走 00 §5.0。
+17. **纠偏只写事实源或词库 §2**。禁止只改 brain / active-entities / index / 图。用户指出错误 = 已确认，不进八块。AI 自检冲突仍待确认。
+18. **每个对外结论必须能指回证据**。无源结论 = 失败。brain 禁止待拍板节。
 
 ## 8. ID 编码
 | 类型 | 格式 | 说明 |

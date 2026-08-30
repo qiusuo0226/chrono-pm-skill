@@ -41,8 +41,9 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
 ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├── plans/ ├── project-info/ ├── requirements/ ├── decisions/
-   ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ops/ ├── backup/
-   └── pm-decisions.md（懒建，不预建）
+   ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ops/ ├── logs/journal/（懒建）
+   ├── backup/ └── pm-decisions.md（懒建）
+   └── 懒建派生：`context/brain.md`、`context/active-entities.json`、`ai/.state.json`（脚本可覆盖；缺了不致命）
 ```
 > v2.1.0：原 `continuity/` 目录合并入 `context/`（4 个文件：carryover-register/import-log/legacy-sources/project-lineage）；原工作区根目录 `outputs/` 移入 `ai/outputs/`，工作区根目录只留一个 `ai/` 顶层目录。
 > v3.11.0：写任何文件前走 00 P-ALWAYS 三路分类。生成物禁止落到项目根。

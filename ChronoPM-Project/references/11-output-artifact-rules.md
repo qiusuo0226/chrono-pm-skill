@@ -315,9 +315,9 @@ ai/outputs/{YYYYMMDDHHMMSS}/
 
 模板：`assets/templates/wp-chart-template.md`。缺文件则懒建。
 
-指纹（字段集合相等则不重写）：每个入图 WP 的 `(编号, 名称, plan_ref 排序, 开始日, 结束日, 当前阶段名, upstream 排序, downstream 排序, effect)`。不含人员。**子图级跨行边属于排版，禁止计入指纹、禁止当关联证据。** 改备注/关联记录/状态历史/§8b 不在指纹内。
+指纹字段 **只认** `scripts/view-spec.json` 的 `wp_chart_fingerprint`，本节不复述。不含人员。**子图级跨行边属于排版，禁止计入指纹、禁止当关联证据。** 改备注/关联记录/状态历史/§8b 不在指纹内。
 
-触发：新建/删除/废弃 WP，改 related_wps、包名、plan_ref、§1 日期、§8 当前阶段，或完成归档导致移出图，且指纹变化。同回合先 index 后图。写入链路见 10 L3 与 00 §8c，属 AUTO，不靠用户再喊画图。
+触发：新建/删除/废弃 WP，改 related_wps、包名、plan_ref、§1 日期、§8 当前阶段，或完成归档导致移出图，且指纹变化。有 Python → `refresh_views.py --all`（先 parse WP 再写 index/图）。无 Python → 先 index 再按本节 AUTO。不靠用户再喊画图。
 
 ### 17.4 触发
 

@@ -604,7 +604,7 @@ AI **必须**：
 | 修改计划 §2 门禁 | 不回写 WP 关键阶段 | 关键阶段只从 WP §8 投影到 §3 第 6 列 |
 | 修改 WP 的关联需求 | `_index.md` 关联需求列 | 与 WP 文件 §2 强制一致 |
 | 修改 WP `related_wps`（v3.16.0） | 对端 YAML + 本 WP §2b + `_index.md` 上游/下游列 | YAML 为 SSOT。改 upstream 必须在对端 downstream 互指（反之亦然）。自指拒绝。环 → pm-decisions。对端文件不存在 → D20，不建幽灵 WP。建链/改链待确认 |
-| 修改 WP 的 related_wps / 名称 / plan_ref / §1 日期 / §8 当前阶段，或增删/废弃/完成归档 WP（v3.18.0） | `wps/_wp-chart.md` | 派生图。先 index 再比指纹（编号+名称+plan_ref+日期+当前阶段+上下游+effect）。变化或文件缺失 → 按 11 §17 重写/懒建。指纹相同不写。不走 P-OUTPUT。属 AUTO |
+| 修改 WP 的 related_wps / 名称 / plan_ref / §1 日期 / §8 当前阶段，或增删/废弃/完成归档 WP（v3.18.0） | `wps/_wp-chart.md` | 派生图。有 Python → P-VIEWS（`refresh_views.py --all`，列/指纹只认 `scripts/view-spec.json`）。无 Python → 先 index 再按 11 §17 AUTO。指纹相同不写。不走 P-OUTPUT |
 | 修改 WP §2 关联需求 / REQ 工作包列 | 对方字段 + `wps/_index.md` | 双向编号一致（07 号）；不一致写入 pm-decisions |
 | 新增/修改/删除 `sources/{编号}/` | `requirements/sources/_index.md` | 索引行同步；存在性以 meta.md 为准 |
 | 修改 WP §3c 内容（改人名/增行/增角色列） | 本 WP §6 变更记录 | 同回合必有一行；仅升级改标题不算内容变更 |
@@ -838,6 +838,14 @@ YAML：`effect: 正常|废弃`（缺省=正常）；废弃必填 `superseded_by`
 | 级联 | requirement-register、risk-register | [CHECK] 需求关联存在；[SUGGEST] 工期紧张/资源冲突登记风险 |
 | 验证 | — | **级联完成验证**（§8a.2）：确认所有级联动作全部执行或呈现 | MANDATORY |
 
+### P-VIEWS / P-RESOLVE / P-CORRECT（v3.21.0）
+
+**P-VIEWS**：写事实成功后、进入工作区后，有 Python 则跑 `refresh_views.py --all`。无 Python 则视图 AUTO 兜底。缺 `.state.json` = 全部 stale。查询准入只比 `facts_fingerprint`；写盘时 facts 或 journal 任一变化都重建。
+
+**P-RESOLVE**：对齐只查 `active-entities.json`。类型序：精确编号 → wp/td → term 第二跳（canonical + 开办/变更/注销收口）→ person（仅指人）。禁止跳过 term 猜 WP，禁止全库语义扫。
+
+**P-CORRECT**：仅用户发起的纠正视为已确认，写 WP/TD/风险留痕或词库 §2，不进八块。AI 自检冲突仍进 `pm-decisions`。禁止只改 brain/json。
+
 ### WF-8 待办创建与归属排布（所有任务创建入口的统一前置规则）
 
 触发：**任何入口**产生新待办——① 口述加待办；② 次日拉齐昨日明日计划（N-37）；③ 纪要正式行动项；④ **已规划工作包拆待办**；⑤ 变更批准且落在已规划 WP 上的增量；⑥ 风险/问题责任人跟踪待办；⑦ **派活**（点名执行人 + 具体动作，可带时间）。**删除「需求拆解落待办」。禁止确认计划后按排期灌待办。** 只改 WP 时间窗、未点名动作 = 登记排期，走 §4b，不进本 WF 建待办。
@@ -850,7 +858,7 @@ YAML：`effect: 正常|废弃`（缺省=正常）；废弃必填 `superseded_by`
 | 抽取门禁 | 本项目尚未完成计划内嵌 WP → `wps/` 一次性抽取时，**禁止**新建待办/生成周报；输出抽取清单待 PM 确认（§8b.0） | MANDATORY |
 | 归属判定① | **先算 C(P)**：只扫 `wps/_index.md` **§1 进行中**（禁止扫已完成/废弃）。C(P)=① 当日该人未办结待办已有 WP Ref；② 进行中 WP 的 §8 执行人格含 P（🔄，或 ⏳ 且含「(点名)」）；③ 该 WP §3c 任一角色格含 P。无 3c 时 ③ 空，C(P) 仍可由 ①② 构成。高置信才自动绑。时间窗仅当 C(P) 为空时作**降级**预筛，不得压过 3c/§8 点名 | MANDATORY |
 | 归属判定② | 候选 WP 名称语义匹配（§8b.1）：**高置信**才自动绑定；中/低置信转追问，不得自行拍板。选包（1/2/3）时若已能算出待办结束 > WP 结束，**同一轮**附带 A/B/C（拉长 WP / 压缩待办 / 挂起），禁止选完包再弹第二次 | MANDATORY |
-| 查重 | 在目标执行人待办文件按「动作主题 + WP」搜未办结。有 → 不新建，只校正（时间走时间盒门禁）。无 → 才允许新建 | MANDATORY |
+| 查重 | 先 P-RESOLVE（活实体表，term 两跳）。再只在目标执行人未办结 `type=td` 按「动作主题 + WP」搜。有 → 不新建，只校正。无 → 才允许新建。禁止全库语义扫 | MANDATORY |
 | 归属判定③ | 未命中 WP：三要素缺失 → 一次性提醒（不落待办）；三要素齐但无 WP → **不落**正式待办，问绑哪个已有 WP 或先补需求再建 WP。禁止 `待绑定`/`none` 落核心表 | MANDATORY |
 | 归属判定④ | 多 WP 近似命中：主题可分（如开办 vs 注销）→ **自动拆成**每 WP 一条待办，各绑一个 WP，不问「要不要建」。主题不清 → 问一次。禁止一条待办多个 WP Ref | MANDATORY |
 | 默认归属 | 未指定归属时默认当前上下文计划中的候选 WP；无上下文仍必须问绑哪个 WP，**不得**落无包待办。owner 默认口述对象 | AUTO |

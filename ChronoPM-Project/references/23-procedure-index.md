@@ -9,6 +9,10 @@
 | ProcID | 名称 | Home | Pre | Calls | Writes | Forbidden |
 |---|---|---|---|---|---|---|
 | P-ROUTE | 场景分发 | SKILL.md §6 | — | 命中行必须加载 | — | 用其他 Skill 替代本包过程 |
+| P-VIEWS | 派生重建 | 00 P-VIEWS；`refresh_views.py` | 版本检查后 | 有 Python 则脚本；无则 AUTO | brain/json/.state/index/图/PLAN 投影 | 手改派生；查询现场写临时脚本；brain 写待拍板 |
+| P-INGEST-DELTA | 增量投喂 | 10 + journal 模板 | P-VIEWS 可选 | **必须 CALL P-RESOLVE** | `logs/journal/` 追加 + 事实文件 | 改历史 J；全库扫；进展句建 WP |
+| P-RESOLVE | 活表对齐 | 00 P-RESOLVE | active-entities | term 两跳 + 开办/注销收口 | 不写文件 | 跳过 term 猜 WP；全库语义扫 |
+| P-CORRECT | 纠偏 | 00 P-CORRECT | 用户发起 | 写事实或词库 §2 后 P-VIEWS | WP/TD/风险/词库 + journal kind=correction | 只改 brain/json；进八块；AI 自检当已确认 |
 | P-WF8 | 待办创建 | 00 §9 WF-8 | P-CARRY | 先算 C(P)；P-WF8-DEDUP → P-WF8-SPLIT? → P-WF8-CARD → P-BOX | inbox→`todos/{date}/{owner}.md` | 问「要不要建待办」；无 WP 落核心表；直写个人文件；日报回写 3c |
 | P-WF8-DEDUP | 查重 | 00 WF-8 查重步 | — | — | 不新建同主题 | 不查重就建第二条 |
 | P-WF8-SPLIT | 多 WP 拆 | 00 归属④ | — | 每条 P-WF8-CARD | 多条待办 | 一条待办多个 WP Ref |
@@ -37,7 +41,10 @@
 
 ```
 P-ROUTE
- ├─ 派活/加待办 → P-WF8 → P-CARRY → P-CARRY-WPREF → P-WF8-DEDUP → (P-WF8-SPLIT) → P-WF8-CARD → P-BOX
+ ├─ 进入工作区 / 写事实后 → P-VIEWS
+ ├─ 投喂入库 → P-INGEST-DELTA → P-RESOLVE →（命中则更新）P-VIEWS
+ ├─ 用户纠偏 → P-CORRECT → P-VIEWS
+ ├─ 派活/加待办 → P-WF8 → P-CARRY → P-CARRY-WPREF → P-RESOLVE → P-WF8-DEDUP → (P-WF8-SPLIT) → P-WF8-CARD → P-BOX
  ├─ 改计划排期 → P-PLAN-SYNC →（WP 窗变）P-WP-BOX-CHK →（越界）P-BOX
  ├─ 拆文件/拆文档/入库源文档 → P-DOC-INGEST → P-SPLIT → P-REQ-WP
  │                              └─（仅当还要对外文件）P-OUTPUT
