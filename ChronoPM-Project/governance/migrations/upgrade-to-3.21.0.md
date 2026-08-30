@@ -53,7 +53,7 @@ SKILL.md §3 懒建名单、§5.1b P-VIEWS、§7 铁律；00 脚本优先+P-CORR
 
 ### A4. 回归（节点4，CR-003 测试段）
 
-`tests/regression-suite.md` Module 75。合计 **807**。阻断：SKIP-002、DUAL-003、SPEC-001、ALI-003、UPD-002、COR-001/004/005、SCH-001、BRN-003。
+`tests/regression-suite.md` Module 75。合计 **807**。阻断：SK-002、TW-003、SP-001、ALI-003、UPD-002、COR-001/004/005、SCH-001、BRN-003。
 
 ### A5. 版本触点（节点5，CR-003 版本段）
 

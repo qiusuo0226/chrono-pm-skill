@@ -1,0 +1,47 @@
+{
+  "wp_index_columns": [
+    "WP 编号",
+    "WP 名称",
+    "状态",
+    "plan_ref",
+    "负责人",
+    "关键阶段",
+    "关联需求",
+    "文件路径",
+    "上游 WP",
+    "下游 WP",
+    "完成时间",
+    "废弃时间"
+  ],
+  "wp_chart_fingerprint": [
+    "编号",
+    "名称",
+    "plan_ref",
+    "开始日",
+    "结束日",
+    "当前阶段名",
+    "upstream",
+    "downstream",
+    "effect"
+  ],
+  "plan_s3_columns": [
+    "WP 编号",
+    "WP 名称",
+    "当前状态",
+    "执行人",
+    "排期",
+    "关键阶段"
+  ],
+  "plan_s4_format": "- {stage} → {icon}｜{owner}｜{window}",
+  "brain_fact_globs": [
+    "wps/WP-*.md",
+    "todos/{latest_legal_day}/*.md",
+    "risks/risk-register.md",
+    "issues/issue-register.md",
+    "decisions/decision-log.md",
+    "requirements/requirement-register.md",
+    "requirements/_index.md",
+    "context/domain-glossary.md",
+    "plans/PLAN-*.md"
+  ]
+}
