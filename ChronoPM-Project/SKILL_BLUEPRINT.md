@@ -20,7 +20,7 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 3.20.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 3.21.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
 | 最后更新 | 2026-08-20（v3.6.0 CR-F：sources/ 文档级拆解 + schema 0.11.0）；2026-08-20（v3.5.0 CR-E：wps/ 独立 WP + schema 0.10.0）；2026-08-20（v3.4.0 CR-D：报告存根 + 时间线报）；2026-08-20（v3.3.0 CR-C：关联待办 + TD Ref + 缩写治理）；2026-08-20（v3.2.0 CR-B：DF-017/018 + 加载场景分类）；2026-08-20（v3.1.1 CR-G：开发仓三目录重组 ChronoPM-Project/ + governance-shared/，schema 仍 0.9.0）；2026-08-20（v3.1.0 CR-A：路径残留清理 + 日报查询/更新路由补全 + 月报残留清理，workspace schema 仍 0.9.0）；2026-08-19（v3.0.0 双包拆分：09 号整文件迁 ChronoPM-Portfolio）；2026-08-18 (v2.1.0 个人待办体系与工作区路径整合：新增 22 号个人待办规则（§0 六字段+T+1 沿用+冲突仲裁+Step 0 结转）+ 18 号向导 Step 5 §0 引导 + 04 号 DF-002 关闭门禁 + 09 号双层数据流微调/可用性聚合动态视图硬约束 + 11/12/13/20 号 outputs/→ai/outputs/ 与 continuity/→context/ 路径迁移 + 待办模板进度列/§2 日报存档段 + 升级文件体系 governance/migrations（版本链 0.1.0→2.1.0 权威执行源）+ VERSION_CAPABILITIES 补齐 29 个历史缺口；v1.21.0 倒排每日矩阵查询视图：05号 §6.7 新增倒排每日矩阵（人员×日期，portfolio 多 board 遍历+存量降级）+ 00号 WF-7 草案输出规范（contract_change）+ 10号查询附带提示 + Module 38 回归；v1.20.0 需求双视图与开发文档关联：07号 §8.10 双视图机制（view_business 派生/view_dev+原型链接挂 REQ 层）+ scope_scope 聚合排除硬约束 + WF-2 需求上下文加载 + 开发侧 source_type 扩展 + 词库开发侧分类/预筛懒加载 + Module 37 回归；v1.17.1 治理一致性修复：分发包幽灵引用根治 + 版本失步修正 + audit_release.py 自动断言 + 基线补档；v1.17.0 PM 偏好通用化升级：5 能力模块（日报集成审查/跨实体联动/关闭佐证/委派跟踪/沟通质量）；v1.16.3 级联强制执行修复：待办→board 反向链路 + SUGGEST 强制呈现；v1.16.2 分发包幽灵引用修复：governance 例外放行 skill-contract + 排除 BLUEPRINT + 移除 16 号路由；v1.16.1 分发包标准化；v1.16.0 合同作用域 RI；v1.15.0 跨源需求归集 RI；v1.14.0 标准工作流数据路径；v1.13.1 升级后治理修复；v1.13.0 架构精简改造；v1.12.0 工作空间清洁度治理) |
@@ -28,7 +28,7 @@
 | 入口文件 | `SKILL.md` |
 | 元数据 | `skill.json` |
 | 核心契约 | `governance/contracts/skill-contract.md` |
-| 文件总数 | 约 140 个（23 份规则 + 36 个模板 + 5 个脚本 + 包内当前 upgrade + 共享历史链归档 + 1 个回归套件 + 版本/蓝图文件） |
+| 文件总数 | 约 140 个（23 份规则 + 37 个模板 + refresh_views 等脚本 + 包内当前 upgrade + 共享历史链归档 + 1 个回归套件 + 版本/蓝图文件） |
 
 ---
 
@@ -118,9 +118,15 @@ ChronoPM 建立在三层信任模型之上：
 
 ### AD-05. 查询采用定向读取，不默认全量扫描
 
-**决策**：查询类请求必须先读待办文件（`todos/{date}/{执行人}.md`）与绑定文件（`todos/{date}/_index.md`），不默认创建临时脚本全量扫描文件。
+**决策**：查询类请求先读 `context/brain.md`（facts 指纹一致时）再打开 1～3 个事实文件；无 brain 则退回待办/`_index` 定向读取。禁止默认创建临时脚本全量扫描。`refresh_views.py` 是打包脚本，不是临时脚本。
 
-**理由**：项目文件数量增长后，全量扫描耗时且不可控。待办按日按人组织可直接定位，确保查询性能稳定。
+**理由**：知识量超过单轮可读上限。压缩快照 + 活实体表让 AI 只消费增量。
+
+### AD-10. 百科叠层（v3.21.0）
+
+**决策**：证据只追加（`logs/journal/` 懒建）；事实不搬家（wps/todos/registers）；派生视图由 `refresh_views.py` 覆盖生成（brain / active-entities / .state / index / 图 / PLAN 投影）。列与指纹唯一家 = `scripts/view-spec.json`。口径家 = 词库纠错表。纠偏只写事实源。跳版本不升 schema。无 Python 则 AUTO 兜底。
+
+**否决方案**：顶层 journal/ 升 schema；JSON 可写 corrections；按 3.21/3.22 切架构；git 业务仓。
 
 **否决方案**：每次查询临时扫描 — 性能差，且可能遗漏或重复
 
@@ -579,6 +585,7 @@ ChronoPM 建立在三层信任模型之上：
 | 3.18.0 | 图按计划分章+结构闸/SCAN冻结/§8b+归档三段+结转脚本+reply-norm；schema 保持 0.16.0；Module 72（总计 706） | CR-20260827-001～005 / upgrade-to-3.18.0.md |
 | 3.19.0 | 图按关联横竖排+skill-gap原位废弃+WP§3功能点留痕+确认不回放；schema 保持 0.16.0；Module 73（总计 729） | CR-20260827-006～009 / upgrade-to-3.19.0.md |
 | 3.20.0 | 可选§3c分工+C(P)挂包+§0.7/§4c+无感知投喂+V-14+弱结构投喂乙案+进度完整表；schema 保持 0.16.0；Module 74（总计 777） | CR-20260829-001～003 / upgrade-to-3.20.0.md |
+| 3.21.0 | 百科叠层懒建+refresh_views+P-RESOLVE/P-CORRECT+L0–L3；schema 保持 0.16.0；Module 75（总计 807） | CR-20260830-001～003 / upgrade-to-3.21.0.md |
 
 ---
 

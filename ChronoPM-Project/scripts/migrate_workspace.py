@@ -773,6 +773,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.20.0（schema 保持 0.16.0）：§3c 分工；C(P) 挂包；§0.7/§4c；无感知投喂；V-14；弱结构投喂乙案；进度完整表。",
     },
+    {
+        "version": "3.21.0",
+        "schema": "0.16.0",
+        "capabilities": ["encyclopedia_overlay"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.21.0（schema 保持 0.16.0）：百科叠层懒建 journal/brain/active-entities/.state；refresh_views.py；缺 brain 不致命。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），

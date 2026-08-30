@@ -4,7 +4,32 @@
 
 ---
 
-## 3.20.0 — 2026-08-29（本次发布）
+## 3.21.0 — 2026-08-30（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。百科叠层：journal/brain/active-entities/.state 懒建；`refresh_views.py` 读 `view-spec.json`；P-RESOLVE 两跳；P-CORRECT；查询 L0–L3；日报默认更新活实体。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **807**。
+
+Blueprint Impact: full
+
+### Added
+- `scripts/view-spec.json` + `scripts/refresh_views.py`
+- 懒建 `logs/journal/`、`context/brain.md`、`context/active-entities.json`、`ai/.state.json`
+- journal 模板；全链通注销总包 §3 fixture
+- P-VIEWS / P-INGEST-DELTA / P-RESOLVE / P-CORRECT
+- 回归 Module 75（合计 **807**）
+- BLUEPRINT AD-10
+
+### Changed
+- 查询先读 brain；05 粒度 L0–L3；横幅只实时读 pm-decisions
+- 10 号日报默认更新、禁止进展句建 WP
+- 11 §17.3 指纹指针化；00 视图脚本优先 AUTO 兜底
+- AD-05 查询主路径
+
+### Fixed
+- 无（本版能力增量）
+
+---
+
+## 3.20.0 — 2026-08-29（released）
 
 > 发布归档：Minor / contract_change + capability_change。可选 §3c 分工矩阵；C(P) 日报挂包；§0.7 派生负责视图；§4c 办结档案；无感知投喂+落点回执；卡点高置信先记。集层 V-14 混报拆分 + 弱结构投喂（乙案落盘）。读侧进度默认完整表。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **777**。
 
