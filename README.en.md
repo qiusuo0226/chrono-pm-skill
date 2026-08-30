@@ -1,4 +1,4 @@
-# ChronoPM v3.21.0 — An AI Sidekick That Actually Manages Projects
+# ChronoPM v3.21.1 — An AI Sidekick That Actually Manages Projects
 
 **You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
@@ -90,7 +90,7 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.21.0 |
+| Skill version | 3.21.1 |
 | Workspace schema | 0.16.0 |
 | Rule files | 23 |
 | Document templates | 37 |
