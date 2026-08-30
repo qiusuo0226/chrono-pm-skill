@@ -1177,6 +1177,43 @@
 | RN-008 | 用户问「改了哪些文件」 | 才给路径清单 | positive |
 | RN-009 | 开放行之和 N=0 | 不输出「等你裁定」横幅 | negative |
 
+## 75. 百科叠层 / 跳版本 / 纠偏 / 粒度（v3.21.0）
+
+施工只认合计 **807**（777+30）。阻断项：SKIP-002、DUAL-003、SPEC-001、ALI-003、UPD-002、COR-001、COR-004、COR-005、SCH-001、BRN-003（另沿用 WPS-014/015/016/007）。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| SKIP-001 | 工作区 3.18.0 + schema 0.16.0 + Skill 3.21 | 不要求先装 3.19；不升 schema；首次 P-VIEWS 懒建 | positive |
+| SKIP-002 | 缺 brain/journal | 健康检查不列 P0 | regression |
+| SKIP-003 | 3.21 工作区 + 3.20 Skill | 只读降级，不删派生文件 | regression |
+| SKIP-004 | get_capabilities_since(3.20.0) | 含 encyclopedia_overlay 且 new_dirs=[] | positive |
+| DUAL-001 | 有 Python，写 WP | index/图/brain 由脚本更新 | positive |
+| DUAL-002 | 无 Python | AUTO 读 view-spec；查询声明无快照 | positive |
+| DUAL-003 | 单视图写失败 | 该视图 failed，已 replace 的保留 ok，无半文件 | negative |
+| DUAL-004 | --all 中途 chart 失败 | index 若已 ok 则保留；chart stale | negative |
+| SPEC-001 | --check-spec | index/§3 表头==view-spec==模板；chart 指纹键一致；改乱表头 fail | positive |
+| BRN-001 | 有 Python 进工作区 | 指纹变才写 brain | positive |
+| BRN-002 | 指纹未变 | 不重写 | regression |
+| BRN-003 | 「注销国庆包现在怎样」 | 先 brain；L0+指针；不载 00 | positive |
+| BRN-004 | 无 Python / 脚本失败 | 读 WP 原文；声明可能过期 | negative |
+| BRN-005 | 无 brain 文件 | 退回 3.20 定向读，不致命 | regression |
+| ALI-001 | 「农专注销 90%」 | term 两跳+注销收口 → WP-20260827-001；fixture 含农民专业合作社 | positive |
+| ALI-002 | 废弃 WP-001 | 跳总包，不在废弃包建 TD | regression |
+| ALI-003 | 对不上活实体 | 问，不建 WP/TD | negative |
+| UPD-001 | 日报进度句 | 更新已有 TD，不建 WP | positive |
+| UPD-002 | 未点名新模块 | 禁止建 WP | negative |
+| COR-001 | 「WP-073 不是开发是联调」 | 写 WP 留痕+journal correction；不进八块 | positive |
+| COR-002 | 「联调完成≠开发完成」 | 写词库 §2；JSON 仅投影 | positive |
+| COR-003 | 只改 brain | 禁止 | negative |
+| COR-004 | 写 active-entities.corrections | 无此槽，失败 | negative |
+| COR-005 | AI 自检 80% vs 95% | 进 pm-decisions，不当已确认 | positive |
+| DEP-001 | 「现在怎样」 | L0/L1 | positive |
+| DEP-002 | 「展开/为什么」 | L2 | positive |
+| DEP-003 | 「列出来/周报/对比」 | L3 | positive |
+| JRN-001 | 粘贴入库 | 追加 J-，不改历史 J | positive |
+| JRN-002 | 无 journal 目录 | 懒建 logs/journal | positive |
+| SCH-001 | 升级后版本 | schema 0.16.0；skillVersion 3.21.0；Portfolio 行为不变 | regression |
+
 ## 74. 分工矩阵 / 挂包先验 / 完整表 / 弱结构投喂（v3.20.0）
 
 施工只认合计 **777**（729+48）。表中 WPS-007/014/015/016 为既有引用不另加。阻断项：WPS-014/015/016/007、WPR-023/024/027/031、IDX-12、BND-001/002/004、FIL-001、DSP-002、ING-005、ING-006。
@@ -1314,4 +1351,5 @@
 | 图分章/结构闸/归档/结转/问答 (WPC/WPS/ARC/CO-S/RN) | 64 | 36 | 28 |
 | 图拓扑/缺口生命周期/留痕/确认对外 (73) | 23 | 14 | 9 |
 | 分工矩阵/挂包/完整表/弱结构投喂 (74) | 48 | 31 | 17 |
-| **合计** | **777** | **461** | **316** |
+| 百科叠层/跳版本/纠偏/粒度 (75) | 30 | 17 | 13 |
+| **合计** | **807** | **478** | **329** |
