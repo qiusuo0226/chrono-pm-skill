@@ -11,3 +11,7 @@
 | 文件 | 动作 |
 |---|---|
 | `VERSION` / `skill.json` / `SKILL.md` / `CHANGELOG.md` | 锁步 3.21.0 |
+
+### 收尾补记（2026-08-30，不另起版本）
+
+- 用户核验通过。Grok 安装区不代更。无 V-x 行为变更。禁写 `projects/*/ai`。

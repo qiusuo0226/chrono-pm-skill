@@ -68,3 +68,22 @@ SKILL.md §3 懒建名单、§5.1b P-VIEWS、§7 铁律；00 脚本优先+P-CORR
 ## B. 业务工作区
 
 开发仓无业务 `ai/wps/` → **B 节 skip**。市监只读核 ALI-001 fixture，不写盘。
+
+## C. 节点完成勾选
+
+- [x] A1 治理（`v3.21.0-step1`）
+- [x] A2 引擎（`v3.21.0-step2`）
+- [x] A3 协议（`v3.21.0-step3`）
+- [x] A4 回归 807（`v3.21.0-step4`）
+- [x] A5 版本锁步（`v3.21.0-step5`）
+- [x] A6 基线 + audit 17/17 + 删 AP（`v3.21.0-step6` / `v3.21.0`）
+- [x] 分发包已写入 Downloads。用户核验通过；**Grok 安装区不代更**
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.21.0；schema 0.16.0
+- [x] planning/ 仅留 README
+
+### 收尾补记（2026-08-30，不另起版本）
+
+- 施工收尾核对：`governance-shared/review-checklists/review-20260830-3.21.0.md`，结论 **通过-升级成功**
+- 三 CR Status=completed；planning/ 仅 README
+- 业务仓未代迁（B 节 skip）
