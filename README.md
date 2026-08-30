@@ -8,6 +8,11 @@ ChronoPM 是一套装进 AI 助手的项目管理方法论：你照常说话—�
 >
 > **Python**：初始化 / 升级 / 巡检脚本需要 Python **≥3.9**（推荐 3.10+）。日常记待办、查进度不依赖 Python。
 
+## 仓库地址
+
+- GitHub：[qiusuo0226/chrono-pm-skill](https://github.com/qiusuo0226/chrono-pm-skill)
+- Gitee：[qiusuo0226/chrono-pm-skill](https://gitee.com/qiusuo0226/chrono-pm-skill)
+
 ## 为什么需要它
 
 PM 的项目事实总是散落各处：日报在群里，纪要在邮箱，风险在某个人脑子里，进度在一份过时的 PPT 里。想确认"这个需求当初是怎么定的"，往往要考古半天。

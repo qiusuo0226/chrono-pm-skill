@@ -8,6 +8,11 @@ ChronoPM is a project-management methodology packaged as an AI skill: talk the w
 >
 > **Python:** init / migrate / verify scripts need Python **≥3.9** (3.10+ recommended). Daily todos and queries do not.
 
+## Repository
+
+- GitHub: [qiusuo0226/chrono-pm-skill](https://github.com/qiusuo0226/chrono-pm-skill)
+- Gitee: [qiusuo0226/chrono-pm-skill](https://gitee.com/qiusuo0226/chrono-pm-skill)
+
 ## Why you need it
 
 A PM's project facts scatter everywhere: daily reports in chat threads, minutes in inboxes, risks in someone's head, progress in a stale deck. Trying to confirm "how was this requirement decided?" turns into an afternoon of archaeology.
