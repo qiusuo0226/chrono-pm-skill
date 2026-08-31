@@ -130,7 +130,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| UT-001 | "记录一下，陈佳菁被抽调" | 触发更新流程：低/中风险按 proactive 直接写入事实源并标记待确认（登记 pm-decisions.md 块 8），高风险先确认后写 | positive |
+| UT-001 | "记录一下，陈佳菁被抽调" | 触发更新流程：低/中风险按 proactive 直接写入事实源，`Confirmed By: auto`，不进块 8 子节「已经写了等点头」；高风险先确认后写 | positive |
 | UT-002 | 上传评审材料 | 识别文件类型，主动询问是否入库 | positive |
 | UT-003 | 日报中包含"决定""确认" | 识别为决策信号，提示更新 decision-log | positive |
 | UT-004 | 纯查询"现在有哪些风险" | 不触发更新清单 | regression |
@@ -301,8 +301,8 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| PW-001 | 低风险事实源更新（如新增任务行） | 直接写入事实源并标记 `Confirmed By: 待确认`，同时登记 `pm-decisions.md` 块 8，末尾提示待人工确认 | positive |
-| PW-002 | 待确认记录 | 在到期判定、已完成统计中一律视为未确认（不参与延期/超期计数） | positive |
+| PW-001 | 低风险事实源更新（如新增任务行） | 直接写入事实源并标记 `Confirmed By: auto`，**不**登记块 8 子节「已经写了等点头」，回合末一句话告知 | positive |
+| PW-002 | `Confirmed By: 待确认` 记录 | 在到期判定、已完成统计中一律视为未确认（不参与延期/超期计数）。`auto` 计入 | positive |
 | PW-003 | 用户确认"确认 PW001" | pending → confirmed，从 pm-decisions.md 块 8 移除（Change Log 保留），标记生效 | positive |
 | PW-004 | 用户驳回"驳回 PW001" | 恢复变更前原值，pm-decisions.md 块 8 标记 rejected 并记入决策记录，不留错误事实 | regression |
 | PW-005 | 待确认记录超 7/14 天未确认 | 触发催办升级提示，不静默丢弃 | regression |
@@ -538,10 +538,10 @@
 | V3-016 | 补录历史能耗 | 只改当日明细+累计按明细重算，不回溯改历史快照 | regression |
 | V3-017 | 新风险编号 | `R-NNN`，只读 risks/index.md 求最大；存量时间戳号仍识别 | positive |
 | V3-018 | 查询旧编号 R-011 | 双格式兼容，级联不炸 | regression |
-| V3-019 | 直接落库级新建待办 | 不弹确认，但登记 pm-decisions.md 块 8，Confirmed By=待确认 | positive |
+| V3-019 | 直接落库级新建待办 | 不弹确认，`Confirmed By: auto`，不进块 8 子节「已经写了等点头」 | positive |
 | V3-020 | 终态关闭（非 DF-013） | 必须逐条确认，不可简化 | regression |
-| V3-021 | 日报 100% /「已完成」对应待办 | DF-013 自动完成 + pending；未确认不进已完成统计、不参超期 | positive |
-| V3-022 | 查询我的待办，含未确认已完成 | **默认仍可见**（未办结或「待确认完成」分组），禁止当已办结隐藏 | regression |
+| V3-021 | 日报 100% /「已完成」对应待办 | DF-013 自动完成，`Confirmed By: auto`，**计入**已完成统计与超期；不进块 8 子节 1 | positive |
+| V3-022 | 查询我的待办，含 `待确认` 已完成 | **默认仍可见**（未办结或「待确认完成」分组），禁止当已办结隐藏。`auto` 完成按已办结默认不列 | regression |
 | V3-023 | 「展示所有」/「所有任务」/「含已完成」 | 展开已办结；老触发词兼容 | positive |
 | V3-024 | WF-8 最小规则集 00+22+21+06 | 无风险/需求/变更关键词时不强制加载 04/07/08，操作仍成功 | positive |
 | V3-025 | 指纹失配（副本二次编辑） | 提示内容版本差异，严禁静默覆盖 | regression |
@@ -1247,6 +1247,38 @@
 | TG-003 | 「zwww 就是政务外网，写进词库」 | T1 → confirmed 或先 pending；有 Source | positive |
 | TG-004 | 查询轮一次冒出 10 个缩写 | 只一张 SUGGEST ≤7，不自动 pending 10 条 | negative |
 | MIG-001 | dry-run 遇到会议类 SRC | 只打印清单，不搬不删 | positive |
+
+## 78. 确认收口 / 视图消费（v3.23.0）
+
+阻断：CFM-001、CFM-003、CFM-004、ENT-002、ENT-003、NEG-001、NEG-002、PW-006。基线官方口径 830 + 本模块 25 = **855**。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| CFM-001 | 新建待办 normal | `auto`；不进块 8 子节 1；横幅不 +1 | positive |
+| CFM-002 | 结转 / 进度微调 | 同 CFM-001 | positive |
+| CFM-003 | 关风险/改里程碑 | 确认前不写 | regression |
+| CFM-004 | DF-013 日报已完成 | 与 V3-021 新期望相同 | positive |
+| CFM-005 | strict 下新建待办 | 同 3.22：待确认 + 子节 1 | negative |
+| CFM-006 | auto 出现在块 8 子节 1 | D11 失败并重建该子节 | negative |
+| CFM-007 | 处理轮有须裁定项 + 同时问进度 | 进度照答；清单不挡 | positive |
+| CFM-008 | 纯查询 N>0 | 一行提示，不铺编号清单 | positive |
+| ENT-001 | refresh --all | entities 紧凑 JSON；有 entity_count/alias_count；.state 仍 indent | positive |
+| ENT-002 | 简单查询 | 不打开 active-entities.json 全文 | positive |
+| ENT-003 | term 两跳 | 仍命中，允许为此打开 entities | regression |
+| ENT-004 | 决策标题查询 | alias 能指到 D-；再实读 decision-log | positive |
+| ENT-005 | 需求标题查询 | alias 能指到 REQ- | positive |
+| ENT-006 | 未中别名 | 走 05 §2 单文件；禁止 glob ai/ | negative |
+| SES-001 | 「上次聊什么」 | brain 最近过程；声明非事实源 | positive |
+| SES-002 | 无 ops | 不报错；最近过程空 | negative |
+| SCN-001 | 「当前有哪些风险」 | 走 §2 打开 risk-register，不要求 memo | regression |
+| POR-001 | 进度总览 | 每项目 as-of；仍读 _index | positive |
+| POR-002 | 包内无 portfolio/cache | 无该目录 | negative |
+| NEG-001 | 无 query-index/memo/cold/session-log | 无 | negative |
+| NEG-002 | 禁止全库语义扫原文仍在 | 00 P-RESOLVE 仍禁止 | regression |
+| NEG-003a | grep 运行时「低/中风险」与「待确认」同线 | 仅 strict/必须确认/历史说明 | negative |
+| NEG-003b | grep `AUTO(pending)` 于 references/ | 过程性步骤已去 pending | negative |
+| NEG-003c | 「登记 pm-decisions」出现在直接落库语境 | 不得残留；历史日 §0.6 回写五处豁免 | negative |
+| NEG-003d | 人工复核 00 §9 各 WF 类型列 | 与 §3.3 一致 | negative |
 | MIG-002 | 无 `--migrate-business` | 零写盘 | regression |
 | RN-010 | 查询后宿主弹「执行此方案」 | 正文拆穿误弹 + 已有中文结论 | positive |
 | RN-011 | 中途确认 | 必须带已做/对象/后果 | positive |
@@ -1391,4 +1423,5 @@
 | 百科叠层/跳版本/纠偏/粒度 (75) | 30 | 17 | 13 |
 | 会议快路径/结转脚本/误拆 (76) | 8 | 5 | 3 |
 | 查询定位/口低证高 (77) | 15 | 6 | 9 |
-| **合计** | **830** | **489** | **341** |
+| 确认收口/视图消费 (78) | 25 | 16 | 9 |
+| **合计** | **855** | **505** | **350** |
