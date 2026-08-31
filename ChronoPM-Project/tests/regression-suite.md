@@ -1214,6 +1214,43 @@
 | JRN-002 | 无 journal 目录 | 懒建 logs/journal | positive |
 | SCH-001 | 升级后版本 | schema 0.16.0；skillVersion 3.21.0；Portfolio 行为不变 | regression |
 
+## 76. 会议快路径 / 结转脚本定位 / 误拆检测（v3.22.0）
+
+施工只认合计见文末统计。阻断：MTG-001、MTG-002、MTG-003、MTG-004、CO-S20、CO-S21、CO-S22、CO-S10、SF-001、BS-022、MIG-001、MIG-002。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| MTG-001 | 腾讯会议 docx +「整理/拆解记录」 | 走 WF-3；不加载 split-rules；不写 sources/ | positive |
+| MTG-002 | 合同/需求规格 +「拆文件」 | 仍 P-SPLIT 六件套 | regression |
+| MTG-003 | 会议含 T-A4，今天未结转 | 先有 meetings/ 文件，再跑包内脚本，再 inbox | positive |
+| MTG-004 | 会议无正式行动项 | 不 Step 0、不建今天 todos | negative |
+| MTG-005 | 2 万字转写 + 文末结构化纪要 | 用文末结构；不建 atoms 六件套 | positive |
+| CO-S20 | cwd=项目根，技能包在别处 | 调用包内 carryover_step0.py；不手搓 | positive |
+| CO-S21 | §1 标题在、表空，上一日有表 | 回退上一日；人数>0；stdout 有 ROSTER_FALLBACK | positive |
+| CO-S22 | 两日都无表 | FAIL:ROSTER_EMPTY；exit 2；不造全员空文件 | negative |
+
+## 77. 查询派生定位 / 口低证高（v3.22.0）
+
+阻断：QLOC-001、QLOC-002、QLOC-003、QLOC-004、QLOC-005、QLOC-007、BRN-003、ALI-001、TERM-001、TERM-002、TERM-003、RN-003。非阻断：QLOC-006、TERM-004、RN-010/011。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| QLOC-001 | 新会话问「住所核验国庆上线哪些地市」类（fixture 有 SRC meta 标题） | 先 refresh_views；alias 命中；事实文件 ≤3；不 glob 100+；不读 backup/ | positive |
+| QLOC-002 | 事实已变、brain 仍旧 | 必须先重建再答；禁止用旧 brain 结论 | negative |
+| QLOC-003 | 用户说「把定位关系写进 wps/_index」 | 写词库 alias 待确认或拒绝手改 index；随后 P-VIEWS | negative |
+| QLOC-004 | 上一对话已答过同一句，本轮未实读 | 不得用上轮正文当证据；须走 alias+实读 | negative |
+| QLOC-005 | 查询日 inbox 非空 | 不 C'、不 Step 0；可 HINT 一行 | negative |
+| QLOC-006 | 仅 sources/meta 有标题「住所核验」 | alias 仍能指到 SRC | positive |
+| QLOC-007 | 同一会话已答过；磁盘事实已改 | 第二问必须发现 stale、重建后再答 | negative |
+| TERM-001 | 只读问「sds 干不干」，模型自推网关 | 本轮标推测；不写词库/journal；可 SUGGEST 一批 | negative |
+| TERM-002 | 用户说「80% 有道理」 | 不升 confirmed | negative |
+| TERM-003 | 「zwww 就是政务外网，写进词库」 | T1 → confirmed 或先 pending；有 Source | positive |
+| TERM-004 | 查询轮一次冒出 10 个缩写 | 只一张 SUGGEST ≤7，不自动 pending 10 条 | negative |
+| MIG-001 | dry-run 遇到会议类 SRC | 只打印清单，不搬不删 | positive |
+| MIG-002 | 无 `--migrate-business` | 零写盘 | regression |
+| RN-010 | 查询后宿主弹「执行此方案」 | 正文拆穿误弹 + 已有中文结论 | positive |
+| RN-011 | 中途确认 | 必须带已做/对象/后果 | positive |
+
 ## 74. 分工矩阵 / 挂包先验 / 完整表 / 弱结构投喂（v3.20.0）
 
 施工只认合计 **777**（729+48）。表中 WPS-007/014/015/016 为既有引用不另加。阻断项：WPS-014/015/016/007、WPR-023/024/027/031、IDX-12、BND-001/002/004、FIL-001、DSP-002、ING-005、ING-006。
@@ -1352,4 +1389,6 @@
 | 图拓扑/缺口生命周期/留痕/确认对外 (73) | 23 | 14 | 9 |
 | 分工矩阵/挂包/完整表/弱结构投喂 (74) | 48 | 31 | 17 |
 | 百科叠层/跳版本/纠偏/粒度 (75) | 30 | 17 | 13 |
-| **合计** | **807** | **478** | **329** |
+| 会议快路径/结转脚本/误拆 (76) | 8 | 5 | 3 |
+| 查询定位/口低证高 (77) | 15 | 6 | 9 |
+| **合计** | **830** | **489** | **341** |
