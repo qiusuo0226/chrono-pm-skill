@@ -42,6 +42,8 @@
     "requirements/requirement-register.md",
     "requirements/_index.md",
     "context/domain-glossary.md",
-    "plans/PLAN-*.md"
+    "plans/PLAN-*.md",
+    "requirements/sources/_index.md",
+    "requirements/sources/*/meta.md"
   ]
 }

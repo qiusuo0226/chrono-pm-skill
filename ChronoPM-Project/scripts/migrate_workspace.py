@@ -789,6 +789,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.21.1 Patch：废弃包 alias 走 superseded_by；term 不被 wp alias 覆盖；联邦集 --project-root 说明。",
     },
+    {
+        "version": "3.22.0",
+        "schema": "0.16.0",
+        "capabilities": ["meeting_ingest_guard", "query_locator"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.22.0（schema 保持 0.16.0）：会议快路径；结转花名册回退；查询指纹定位+SRC alias；查询不自动写词库 pending。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -1823,6 +1831,7 @@ def migrate_business_data(ai_dir: Path, dry_run: bool = True):
                 wp.write_text(new, encoding="utf-8")
     archive_actions = _migrate_wp_archive_index(ai_dir, dry_run=dry_run)
     actions.extend(archive_actions)
+    actions.extend(_detect_meeting_sources(ai_dir, dry_run=dry_run))
     if dry_run:
         print(f"  待校准 {len(actions)} 处（未写盘）")
         for a in actions[:40]:
@@ -1832,6 +1841,30 @@ def migrate_business_data(ai_dir: Path, dry_run: bool = True):
         print("  确认后加 --migrate-business 写回（写前会做 backup/migration-snapshot-*）")
     else:
         print(f"  已写回 {len(actions)} 处")
+    return actions
+
+
+_MEETING_HINTS = ("会议纪要", "会议记录", "视频会议", "腾讯会议", "例会", "转写")
+
+
+def _detect_meeting_sources(ai_dir: Path, dry_run: bool = True):
+    """疑似会议误拆进 sources/：只清单，不搬不删。写回须 --migrate-business 且本轮升级不对市监跑。"""
+    root = ai_dir / "requirements" / "sources"
+    actions = []
+    if not root.is_dir():
+        return actions
+    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+        meta = d / "meta.md"
+        blob = d.name
+        if meta.is_file():
+            try:
+                blob += "\n" + meta.read_text(encoding="utf-8")[:4000]
+            except OSError:
+                pass
+        if any(h in blob for h in _MEETING_HINTS):
+            actions.append(("meeting-src", f"疑似会议误拆 {d.name}（dry-run 不搬不删）", str(meta if meta.is_file() else d)))
+            if not dry_run:
+                print(f"  [skip-auto-move] {d.name}：会议类 SRC 须 PM 确认后才搬 meetings/")
     return actions
 
 

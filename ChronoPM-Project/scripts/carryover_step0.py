@@ -181,6 +181,40 @@ def parse_index(index_md: Path) -> tuple[list[str], dict]:
     return names, flags
 
 
+def parse_section3_names(index_md: Path) -> list[str]:
+    """§3 当日参与：花名册表空时的第二回退。"""
+    text = index_md.read_text(encoding="utf-8") if index_md.exists() else ""
+    names: list[str] = []
+    in_s3 = False
+    skip = HDR_NAMES | {"姓名", "人员", "参与人", "Name"}
+    for line in text.splitlines():
+        if line.startswith("## 3") or ("参与" in line and line.startswith("##")):
+            in_s3 = True
+            continue
+        if in_s3 and line.startswith("## "):
+            break
+        if in_s3 and line.startswith("|") and "---" not in line:
+            cells = _cells(line)
+            if cells and cells[0] not in skip:
+                names.append(cells[0])
+    return names
+
+
+def resolve_roster(todos: Path, dates_desc: list[str]) -> tuple[list[str], dict, str | None, str | None]:
+    """倒序合法日，取第一个 names>0 的花名册。"""
+    for d in dates_desc:
+        idx = todos / d / "_index.md"
+        if not idx.exists():
+            continue
+        names, flags = parse_index(idx)
+        if names:
+            return names, flags, d, "index"
+        s3 = parse_section3_names(idx)
+        if s3:
+            return s3, flags, d, "section3"
+    return [], {}, None, None
+
+
 def find_source_file(todos: Path, name: str, today: str) -> Path | None:
     """该人 date≤today 的最新个人 md。"""
     dates = []
@@ -275,14 +309,19 @@ def main() -> int:
         for d in todos.iterdir()
         if d.is_dir() and re.match(r"\d{4}-\d{2}-\d{2}$", d.name) and d.name <= today
     )
-    legal = todos / dates[-1] / "_index.md" if dates else None
-    if legal is None or not legal.exists():
-        print("无合法 _index")
+    dates_desc = list(reversed(dates))
+    names, flags, roster_day, how = resolve_roster(todos, dates_desc)
+    if not names:
+        print("FAIL:ROSTER_EMPTY")
         return 2
-    names, flags = parse_index(legal)
+    if roster_day and roster_day != today:
+        tag = "section3" if how == "section3" else roster_day
+        print(f"ROSTER_FALLBACK={tag}")
+    legal = todos / (roster_day or dates[-1]) / "_index.md"
     today_dir = todos / today
     today_idx = today_dir / "_index.md"
-    if flags.get("done") and today_idx.exists() and all((today_dir / f"{n}.md").exists() for n in names):
+    today_flags = parse_index(today_idx)[1] if today_idx.exists() else {}
+    if today_flags.get("done") and today_idx.exists() and names and all((today_dir / f"{n}.md").exists() for n in names):
         print("SKIP already done")
         return 0
     if args.dry_run:

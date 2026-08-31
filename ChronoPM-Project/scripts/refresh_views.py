@@ -385,8 +385,88 @@ def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str) -> 
         lines.append("（无）")
     for e in risks:
         lines.append(f"- {e['id']} {e['name']}（{e.get('status','—')}）")
-    lines += ["", "## 别名跳转", "", "见 `context/active-entities.json` 的 alias_index。", ""]
+    lines += ["", "## 别名跳转", "", "| 别名 | 指向 | 类型 |", "|---|---|---|"]
+    alias_index = entities.get("alias_index") or {}
+    n = 0
+    seen = set()
+    for e in entities.get("entities") or []:
+        if n >= 80:
+            break
+        typ = e.get("type")
+        if typ not in ("wp", "src", "term"):
+            continue
+        keys = []
+        if typ == "wp":
+            keys = [e.get("name"), e.get("id")]
+        elif typ == "src":
+            keys = [e.get("name"), e.get("id")]
+        elif typ == "term":
+            keys = [e.get("id"), e.get("canonical")]
+        for k in keys:
+            if not k or k in ("—", "-") or k in seen:
+                continue
+            seen.add(k)
+            lines.append(_md_row([str(k)[:40], e.get("id") or "", typ]))
+            n += 1
+            if n >= 80:
+                break
+    if n == 0:
+        for k, v in list(alias_index.items())[:80]:
+            if not k or k in seen:
+                continue
+            lines.append(_md_row([str(k)[:40], (v or {}).get("id") or "", (v or {}).get("type") or ""]))
+            n += 1
+    if n == 0:
+        lines.append("（无）")
+    lines += ["", "全文见 `context/active-entities.json` 的 alias_index。", ""]
     return "\n".join(lines) + "\n"
+
+
+def parse_sources(ai: Path) -> list[dict]:
+    """SRC meta 标题/编号进 alias。不读 atoms。"""
+    root = ai / "requirements" / "sources"
+    out: list[dict] = []
+    if not root.is_dir():
+        return out
+    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+        meta = d / "meta.md"
+        if not meta.is_file():
+            continue
+        try:
+            text = meta.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        fm = _front(text)
+        sid = (fm.get("source_id") or d.name).strip()
+        title = (fm.get("title") or "").strip()
+        if not title:
+            h = _heading_title(text)
+            if "—" in h:
+                title = h.split("—", 1)[-1].strip()
+            elif "-" in h and h.startswith("SRC"):
+                title = h.split("-", 1)[-1].strip()
+            else:
+                title = h
+        for row in _table_rows(_section(text, "meta")):
+            if len(row) >= 2 and row[0] in ("源文档名称", "名称"):
+                title = title or row[1]
+            if len(row) >= 2 and row[0] == "编号":
+                sid = sid or row[1]
+        aliases = [sid, d.name]
+        if title and title not in aliases:
+            aliases.append(title[:40])
+        rel = f"requirements/sources/{d.name}/meta.md"
+        out.append(
+            {
+                "id": sid,
+                "type": "src",
+                "name": title or sid,
+                "status": "源",
+                "path": rel,
+                "aliases": [a for a in aliases if a and a not in ("—", "-")],
+            }
+        )
+    return out
 
 
 def parse_todos(ai: Path, day: str | None) -> list[dict]:
@@ -501,6 +581,7 @@ def collect_facts(ai: Path, today: str) -> dict[str, str]:
         "decisions/decision-log.md",
         "requirements/requirement-register.md",
         "requirements/_index.md",
+        "requirements/sources/_index.md",
         "context/domain-glossary.md",
     ):
         p = ai / rel
@@ -514,6 +595,12 @@ def collect_facts(ai: Path, today: str) -> dict[str, str]:
             if fm.get("status") == "废弃":
                 continue
             facts[f"plans/{p.name}"] = _file_sha(p)
+    src_root = ai / "requirements" / "sources"
+    if src_root.is_dir():
+        for d in src_root.iterdir():
+            meta = d / "meta.md"
+            if d.is_dir() and meta.is_file():
+                facts[f"requirements/sources/{d.name}/meta.md"] = _file_sha(meta)
     return facts
 
 
@@ -565,7 +652,7 @@ def _successor_id(w: dict, by_id: dict, seen: set | None = None) -> str:
     return nxt["id"]
 
 
-def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: list[dict], people_abbr: dict, gloss_alias: dict, corrections: list, facts_fp: str, as_of: str) -> dict:
+def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: list[dict], people_abbr: dict, gloss_alias: dict, corrections: list, facts_fp: str, as_of: str, srcs: list[dict] | None = None) -> dict:
     entities = []
     alias_index = dict(gloss_alias)
     by_id = {w["id"]: w for w in wps}
@@ -589,7 +676,7 @@ def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: 
         ptr = {"id": dest, "type": "wp"}
         for a in [w["id"], w["name"], *w["aliases"]]:
             _put_alias(alias_index, a, ptr)
-    for e in tds + risks + people:
+    for e in tds + risks + people + (srcs or []):
         entities.append(e)
         ptr = {"id": e["id"], "type": e["type"]}
         _put_alias(alias_index, e["id"], ptr)
@@ -691,7 +778,8 @@ def run(root: Path, flags: argparse.Namespace) -> int:
     risks = parse_register(ai / "risks" / "risk-register.md", "risk")
     issues = parse_register(ai / "issues" / "issue-register.md", "issue")
     gloss_alias, corrections = parse_glossary(ai / "context" / "domain-glossary.md")
-    entities = build_entities(wps, tds, risks + issues, people, abbr, gloss_alias, corrections, facts_fp, as_of)
+    srcs = parse_sources(ai)
+    entities = build_entities(wps, tds, risks + issues, people, abbr, gloss_alias, corrections, facts_fp, as_of, srcs)
 
     views = prev.get("views") or {}
     want_index = flags.all or flags.index
