@@ -79,4 +79,13 @@ SKILL §5/§6 会议排除、脚本包内路径、查询先 P-VIEWS；00 §2.7 �
 - [x] A3 协议（`v3.22.0-step3`）
 - [x] A4 回归（`v3.22.0-step4`）
 - [x] A5 版本锁步（`v3.22.0-step5`）
-- [ ] A6 基线 + audit + 删 AP（`v3.22.0-step6` / `v3.22.0`）
+- [x] A6 基线 + audit + 删 AP（`v3.22.0-step6` / `v3.22.0`）
+- [x] 分发包已写入 Downloads：`ChronoPM-Project-Skill-v3.22.0.zip` + `ChronoPM-Portfolio-Skill-v3.22.0.zip`
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.22.0；schema 0.16.0；audit 17/17
+- [x] planning/ 仅留 README
+
+### 收尾补记（2026-08-31，待用户核验）
+
+- 施工完成。audit 17/17 通过。AP 已删。Grok 安装区**不代更**。
+- 业务仓 B 节 skip；未写市监。
