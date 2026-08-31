@@ -54,15 +54,15 @@ ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├──
 
 默认采用 `proactive` 模式（主动变更 + 人工确认）。项目可在 `prompts/project-rules.md` 中修改权限级别。
 
-**低/中风险更新（proactive 模式下直接写入事实源，并标记 `Confirmed By: 待确认`，同步登记 `pm-decisions.md` 对应块，待 PM 确认后持久化）：**
+**低/中风险更新（proactive 模式下直接写入事实源；`Confirmed By` 见 00 §3.3，默认 `auto` 即生效，不进块 8 子节「已经写了等点头」）：**
 - 日报归档、会议纪要草稿归档、评审纪要归档
 - 周报草稿生成
 - 花名册/§0.5 人员变动候选、AI 操作日志 / 过程日志更新
 - 待办缺负责人 → `pm-decisions.md` **块 6**（不落无主待办）；未绑定 WP → **块 5**；已经写了等点头 → **块 8**
 - 风险/问题候选新增为开放
-- 任务 Due Date / 状态中途 / Owner 等过程性更新（写事实源并标记待确认）
+- 任务 Due Date / 状态中途 / Owner 等过程性更新（口径见 00 §3.3）
 
-> 低/中风险先在事实源记录新值并标 `Confirmed By: 待确认`，PM 确认后翻转为 PM 姓名，驳回则恢复原值并追加 `已驳回` 记录。若配置 `update_mode: passive` 则回退为"仅输出建议清单，不写事实源"。
+> 低/中风险先在事实源记录新值并标 `Confirmed By: auto`（见 00 §3.3）。必须确认级仍待确认。若配置 `update_mode: passive` 则回退为"仅输出建议清单，不写事实源"。
 
 **高风险更新（必须确认后才能更新）：**
 - 需求状态确认/取消、需求变更批准
@@ -165,7 +165,7 @@ reviews/YYYYMM/YYYY-MM-DD-[event]-retrospective.md
 >
 > **v2.1.0 废弃路径标注**：`reports/daily/personal/`（任何子目录层级）已废弃，**禁止写入**（见 01 号 §1.2a 与本文件 §12 禁用清单）；周报路径统一为 `reports/weekly/YYYY/YYYY-Wxx.md`（R-1，以 01 号 §3.0 单项目周报为准，不再使用 `YYYY-Wxx-[project]-周报.md` 旧命名）。
 >
-> **v3.4.0**：`reports/timeline/` 懒建（首次生成时间线报时创建），**不列入本标准结构表**，健康检查不得因缺该目录报 P0。历史 `todos/{date}/{owner}.md` **不可变留档**（存根有效性前提）；回改必须登记 `pm-decisions.md` 并标注受影响报告存根可能失效。**受控例外（v3.10.0）**：能耗补录回写**已有**历史日个人文件的 §0.6 允许，须登记 pm-decisions + 存根影响；禁止 `*-energy-*.md`；无该日文件仍不建历史空目录。
+> **v3.4.0**：`reports/timeline/` 懒建（首次生成时间线报时创建），**不列入本标准结构表**，健康检查不得因缺该目录报 P0。历史 `todos/{date}/{owner}.md` **不可变留档**（存根有效性前提）；回改必须登记 `pm-decisions.md` 并标注受影响报告存根可能失效。**受控例外（v3.10.0）**：能耗补录回写**已有**历史日个人文件的 §0.6 允许（非当日投喂），须登记 pm-decisions 块 8 子节「已经写了等点头」+ 存根影响；禁止 `*-energy-*.md`；无该日文件仍不建历史空目录。
 >
 > **v3.9.0**：过程日志 `logs/ops/` 懒建（无 `_index.md` = 尚未发生，不报 P0）。`pm-decisions.md` 懒建，不预建实例。旧 `pending-changes.md` 迁入后进 `backup/`，不再当事实源读。
 
@@ -324,9 +324,9 @@ author: AI辅助生成
 
 - Change Type：`add` / `update` / `remove` / `status` / `archive`
 - Source：来源文件或会议 ID
-- Confirmed By：确认人姓名（AI 建议的记录为"待确认"）
+- Confirmed By：确认人姓名；低/中风险写字面 `auto`（已生效）；必须确认/strict 为 `待确认`
 
-> 主动变更模式下，`Confirmed By: 待确认` 的「已经写了等点头」还必须同步登记到 `pm-decisions.md` **块 8**，与该条目一一对应；PM 确认/驳回后按 14 号处理。块 1–7 以决策文件为权威，禁止用 Change Log 重建。完整机制见 `14-self-check-rules.md`。
+> 仅 `Confirmed By: 待确认` 的「已经写了等点头」还必须同步登记到 `pm-decisions.md` **块 8 子节「已经写了等点头」**，与该条目一一对应；`auto` 不进该子节。PM 确认/驳回后按 14 号处理。块 1–7 以决策文件为权威，禁止用 Change Log 重建。完整机制见 `14-self-check-rules.md`。
 
 > 注：此处的 Change Type 是**记录操作类型**（对事实源记录执行的操作），与 `references/08-change-control-rules.md` 中需求变更**影响分类**（requirement/scope/schedule/cost/resource/plan_change）是两个不同概念域，不可混用。计划变更（plan_change）在待办文件底部 Change Log 中以 `update` 操作 + Description 标注体现，不在本枚举中新增类型。
 

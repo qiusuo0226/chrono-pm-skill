@@ -78,6 +78,7 @@ version: 1.0
 |---|---|---|
 | `pm_name` | 项目基本信息里的项目经理 | 1～2 位，写法 `张三` 或 `张三 / 李四`。初始化询问。**禁止**根据 todos 岗位自动填充/升格 |
 | `current_operator` | 当前操作人（对话里的「我」） | 单值。可随文件夹易主。不必是 pm_name 之一 |
+| `confirmation_level` | 确认面（v3.23.0） | `normal`（缺省）= 00 §3.3 分级即生效；`strict` = 低/中风险恢复待确认 + 进块 8 子节 1。用户说「全部都要我点头」→ `strict`。与 `update_mode` 不是同一开关 |
 
 1. **"我"推导**：出现「我」「我的待办」「给我加个任务」时，**只**用 `current_operator`。
 2. **TD 人名缩写段**：优先 `current_operator`。空则 **ASK**，禁止猜 pm_name 之一。

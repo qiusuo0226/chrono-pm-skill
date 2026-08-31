@@ -320,7 +320,7 @@ PM 方法论、干系人沟通备忘、项目洞察、交付策略等**低结构
 1. PM 主动要求（"记一下/备忘/这个经验记下"）→ 直接追加。
 2. AI 主动感知（仿 17 号 §8.1 自动发现 + pending→confirmed）：对话命中方法论/干系人/洞察/策略信号 → 附加"💡 检测到 N 条候选备忘，是否记入 project-notes？" → PM 确认写入、否定不记录、不阻塞主体任务。
 
-**更新权限**：project-notes 为低结构化追加式记录，属**低/中风险更新**（proactive 模式可直接追加并标 `Confirmed By: 待确认`，与 AI 感知"建议保存→确认"一致），不涉及事实源状态变更。
+**更新权限**：project-notes 为低结构化追加式记录，属**低/中风险更新**（proactive 模式可直接追加，`Confirmed By: auto`，见 00 §3.3），不涉及事实源状态变更。
 
 **与既有文件边界**：`project-context`=结构化背景；`decision-log`=正式决策；`lessons-learned`=复盘产出；`project-notes`=非正式随笔/备忘。
 
@@ -357,7 +357,7 @@ RI 范围判定隐含"合同↔项目 1:1"假设，但现实中为**多对多**�
 | superseded_by | 否 | 合同拆分/替代时的血缘（D8） |
 | Source | 是 | 来源合同/文档 |
 
-> 撰写遵循 SKILL.md 底线 #2（待确认 + `ai/pm-decisions.md`）；写入走主动变更模式标记 `Confirmed By: 待确认`。
+> 撰写遵循 SKILL.md 底线 #2 与 00 §3.3；低/中风险写入 `Confirmed By: auto`。
 
 **文档簇关联（N5）**：招投标/立项/密评等文档与合同成套出现。通过 contract-register 的关联字段形成文档簇：`CON-NNN（合同）← BID-NNN（招标文件）← INIT-NNN（立项批复）← COMP-NNN（密评报告）`。检索"某 PDF 要求 X 在不在合同范围"时，先经文档簇定位对应合同，再走 §8.9.3 路由。
 

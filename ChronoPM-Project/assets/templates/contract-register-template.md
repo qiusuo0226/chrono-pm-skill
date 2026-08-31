@@ -3,7 +3,7 @@
 > RI 检索入口事实源（v3.0.0）。本文件为**项目级**合同登记册，位于 `requirements/contract-register.md`。每个项目各一份，不再作为项目集唯一登记册。
 > 新建编号：`CON-{YYYYMMDD}-{HHmmss}`；存量旧编号 `CON-NNN` 保留不重编。
 > 拆解产物见 `requirements/sources/{编号}/`（本表「拆解文件夹指针」列）；各目录配 `ledger.md`（字段规范见 07 号 §8.9.5）。存量 `{type}-source/` 未迁完时可作 fallback。
-> 写入遵循 SKILL.md 底线 #2（待确认 + pm-decisions）：主动变更写入时标记 `Confirmed By: 待确认` 并登记到决策文件，你确认后方视为生效。
+> 写入遵循 00 §3.3：合同范围/登记若属必须确认则先问再写；低/中风险过程性补全 `Confirmed By: auto`。
 > 结构规则见 `references/07-requirement-rules.md` §8.9。
 
 ## 合同登记表

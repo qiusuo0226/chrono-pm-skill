@@ -3,6 +3,7 @@ doc_type: pm-profile
 project: "[项目名或项目集名]"
 pm_name: "[项目经理，1～2 位：张三 或 张三 / 李四]"
 current_operator: ""
+confirmation_level: normal
 version: v1.0
 date: YYYY-MM-DD
 status: 活跃
@@ -37,7 +38,7 @@ status: 活跃
 | DF-010 | P-WRK | 梳理主动提问 | 梳理日报时主动提出疑问点与分析思路，结合风险/问题/计划/里程碑多角度审视 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | |
 | DF-011 | P-OUT | 完整引用 | 引用任务须写出项目名称+归属计划（PLAN）+任务完整名称，禁止缩略写法 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | |
 | DF-012 | P-OUT | 查询默认未办结 | 待办清单查询默认仅输出未办结（待处理/进行中/已阻塞）；已办结规范见 05 号；展开须显式触发词 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 见 05 号 |
-| DF-013 | P-WRK | 日报100%自动完成 | 日报填写 100% 或「已完成」时对应待办自动改为已完成（先写后告知，仍登记 pm-decisions；未确认不进统计）；进度不足 100% 不自动关单 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | |
+| DF-013 | P-WRK | 日报100%自动完成 | 日报填写 100% 或「已完成」时对应待办自动改为已完成（先写后告知，`Confirmed By: auto`，计入统计，见 00 §3.3）；进度不足 100% 不自动关单 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | |
 | DF-014 | P-WRK | 间接配合进出组 | 间接配合人员进出组：当日有日报=进组/在岗，当日无日报不自动离组；判定落点为待办 §0.5；不得写具体人名 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 无具体人名 |
 | DF-015 | P-CFM | 一次问完 | 待确认事项必须同一轮一次问完（按类分组、编号+背景+选项、回复模板）；完整协议见 21 号 §5.1b | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | 指向 §5.1b |
 | DF-016 | P-WRK | 非本项目不入库 | 成员日报/口述中属于其他项目的工作，本项目不建待办、不写日报存档以外的事实源 | confirmed | — | built-in default | YYYY-MM-DD | YYYY-MM-DD | — | |

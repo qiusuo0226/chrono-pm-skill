@@ -3,7 +3,7 @@ name: chrono-pm-project
 version: 3.22.0
 schema_version: 0.16.0
 updated_at: 2026-08-31
-description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/整理记录/补全/回填/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好、画图、责任链图。支持主动变更+人工确认：写入即标记待确认并登记 pm-decisions，确认后生效。需求只绑工作包，计划只绑工作包。
+description: Markdown 驱动的单项目 AI 项目管理技能。覆盖需求、待办、进度、风险问题、里程碑、成本、日报周报、会议纪要、决策、复盘、初始化向导、计划、完整性巡检、历史计划导入、词库、PM 偏好。录入只发生在本项目 ai 目录。跨项目归集/检索请使用伴生技能 ChronoPM-Portfolio（只读）。触发：项目管理、日报、周报、风险登记册、需求追踪、里程碑、ChronoPM、记录/整理记录/补全/回填/更新/归档/入库/评审/验收、会议纪要、合同登记、初始化项目、倒排、待办、完整性巡检、词库、偏好、画图、责任链图。支持主动变更：低/中风险写入即生效（Confirmed By: auto）；高风险确认前不写该笔；确认清单不阻断其他动作。需求只绑工作包，计划只绑工作包。
 ---
 # ChronoPM-Project — 单项目 Markdown 项目管理技能
 
@@ -38,8 +38,8 @@ project-root/
 ```
 联邦集工作区（Portfolio 使用，本包不创建）：`ai/portfolio/` + `ai/projects/{名}/ai/`（内部即上图）。项目 ai 内禁止再出现 `portfolio/` 或 `projects/`。
 
-## 4. 事实源（须确认后生效；主动变更先写后确认）
-写入即 `Confirmed By: 待确认`、登记 `pm-decisions.md`，确认前不进已完成统计、不参与超期判定。
+## 4. 事实源（低/中风险写入即生效；高风险确认前不写该笔）
+口径见 `00-pm-main-rules.md` §3.3。低/中风险：`Confirmed By: auto`，不进 `pm-decisions.md` 块 8 子节「已经写了等点头」，计入统计。仅 `Confirmed By: 待确认` 不进完成统计/超期。确认清单不阻断同一轮其他动作。`confirmation_level: strict` 恢复 3.22 全确认。
 
 | 文件 | 对象 |
 |------|------|
@@ -87,7 +87,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 5.2 日报
 先判定是否本项目 → 原文进 inbox → 合并进当天一人一份个人文件 → 映射待办（够正式的未匹配进展自动建待办）。禁止写入 `reports/daily/`。明日计划留在当天原文，次日才落待办。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
 ### 5.3 查询
-本项目事实源。跨项目用 Portfolio。简单查询仍只载 05，但 **每一次查询**须先 P-VIEWS（命令写在 05 文首，不因此加载 00）：有 Python 则跑本 Skill 包 `scripts/refresh_views.py --project-root <根> --all`；无 Python / 失败 → 不阻断，定向读事实并声明 as-of。有 `brain.md` 且 facts 指纹一致 → 先读 brain/`alias_index`，再最多打开 1～3 个事实文件。全库扫 / 扫 `backup/` = 本轮失败。横幅只实时读 `pm-decisions.md`。待办清单输出见 05（默认未办结；未确认终态仍可见）。日报内容默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`。只读查询禁止因 inbox 非空 AUTO C'，禁止因此 Step 0。
+本项目事实源。跨项目用 Portfolio。简单查询仍只载 05，但 **每一次查询**须先 P-VIEWS（命令写在 05 文首，不因此加载 00）：有 Python 则跑本 Skill 包 `scripts/refresh_views.py --project-root <根> --all`；无 Python / 失败 → 不阻断，定向读事实并声明 as-of。有 `brain.md` 且 facts 指纹一致 → 先读 `context/brain.md` 别名短表（不得默认打开 `active-entities.json`）；未中按 05 §2 打开路由文件；写入/对齐/查重（P-RESOLVE）才打开 entities。再最多打开 1～3 个事实文件。全库扫 / 扫 `backup/` / 全库语义扫 = 本轮失败。纯查询横幅见 05 §1a（N>0 一行，不铺清单）。待办清单输出见 05（默认未办结；`待确认` 终态仍可见；`auto` 按已确认）。日报内容默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`。只读查询禁止因 inbox 非空 AUTO C'，禁止因此 Step 0。
 ### 5.4 其他
 需求变更 08；结转 22（含 Step 0.5 共享人力提示）；历史计划 15。时间线报/月报（自然月）见 01 号 §4a：懒建 `reports/timeline/`，判重四案，非精确重合整段从 todos 重汇聚。
 
@@ -128,7 +128,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 
 ## 7. 安全底线
 1. 不得编造；不足须说明缺什么。
-2. 不得未经确认改事实源（主动变更须待确认 + pm-decisions + 可回滚；未确认不进完成统计/超期）。
+2. 不得未经确认改**必须确认级**事实源。低/中风险按 00 §3.3 写入即生效（`Confirmed By: auto`，可回滚靠 Change Log）；仅 `待确认` 不进完成统计/超期。确认清单不得阻断同一轮其他录入、查询、结转、出报。
 3. 不得把日报/纪要当事实源结论。
 4. 不得混淆需求与任务、风险与问题。需求不写进工作包正文。计划不列待办。
 5. 推测必须标注。

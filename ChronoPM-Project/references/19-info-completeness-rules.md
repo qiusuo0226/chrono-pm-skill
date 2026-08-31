@@ -64,7 +64,7 @@ python scripts/verify_todo_continuity.py --root <项目根>
 - 汇总里程碑状态
 - 跨项目统筹分析（本包不巡检集层路径；请到 ChronoPM-Portfolio 对话）
 - 导出 Excel/Word/PDF 报告
-- 生成/管理待裁定事项（确认/驳回/巡检 `pm-decisions.md` 八块开放行；**仅块 8「已经写了等点头」**与 Change Log `Confirmed By: 待确认` 一一对应，不一致以 Change Log 重建该块；块 1–7 以决策文件为权威。横幅 N=八块开放行之和）
+- 生成/管理待裁定事项（确认/驳回/巡检 `pm-decisions.md` 八块开放行；**仅块 8 子节「已经写了等点头」**与 Change Log `Confirmed By: 待确认` 一一对应，该子节禁 `auto` 行，不一致以 Change Log 重建该子节；块 1–7 以决策文件为权威。横幅 N=须人裁定开放行之和，`auto` 不计）
 - 最近合法日 inbox 非空：本轮 **AUTO 跑 C'**（无并发），不向人派单；claim 直接删。报告只列本次自动合并了哪些残留稿
 - 检查 Change Log 活跃区归档阈值（活跃区超 50 行或超 30 天触发按月归档到 `change-log/archive/YYYYMM-change-log.md` 并更新 `change-log/index.md`）
 
