@@ -1,0 +1,151 @@
+{
+  "name": "chrono-pm-portfolio",
+  "displayName": "ChronoPM-Portfolio — 只读项目集归集",
+  "version": "3.23.0",
+  "schemaVersion": "0.7.0",
+  "supportedWorkspaceSchema": {
+    "min": "0.9.0",
+    "current": "0.16.0"
+  },
+  "description": "给项目集/组合经理用的只读 Skill。跨多个项目 ai 目录归集检索进度、风险、合同、周报。禁止写入成员项目事实源。",
+  "modes": [
+    "viewer"
+  ],
+  "entry": "SKILL.md",
+  "referencesDir": "references",
+  "templatesDir": "assets/templates",
+  "requires": {
+    "python": ">=3.9"
+  },
+  "versionHistory": [
+    {
+      "version": "3.23.0",
+      "date": "2026-08-31",
+      "summary": "版本锁步 3.23.0。as-of + auto 按已确认。禁止 cache 目录。"
+    },
+    {
+      "version": "3.22.0",
+      "date": "2026-08-31",
+      "summary": "版本锁步 3.22.0。本包无行为变更。"
+    },
+    {
+      "version": "3.21.1",
+      "date": "2026-08-30"
+    },
+    {
+      "version": "3.21.0",
+      "date": "2026-08-30"
+    },
+    {
+      "version": "3.20.0",
+      "date": "2026-08-29"
+    },
+    {
+      "version": "3.19.0",
+      "date": "2026-08-27"
+    },
+    {
+      "version": "3.18.0",
+      "date": "2026-08-27"
+    },
+    {
+      "version": "3.17.0",
+      "date": "2026-08-26"
+    },
+    {
+      "version": "3.16.0",
+      "date": "2026-08-26",
+      "summary": "同号对齐，能力变更见 Project。schema 保持 0.16.0。"
+    },
+    {
+      "version": "3.15.0",
+      "date": "2026-08-25"
+    },
+    {
+      "version": "3.14.0",
+      "date": "2026-08-25",
+      "summary": "锁步3.14.0：各项目budget读project-info/budget.md；里程碑口径改为WP§8关键阶段。"
+    },
+    {
+      "version": "3.13.0",
+      "date": "2026-08-24",
+      "summary": "锁步3.13.0：V-13时间窗归集正常计划WP；集层技能缺口落reports。"
+    },
+    {
+      "version": "3.12.0",
+      "date": "2026-08-24",
+      "summary": "锁步3.12.0：待办WP Ref单值聚合；缺/多值当脏数据不双计。"
+    },
+    {
+      "version": "3.11.0",
+      "date": "2026-08-24",
+      "summary": "锁步3.11.0：能力零改动。"
+    },
+    {
+      "version": "3.10.0",
+      "date": "2026-08-23",
+      "summary": "锁步3.10.0：集层portfolio/logs懒建；查成员日志按管理路径推导；待办列表项目名+TD。"
+    },
+    {
+      "version": "3.9.0",
+      "date": "2026-08-22",
+      "summary": "锁步3.9.0：只读成员ops-index与pm-decisions；不读inbox；过程日志不当进度。"
+    },
+    {
+      "version": "3.8.0",
+      "date": "2026-08-22"
+    },
+    {
+      "version": "3.7.0",
+      "date": "2026-08-21"
+    },
+    {
+      "version": "3.6.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步+V-8 双形态只读(Minor)：成员 sources/{簇 ID}/ 优先，未迁完可读 {type}-source/；去重键不变。"
+    },
+    {
+      "version": "3.5.1",
+      "date": "2026-08-20"
+    },
+    {
+      "version": "3.5.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步+成员项目wps/只读加速(Minor)：workspace schema 感知 0.10.0；禁止写入成员 WP 文件。"
+    },
+    {
+      "version": "3.4.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步+集周报临时摘改指向todos §3(Minor)。"
+    },
+    {
+      "version": "3.3.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步+共享人力按中文名归并(Minor)：不按TD缩写跨项目聚合。"
+    },
+    {
+      "version": "3.2.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步(Minor)：与 Project 3.2.0 共用版本线。本包规则零改动。"
+    },
+    {
+      "version": "3.1.1",
+      "date": "2026-08-20",
+      "summary": "版本锁步 + 补齐 governance/migrations 指针(Patch)：与 Project 3.1.1 共用版本线。规则零改动。主包 upgrade 为准。"
+    },
+    {
+      "version": "3.1.0",
+      "date": "2026-08-20",
+      "summary": "版本锁步(Minor)：与 ChronoPM-Project 3.1.0 共用版本线。本包规则零改动；04 号 L35 reports/daily/ 只读引用随 CR-D 处置。"
+    },
+    {
+      "version": "3.0.0",
+      "date": "2026-08-19",
+      "summary": "初版（Major/architecture_change）：独立只读伴生 Skill。写归 ChronoPM-Project，读归本包。联邦结构 ai/portfolio/ + ai/projects/{名}/ai/。只读契约五条；能力 V-1~V-10；无 init 脚本。旧 09 号项目集规则整文件迁入本包。"
+    }
+  ],
+  "blueprint": {
+    "lastUpdated": "2026-08-31",
+    "lastVersion": "3.23.0"
+  }
+}
