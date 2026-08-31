@@ -4,7 +4,33 @@
 
 ---
 
-## 3.21.1 — 2026-08-30（本次发布）
+## 3.22.0 — 2026-08-31（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。会议转写走 WF-3 快路径（先纪要后结转，禁止误入源文档拆解）；结转脚本包内路径 + 空花名册回退；查询每次比指纹、SRC 进 alias、只读不 C'/Step 0；查询轮不自动写词库 pending。问答残差：提问带对象、宿主假执行门拆穿。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **830**。
+
+Blueprint Impact: full
+
+### Added
+- 会议快路径：转写/纪要/例会导出禁止改走 P-SPLIT（除非明示拆进 sources）
+- `carryover_step0.py` `ROSTER_FALLBACK` / `FAIL:ROSTER_EMPTY`（exit 2）
+- `refresh_views.py` SRC meta → alias_index；brain 别名短表
+- migrate dry-run 疑似会议误拆检测
+- 回归 Module 76 + 77（合计 **830**）
+
+### Changed
+- 05 每一次查询 if-else P-VIEWS；只读禁止 AUTO C' 与 Step 0
+- 17 查询轮禁止自动 pending；升格只认命题
+- examples/08 删除 T-A4 的 A/B/C 可选化
+- 00 WF-3 与 02 T-A4 对齐：先归档再结转
+
+### Fixed
+- 结转脚本在业务 cwd 找不到后手搓全员
+- 花名册 §1 空表解析 0 人仍 exit 0
+- 查询把对话推断当检索命中
+
+---
+
+## 3.21.1 — 2026-08-30（released）
 
 > Patch。百科引擎对齐修复：废弃包 `superseded_by` 重定向；词库 term 不被 WP 功能点 alias 覆盖；SKILL 标明联邦集 `--project-root`。schema **保持 0.16.0**。回归仍认 **807**（ALI-001/002 行为按此补丁）。
 

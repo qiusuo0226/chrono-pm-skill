@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.21.1",
+  "version": "3.22.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -102,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.22.0",
+      "date": "2026-08-31",
+      "summary": "会议快路径+结转花名册回退+查询指纹定位+口低证高+问答残差。schema保持0.16.0。双包同版本。Module 76+77（总计830）。"
+    },
     {
       "version": "3.21.1",
       "date": "2026-08-30"
@@ -514,8 +519,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-30",
-    "lastVersion": "3.21.1",
+    "lastUpdated": "2026-08-31",
+    "lastVersion": "3.22.0",
     "updateRequiredOn": [
       "major",
       "minor",
