@@ -105,7 +105,7 @@ Skill 包根 = 与 `SKILL.md` 同级。CQ-5：禁对话记忆当证据；指纹�
 | 任务查询 | “张三在做什么？” | todos/{date}/ 待办文件（按 Owner 筛选） |
 | TD 编号反查 | "TD-CJJ-20260820-001 是谁的？""TD-SJJ-xxx" | 最新合法日 `todos/{date}/_index.md` **§6 TD 缩写映射**（双键：先匹配现行缩写，未中再匹配历史别名）；命中后读该人 todos。旧号不重编。跨项目归并请用 Portfolio（按中文名，不按缩写） |
 | 需求查询 | "需求完成多少了？" | requirements/requirement-register.md |
-| 源文档 / 拆解产物 | "这份合同拆了没？""SRC-001 摘要" | 先读 `requirements/sources/_index.md` → `_digest.md`；取证才读 atoms/facts（分片先读 atoms/_index.md）。未零清旧结构 → 门禁阻断并出零清清单 |
+| 源文档 / 拆解产物 | "这份合同拆了没？""SRC-001 摘要" | **仅** SRC 编号/合同「拆了没」走本行：`requirements/sources/_index.md` → `_digest.md`；取证才读 atoms/facts。主题定位（如「住所核验现在怎样」）先走 §0 alias 一跳，禁止为本行全库扫。未零清旧结构 → 门禁阻断并出零清清单 |
 | 对账 / 查重 | "对账""同源合同" | WF-SD-1（07 §8.12）；提示一次不阻断主体任务 |
 | 重拆 / 二次拆解 | "再拆一下这份" | WF-SD-2（07 §8.6）；指纹未变则跳过 |
 | 风险/问题历史 | "某风险怎么演变的" | `risks/index.md` 或 `issues/index.md` → 活跃册条目时间线表；必要时按索引读归档册（归档=活历史，索引受控可读；禁止遍历 `backup/`） |

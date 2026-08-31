@@ -78,7 +78,7 @@ ELSE：
 
 1. **日级完成检查**（时机 0 / N-43）：今天 `_index.md` 存在且 `carryover_done_for_today` **恰好**为 `true` 且应建档文件齐全 → 跳过 Step 0。缺失 / false / 「部分」等 = 未完成
 2. **读取最新合法日** `_index.md`（不必是日历昨天）
-3. **有 Python ≥3.9**：先跑 `python scripts/carryover_step0.py --root <项目根>`。AI 只处理 stdout 的 `ASK:`。exit ≠ 0 时 **只对 FAIL 的人**按 §6 E5 兜底，不算手搓全员。exit 0 后再手搓全员重写 = 级联失败
+3. **有 Python ≥3.9**：先跑本 Skill 包 `scripts/carryover_step0.py --root <项目根>`（与 SKILL.md 同级；`--root` 才是项目根。禁止在业务 cwd / `ai/` 找脚本）。AI 只处理 stdout 的 `ASK:` / `ROSTER_FALLBACK` / `FAIL:`。exit ≠ 0 时 **只对 FAIL 的人**按 §6 E5 兜底，不算手搓全员。`FAIL:ROSTER_EMPTY` → 禁止手搓全员。exit 0 后再手搓全员重写 = 级联失败
 4. **无 Python / 对失败人 E5**：对花名册除已出组的每人做「拷贝后裁剪」（禁止字节级整文件复制）。当天文件已存在（已投喂日报）→ **不覆盖 §2**，只补缺失的未办结行
 5. **裁剪表**（机械段必须执行）：
 

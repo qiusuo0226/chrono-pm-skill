@@ -83,7 +83,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 无 `--mode portfolio`。向导见 `18-init-wizard-rules.md`（含成本核算方式必填）。
 ### 5.1b 版本检查（进入工作区先做）
 读 `ai/.skill-version.json` → 比 Skill `VERSION`。Skill < 工作区版本 → 提示升级 Skill + 只读降级。见 `20-workspace-version-rules.md`。
-随后 **P-VIEWS**：有 Python 则 `python scripts/refresh_views.py --project-root <根> --all`（指纹未变不写盘）。`<根>` = **单项目根**（其下直接有 `ai/wps/`）。联邦集工作区须指向成员项目根 `.../ai/projects/{项目名}`，**禁止**对集根或 `.../ai`（只有 `portfolio/`+`projects/`）跑 `--all`，否则会写出空视图。无 Python / 无 `.state.json` / 脚本失败 → 不阻断；查询读事实原文并声明 as-of。缺 `context/brain.md` 不致命。
+随后 **P-VIEWS**：有 Python 则跑本 Skill 包 `scripts/refresh_views.py --project-root <根> --all`（与 SKILL.md 同级；指纹未变不写盘）。`<根>` = **单项目根**（其下直接有 `ai/wps/`）。联邦集工作区须指向成员项目根 `.../ai/projects/{项目名}`，**禁止**对集根或 `.../ai`（只有 `portfolio/`+`projects/`）跑 `--all`，否则会写出空视图。无 Python / 无 `.state.json` / 脚本失败 → 不阻断；查询读事实原文并声明 as-of。缺 `context/brain.md` 不致命。
 ### 5.2 日报
 先判定是否本项目 → 原文进 inbox → 合并进当天一人一份个人文件 → 映射待办（够正式的未匹配进展自动建待办）。禁止写入 `reports/daily/`。明日计划留在当天原文，次日才落待办。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
 ### 5.3 查询

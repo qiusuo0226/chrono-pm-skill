@@ -85,7 +85,10 @@ SKILL §5/§6 会议排除、脚本包内路径、查询先 P-VIEWS；00 §2.7 �
 - [x] 双包 3.22.0；schema 0.16.0；audit 17/17
 - [x] planning/ 仅留 README
 
-### 收尾补记（2026-08-31，待用户核验）
+### 收尾补记（2026-08-31，不另起版本）
 
-- 施工完成。audit 17/17 通过。AP 已删。Grok 安装区**不代更**。
-- 业务仓 B 节 skip；未写市监。
+- 用户核验通过并指示收尾。Grok 安装区**不代更**。
+- B2 验收漏改已补：22 §3 第 3 步、SKILL §5.1b 包内路径；05 源文档行加主题/取证边界。
+- 施工收尾核对：`governance-shared/review-checklists/review-20260831-3.22.0.md`，结论 **通过-升级成功**。
+- 四 CR Status=completed；planning/ 仅 README。
+- 业务仓未代迁（B 节 skip）。
