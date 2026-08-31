@@ -6,6 +6,7 @@
 |---|---|
 | `references/07-requirement-rules.md` | §8.6 / §8.9.5 / §8.11–§8.14（WF-SD-1/2、分片、自动编号） |
 | `references/05-query-rules.md` | 源文档路由；对账/重拆 |
+| `references/02-meeting-rules.md` / 00 WF-3 | 会议转写/纪要不走本目录（v3.22.0） |
 | `references/06-file-rules.md` | atoms/facts 分片例外；parse-log 归档；软阈值 |
 | `references/14-self-check-rules.md` | D24 |
 | `references/17-domain-glossary-rules.md` | 拆解术语节流 |
@@ -19,7 +20,7 @@
 
 ## 回归
 
-`tests/regression-suite.md` Module 53（SD-001~006）+ Module 54（SD-101~113）
+`tests/regression-suite.md` Module 53（SD-001~006）+ Module 54（SD-101~113）+ Module 76 MTG（会议≠拆解）
 
 ## 迁出步骤（未来）
 

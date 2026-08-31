@@ -17,7 +17,7 @@ version: 1.0
 
 - 本规则是 `00-pm-main-rules.md` §4c（硬阻断要点）与 WF-8 Step 0 的完整机制承载。
 
-**有 Python ≥3.9**：Step 0 机械段先跑 `python scripts/carryover_step0.py --root <项目根>`（拷贝后裁剪，人人一份）。AI 只处理 stdout 的 `ASK:` 行。脚本 exit ≠ 0 时 **只对 FAIL 的人**按 §6 E5 兜底，不算手搓全员。exit 0 后再手搓全员重写 = 级联失败。
+**有 Python ≥3.9**：Step 0 机械段先跑本 Skill 包 `scripts/carryover_step0.py --root <项目根>`（与 SKILL.md 同级；`--root` 才是项目根。禁止在业务 cwd / `ai/` 判断「脚本不存在」后手搓全员）。AI 只处理 stdout 的 `ASK:` / `ROSTER_FALLBACK` / `FAIL:` 行。脚本 exit ≠ 0 时 **只对 FAIL 的人**按 §6 E5 兜底，不算手搓全员。`FAIL:ROSTER_EMPTY` → 禁止手搓全员。exit 0 后再手搓全员重写 = 级联失败。
 
 **无 Python**：AI 按同一套拷贝后裁剪执行，**禁止跳过**。禁止自动离组。
 - 结转标记落点：`todos/{date}/_index.md` §2（模板见 `assets/templates/daily-todo-binding-template.md`）

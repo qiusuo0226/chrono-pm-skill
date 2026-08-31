@@ -13,7 +13,7 @@
 
 ## 回归
 
-`tests/regression-suite.md` RN-001～004
+`tests/regression-suite.md` RN-001～011
 
 ## 迁出步骤（未来）
 

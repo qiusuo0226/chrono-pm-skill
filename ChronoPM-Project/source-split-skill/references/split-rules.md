@@ -2,6 +2,8 @@
 
 由 P-DOC-INGEST / P-SPLIT 加载本文件（SKILL.md「源文档拆解」行）。禁止未加载本文件就声称已拆解入库。需求/工作包绑定见 Project `07-requirement-rules.md`。
 
+**不是本文件**：会议转写、会议纪要、例会录音稿、腾讯/视频会议导出 → 走 Project WF-3 / `02-meeting-rules.md`。仅当用户明示「把这份会议拆进 `sources/` / 当需求源文档」才加载本文件。
+
 **工人只写** `requirements/sources/{编号}/atoms/part-NN-*.md`（或 facts 分片）。ledger、`sources/_index.md`、parse-log 收尾由协调者写。禁止工人写 `_index`。
 
 拆解只产需求清单条目（默认未确认），**不落待办**。

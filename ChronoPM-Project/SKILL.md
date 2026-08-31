@@ -74,7 +74,7 @@ python --version
 - Mac：`brew install python3`
 - Linux：`sudo apt update && sudo apt install python3`
 
-装完再跑脚本。日常记待办、查进度 **可不依赖** Python。结转：有 Python 则优先 `scripts/carryover_step0.py`；无 Python 仍按 22 号全员结转，**禁止跳过**。
+装完再跑脚本。日常记待办、查进度 **可不依赖** Python。结转：有 Python 则优先本 Skill 包 `scripts/carryover_step0.py`（与 SKILL.md 同级，`--root` 指向项目根，禁止在业务 cwd/`ai/` 找脚本后手搓全员）；无 Python 仍按 22 号全员结转，**禁止跳过**。
 
 ### 5.1 初始化
 ```bash
@@ -87,19 +87,19 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 5.2 日报
 先判定是否本项目 → 原文进 inbox → 合并进当天一人一份个人文件 → 映射待办（够正式的未匹配进展自动建待办）。禁止写入 `reports/daily/`。明日计划留在当天原文，次日才落待办。疑似他项目：拆分+分流，禁代写。见 `01-daily-report-rules.md`。
 ### 5.3 查询
-本项目事实源。跨项目用 Portfolio。有 `brain.md` 且 facts 指纹一致 → 先读 brain，再最多打开 1～3 个事实文件。简单查询仍只载 05。横幅只实时读 `pm-decisions.md`。待办清单输出见 05（默认未办结；未确认终态仍可见）。日报内容默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`。
+本项目事实源。跨项目用 Portfolio。简单查询仍只载 05，但 **每一次查询**须先 P-VIEWS（命令写在 05 文首，不因此加载 00）：有 Python 则跑本 Skill 包 `scripts/refresh_views.py --project-root <根> --all`；无 Python / 失败 → 不阻断，定向读事实并声明 as-of。有 `brain.md` 且 facts 指纹一致 → 先读 brain/`alias_index`，再最多打开 1～3 个事实文件。全库扫 / 扫 `backup/` = 本轮失败。横幅只实时读 `pm-decisions.md`。待办清单输出见 05（默认未办结；未确认终态仍可见）。日报内容默认先读 `todos/{date}/*.md` §2+§3，禁止先探测 `reports/daily/`。只读查询禁止因 inbox 非空 AUTO C'，禁止因此 Step 0。
 ### 5.4 其他
 需求变更 08；结转 22（含 Step 0.5 共享人力提示）；历史计划 15。时间线报/月报（自然月）见 01 号 §4a：懒建 `reports/timeline/`，判重四案，非精确重合整段从 todos 重汇聚。
 
 ## 6. 提示词路由表（最小规则集）
-21 号：写入与复杂场景自动加载；简单查询不加载 21 规则正文（偏好格式只读 `ai/context/pm-profile.md`）。WF-8 新建待办 = 00+22+21+06+23。命中拆文件/拆文档 → 改走「源文档拆解」行，禁止只走「更新意图」。WP 状态历史见 00。词库感应见 17 §8.4。过程签名见 23（纯查询不载）。问答规范：写入/确认/方案/出文件/复杂分析叠加加载 `reply-norm-skill/references/reply-rules.md`；简单查询不加载该全文（靠底线 14–16 与 05 短条）。`reply-norm-skill/` 是能力目录，不是独立 Skill，禁止宿主扫成第二个 Skill。
+21 号：写入与复杂场景自动加载；简单查询不加载 21 规则正文（偏好格式只读 `ai/context/pm-profile.md`）。WF-8 新建待办 = 00+22+21+06+23。命中拆文件/拆文档 → 改走「源文档拆解」行，禁止只走「更新意图」。**命中会议转写/纪要/例会导出 → 走会议纪要行，禁止改走源文档拆解**（除非用户明示拆进 `sources/`）。WP 状态历史见 00。词库感应见 17 §8.4。过程签名见 23（纯查询不载）。问答规范：写入/确认/方案/出文件/复杂分析叠加加载 `reply-norm-skill/references/reply-rules.md`；简单查询不加载该全文（靠底线 14–16 与 05 短条）。`reply-norm-skill/` 是能力目录，不是独立 Skill，禁止宿主扫成第二个 Skill。
 
 | 场景 | 必须加载 | 可选 |
 |------|----------|------|
 | 初始化向导 | 00+06+18 | — |
 | 完整性巡检 | 00+06+19 | 01/02/04-08 |
 | 日报 | 00+01+06+17+22 | 04、07、10 |
-| 会议纪要 | 00+02+06+17 | 04、07、08 |
+| 会议纪要 | 00+02+06+17 | 04、07、08。命中会议转写/纪要/例会导出禁止改走源文档拆解 |
 | 需求评审/变更 | 00+07+08+06 | — |
 | 待办文件更新 | 00+06+23 | 10 |
 | 待办创建 WF-8 | 00+22+21+06+23 | 01、02、07、08、10 |

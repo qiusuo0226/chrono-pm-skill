@@ -12,12 +12,32 @@
 
 细则见 `reply-norm-skill/references/reply-rules.md`（本场景默认不加载全文）。
 
+### 0. 每一次查询硬步骤（v3.22.0；不加载 00）
+
+```
+每一次查询（同一会话第 2 问也一样，禁止「本会话刷过就不再比」）：
+  IF 有 Python ≥3.9：
+      python "<Skill包根>/scripts/refresh_views.py" --project-root "<项目根>" --all
+      指纹未变不得 --force 重写
+      读 ai/.state.json 的 facts_fingerprint 须与本次脚本结果一致
+      不一致 = stale，禁止用旧 brain 作答
+  ELSE（无 Python 或脚本失败）：
+      不阻断、不报错当失败门
+      不读过期 brain 当真理
+      按四个加速器定向读：wps/_index.md、requirements/sources/_index.md、
+      最新合法日 todos/_index.md、risks/risk-register.md，声明 as-of（BRN-004）
+  然后：alias_index / brain 别名表一跳 → 最多打开 1～3 个事实文件
+  第 4 个起 = 本轮查询失败。禁止 glob ai/、禁止 backup/、禁止上轮对话当证据。
+```
+
+Skill 包根 = 与 `SKILL.md` 同级。CQ-5：禁对话记忆当证据；指纹一致的 alias **必须**用来找路，然后实读命中文件。
+
 ---
 
 ## 1. 查询处理流程
 
 ```
-用户提问 → 判断问题类型 → 按路由表加载对应提示词 → 前置检查 pm-decisions.md（见 §1a，**实时读，禁止从 brain 抄待拍板**）与 inbox（见 §1b） → 有 brain 且 facts_fingerprint 一致则先读 `context/brain.md`，再最多打开 1～3 个事实文件；无 brain / 无 .state / 脚本失败则读原文并声明 as-of → 输出结论+证据指针+不确定项
+用户提问 → 判断问题类型 → 按路由表加载对应提示词 → **先跑 §0 硬步骤** → 前置检查 pm-decisions.md（见 §1a，**实时读，禁止从 brain 抄待拍板**）与 inbox（见 §1b） → 有 brain 且 facts_fingerprint 一致则先读 `context/brain.md`/`alias_index`，再最多打开 1～3 个事实文件；无 brain / 无 .state / 脚本失败则读原文并声明 as-of → 输出结论+证据指针+不确定项
 
 ### 1.0a 回复粒度（v3.21.0，≤40 行）
 
@@ -47,11 +67,13 @@
 
 - 查对话过程、本轮改了哪些文件、出处、用量：先读 `ai/logs/ops/_index.md`（无则尚未发生过过程日志），再按 index 打开当日 `logs/ops/YYYY-MM-DD.md` / `-errors.md` / `-pN`。旧列日文件声明「旧格式，不作数」。日志**不是**事实源，不能替代 todos/registers。
 - **禁止**把 `todos/{date}/inbox/` 稿或 `.claim-*` 当事实源、进度或人员名单。
-- 发现当日或最近合法日 inbox 非空：本轮 **AUTO 跑 C' 合并**（查询无并发），不向人派单、不把残留稿派成待办。合并规则见 06 号。
+- 发现当日或最近合法日 inbox 非空：**只读查询只 HINT**「有未合并稿」，禁止 AUTO C'，禁止因此 Step 0。写入意图才 C'。合并规则见 06 号。
 
 ## 1.5 查询术语归一化
 
 查询处理流程增加前置步骤：读本项目 `context/domain-glossary.md`（如存在）→ 扫提问中的术语缩写 → 仅 `confirmed` 映射替换（`pending` 输出提示"按候选理解"）→ 按标准名称进入路由表 → 正常查询流程。
+
+**查询轮禁止写词库**（v3.22.0）：禁止触发 17 §6.1 第 6 步 / §8.1 自动写入 pending。生词最多一张 SUGGEST（≤7 个词）。用户点名「写这几个」才 pending；T1/T2 才 confirmed。「有道理 / 80%」不是确认。
 
 **示例：** 用户问"农专注销进度"；"农专"为 confirmed，映射为"农民专业合作社"，按"农民专业合作社+注销"路由到任务/风险/里程碑查询。
 
@@ -162,7 +184,7 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 | 我明天/今天的待办 | PM 当日待办文件 `todos/{date}/{PM姓名}.md` + 绑定文件 `todos/{date}/_index.md` | 本项目 `todos/{date}/` 待办文件 | 全量扫描所有日报/会议 |
 | 明天大家做什么 | 绑定文件 `todos/{date}/_index.md` → 各人待办文件 | 本项目 `todos/{date}/` 待办文件 | 创建临时脚本扫描 |
 | 本周重点是什么 | `todos/{date}/` 待办文件（按本周 Due Date 过滤） | 最近周报 + PLAN 文件 | 全量扫描历史周报 |
-| 某人的任务 | **直接读取** `todos/{today}/{owner}.md`；若文件不存在 → **触发 Step 0 结转检查**（读前一天 `_index.md` → 扫描未办结待办 → 生成今天文件）→ 读取生成后的文件（见 §2.5a） | 绑定文件 `_index.md`（仅用于确认当天有哪些人） | 逐日扫描该人历史待办（除非用户明确问"历史"） |
+| 某人的任务 | **直接读取** `todos/{today}/{owner}.md`；若文件不存在 → **只读查询 HINT「今日待办未结转」，禁止 Step 0 / 不建档**（见 §2.5a） | 绑定文件 `_index.md`（仅用于确认当天有哪些人） | 逐日扫描该人历史待办（除非用户明确问"历史"）；只读查询手搓全员 |
 | 项目进展如何 | `wps/_index.md` + `wps/WP-*.md` + PLAN §3 引用简表（**只聚合 WP，不读 PLAN 正文待办行**） | 待办按 WP Ref 实时聚合 | 把 PLAN 当待办清单；全量扫描过程记录 |
 | 当前风险 | `risks/risk-register.md`（开放/监控中） | 最近周报 | 全量扫描历史周报 |
 | 当前问题 | `issues/issue-register.md`（未关闭） | `todos/{date}/` 待办文件（已阻塞） | 全量扫描历史日报 |
@@ -183,19 +205,10 @@ PM 问"我明天的待办""明天做什么"时，AI 必须输出 **PM 全景待�
 **强制流程**：
 1. **直接读取** `todos/{today}/{owner}.md`（today = 当前日期）
 2. 若文件存在 → 直接输出待办内容
-3. 若文件不存在 → **触发 Step 0 结转检查**（`00-pm-main-rules.md` §4c / `22-carried-over-rules.md`）：
-   a. 读前一天 `todos/{date-1}/_index.md`
-   b. 扫描该人前一天的未办结待办
-   c. 生成 `todos/{today}/{owner}.md`（写入结转待办）
-   d. 输出"已自动生成今日待办文件（结转自 {date-1}）" + 待办内容
+3. 若文件不存在 → **只读查询禁止 Step 0、禁止建今天 todos**。对外 HINT：「今日待办还没结转。要生成本日文件再说一声。」用户明确要求结转/生成本日待办才走 22。
 4. **禁止**：逐日扫描该人的历史待办文件（除非用户明确问"朱嵩上周的待办""朱嵩历史任务"）
 
-**违规处理**：若 AI 逐日扫描历史文件而非直接读取今天文件，必须在输出中标注「⚠️ 查询路径错误：应直接读取今天文件，而非扫描历史」。
-
-**安全底线 2 约束**：查询触发的结转生成属于"查询触发的事实源写入"，必须满足：
-1. 生成的文件头部标注 `[来源: 查询触发结转（自动生成），结转自 {date-1}]`
-2. 查询输出中明确告知"今日文件不存在，已自动生成结转"，并提示 PM 确认
-3. PM 明确否认（如"此人今日休假/已离组"）→ 删除生成的文件，并在 `_index.md` 记录否认原因
+**违规处理**：若 AI 逐日扫描历史文件而非直接读取今天文件，必须在输出中标注「⚠️ 查询路径错误：应直接读取今天文件，而非扫描历史」。只读查询若自动结转/手搓全员 = 本轮失败。
 
 ### Quick Query 路由注：RI 范围判定四步路由（CR-20260813-002）
 
@@ -394,7 +407,7 @@ WF-1/WF-2 等涉及待办的流程，当待办存在 `Requirement Ref`（REQ-XXX
 | 查询意图 | 直接读取文件 | 跳过的环节 |
 |---|---|---|
 | 版本查询 | ai/.skill-version.json | 不读 SKILL.md、不读 06-file-rules |
-| 待办查询 | **直接读取** `todos/{today}/{owner}.md`；若不存在 → **触发结转生成**（见 §2.5a） | 不读 SKILL.md、不读 01-daily-report-rules、**不扫描历史待办** |
+| 待办查询 | **直接读取** `todos/{today}/{owner}.md`；若不存在 → HINT 不结转（见 §2.5a） | 不读 SKILL.md、不读 01-daily-report-rules、**不扫描历史待办**；只读查询不 Step 0 |
 | 风险列表 | 本项目 `risks/risk-register.md` | 不读 SKILL.md、不读 04-risk-issue-rules |
 | 项目概况 | 本项目 `context/project-brief.md` | 不读 SKILL.md、不读 06-file-rules |
 | 人员状态 | 最新合法日 `_index.md` **§1 花名册**（六态） | 不读 SKILL.md、不读已退役 resource-register / transfer-log、不读 09 号 |
