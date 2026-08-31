@@ -4,7 +4,34 @@
 
 ---
 
-## 3.22.0 — 2026-08-31（本次发布）
+## 3.23.0 — 2026-08-31（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。堵住 3.21/3.22 已建层消费洞：确认分级驱动生效与横幅（低/中风险 `Confirmed By: auto`）；主路径不阻断；查询默认不灌 entities 全文；决策/需求标题进 alias；brain 投影 ops 摘要；Portfolio as-of。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **855**。
+
+Blueprint Impact: full
+
+### Added
+- pm-profile `confirmation_level: normal|strict`
+- brain「最近过程」节（ops `_index` 投影）
+- Module 78（合计 **855**）
+
+### Changed
+- 00 §3.3 留痕/生效/块 8 子节 1；skill-contract #5；SKILL 底线 #2 / §4 / §5.3
+- 05 查询加载序与横幅降级；01/06/07/10/14/19 镜像句指针 00 §3.3
+- refresh_views：entities 紧凑 JSON；决策/需求标题进 alias
+- Portfolio 02 as-of；`auto` 按已确认
+- DF-013 / V3-021：计入完成统计
+
+### Fixed
+- 查询轮横幅铺清单挡住进度回答
+- WF-1 过程性 AUTO(pending) 导致块 8 回涨
+
+### 不做
+- query-index / memo / 冷热 7 文件 / session-log / portfolio/cache / 24h 生效 / 升 schema
+
+---
+
+## 3.22.0 — 2026-08-31
 
 > 发布归档：Minor / contract_change + capability_change。会议转写走 WF-3 快路径（先纪要后结转，禁止误入源文档拆解）；结转脚本包内路径 + 空花名册回退；查询每次比指纹、SRC 进 alias、只读不 C'/Step 0；查询轮不自动写词库 pending。问答残差：提问带对象、宿主假执行门拆穿。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **830**。
 

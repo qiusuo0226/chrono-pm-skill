@@ -4,6 +4,14 @@
 
 ---
 
+## 3.23.0 — 2026-08-31（版本锁步）
+
+> 与 Project 3.23.0 共用版本线。本包：聚合 as-of；`auto` 按已确认。禁止 `portfolio/cache/`。schema 0.16.0。回归 **855**。
+
+Blueprint Impact: metadata-only（as-of 一句 + 锁步）
+
+---
+
 ## 3.22.0 — 2026-08-31（版本锁步）
 
 > 与 Project 3.22.0 共用版本线。本包无行为变更。schema 0.16.0。回归 **830**。

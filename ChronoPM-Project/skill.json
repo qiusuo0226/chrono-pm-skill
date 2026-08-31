@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.22.0",
+  "version": "3.23.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -102,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.23.0",
+      "date": "2026-08-31",
+      "summary": "确认收口 auto+主路径不阻断+查询不灌 entities+alias 补决策/需求+brain 最近过程+Portfolio as-of。schema保持0.16.0。双包同版本。Module 78（总计855）。"
+    },
     {
       "version": "3.22.0",
       "date": "2026-08-31",
@@ -520,7 +525,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-08-31",
-    "lastVersion": "3.22.0",
+    "lastVersion": "3.23.0",
     "updateRequiredOn": [
       "major",
       "minor",

@@ -797,6 +797,14 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.22.0（schema 保持 0.16.0）：会议快路径；结转花名册回退；查询指纹定位+SRC alias；查询不自动写词库 pending。",
     },
+    {
+        "version": "3.23.0",
+        "schema": "0.16.0",
+        "capabilities": ["confirm_auto", "query_load_discipline"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.23.0（schema 保持 0.16.0）：确认分级驱动生效；查询不灌 entities 全文；alias 补决策/需求标题；brain 投影 ops；Portfolio as-of。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
