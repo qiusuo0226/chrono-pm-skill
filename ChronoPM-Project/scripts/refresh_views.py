@@ -354,7 +354,56 @@ def chart_fp(wps: list[dict], spec: dict) -> str:
     return _sha("\n".join(rows))
 
 
-def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str) -> str:
+def parse_ops_index(ai: Path) -> list[tuple[str, str]]:
+    p = ai / "logs" / "ops" / "_index.md"
+    if not p.is_file():
+        return []
+    rows = []
+    for row in _table_rows(p.read_text(encoding="utf-8")):
+        if len(row) < 2 or row[0] in ("日期", "date"):
+            continue
+        if not re.match(r"^\d{4}-\d{2}-\d{2}", row[0]):
+            continue
+        rows.append((row[0][:10], (row[1] or "").strip()[:80]))
+    return rows[-2:]
+
+
+def parse_decision_titles(ai: Path) -> list[tuple[str, str]]:
+    p = ai / "decisions" / "decision-log.md"
+    if not p.is_file():
+        return []
+    out = []
+    block = _section(p.read_text(encoding="utf-8"), "活跃决策") or p.read_text(encoding="utf-8")
+    for row in _table_rows(block):
+        if len(row) < 3 or row[0] in ("决策ID", "决策编号"):
+            continue
+        did = row[0].strip()
+        if not did.startswith("D-"):
+            continue
+        title = row[2].strip()[:40]
+        if title and title not in ("—", "-"):
+            out.append((title, did))
+    return out
+
+
+def parse_req_titles(ai: Path) -> list[tuple[str, str]]:
+    p = ai / "requirements" / "requirement-register.md"
+    if not p.is_file():
+        return []
+    out = []
+    for row in _table_rows(_section(p.read_text(encoding="utf-8"), "需求总览") or p.read_text(encoding="utf-8")):
+        if len(row) < 2 or row[0] in ("Req ID", "需求编号"):
+            continue
+        rid = row[0].strip()
+        if not rid.startswith("REQ"):
+            continue
+        title = row[1].strip()[:40]
+        if title and title not in ("—", "-"):
+            out.append((title, rid))
+    return out
+
+
+def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str, ops_rows: list[tuple[str, str]] | None = None) -> str:
     live = [w for w in wps if w["effect"] != "废弃" and w["status"] != "已完成"]
     lines = [
         "---",
@@ -375,7 +424,7 @@ def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str) -> 
     ]
     for w in live:
         lines.append(_md_row([w["id"], w["name"], w["status"], w["owner"], w["plan_ref"], w["stage"]]))
-    tds = [e for e in entities["entities"] if e["type"] == "td"]
+    tds = sorted((e for e in entities["entities"] if e["type"] == "td"), key=lambda x: x["id"])
     lines += ["", "## 未办结待办", "", "| 编号 | 名称 | 状态 | Owner | WP |", "|---|---|---|---|---|"]
     for e in tds[:80]:
         lines.append(_md_row([e["id"], e["name"], e.get("status", "—"), e.get("owner", "—"), e.get("wp", "—")]))
@@ -385,37 +434,47 @@ def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str) -> 
         lines.append("（无）")
     for e in risks:
         lines.append(f"- {e['id']} {e['name']}（{e.get('status','—')}）")
+    lines += ["", "## 最近过程", ""]
+    if ops_rows:
+        for d, s in ops_rows:
+            lines.append(f"- {d}：{s or '（无摘要）'}")
+    else:
+        lines.append("（无过程日志）")
     lines += ["", "## 别名跳转", "", "| 别名 | 指向 | 类型 |", "|---|---|---|"]
-    alias_index = entities.get("alias_index") or {}
     n = 0
-    seen = set()
-    for e in entities.get("entities") or []:
-        if n >= 80:
-            break
-        typ = e.get("type")
-        if typ not in ("wp", "src", "term"):
+    seen: set[str] = set()
+    people = [e for e in entities.get("entities") or [] if e.get("type") == "person"]
+    srcs = [e for e in entities.get("entities") or [] if e.get("type") == "src"]
+    alias_index = entities.get("alias_index") or {}
+    ordered: list[tuple[str, str, str]] = []
+    for w in live:
+        for k in (w.get("name"), w.get("id")):
+            if k:
+                ordered.append((str(k), w["id"], "wp"))
+    for e in people:
+        if e.get("name"):
+            ordered.append((e["name"], e["id"], "person"))
+        for a in e.get("aliases") or []:
+            ordered.append((str(a), e["id"], "person"))
+    live_names = {w.get("name") for w in live}
+    for k, v in alias_index.items():
+        if (v or {}).get("type") != "term":
             continue
-        keys = []
-        if typ == "wp":
-            keys = [e.get("name"), e.get("id")]
-        elif typ == "src":
-            keys = [e.get("name"), e.get("id")]
-        elif typ == "term":
-            keys = [e.get("id"), e.get("canonical")]
-        for k in keys:
-            if not k or k in ("—", "-") or k in seen:
-                continue
-            seen.add(k)
-            lines.append(_md_row([str(k)[:40], e.get("id") or "", typ]))
-            n += 1
-            if n >= 80:
-                break
-    if n == 0:
-        for k, v in list(alias_index.items())[:80]:
-            if not k or k in seen:
-                continue
-            lines.append(_md_row([str(k)[:40], (v or {}).get("id") or "", (v or {}).get("type") or ""]))
-            n += 1
+        dest = (v or {}).get("id") or ""
+        if k in live_names:
+            ordered.insert(0, (str(k), dest, "term"))
+        else:
+            ordered.append((str(k), dest, "term"))
+    for e in srcs:
+        for k in (e.get("name"), e.get("id")):
+            if k:
+                ordered.append((str(k), e.get("id") or "", "src"))
+    for k, dest, typ in ordered:
+        if n >= 80 or not k or k in ("—", "-") or k in seen:
+            continue
+        seen.add(k)
+        lines.append(_md_row([str(k)[:40], dest, typ]))
+        n += 1
     if n == 0:
         lines.append("（无）")
     lines += ["", "全文见 `context/active-entities.json` 的 alias_index。", ""]
@@ -583,6 +642,7 @@ def collect_facts(ai: Path, today: str) -> dict[str, str]:
         "requirements/_index.md",
         "requirements/sources/_index.md",
         "context/domain-glossary.md",
+        "logs/ops/_index.md",
     ):
         p = ai / rel
         if p.is_file():
@@ -688,10 +748,18 @@ def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: 
         "as_of": as_of,
         "facts_fingerprint": facts_fp,
         "generated_by": "refresh_views.py",
+        "entity_count": len(entities),
+        "alias_count": len(alias_index),
         "entities": entities,
         "alias_index": alias_index,
         "term_corrections": corrections,
     }
+
+
+def put_title_aliases(alias_index: dict, pairs: list[tuple[str, str]], typ: str, path: str) -> None:
+    for title, eid in pairs:
+        _put_alias(alias_index, title, {"id": eid, "type": typ, "path": path})
+        _put_alias(alias_index, eid, {"id": eid, "type": typ, "path": path})
 
 
 def patch_plan(ai: Path, wps: list[dict], spec: dict) -> bool:
@@ -780,6 +848,10 @@ def run(root: Path, flags: argparse.Namespace) -> int:
     gloss_alias, corrections = parse_glossary(ai / "context" / "domain-glossary.md")
     srcs = parse_sources(ai)
     entities = build_entities(wps, tds, risks + issues, people, abbr, gloss_alias, corrections, facts_fp, as_of, srcs)
+    put_title_aliases(entities["alias_index"], parse_decision_titles(ai), "decision", "decisions/decision-log.md")
+    put_title_aliases(entities["alias_index"], parse_req_titles(ai), "req", "requirements/requirement-register.md")
+    entities["alias_count"] = len(entities["alias_index"])
+    ops_rows = parse_ops_index(ai)
 
     views = prev.get("views") or {}
     want_index = flags.all or flags.index
@@ -799,9 +871,10 @@ def run(root: Path, flags: argparse.Namespace) -> int:
             ok = patch_plan(ai, wps, spec)
             views["plan_proj"] = {"as_of": as_of, "view_fingerprint": _sha("plan"), "status": "ok" if ok or True else "stale"}
         if want_brain:
-            _atomic_write(ai / "context" / "active-entities.json", json.dumps(entities, ensure_ascii=False, indent=2) + "\n")
+            dumped = json.dumps(entities, ensure_ascii=False, separators=(",", ":"))
+            _atomic_write(ai / "context" / "active-entities.json", dumped + "\n")
             views["active_entities"] = {"as_of": as_of, "view_fingerprint": _sha(json.dumps(entities, ensure_ascii=False, sort_keys=True)), "status": "ok"}
-            brain = render_brain(wps, entities, as_of, facts_fp)
+            brain = render_brain(wps, entities, as_of, facts_fp, ops_rows)
             if "## 待拍板" in brain or "## 等你裁定" in brain:
                 print("brain must not contain pending section", file=sys.stderr)
                 return 1
