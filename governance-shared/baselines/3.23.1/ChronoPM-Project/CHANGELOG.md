@@ -21,6 +21,13 @@ Blueprint Impact: full（SKILL.md §6 增行）
 ### 不做
 - 抽独立升级 Skill；升 schema；改 Project 01/05/00/22；降 V-14 门槛
 
+### 收尾补记（2026-09-01，不另起版本）
+- 用户指示收尾。Grok 安装区**不代更**
+- AP 已删；audit 17/17；分发包在 Downloads：`ChronoPM-Project-Skill-v3.23.1.zip` + `ChronoPM-Portfolio-Skill-v3.23.1.zip`
+- 施工收尾核对 `review-20260901-3.23.1.md`：**通过-升级成功**
+- 业务仓 B 节 skip；未写市监
+- 基线 3.23.1 已同步本收尾补记（无功能补丁，仅归档）
+
 ---
 
 ## 3.23.0 — 2026-08-31
