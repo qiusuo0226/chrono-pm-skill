@@ -92,7 +92,7 @@ ChronoPM Skill/
 |---|---|
 | Skill version | 3.23.1 |
 | Workspace schema | 0.16.0 |
-| Rule files | 23 |
+| Rule files | 24 |
 | Document templates | 37 |
 | Regression cases | 867 |
 
