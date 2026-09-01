@@ -100,6 +100,7 @@ Write-Host "|---|---|"
 Write-Host "| tests/ | 开发者回归套件，运行时不加载 |"
 Write-Host "| SKILL_BLUEPRINT.md | 开发者架构审查，不进发行包 |"
 Write-Host "| references/16-skill-governance-rules.md | Skill 自身变更治理，开发者侧 |"
+Write-Host "| references/16-upgrade-dual-agent.md | 升级双角色协议全文，开发者侧 |"
 Write-Host "| SKILL_MODULE_MAP.md | 给人看的模块图，不进发行包 |"
 Write-Host "不排除：source-split-skill/（能力目录，必须进包；目录内禁止 SKILL.md）"
 
@@ -142,13 +143,15 @@ $excludeFiles = @(
 # Specific file paths to exclude (matched by normalized relative path)
 # Customize per project: these are ChronoPM-specific governance artifacts
 $excludeFilePaths = @(
-    "references/16-skill-governance-rules.md"  # Skill self-governance rules — developer-side process
+    "references/16-skill-governance-rules.md",  # Skill self-governance rules — developer-side process
+    "references/16-upgrade-dual-agent.md"       # Dual-agent upgrade protocol — developer-side, full prompt
 )
 
 # === 有意排除清单 BEGIN ===
 # tests/|开发者回归套件，运行时不加载
 # SKILL_BLUEPRINT.md|开发者架构审查，不进发行包
 # references/16-skill-governance-rules.md|Skill 自身变更治理，开发者侧
+# references/16-upgrade-dual-agent.md|升级双角色协议全文，开发者侧
 # SKILL_MODULE_MAP.md|给人看的模块图，不进发行包
 # === 有意排除清单 END ===
 # 不排除：source-split-skill/（能力目录，必须进包；禁止列入 excludeDirs；目录内禁止 SKILL.md）

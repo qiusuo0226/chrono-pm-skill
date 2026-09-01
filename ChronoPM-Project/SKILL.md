@@ -105,6 +105,8 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 待办创建 WF-8 | 00+22+21+06+23 | 01、02、07、08、10 |
 | WP 创建/查询 | 00+06+23 | 05、07、14、11 |
 | 技能缺口 / 技能做不到 / 记升级需求 | 00+11+23 + `skill-gap-skill/references/gap-capture-rules.md` | — |
+| 技能升级 / 你是 Agent A / 写升级方案 / 写 AP | 16 + **整份** `16-upgrade-dual-agent.md`（只从当前工作区开发仓读；分发包不含） | — |
+| 你是 Agent B / B1 / B2 / 审核升级方案 | 16 + **整份** `16-upgrade-dual-agent.md`（同上） | — |
 | 待办状态 WF-1 | 00+01+04+06+10 | 17 |
 | 关联待办 WF-Linked | 00+22 | 01 |
 | 风险评估 | 00+04 | — |
@@ -125,6 +127,8 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | 自查 | 00+14 | 按场景 |
 
 已删除路由：项目集汇总周报、跨项目查询（改用 Portfolio）。
+
+**开发仓升级行（v3.23.1）：** 与「技能缺口」行互斥。业务「记升级需求 / 技能做不到」仍走 gap-capture。触发词仅 Agent A/B/B1/B2、写 AP、审核升级方案、升级方案；**不含**「项目升级」「系统升级」。必须**整份**加载工作区 `16-upgrade-dual-agent.md`，按该文件规定章节输出，缺节=失败。探测：`{cwd}/ChronoPM-Project/references/16-skill-governance-rules.md` → `{cwd}/references/16-skill-governance-rules.md`。都没有 → 停止，提示打开开发仓。禁止向用户索要外置提示词，禁止读安装区凑 16。用户不必报目标版本（A 按 16 号 §10 拟定）。B 只在 AP 文末写 `## B{N} 审核结果`，不改 A 正文与其他 B 节。同一对话已以 A 出过方案则拒绝直接转 B。
 
 ## 7. 安全底线
 1. 不得编造；不足须说明缺什么。
@@ -179,6 +183,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | `14-self-check-rules.md` | 自查（含决策文件查重、DF 完整性） |
 | `15-snapshot-rules.md` | 快照冻结 |
 | `16-skill-governance-rules.md` | Skill 治理（开发仓，分发包不含） |
+| `16-upgrade-dual-agent.md` | 升级双角色协议全文（开发仓，分发包不含；命中升级行整份加载） |
 | `17-domain-glossary-rules.md` | 词库 |
 | `18-init-wizard-rules.md` | 初始化向导 |
 | `19-info-completeness-rules.md` | 完整性巡检 |
