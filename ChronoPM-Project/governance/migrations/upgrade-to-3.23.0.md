@@ -74,4 +74,15 @@
 - [x] A3 协议（`v3.23.0-step3`）
 - [x] A4 回归（`v3.23.0-step4`）
 - [x] A5 版本（`v3.23.0-step5`）
-- [x] A6 基线（`v3.23.0-step6`）
+- [x] A6 基线（`v3.23.0-step6` / `v3.23.0`）
+- [x] 分发包已写入 Downloads：`ChronoPM-Project-Skill-v3.23.0.zip` + `ChronoPM-Portfolio-Skill-v3.23.0.zip`
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.23.0；schema 0.16.0；audit 17/17
+- [x] planning/ 仅留 README
+
+### 收尾补记（2026-09-01，不另起版本）
+
+- 用户核验通过并指示收尾。Grok 安装区**不代更**（用户已自行安装 3.23.0）。
+- 施工收尾核对：`governance-shared/review-checklists/review-20260831-3.23.0.md`，结论 **通过-升级成功**。
+- CR-20260831-005 Status=completed；planning/ 仅 README。
+- 业务仓未代迁（B 节 skip）。无功能补丁。

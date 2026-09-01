@@ -29,6 +29,13 @@ Blueprint Impact: full
 ### 不做
 - query-index / memo / 冷热 7 文件 / session-log / portfolio/cache / 24h 生效 / 升 schema
 
+### 收尾补记（2026-09-01，不另起版本）
+- 用户核验通过并指示收尾。Grok 安装区**不代更**（用户已自行安装 3.23.0）
+- AP 已删；audit 17/17；分发包在 Downloads
+- 施工收尾核对 `review-20260831-3.23.0.md`：**通过-升级成功**
+- 业务仓 B 节 skip；未写市监
+- 基线 3.23.0 已同步本收尾补记（无功能补丁，仅归档）
+
 ---
 
 ## 3.22.0 — 2026-08-31

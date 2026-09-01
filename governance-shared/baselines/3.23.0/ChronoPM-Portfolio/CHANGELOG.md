@@ -10,6 +10,9 @@
 
 Blueprint Impact: metadata-only（as-of 一句 + 锁步）
 
+### 收尾补记（2026-09-01，不另起版本）
+- 用户核验通过。Grok 安装区不代更。禁写 `projects/*/ai`。禁止 `portfolio/cache/`。
+
 ---
 
 ## 3.22.0 — 2026-08-31（版本锁步）
