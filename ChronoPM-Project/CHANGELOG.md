@@ -4,7 +4,26 @@
 
 ---
 
-## 3.23.0 — 2026-08-31（本次发布）
+## 3.23.1 — 2026-09-01（本次发布）
+
+> 发布归档：Patch / contract_change + capability_change。① Portfolio V-14 拆分读取硬闸（禁历史日待办全文/旧分发稿；+1 双锚点）。② 升级提示词全文嵌入 16 家族；SKILL.md §6 开发仓路由；用户不必先报版本；B 只写 AP 文末 `## B{N} 审核结果`。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **867**。16 号 §4 豁免：同版本两件事。
+
+Blueprint Impact: full（SKILL.md §6 增行）
+
+### Added
+- `references/16-upgrade-dual-agent.md`（提示词全文，分发包排除）
+- Module 79（DSP-004～007 + UG-001～008；合计 **867**）
+
+### Changed
+- Portfolio 02 §12 硬闸；Portfolio SKILL V-14 / 最小读取集指针
+- Project SKILL.md §6/§15 升级路由；16 号指针；pack.ps1 排除 dual-agent
+
+### 不做
+- 抽独立升级 Skill；升 schema；改 Project 01/05/00/22；降 V-14 门槛
+
+---
+
+## 3.23.0 — 2026-08-31
 
 > 发布归档：Minor / contract_change + capability_change。堵住 3.21/3.22 已建层消费洞：确认分级驱动生效与横幅（低/中风险 `Confirmed By: auto`）；主路径不阻断；查询默认不灌 entities 全文；决策/需求标题进 alias；brain 投影 ops 摘要；Portfolio as-of。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **855**。
 

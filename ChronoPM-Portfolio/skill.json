@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-portfolio",
   "displayName": "ChronoPM-Portfolio — 只读项目集归集",
-  "version": "3.23.0",
+  "version": "3.23.1",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.9.0",
@@ -18,6 +18,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.23.1",
+      "date": "2026-09-01",
+      "summary": "版本锁步 3.23.1。V-14 拆分读取硬闸。禁止 cache 目录。"
+    },
     {
       "version": "3.23.0",
       "date": "2026-08-31",
@@ -145,7 +150,7 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-08-31",
-    "lastVersion": "3.23.0"
+    "lastUpdated": "2026-09-01",
+    "lastVersion": "3.23.1"
   }
 }
