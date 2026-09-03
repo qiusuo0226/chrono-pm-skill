@@ -11,8 +11,8 @@ stale_after: YYYY-MM-DD
 
 # 集层分发稿 — {YYYY-MM-DD} — {批次}
 
-> ChronoPM-Portfolio 派生产物，**不是**成员项目事实源。本包不得按本文件改 `projects/*/ai`。
-> 对外白话告知「请到对应项目对话说收下今日分发」。禁止对用户说「建议更新清单」。
+> ChronoPM-Portfolio 派生产物（日报/人员/资源/风险等投喂分发均可），**不是**成员项目事实源。本包不得按本文件改 `projects/*/ai`。
+> 对外白话告知「请到对应项目对话说收下今日分发」。禁止对用户说「建议更新清单」。文件名历史原因仍叫 daily-dispatch，不改。
 
 ## 白话摘要
 
@@ -22,7 +22,7 @@ stale_after: YYYY-MM-DD
 
 | 人 | 建议项目 | 原句摘要 | 置信 | 建议落点（相对该项目 ai/） |
 |---|---|---|---|---|
-| [姓名] | PRJ-NNN [名] | [一句] | 高 / 低 | todos/{date}/{owner}.md |
+| [姓名] | PRJ-NNN [名] | [一句] | 高 / 低 | todos/{date}/{owner}.md 或 todos/{date}/_index.md |
 
 ## 对内 V-9
 
