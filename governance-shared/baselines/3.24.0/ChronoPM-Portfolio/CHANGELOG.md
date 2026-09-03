@@ -19,6 +19,9 @@ Blueprint Impact: full（规则补丁 + SKILL 入口）
 - 04 §5、05 投喂默认、§2a 先走入口
 - daily-dispatch 注释泛化为全投喂分发
 
+### 收尾补记（2026-09-03，不另起版本）
+- 用户指示收尾。Grok 安装区不代更。禁写 `projects/*/ai`。禁止 `portfolio/cache/`。禁止问要不要落库。
+
 ---
 
 ## 3.23.1 — 2026-09-01（版本锁步）
