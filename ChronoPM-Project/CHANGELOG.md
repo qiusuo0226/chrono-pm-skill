@@ -4,7 +4,29 @@
 
 ---
 
-## 3.23.1 — 2026-09-01（本次发布）
+## 3.24.0 — 2026-09-03（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。Portfolio 材料投喂统一入口（01 §2.1）：识别 → 无条件落 ingest 原件+抽出行 → 写集层日志 → 分类；仅成员实体走 V-9。禁止问要不要落库。不新增 V-15，不升 schema，不代写成员项目。Project 01 收下句扩人员/资源，确认级不降。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **877**。
+
+Blueprint Impact: full
+
+### Added
+- Portfolio 01 §2.1 投喂统一入口
+- Module 80（ING-010～016、DSP-008、FE-008b、EX-013；合计 **877**）
+
+### Changed
+- Portfolio SKILL §2/§7/§9：投喂默认句；三行加载 `01（先 §2.1）`
+- Portfolio 02 §11/§12、04 §5、05 投喂+§2a
+- `daily-dispatch-template.md` 注释泛化（不改文件名）
+- Project 01 落点回执：集层分发稿含人员/资源，仍走 00 确认级
+- examples/13 增排期轮；examples/05 先报已存 ingest 再问分法
+
+### 不做
+- V-15；新规则文件；升 schema；集层直写成员；新建 Portfolio Blueprint；缺口自动落盘；纯查询强制 ingest
+
+---
+
+## 3.23.1 — 2026-09-01
 
 > 发布归档：Patch / contract_change + capability_change。① Portfolio V-14 拆分读取硬闸（禁历史日待办全文/旧分发稿；+1 双锚点）。② 升级提示词全文嵌入 16 家族；SKILL.md §6 开发仓路由；用户不必先报版本；B 只写 AP 文末 `## B{N} 审核结果`。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **867**。16 号 §4 豁免：同版本两件事。
 

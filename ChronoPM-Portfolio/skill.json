@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-portfolio",
   "displayName": "ChronoPM-Portfolio — 只读项目集归集",
-  "version": "3.23.1",
+  "version": "3.24.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.9.0",
@@ -18,6 +18,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.24.0",
+      "date": "2026-09-03",
+      "summary": "版本锁步 3.24.0。投喂统一入口 01 §2.1。禁止问要不要落库。禁止 cache 目录。"
+    },
     {
       "version": "3.23.1",
       "date": "2026-09-01",
@@ -150,7 +155,7 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-09-01",
-    "lastVersion": "3.23.1"
+    "lastUpdated": "2026-09-03",
+    "lastVersion": "3.24.0"
   }
 }
