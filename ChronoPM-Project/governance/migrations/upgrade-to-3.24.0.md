@@ -88,7 +88,7 @@
 
 ### A3. 回归（节点3）
 
-`ChronoPM-Project/tests/regression-suite.md` Module 80：ING-010～016、DSP-008、FE-008b、EX-013。合计 **877**。
+`ChronoPM-Project/tests/regression-suite.md` Module 80：ING-010～017、DSP-008、EX-013。合计 **877**。
 
 阻断：ING-010、ING-012、ING-013、ING-015、DSP-002、DSP-004、DSP-006、UG-001、UG-002、UG-005、UG-006。
 
@@ -110,11 +110,11 @@
 
 ## C. 节点完成勾选
 
-- [ ] A1 治理（`v3.24.0-step1`）
-- [ ] A2 协议（`v3.24.0-step2`）
-- [ ] A3 回归（`v3.24.0-step3`）
-- [ ] A4 版本（`v3.24.0-step4`）
-- [ ] A5 基线（`v3.24.0-step5` / `v3.24.0`）
-- [ ] 分发包（Downloads；Grok 安装区不代更）
-- [ ] 无业务仓路径写入；正式文档不引用 upgrade-plan
-- [ ] 双包 3.24.0；schema 0.16.0
+- [x] A1 治理（`v3.24.0-step1`）
+- [x] A2 协议（`v3.24.0-step2`）
+- [x] A3 回归（`v3.24.0-step3`）
+- [x] A4 版本（`v3.24.0-step4`）
+- [x] A5 基线（`v3.24.0-step5` / `v3.24.0`）
+- [x] 分发包（Downloads；Grok 安装区不代更）
+- [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
+- [x] 双包 3.24.0；schema 0.16.0
