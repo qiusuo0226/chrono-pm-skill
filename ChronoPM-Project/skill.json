@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — Markdown 单项目管理技能",
-  "version": "3.24.0",
+  "version": "3.25.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
@@ -102,6 +102,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.25.0",
+      "date": "2026-09-04",
+      "summary": "集层手递写入（01 §2.2 / 23 P-HANDOFF-ACCEPT）；只读五条工人零写；00/contract 拆跨项目镜像。schema保持0.16.0。双包同版本。Module 81（总计891）。"
+    },
     {
       "version": "3.24.0",
       "date": "2026-09-03",
@@ -534,8 +539,8 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-09-03",
-    "lastVersion": "3.24.0",
+    "lastUpdated": "2026-09-04",
+    "lastVersion": "3.25.0",
     "updateRequiredOn": [
       "major",
       "minor",

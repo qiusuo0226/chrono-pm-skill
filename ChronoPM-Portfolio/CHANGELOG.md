@@ -4,6 +4,22 @@
 
 ---
 
+## 3.25.0 — 2026-09-04（版本锁步）
+
+> 与 Project 3.25.0 共用版本线。本包：投喂先 §2.1；高置信低/中风险同会话 CALL Project 写归属项目（§2.2）。工人不手搓成员正文。禁止手递 pm-profile。V-14 硬闸不放宽。schema 0.16.0。回归 **891**。
+
+Blueprint Impact: full（规则补丁 + SKILL 入口）
+
+### Added
+- 01 §2.2 P-HANDOFF-WRITE
+
+### Changed
+- SKILL.md 只读五条、触发词、路由
+- 02 V-14/V-11 终点；05 排期/当日能耗；04 资源指针
+- daily-dispatch status 枚举；suggested-update 本对话手递
+
+---
+
 ## 3.24.0 — 2026-09-03（版本锁步）
 
 > 与 Project 3.24.0 共用版本线。本包：材料投喂统一入口（01 §2.1）。禁止问要不要落库。禁止写 `projects/*/ai`。禁止 `portfolio/cache/`。schema 0.16.0。回归 **877**。

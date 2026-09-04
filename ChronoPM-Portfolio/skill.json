@@ -1,7 +1,7 @@
 {
   "name": "chrono-pm-portfolio",
   "displayName": "ChronoPM-Portfolio — 只读项目集归集",
-  "version": "3.24.0",
+  "version": "3.25.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.9.0",
@@ -18,6 +18,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.25.0",
+      "date": "2026-09-04",
+      "summary": "版本锁步 3.25.0。投喂 §2.1 后同会话 CALL Project 写归属项目。工人不手搓成员正文。禁止手递 pm-profile。"
+    },
     {
       "version": "3.24.0",
       "date": "2026-09-03",
@@ -155,7 +160,7 @@
     }
   ],
   "blueprint": {
-    "lastUpdated": "2026-09-03",
-    "lastVersion": "3.24.0"
+    "lastUpdated": "2026-09-04",
+    "lastVersion": "3.25.0"
   }
 }

@@ -4,7 +4,29 @@
 
 ---
 
-## 3.24.0 — 2026-09-03（本次发布）
+## 3.25.0 — 2026-09-04（本次发布）
+
+> 发布归档：Minor / contract_change + capability_change。集层投喂闭环：01 §2.2 P-HANDOFF-WRITE 按白名单同会话调用 Project 写过程（inbox / 01 人员口径 / 04 判定卡 / P-SPLIT / 07 §8.9 / 当日能耗）。只读五条改为工人零写、手递须 CALL Project。00 §3.3 / skill-contract #5 拆「跨项目镜像」与归属项目过程记录。禁止手递 pm-profile。V-14 硬闸不放宽。不新增 V-15，不升 schema。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **891**。
+
+Blueprint Impact: full
+
+### Added
+- Portfolio 01 §2.2 P-HANDOFF-WRITE（白名单 5a–5f）
+- Project 23 P-HANDOFF-ACCEPT
+- Module 81（HO-001～014；合计 **891**）
+
+### Changed
+- Portfolio SKILL 只读五条 / 触发词 / 路由手递加载集
+- Portfolio 02 V-14/V-11 终点；05 排期确认后手递；04 资源指针
+- Project 00 §3.3、skill-contract #5、01 手递入口、04/07 callee 指针、10 感知指针
+- 模板 status 枚举；examples/05、13 演示闭环
+
+### 不做
+- V-15；新规则文件；升 schema；Portfolio 手搓 todos；取消进出组/里程碑/成本确认；手递 pm-profile；放宽 V-14 硬闸；新建 Portfolio Blueprint；缺口自动落盘；纯查询强制 ingest；写入市监；代更 Grok 安装区
+
+---
+
+## 3.24.0 — 2026-09-03
 
 > 发布归档：Minor / contract_change + capability_change。Portfolio 材料投喂统一入口（01 §2.1）：识别 → 无条件落 ingest 原件+抽出行 → 写集层日志 → 分类；仅成员实体走 V-9。禁止问要不要落库。不新增 V-15，不升 schema，不代写成员项目。Project 01 收下句扩人员/资源，确认级不降。workspace schema **保持 0.16.0**。双包同版本。施工只认回归 **877**。
 

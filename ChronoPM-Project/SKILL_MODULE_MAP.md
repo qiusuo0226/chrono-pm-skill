@@ -23,6 +23,7 @@ flowchart LR
   AI -->|实线| ATOM[ATOM/Canonical]
   AI -->|实线| REQ[需求清单 未确认]
   REQ -->|粗线| B1[决策文件 需求未确认]
+  PF[集层投喂] -->|实线| HO[P-HANDOFF-ACCEPT / P-SPLIT]
 ```
 
 ## G2 确认需求
@@ -86,6 +87,7 @@ flowchart LR
   MD --> MAP[映射已有待办]
   MAP -->|够正式未匹配| NEW[自动建待办]
   P --> TMR[明日计划留当天原文]
+  HO[集层手递] -->|实线| IN
 ```
 
 ## G7 会议
@@ -107,6 +109,7 @@ flowchart LR
   ROSTER --> TODO
   TODO -->|无| ADD[建跟踪待办挂责任人]
   PM -->|甲方厂商客户| X[禁止入执行花名册]
+  HO[集层风险清单] -->|实线| CARD[04判定卡]
 ```
 
 ## G9 关联待办
@@ -137,6 +140,7 @@ flowchart LR
   A[喂日报/点名加待办/进组/责任人] -->|实线| R[入册]
   B[旁人提及/参会名单/甲方客户] --> X[不入册]
   C[次日无待办无日报] -->|粗线| B8[块8空闲提醒]
+  HO[集层排期] -->|粗线| V9[确认后手递 01口径]
 ```
 
 ## G12 变更
@@ -170,7 +174,8 @@ flowchart LR
   PF[Portfolio] -.-> FS[各项目事实源]
   PF -.-> DEC[决策文件开放计数]
   PF -.-> OPS[过程日志index]
-  PF --> X[禁止写成员项目]
+  PF -->|实线| HO[§2.2 调用 Project 写过程]
+  PF --> X[禁止工人手搓成员正文]
 ```
 
 ## G15 巡检
@@ -264,4 +269,5 @@ flowchart LR
   SRC --> REQ[需求清单 未确认]
   F -->|还要对外文件| OUT[再走 outputs]
   X[只出HTML不入库] --> BAN[禁止替代]
+  PF[集层分法已定] -->|实线| SPLIT
 ```
