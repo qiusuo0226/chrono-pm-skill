@@ -1327,15 +1327,15 @@
 | FED-001 | 只贴日报无「记录一下」 | 入库+回执，不问要不要记住 | positive |
 | FED-002 | 「先别写，这包现在怎样」 | 不入库，出完整进度表 | negative |
 | AMB-001 | 仅有 ## 3b. 无 ## 3. | 仍当功能点读，并提示/迁标题 | positive |
-| DSP-001 | 集层一份混报，两人各一项目、花名册+项目名命中 | 拆成两段高置信；先 ingest 再写 portfolio 分发稿；不写成员 | positive |
-| DSP-002 | 用户要集层直接改两个项目 todos | 拒绝 | negative |
+| DSP-001 | 集层一份混报，两人各一项目、花名册+项目名命中 | 拆成两段高置信；先 ingest 再分发稿；高置信经 §2.2 写入两项目当日 `{人}.md` | positive |
+| DSP-002 | 用户要集层把高置信日报写进两个项目 todos | 同会话经 Project inbox→C' 写入；回执给路径；禁止工人手搓格式 | positive |
 | DSP-003 | 一句同时像两个项目且分差 <2 | 必问，不双写 | positive |
 | ING-001 | 集层丢无完整表头的进度 xlsx | 入库+回执；不问要不要记住；原件落 `ai/portfolio/reports/ingest/{batch}/` | positive |
 | ING-002 | 首行有岗位/角色词；某列值能撞 project-index；空格可 fill-down | 角色槽自动认；空格继承后仍归该项目 | positive |
 | ING-003 | 第二次列序不同但指纹命中且行键相同 | 只更新备注/角色人，不新建 WP | positive |
 | ING-004 | 单元格值既不像目录名也不在 scope=project 别名 | 回执未挂项目，一次选项 | negative |
-| ING-005 | 集层要求直接改成员 todos | 拒绝 | negative |
-| ING-006 | 集层投无表头跨项目表 | 原件+全表 rows.md 仅落 `reports/ingest/{batch}/`；映射落 `context/ingest-maps.md`；成员 sources 须「收下」才写；禁止 `portfolio/batches/`；禁止 Portfolio 直写 `projects/*/ai` | positive |
+| ING-005 | 无归属/低置信时集层要求直改成员 todos | 拒绝直写；只问归属 | negative |
+| ING-006 | 集层投无表头跨项目表 | 原件+全表 rows.md 落 `reports/ingest/{batch}/`；映射落 `context/ingest-maps.md`；高置信/已点名则 §2.2 P-SPLIT 写成员 sources；禁止 `portfolio/batches/`；禁止 Portfolio 工人手搓 `projects/*/ai` | positive |
 | MAP-001 | 首次槽位确认后同指纹再投 | 不问列 | positive |
 | COD-001 | 投仓库路径 | 建 source_code 指针；不刷 REQ 实现视图 | positive |
 | ING-007 | 一列高重复不像 WP 名，另一列能最长命中 index | 用能命中的当 wp/feature，分组列不当 WP | positive |
@@ -1348,7 +1348,7 @@
 
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
-| DSP-004 | 集层贴 3～4 人、含项目名的昨天混报，「补昨天日报」 | 归属仍可高置信；本轮不得打开早于锚点的个人待办全文或旧分发稿；只写 portfolio 分发稿 | positive |
+| DSP-004 | 集层贴 3～4 人、含项目名的昨天混报，「补昨天日报」 | 归属仍可高置信；本轮不得打开早于锚点的个人待办全文或旧分发稿；允许手递；硬闸不放宽 | positive |
 | DSP-005 | 目标日无该人文件，最新合法日 `_index` 有未办结计数 | +1 最多再读这一份；打开第二份更早的待办全文 = 失败 | negative |
 | DSP-006 | 与 DSP-001 相同（两人各一项目、花名册+项目名） | 仍两段高置信；门槛 ≥5 / 差≥2 / C(P) 未被删 | regression |
 | DSP-007 | 拆分回合对外正文 | 有人/项目/置信/落点；无「扫描了 8 月××待办」类过程叙述 | regression |
@@ -1368,15 +1368,36 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | ING-010 | 集层粘贴 6 人「近期人员安排」（请假/释放/承接），不说「入库」 | 写 ingest 原件+rows+当日 logs；回执先报已存入；不得问要不要落库 | positive |
-| ING-011 | 同上 | 对外白话 N 件事+项目+编号；对内 V-9 指向各项目 `_index` §1 及/或个人 §0.5；不写 `projects/*/ai` | positive |
+| ING-011 | 同上 | 对外白话 N 件事+项目+编号；进出组/花名册敏感仍 V-9；确认后 §2.2 手递 01 人员口径 | positive |
 | ING-012 | 「各项目进度怎么样」无材料 | 不新建 ingest batch | negative |
 | ING-013 | 人员排期投喂后助手正文 | 不得出现「要不要落库」「要不要记住」「摘要要不要写入」 | negative |
 | ING-014 | 投喂无法分类的材料且规则盖不住 | 已 ingest；主动问是否记升级需求；未点头不新建 gap 文件 | positive |
-| ING-015 | 用户要集层把排期直接写入两项目花名册 | 拒绝；DSP-002/ING-005 同文 | negative |
+| ING-015 | 用户要集层把排期静默写入两项目花名册（未回编号） | 拒绝静默写 §1；须 V-9 确认 | negative |
 | ING-016 | 弱结构进度 xlsx | 仍满足 ING-001/006（原件 ingest、不问记住） | regression |
-| DSP-008 | V-14 两人各一项目高置信混报 | 本轮有 ingest + 分发稿；低置信才问归属；不问落库 | positive |
-| ING-017 | 集层投喂跨项目工时表 | 不写成员 §0.6；有 ingest+日志+V-9（FE-008 加强） | regression |
-| EX-013 | examples/13 含人员排期轮 | 对话演示先存 ingest 再拍板，无「要不要落库」 | positive |
+| DSP-008 | V-14 两人各一项目高置信混报 | 本轮有 ingest + 分发稿 + 手递成员；低置信才问归属；不问落库 | positive |
+| ING-017 | 集层投喂跨项目**当日**工时表 | 经 §2.2 CALL 01 §1.6 写成员当日能耗；有 ingest+日志；历史日 §0.6 仍确认 | regression |
+| EX-013 | examples/13 含人员排期轮 | 对话演示先存 ingest；进出组问编号；`1A；2A` 后同会话手递；无「要不要落库」 | positive |
+
+## 81. 集层手递写入（v3.25.0）
+
+施工只认合计 **891**（877+14）。SKILL.md 只读五条改写属核心契约：本模块 14 条 + DSP-001/002/004/008、ING-005/006/011/015/017 按新期望；其余按既有期望，发布仍跑全套。阻断项：HO-001、HO-004、HO-006、HO-008、DSP-006、DSP-004、ING-010、ING-012、UG-001、UG-002。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| HO-001 | 集层贴两人各一项目、花名册+项目名混报，不说入库/分发 | ingest + 两项目当日 `{人}.md` 含原文；回执路径 | positive |
+| HO-002 | 一句两项目分差<2 | 只问归属；不写成员；不问落库 | positive |
+| HO-003 | 高置信已拆完，用户说「分发到各项目」 | 执行手递，不是只出稿 | positive |
+| HO-004 | 不加载 Project 01/inbox，集层手改 todos 正文 | 拒绝 | negative |
+| HO-005 | 目标日无 `todos/{date}/` | 先对该项目 Step 0 再写 | positive |
+| HO-006 | 排期含请假/释放/承接 | 花名册/进出组仍确认；确认前不写 §1/§0.5 | negative |
+| HO-007 | 「各项目进度」无材料 | 不 ingest 不手递 | negative |
+| HO-008 | 高置信混报回执 | 有成员路径；无「请到项目对话说收下」完成句 | negative |
+| HO-009 | 集层要求改两项目预算/里程碑 | 确认前不写 | negative |
+| HO-010 | 立项已点名大厅/市民端分法 | 调用 P-SPLIT 写入两项目 sources；不拒绝直写 | positive |
+| HO-011 | 只贴 xlsx 进度表，不说项目集/记录 | 走 §2.1 分类；该写则写 | positive |
+| HO-012 | 同一原文第二次投喂 | 指向旧 batch；不重复追加日报原文 | positive |
+| HO-013 | 集层高置信风险/问题清单 | 走 04 判定卡后登记或「先写问题待确认」；跳过判定卡静默登册 = 失败 | positive |
+| HO-014 | 已点名项目的合同登记材料 | CALL 07 §8.9 写该项目 contract-register；空则引导补录不臆造 | positive |
 
 ## 回归用例统计
 
@@ -1462,4 +1483,5 @@
 | 确认收口/视图消费 (78) | 25 | 16 | 9 |
 | V-14硬闸/升级协议 (79) | 12 | 5 | 7 |
 | 投喂默认落库 (80) | 10 | 5 | 5 |
-| **合计** | **877** | **515** | **362** |
+| 集层手递写入 (81) | 14 | 9 | 5 |
+| **合计** | **891** | **524** | **367** |
