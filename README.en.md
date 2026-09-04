@@ -13,6 +13,22 @@ ChronoPM is a project-management methodology packaged as an AI skill: talk the w
 - GitHub: [qiusuo0226/chrono-pm-skill](https://github.com/qiusuo0226/chrono-pm-skill)
 - Gitee: [qiusuo0226/chrono-pm-skill](https://gitee.com/qiusuo0226/chrono-pm-skill)
 
+## Install
+
+```bash
+npx skills add qiusuo0226/chrono-pm-skill
+```
+
+This installs **ChronoPM-Project** (single-project writes) and **ChronoPM-Portfolio** (read-only cross-project rollups). Project only:
+
+```bash
+npx skills add qiusuo0226/chrono-pm-skill -s chrono-pm-project
+```
+
+Or copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root. Then point the workspace at the **project folder** and say: "Initialize my project workspace."
+
+[![skills.sh](https://skills.sh/b/qiusuo0226/chrono-pm-skill)](https://skills.sh/qiusuo0226/chrono-pm-skill)
+
 ## Why you need it
 
 A PM's project facts scatter everywhere: daily reports in chat threads, minutes in inboxes, risks in someone's head, progress in a stale deck. Trying to confirm "how was this requirement decided?" turns into an afternoon of archaeology.
@@ -59,7 +75,7 @@ The full surface of day-to-day management is covered: requirements and change tr
 
 ## Getting started
 
-1. Copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
+1. Install: `npx skills add qiusuo0226/chrono-pm-skill` (add `-s chrono-pm-project` for Project only); or copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
 2. Tell the AI: "Initialize my project workspace."
 3. From then on, feed it materials the way you already work.
 
