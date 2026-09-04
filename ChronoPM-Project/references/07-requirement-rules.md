@@ -332,7 +332,7 @@ RI 范围判定隐含"合同↔项目 1:1"假设，但现实中为**多对多**�
 
 #### 8.9.1 contract-register.md 合同登记册（拆解发生地）
 
-**位置**：项目级 `requirements/contract-register.md` 为合同登记与检索入口（每项目一份）。**拆解产物（v3.6.0）**落 `requirements/sources/{编号}/`（一个源文档 = 一个目录，编号即目录名）。文档簇固定号（CON-/BID-/INIT-/COMP-/SUP-/TRN- 等 `{YYYYMMDD}-{HHmmss}`）为跨项目互认键；`SRC-NNN` 仅项目内短号，不得作互认键。
+**位置**：项目级 `requirements/contract-register.md` 为合同登记与检索入口（每项目一份）。集层 P-HANDOFF-ACCEPT 可 CALL 本节写该项目登记册；禁止 Portfolio 另写格式；空则补录引导不臆造。**拆解产物（v3.6.0）**落 `requirements/sources/{编号}/`（一个源文档 = 一个目录，编号即目录名）。文档簇固定号（CON-/BID-/INIT-/COMP-/SUP-/TRN- 等 `{YYYYMMDD}-{HHmmss}`）为跨项目互认键；`SRC-NNN` 仅项目内短号，不得作互认键。
 
 - **现行**：`requirements/sources/{CON-… 或 SRC-NNN}/` 含 meta.md / _digest.md / atoms.md（或 atoms/）/ facts.md（或 facts/）/ ledger.md / parse-log.md。
 - **存量**：旧 `{type}-source/` 走零清重建，不走迁移；未零清前禁止新拆解。禁止再新建 `{type}-source/`。Portfolio V-8 读取端仍可兼容旧形态。

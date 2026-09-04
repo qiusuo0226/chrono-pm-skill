@@ -3,7 +3,7 @@ doc_type: portfolio-dispatch
 portfolio: [项目集名称]
 date: YYYY-MM-DD
 batch: YYYYMMDDHHMMSS
-status: 待收下
+status: 待归属
 generated_from: []
 updated: YYYY-MM-DDTHH:MM
 stale_after: YYYY-MM-DD
@@ -11,8 +11,8 @@ stale_after: YYYY-MM-DD
 
 # 集层分发稿 — {YYYY-MM-DD} — {批次}
 
-> ChronoPM-Portfolio 派生产物（日报/人员/资源/风险等投喂分发均可），**不是**成员项目事实源。本包不得按本文件改 `projects/*/ai`。
-> 对外白话告知「请到对应项目对话说收下今日分发」。禁止对用户说「建议更新清单」。文件名历史原因仍叫 daily-dispatch，不改。
+> ChronoPM-Portfolio 派生产物（日报/人员/资源/风险等投喂分发均可），**不是**成员项目事实源。工人不得按本文件手搓 `projects/*/ai`；手递须 CALL 01 §2.2。
+> status：`待归属` / `待确认` / `已手递` / `部分手递` / `已驳回`。手递成功后改 `已手递`。禁止对用户说「建议更新清单」。禁止把「请到对应项目对话说收下」当完成句。文件名历史原因仍叫 daily-dispatch，不改。
 
 ## 白话摘要
 
