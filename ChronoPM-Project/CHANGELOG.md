@@ -24,6 +24,14 @@ Blueprint Impact: full
 ### 不做
 - V-15；新规则文件；升 schema；Portfolio 手搓 todos；取消进出组/里程碑/成本确认；手递 pm-profile；放宽 V-14 硬闸；新建 Portfolio Blueprint；缺口自动落盘；纯查询强制 ingest；写入市监；代更 Grok 安装区
 
+### 收尾补记（2026-09-04，不另起版本）
+- 用户核验通过。Grok 安装区**不代更**
+- P2：upgrade-to / CR 验收标准去掉幽灵编号 EX-014、EX-015，改为 HO-001～014（14 条）；套件与版本不动
+- AP 已删；audit 17/17；分发包在 Downloads：`ChronoPM-Project-Skill-v3.25.0.zip` + `ChronoPM-Portfolio-Skill-v3.25.0.zip`
+- 施工收尾核对 `review-20260904-3.25.0.md`：**通过-升级成功**
+- 业务仓 B 节 skip；未写市监
+- 基线 3.25.0 已同步本收尾补记（无功能补丁，仅归档）
+
 ---
 
 ## 3.24.0 — 2026-09-03

@@ -97,7 +97,7 @@
 
 ### A3. 回归（节点3）
 
-`ChronoPM-Project/tests/regression-suite.md` Module 81：HO-001～014、EX-014、EX-015。合计 **891**。
+`ChronoPM-Project/tests/regression-suite.md` Module 81：HO-001～014（14 条）。合计 **891**。人员手递正例由 ING-011 翻转承担。
 
 阻断：HO-001、HO-004、HO-006、HO-008、DSP-006、DSP-004、ING-010、ING-012、UG-001、UG-002。
 
@@ -129,4 +129,4 @@
 - [x] 分发包（Downloads；Grok 安装区不代更）
 - [x] 无业务仓路径写入；正式文档不引用 upgrade-plan
 - [x] 双包 3.25.0；schema 0.16.0
-- [ ] 收尾（`v3.25.0-close`）：用户核验通过；Grok 不代更；归档施工核对
+- [x] 收尾（`v3.25.0-close`）：用户核验通过；P2 幽灵编号 EX-014/015 已改为 HO-001～014（14 条）；Grok 不代更；归档施工核对

@@ -18,6 +18,9 @@ Blueprint Impact: full（规则补丁 + SKILL 入口）
 - 02 V-14/V-11 终点；05 排期/当日能耗；04 资源指针
 - daily-dispatch status 枚举；suggested-update 本对话手递
 
+### 收尾补记（2026-09-04，不另起版本）
+- 用户核验通过。Grok 安装区不代更。工人不手搓成员正文。禁止手递 pm-profile。
+
 ---
 
 ## 3.24.0 — 2026-09-03（版本锁步）
