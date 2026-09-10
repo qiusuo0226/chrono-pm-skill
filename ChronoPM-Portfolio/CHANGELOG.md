@@ -10,6 +10,9 @@
 
 Blueprint Impact: metadata-only
 
+### 收尾补记（2026-09-10，不另起版本）
+- 与 Project 3.26.0 收尾同发。Grok 不代更。audit 17/17。
+
 ---
 
 ## 3.25.2 — 2026-09-04（版本锁步）

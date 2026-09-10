@@ -25,11 +25,14 @@ Blueprint Impact: full
 - 升 schema；新规则文件；查询中全量扫描建索引；改 PLAN 号段；强制回填历史 YAML；代更 Grok
 
 ### 收尾补记（2026-09-10，不另起版本）
+- 用户核验通过。Grok 安装区**不代更**。业务仓未代迁、未写市监。
 - C1：Module 85 编号不是 PAN-001～012。施工时 AP 的 PAN-011q/011w 因 `audit_release` Case ID 只认 `[0-9A-Z]`（小写后缀匹配失败）改为 **PAN-013 / PAN-014**，全集为 PAN-001～010、012～014。
 - C2：统计表 Module 84 正向/回归由 6/9 改为 **4/11**（表内 4 positive + 4 negative + 7 regression）。合计正向 **548**、回归 **389**，总数仍 937。
 - C3：upgrade-to 阻断摘要补齐 11 条（REL-001/006/007/011/012、PAN-001/002/004/005/007/013）。
 - C4：Module 85 表按 PAN-012 → 013 → 014 升序。
-- 基线 `baselines/3.26.0/` 同步上述文档；audit 总数断言不受影响。
+- AP 已删；audit 17/17；分发包在 Downloads：`ChronoPM-Project-Skill-v3.26.0.zip` + `ChronoPM-Portfolio-Skill-v3.26.0.zip`
+- 施工收尾核对 `review-20260910-3.26.0.md`：**通过-升级成功**
+- 基线 `baselines/3.26.0/` 已同步本收尾补记（无功能补丁，仅归档）
 
 ---
 
