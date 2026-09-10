@@ -4,6 +4,30 @@
 
 ---
 
+## 3.27.0 — 2026-09-10
+
+> 发布归档：Minor / contract_change + capability_change。同类切片可关联、推导结构化：范围登记表 + entities.relations + 05 推导失败门；修 parse_todos 三表脏投影；升级工作区回填清零门；集层 V-15 只读聚合。workspace schema **0.17.0**。双包同号。施工只认回归 **961**。
+
+Blueprint Impact: full
+
+### Added
+- `ai/registers/scope-register.md` + `_index.md`（空表合法）
+- `active-entities.relations`（显式引用建边）
+- 05 §0.1 推导失败门；14 D44；Portfolio V-15
+- Module 86–88（VW/REG-101/DER/EDG/MIG-101～103/FED-003 等 24 条）
+
+### Changed
+- `parse_todos` 只读 §1.1、TD 去重、WP 列正则
+- 上线路由：有表先表
+- migrate 0.17.0 抽取回填-未确认；`scopeBackfillOpen` 健康 P0
+
+### 不做
+- 模型原生/向量库/新规则文件/新 ProcID/新 verify 引擎
+- 领域枚举进包；集层事实源；migrate 按项目路径删 `ai/scripts/`
+- 代更 Grok；写入业务仓
+
+---
+
 ## 3.26.0 — 2026-09-10
 
 > 发布归档：Minor / contract_change + capability_change。CR-001 相关性总闸：相关材料默认拆存关联；L2 约定类+薄源兜底；L3 背景陈述走 journal；禁止「您希望我怎么做」。CR-002 计划索引：`plans/_index` 加速器 + YAML 可选锚点 + D43；查询缺 index 只提示重建（14 §2.1）；上线范围先读 index。不升 schema。双包同号。施工只认回归 **937**。G1 图不改（总闸是触发不是新数据流节点；计划索引对标 wps/_index）。

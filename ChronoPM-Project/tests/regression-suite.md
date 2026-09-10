@@ -1460,7 +1460,7 @@
 | Case ID | Input | Expected | Type |
 |---|---|---|---|
 | PAN-001 | 新建两份近义计划 | YAML 锚点；`plans/_index` 两行；related_plans 互指或 SUGGEST；文件名仍 PLAN-YYYYMMDD-NNN-* | positive |
-| PAN-002 | 「开办变更注销哪些 10 月 1 不上线」 | 先读 `plans/_index`，不先读风险册；结论含 PLAN 号 | positive |
+| PAN-002 | 「开办变更注销哪些 10 月 1 不上线」 | 有 `registers/scope-register.md` 先读表再指针；无表先读 `plans/_index` 并挂牌未登记；不先读风险册；结论含 PLAN/SR 号 | positive |
 | PAN-003 | 「当前有哪些高风险」 | 仍走 risk-register | regression |
 | PAN-004 | 存量 PLAN 无 YAML 锚点 | 索引仍有行，列为 `—`；不报健康失败；不改文件名 | regression |
 | PAN-005 | 为检索把文件改名为「开办变更注销-国庆窗口-…」 | 违规 | negative |
@@ -1472,6 +1472,51 @@
 | PAN-012 | examples/11 | 演示索引命中、不改文件名 | positive |
 | PAN-013 | 纯查询、缺 `plans/_index.md` | 提示一次是否重建；未同意则不扫描、标锚点未填；不当 P0 | positive |
 | PAN-014 | 写入/改计划、缺 index | 按模板建并补行 | positive |
+
+## 86. 待办投影正确性（v3.27.0 CR-003）
+
+阻断：VW-001、VW-002。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| VW-001 | §1.1+§1.2+§1.3 同 TD fixture | brain/entities 该 TD 恰好 1 行，WP 列为 `WP-*` | positive |
+| VW-002 | 同 fixture WP 列不得为 0/是 | 投影不出现延期次数/是否关键脏值 | negative |
+| VW-003 | 仅 §1.1 合法一行 | 仍投影 1 行 | regression |
+| VW-004 | §1.1 两行同一 TD | 去重保留一行 | positive |
+| VW-005 | 无 ### 1.1 但首表头含 WP Ref | 仍按核心表解析 | positive |
+| VW-006 | 状态已完成 | 不进未办结投影 | regression |
+| VW-007 | WP-YYYYMMDD-NNN | 接受为合法 WP 列 | positive |
+| VW-008 | 纠偏只改 brain 待办行 | 违规（底线 17） | negative |
+
+## 87. 范围表 / 边 / 推导协议（v3.27.0 CR-004）
+
+阻断：REG-101、DER-001、DER-002、DER-003、EDG-001。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| REG-101 | 按批次 B1 且纳入=否筛表 | 命中对象乙一行 | positive |
+| REG-102 | 未知对象类型落确认态 | 违规，只能待裁定 | negative |
+| REG-103 | 空范围表 | 合法，不报健康失败 | regression |
+| DER-001 | 跨切片范围提问无证据矩阵 | 本轮失败 | negative |
+| DER-002 | 有表问哪些不上线 | 先读 scope-register，按表回答+指针；不先读风险册（PAN-002 升级） | positive |
+| DER-003 | 无表问哪些不上线 | 挂牌未登记，不猜 PLAN 散文 | positive |
+| DER-004 | 「当前有哪些高风险」 | 仍走 risk-register | regression |
+| EDG-001 | PLAN§3、WP§2、TD WP Ref、SR 外键 | relations 含 contains/implements/binds/scoped_to | positive |
+| EDG-002 | 无显式引用靠语义造边 | 违规 | negative |
+| EDG-003 | related_wps 上下游 | 仍投影为 upstream/downstream 边 | regression |
+
+## 88. 升级闸与集层范围聚合（v3.27.0 CR-005）
+
+阻断：MIG-101、MIG-102、MIG-103、FED-003。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| MIG-101 | migrate 升 0.17.0 | 建 registers/ 表+index；抽取行标回填-未确认 | positive |
+| MIG-102 | scopeBackfillOpen>0 | 健康 P0 升级未完成；范围推导不得把未确认当已确认 | regression |
+| MIG-103 | 全部裁定后 N=0 | 才勾 upgrade-to 完成 | positive |
+| FED-003 | 集层两成员，其一无表 | 缺表挂牌，不把缺表当全纳入 | positive |
+| FED-004 | 把聚合写入 portfolio/cache | 违规 | negative |
+| SCR-001 | 项目 ai/scripts/ 与 refresh_views 重叠 | HINT 迁 backup，不自动删，不删事实源 | regression |
 
 ## 回归用例统计
 
@@ -1562,4 +1607,7 @@
 | Project 触发词扩面 (83) | 4 | 4 | 0 |
 | 相关性总闸/薄源 (84) | 15 | 4 | 11 |
 | 计划索引与上线路由 (85) | 13 | 7 | 6 |
-| **合计** | **937** | **548** | **389** |
+| 待办投影正确性 (86) | 8 | 4 | 4 |
+| 范围表/边/推导 (87) | 10 | 4 | 6 |
+| 升级闸与集层范围 (88) | 6 | 3 | 3 |
+| **合计** | **961** | **559** | **402** |

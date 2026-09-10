@@ -1,13 +1,18 @@
 {
   "name": "chrono-pm-project",
   "displayName": "ChronoPM-Project — 项目管理（日报/待办/合同）",
-  "version": "3.26.0",
+  "version": "3.27.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
     "min": "0.1.0",
-    "current": "0.16.0"
+    "current": "0.17.0"
   },
   "migrations": [
+    {
+      "from": "0.16.0",
+      "to": "0.17.0",
+      "description": "v3.27.0：新增 ai/registers/ 范围登记表；entities.relations；推导失败门；回填清零健康项。"
+    },
     {
       "from": "0.15.0",
       "to": "0.16.0",
@@ -102,6 +107,11 @@
     "python": ">=3.9"
   },
   "versionHistory": [
+    {
+      "version": "3.27.0",
+      "date": "2026-09-10",
+      "summary": "范围登记表+entities.relations+05推导失败门；parse_todos只读§1.1去重；migrate 0.17.0回填清零；Portfolio V-15。schema 0.17.0。双包同版本。Module 86–88（总计961）。"
+    },
     {
       "version": "3.26.0",
       "date": "2026-09-10",
@@ -555,7 +565,7 @@
   ],
   "blueprint": {
     "lastUpdated": "2026-09-10",
-    "lastVersion": "3.26.0",
+    "lastVersion": "3.27.0",
     "updateRequiredOn": [
       "major",
       "minor",

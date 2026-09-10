@@ -22,7 +22,7 @@ CHANGELOG）由发布流程统一同步，禁止遗漏。
 """
 
 # Skill 本体版本（发布时统一 bump）
-SKILL_VERSION = "3.26.0"
+SKILL_VERSION = "3.27.0"
 
 # 工作区目录结构 Schema 版本（CR-20260811-002 → 0.6.0；CR-20260813-001 → 0.7.0 跨源需求归集；
 # CR-20260813-002 → 0.8.0 合同作用域 RI，新增 portfolio/requirements + contract-register；
@@ -36,5 +36,6 @@ SKILL_VERSION = "3.26.0"
 # 0.15.0 = 新增 ai/project-info/；budget/progress-plan 迁出 plans/；
 # 0.16.0 = pm-profile current_operator；升级契约含存量受控迁移。
 # 3.21.0 百科叠层为懒建派生，不升 schema：新增必填目录/必填文件/迁移义务才升 schema；
-# 懒建可选派生物（缺了能降级、不参与 migrate 校验）不升。）
-WORKSPACE_SCHEMA_VERSION = "0.16.0"
+# 懒建可选派生物（缺了能降级、不参与 migrate 校验）不升。
+# 0.17.0 = 新增 ai/registers/ + scope-register 必填（空表合法）+ 回填清零迁移义务。）
+WORKSPACE_SCHEMA_VERSION = "0.17.0"

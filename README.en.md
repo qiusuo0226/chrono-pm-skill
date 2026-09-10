@@ -1,4 +1,4 @@
-# ChronoPM v3.26.0 — An AI Sidekick That Actually Manages Projects
+# ChronoPM v3.27.0 — An AI Sidekick That Actually Manages Projects
 
 **You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
@@ -98,7 +98,7 @@ ChronoPM Skill/
 
 ## Engineering quality
 
-- **937 regression cases** guarding every update against breaking existing behavior;
+- **961 regression cases** guarding every update against breaking existing behavior;
 - **Two-layer versioning:** the skill version and the workspace schema evolve independently, with compatibility checks and migration guidance on upgrade;
 - **Governance built in:** change requests, impact analysis, and release audits are formal flows in the repo, not verbal agreements.
 
@@ -106,15 +106,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.26.0 |
-| Workspace schema | 0.16.0 |
+| Skill version | 3.27.0 |
+| Workspace schema | 0.17.0 |
 | Rule files | 24 |
-| Document templates | 38 |
-| Regression cases | 937 |
+| Document templates | 40 |
+| Regression cases | 961 |
 
 Release artifacts: `ChronoPM-Project-Skill-v3.18.0.zip` + `ChronoPM-Portfolio-Skill-v3.18.0.zip`.
 
-Regression tests | 937 cases. Regression test suite (937 cases).
+Regression tests | 961 cases. Regression test suite (961 cases).
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 
