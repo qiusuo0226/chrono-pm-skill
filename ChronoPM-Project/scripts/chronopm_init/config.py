@@ -34,6 +34,7 @@ SINGLE_PROJECT_DIRS = [
     "plans",
     "project-info",
     "wps",
+    "registers",
     "todos",
     f"meetings/{CURRENT_YM}",
     f"reports/daily/project/{CURRENT_YM}",
@@ -61,6 +62,8 @@ SINGLE_FACT_SOURCE_FILES = {
     "requirements/change-log.md": "change-log-template.md",
     "requirements/source-type-registry.md": "source-type-registry-template.md",
     "requirements/contract-register.md": "contract-register-template.md",
+    "registers/scope-register.md": "scope-register-template.md",
+    "registers/_index.md": "register-index-template.md",
 }
 
 # ============================================================
@@ -214,6 +217,8 @@ ALL_TEMPLATE_FILES = [
     "project-notes-template.md",
     # 已通过 *_FACT_SOURCE_FILES 实例化，按全量副本库口径纳入
     "source-type-registry-template.md",
+    "scope-register-template.md",
+    "register-index-template.md",
 ]
 
 # 拆解四模板现行拷贝源：source-split-skill/assets/templates/

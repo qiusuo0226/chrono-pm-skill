@@ -28,7 +28,7 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 
 | 目录 | 是否允许创建AI文件 | 说明 |
 |---|---|---|
-| `ai/` 下本项目目录（todos/wps/risks/issues/plans/project-info/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`project-info/` 放 budget/progress-plan。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7）。过程日志=`logs/ops/`；决策文件=`pm-decisions.md`（懒建） |
+| `ai/` 下本项目目录（todos/wps/registers/risks/issues/plans/project-info/requirements/decisions/reports/meetings/context/outputs/logs/backup） | ✅ 允许 | 本项目管理工作区。`registers/` 放范围登记表。`project-info/` 放 budget/progress-plan。`resources/` 已退役，人员读 todos；`backup/` 禁读（见 §1.7）。过程日志=`logs/ops/`；决策文件=`pm-decisions.md`（懒建） |
 | 业务代码目录 / 需求文档目录 / 交付物目录 / **工作区根下除 `ai/` 外的一切（含与 `ai/` 平级）** | ❌ 禁止 | AI 不得在此创建或修改任何文件。生成物只进 `ai/outputs/{timestamp}/`。宿主 final workspace folder / cwd 若等于项目根，忽略并改映射到 outputs |
 | 他项目 `ai/` | ❌ 禁止 | 不得代写；跨项目可见性由 ChronoPM-Portfolio 只读聚合 |
 
@@ -40,10 +40,10 @@ AI 生成的所有管理文件必须统一存放在 `ai/` 目录下，**严禁�
 
 直接放 `ai/` 下（无 `portfolio/`、`projects/` 分层）：
 ```
-ai/ ├── todos/ ├── wps/ ├── risks/ ├── issues/ ├── plans/ ├── project-info/ ├── requirements/ ├── decisions/
+ai/ ├── todos/ ├── wps/ ├── registers/ ├── risks/ ├── issues/ ├── plans/ ├── project-info/ ├── requirements/ ├── decisions/
    ├── reports/ ├── meetings/ ├── context/ ├── outputs/ ├── logs/ops/ ├── logs/journal/（懒建）
    ├── backup/ └── pm-decisions.md（懒建）
-   └── 懒建派生：`context/brain.md`、`context/active-entities.json`、`ai/.state.json`（脚本可覆盖；缺了不致命）
+   └── 懒建派生：`context/brain.md`、`context/active-entities.json`、`ai/.state.json`、`registers/_index.md`（脚本可覆盖；缺 brain 不致命）
 ```
 > v2.1.0：原 `continuity/` 目录合并入 `context/`（4 个文件：carryover-register/import-log/legacy-sources/project-lineage）；原工作区根目录 `outputs/` 移入 `ai/outputs/`，工作区根目录只留一个 `ai/` 顶层目录。
 > v3.11.0：写任何文件前走 00 P-ALWAYS 三路分类。生成物禁止落到项目根。
@@ -324,6 +324,12 @@ author: AI辅助生成
 `plans/_index.md` 列：`PLAN 编号 | 名称 | status | business_modules | time_window | batch | scope_include | scope_exclude | related_plans | 文件路径`。只允许末尾追加列。分两段：§1 正常 / §2 废弃。列定义与 `assets/templates/plan-index-template.md`、`scripts/view-spec.json` `plan_index_columns` 一致。
 
 **语义**：查找加速器，**不是存在性判据**。存在性以 `plans/PLAN-*.md` 为准；文件有而索引缺行 → D43 补行（仅写入/P-VIEWS/用户同意重建）；索引有行文件缺失 → `pm-decisions.md`。YAML 缺锚点镜像为 `—`。禁止用文件名编码模块/批次。纯查询缺本文件 → 提示重建，禁止查询中全量扫描（14 §2.1）。
+
+### 7.7 范围登记索引（v3.27.0）
+
+`registers/_index.md` 列：`类型 | 路径 | 行数 | 回填-未确认`。列定义与 `assets/templates/register-index-template.md`、`scripts/view-spec.json` `scope_register_columns`（表文件）一致。
+
+**语义**：查找加速器，**不是存在性判据**。存在性以 `registers/scope-register.md` 为准。写入 / P-VIEWS / 升级重建时覆盖。纯查询缺本文件：提示一次是否重建；未同意则读 `scope-register.md` 标题，禁止查询中全量扫描（14 §2.1）。空表合法。
 
 **分片例外（v3.7.0）**：`sources/{编号}/atoms/` 与 `facts/` 在超过 **300 条或 1500 行**（可配置软阈值，只改本条）时目录化为合法形态。按章节分片，一条 ATOM 不跨片。parse-log 活跃区超限归档同目录 `parse-log-archive.md`。
 

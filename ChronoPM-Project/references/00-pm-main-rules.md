@@ -847,7 +847,7 @@ YAML：`effect: 正常|废弃`（缺省=正常）；废弃必填 `superseded_by`
 
 ### P-VIEWS / P-RESOLVE / P-CORRECT（v3.21.0）
 
-**P-VIEWS**：写事实成功后、进入工作区后，有 Python 则跑 `refresh_views.py --all`。无 Python 则视图 AUTO 兜底。缺 `.state.json` = 全部 stale。查询准入只比 `facts_fingerprint`；写盘时 facts 或 journal 任一变化都重建。
+**P-VIEWS**：写事实成功后、进入工作区后，有 Python 则跑 `refresh_views.py --all`。无 Python 则视图 AUTO 兜底。缺 `.state.json` = 全部 stale。查询准入只比 `facts_fingerprint`；写盘时 facts 或 journal 任一变化都重建。写 `registers/scope-register.md` / WP§3 / PLAN 范围字段后必须 P-VIEWS。`active-entities.relations` 是派生，禁止手改（同底线 17）。
 
 **P-RESOLVE**：对齐只查 `active-entities.json`。类型序：精确编号 → wp/td → term 第二跳（canonical + 开办/变更/注销收口）→ person（仅指人）。禁止跳过 term 猜 WP，禁止全库语义扫。
 

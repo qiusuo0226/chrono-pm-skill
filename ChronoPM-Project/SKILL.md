@@ -1,7 +1,7 @@
 ---
 name: chrono-pm-project
-version: 3.26.0
-schema_version: 0.16.0
+version: 3.27.0
+schema_version: 0.17.0
 updated_at: 2026-09-10
 description: 给项目经理的单项目 AI 项目管理技能。把日报、待办、工作包、计划、合同、风险、会议纪要写进本项目 ai 目录。触发：项目管理、项目、单项目、初始化项目、工作包、WP、计划、看计划、排计划、倒排、排期、阶段、里程碑、门禁、结转、派活、待办、任务、进度、需求、变更、范围、合同、合同登记、风险、问题、决策、会议、会议纪要、纪要、拆文件、源文档、工时、能耗、人员、花名册、人员进出、进度表、xlsx、csv、投喂、粘贴、入库、归档、更新、补全、回填、评审、验收、成本、预算、复盘、历史计划、完整性巡检、词库、偏好、画图、责任链图、记日报、日报、出周报、周报、ChronoPM、ChronoPM-Project、ChronoPM-Portfolio。项目集、组合、跨项目汇总请安装并调用 ChronoPM-Portfolio。本包只写本项目。
 ---
@@ -28,7 +28,7 @@ project-root/
     ├── templates/
     ├── todos/{date}/{owner}.md
     ├── requirements/     # 登记册 + sources/{编号}/ 拆解产物（本项目一套）
-    ├── plans/  project-info/  wps/  risks/  issues/  decisions/
+    ├── plans/  project-info/  wps/  registers/  risks/  issues/  decisions/
     ├── backup/           # 升级垃圾封存（禁读；3.8.0 空目录）
     ├── resources/        # 退役：register/transfer-log 迁 backup；人员读 todos/_index
     ├── reports/          # 项目日报按需生成（存根，可能不存在）+ 周报；个人日报在 todos
@@ -54,6 +54,7 @@ project-root/
 | `plans/PLAN-*.md` | 计划（§3 = WP 引用简表；§4 = 阶段列表投影） |
 | `project-info/progress-plan.md` `project-info/budget.md` | 进度框架/预算 |
 | `wps/WP-*.md` `wps/_index.md` | 独立 WP 文件 + 查找加速器（存在性以文件为准） |
+| `registers/scope-register.md` `registers/_index.md` | 范围矩阵（功能点×对象类型×批次；存在性以表文件为准） |
 | `requirements/requirement-register.md` `change-log.md` `contract-register.md` `source-type-registry.md` | 需求与合同（本项目） |
 | `requirements/sources/` `_index.md` | 源文档级拆解（加速器；存在性以 sources/*/meta.md 为准） |
 | （人员） | 权威=最新合法日 `_index.md` §1；进出组=个人 §0.5；能耗=个人最新文件 §0.6。退役 register/transfer-log 见 `backup/` |
@@ -162,6 +163,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 | WP/PLAN | 新号 `WP/PLAN-YYYYMMDD-NNN`（ASCII，当日序号）；存量短号与中文名不重编 | 文件名=编号 |
 | REQ/CAN/CR/PRJ/DF/SRC | 短号或固定号 | SRC-NNN 仅项目内；共享用簇固定号 |
 | Meeting | MTG-YYYYMMDD-NNN | 不变 |
+| SR | SR-YYYYMMDD-NNN | 范围登记表行 |
 
 ## 9–14. 状态 / 瘦身 / 输出 / 优先级 / 里程碑 / 容忍度
 同 v2.1.0：全中文枚举见 00 §5a；瘦身 300 行/30 条；优先级 Level 0–4；里程碑=WP §8 关键阶段；容忍度见 00 §5c。
@@ -200,7 +202,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 版本控制文件
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | Skill 包版本号（当前 3.26.0） |
+| `VERSION` | Skill 包版本号（当前 3.27.0） |
 | `skill.json` | Skill 元数据（版本、模式、依赖；skill schemaVersion 与 supportedWorkspaceSchema 分离） |
 | `CHANGELOG.md` | 版本变更历史和升级说明 |
 | SKILL.md front matter | AI 可读的版本字段 |

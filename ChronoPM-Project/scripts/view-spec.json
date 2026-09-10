@@ -45,6 +45,19 @@
     "关键阶段"
   ],
   "plan_s4_format": "- {stage} → {icon}｜{owner}｜{window}",
+  "scope_register_columns": [
+    "SR 编号",
+    "功能点",
+    "对象类型",
+    "批次/窗口",
+    "纳入",
+    "排除原因",
+    "WP",
+    "REQ",
+    "PLAN",
+    "证据指针",
+    "回填状态"
+  ],
   "brain_fact_globs": [
     "wps/WP-*.md",
     "todos/{latest_legal_day}/*.md",
@@ -57,6 +70,8 @@
     "plans/PLAN-*.md",
     "requirements/sources/_index.md",
     "requirements/sources/*/meta.md",
-    "logs/ops/_index.md"
+    "logs/ops/_index.md",
+    "registers/scope-register.md",
+    "registers/_index.md"
   ]
 }

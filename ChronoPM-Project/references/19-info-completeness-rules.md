@@ -149,6 +149,10 @@ python scripts/verify_todo_continuity.py --root <项目根>
 
 已建 `sources/{编号}/` 时：台账缺行补行；分片目录须有 `_index.md`；parse-log 缺失作提示不阻断。
 
+### 3.3c 范围登记表（v3.27.0）
+
+问批次/上线范围时：有 `registers/scope-register.md` 则先表。缺表挂牌。`回填-未确认` 行必须可见。缺口不得静默当已纳入。
+
 ### 3.4 需求层
 
 检查文件：`requirements/requirement-register.md`
