@@ -14,7 +14,7 @@ Blueprint Impact: full
 - 10 §1.0 相关性总闸；L2 泛化材料薄源；L3 背景陈述
 - `plans/_index.md` 懒建加速器 + `plan-index-template.md`
 - D43 计划文件↔索引一致性（含 related_plans 双向）
-- Module 84 REL-001～014 + EX-019；Module 85 PAN-001～012（合计 **937**）
+- Module 84 REL-001～014 + EX-019；Module 85 PAN-001～010、PAN-012～014（合计 **937**）
 
 ### Changed
 - 00 §2.7 意图与规则 1–4；SKILL 路由/底线 16；23 P-DOC-INGEST Pre
@@ -23,6 +23,13 @@ Blueprint Impact: full
 
 ### 不做
 - 升 schema；新规则文件；查询中全量扫描建索引；改 PLAN 号段；强制回填历史 YAML；代更 Grok
+
+### 收尾补记（2026-09-10，不另起版本）
+- C1：Module 85 编号不是 PAN-001～012。施工时 AP 的 PAN-011q/011w 因 `audit_release` Case ID 只认 `[0-9A-Z]`（小写后缀匹配失败）改为 **PAN-013 / PAN-014**，全集为 PAN-001～010、012～014。
+- C2：统计表 Module 84 正向/回归由 6/9 改为 **4/11**（表内 4 positive + 4 negative + 7 regression）。合计正向 **548**、回归 **389**，总数仍 937。
+- C3：upgrade-to 阻断摘要补齐 11 条（REL-001/006/007/011/012、PAN-001/002/004/005/007/013）。
+- C4：Module 85 表按 PAN-012 → 013 → 014 升序。
+- 基线 `baselines/3.26.0/` 同步上述文档；audit 总数断言不受影响。
 
 ---
 
