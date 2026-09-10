@@ -22,6 +22,7 @@ import json
 import os
 import re
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -805,6 +806,62 @@ VERSION_CAPABILITIES = [
         "new_files": [],
         "note": "v3.23.0（schema 保持 0.16.0）：确认分级驱动生效；查询不灌 entities 全文；alias 补决策/需求标题；brain 投影 ops；Portfolio as-of。",
     },
+    {
+        "version": "3.23.1",
+        "schema": "0.16.0",
+        "capabilities": [],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.23.1 Patch：schema 0.16.0。",
+    },
+    {
+        "version": "3.24.0",
+        "schema": "0.16.0",
+        "capabilities": [],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.24.0（schema 保持 0.16.0）。",
+    },
+    {
+        "version": "3.25.0",
+        "schema": "0.16.0",
+        "capabilities": [],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.25.0（schema 保持 0.16.0）。",
+    },
+    {
+        "version": "3.25.1",
+        "schema": "0.16.0",
+        "capabilities": [],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.25.1 Patch。",
+    },
+    {
+        "version": "3.25.2",
+        "schema": "0.16.0",
+        "capabilities": [],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.25.2 Patch。",
+    },
+    {
+        "version": "3.26.0",
+        "schema": "0.16.0",
+        "capabilities": ["relevance_gate", "plan_index"],
+        "new_dirs": [],
+        "new_files": [],
+        "note": "v3.26.0（schema 保持 0.16.0）：相关性总闸；plans/_index 懒建。",
+    },
+    {
+        "version": "3.27.0",
+        "schema": "0.17.0",
+        "capabilities": ["scope_register", "entity_relations", "derive_gate"],
+        "new_dirs": ["registers"],
+        "new_files": ["registers/scope-register.md", "registers/_index.md"],
+        "note": "v3.27.0 schema 0.17.0：范围登记表；entities.relations；推导失败门；回填清零健康项。",
+    },
 ]
 
 # v2.1.0 已将 VERSION_CAPABILITIES 补齐至全部 50 个历史版本（0.1.0 ~ 2.1.0），
@@ -962,6 +1019,8 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
 
         "wps/_index.md": "wp-index-template.md",
         "requirements/sources/_index.md": "source-index-template.md",
+        "registers/scope-register.md": "scope-register-template.md",
+        "registers/_index.md": "register-index-template.md",
     }
 
     for f in files:
@@ -993,6 +1052,104 @@ def create_missing_files(ai_dir: Path, files: list, templates_dir: Path):
         else:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(f"---\ndoc_type: auto-migrated\nmigrated_at: {datetime.now().strftime('%Y-%m-%d')}\n---\n", encoding="utf-8")
+
+
+def extract_scope_backfill(ai_dir: Path, dry_run: bool = False) -> int:
+    """从 PLAN YAML / §3 / WP §3 显式结构抽范围行，标回填-未确认。散文不语义抽。返回未确认行数。"""
+    try:
+        from refresh_views import parse_plans, parse_wp, _md_row, _table_rows
+    except ImportError:
+        return 0
+    reg_dir = ai_dir / "registers"
+    if not reg_dir.is_dir():
+        return 0
+    path = reg_dir / "scope-register.md"
+    if not path.is_file():
+        return 0
+    text = path.read_text(encoding="utf-8")
+    existing = set()
+    existing_keys = set()
+    n = 0
+    today = datetime.now().strftime("%Y%m%d")
+    prefix = f"SR-{today}-"
+    for row in _table_rows(text):
+        if not row or not str(row[0]).startswith("SR-"):
+            continue
+        existing.add(row[0])
+        fp = row[1].strip() if len(row) > 1 else ""
+        batch = row[3].strip() if len(row) > 3 else ""
+        wp = row[6].strip() if len(row) > 6 else ""
+        existing_keys.add((fp, wp, batch))
+        if row[0].startswith(prefix):
+            try:
+                n = max(n, int(row[0][len(prefix):]))
+            except ValueError:
+                pass
+    pending_existing = text.count("回填-未确认")
+    rows = []
+    wps_dir = ai_dir / "wps"
+    wp_fps = {}
+    if wps_dir.is_dir():
+        for p in wps_dir.glob("WP-*.md"):
+            try:
+                w = parse_wp(p)
+            except Exception:
+                continue
+            wp_fps[w["id"]] = w.get("fps") or []
+    for pl in parse_plans(ai_dir):
+        if pl.get("status") == "废弃":
+            continue
+        batch = pl.get("batch") or "—"
+        if batch in ("—", "") and (pl.get("scope_include") in ("—", "", None)) and (pl.get("scope_exclude") in ("—", "", None)):
+            if not pl.get("wp_ids"):
+                continue
+        for wid in pl.get("wp_ids") or []:
+            fps = wp_fps.get(wid) or ["整包"]
+            for fp in fps:
+                key = (str(fp)[:40], wid, batch or "—")
+                if key in existing_keys:
+                    continue
+                n += 1
+                sid = f"SR-{today}-{n:03d}"
+                while sid in existing:
+                    n += 1
+                    sid = f"SR-{today}-{n:03d}"
+                evid = f"{pl.get('path')}#YAML"
+                rows.append(_md_row([
+                    sid, str(fp)[:40], "待裁定", batch or "—", "待裁定", "—",
+                    wid, "—", pl.get("id") or "—", evid, "回填-未确认",
+                ]))
+                existing.add(sid)
+                existing_keys.add(key)
+    if dry_run:
+        return pending_existing + len(rows)
+    if rows:
+        if not text.endswith("\n"):
+            text += "\n"
+        path.write_text(text + "\n".join(rows) + "\n", encoding="utf-8")
+    pending = (path.read_text(encoding="utf-8").count("回填-未确认"))
+    ver = ai_dir / ".skill-version.json"
+    if ver.is_file():
+        try:
+            data = json.loads(ver.read_text(encoding="utf-8"))
+            data["scopeBackfillOpen"] = pending
+            ver.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        except (OSError, json.JSONDecodeError):
+            pass
+    if pending:
+        print(f"  SCOPE_BACKFILL_OPEN {pending}（清零前升级未完成）")
+    return pending
+
+
+def refresh_views_force(project_root: Path) -> None:
+    script = Path(__file__).parent / "refresh_views.py"
+    if not script.is_file():
+        return
+    import subprocess
+    subprocess.run(
+        [sys.executable, str(script), "--project-root", str(project_root), "--all", "--force"],
+        check=False,
+    )
 
 
 def update_version_file(ai_dir: Path, mode: str, skill_version: str = None):
@@ -2187,6 +2344,8 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
         append_migration_log(ai_dir, old_version, [], [], skill_version)
         print(f"\n✅ 版本已更新到 {skill_version}")
         migrate_business_data(ai_dir, dry_run=not migrate_business)
+        extract_scope_backfill(ai_dir, dry_run=False)
+        refresh_views_force(ai_dir.parent if (ai_dir / "wps").exists() or True else ai_dir.parent)
         if migrate_business:
             print("  （未建快照：目录已完整路径；需要快照请对有 wps 的业务仓使用 --migrate-business）")
         return
@@ -2227,6 +2386,10 @@ def migrate_workspace(project_root: str, dry_run: bool = False, target_version: 
     print(f"\n记录迁移日志...")
     append_migration_log(ai_dir, old_version, missing_dirs, missing_files, skill_version)
     print(f"  ✓ logs/migration-log.md 已追加")
+    print(f"\n范围回填抽取...")
+    extract_scope_backfill(ai_dir, dry_run=False)
+    print(f"  ✓ 范围表抽取完成（未确认须裁定清零）")
+    refresh_views_force(ai_dir.parent)
 
     # 生成健康文件
     print(f"\n生成工作区健康文件...")

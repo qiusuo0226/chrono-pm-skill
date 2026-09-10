@@ -93,6 +93,7 @@ AI 在每次会话**首次进入工作区**时（而非每次请求），必须�
 | 3.14.0+ / schema 0.15.0 | 应有 `project-info/`。`plans/budget.md` / `plans/progress-plan.md` 仍在旧路径 → 提示迁到 `project-info/`（清单→PM 确认）。PLAN 新建用 6 节、无子行 |
 | 3.15.0+ / schema 0.16.0 | `pm-profile.md` 应有 `current_operator`（可空）。存量迁移默认 dry-run，`--migrate-business` 写回 |
 | 3.21.0+ / schema 0.16.0 | **不要**把缺 `context/brain.md` / `logs/journal/` / `ai/.state.json` 当健康失败或 P0（懒建派生）。新增必填目录/必填文件/迁移义务才升 schema；懒建可选派生物（缺了能降级、不参与 migrate 校验）不升 schema |
+| 3.27.0+ / schema 0.17.0 | 应有 `registers/` + `scope-register.md`（空表合法）+ `_index.md`。`.skill-version.json` 的 `scopeBackfillOpen` > 0 → **P0 升级未完成**（范围回填未清零）；范围推导必须横幅且不得把 `回填-未确认` 当已确认。日报/待办不阻断。项目内 `ai/scripts/` 若与包内 `refresh_views`/verify 功能重叠 → HINT 迁 `backup/`，禁止再跑；**不自动删**、不删 PLAN/WP/待办正文 |
 | 3.8.0+ / schema 0.13.0 | ① 缺 `backup/` → **建空目录**（脚本只建空目录 + 升 schema，不改业务文件）。② 人员仍读 `resource-register` / `transfer-log` → 提示改读待办体系（最新合法 `_index` §1 花名册 + 个人 §0 / §0.5 / §0.6）。③ `v1-legacy` 等升级垃圾应由分类器建议搬出 archive 进 backup，本包不代搬 |
 
 3b. 检查 `ai/templates/` 参考模板库完整性：对比工作区 `ai/templates/` 下的文件与 Skill 包 `assets/templates/` 目录中的模板清单（`ALL_TEMPLATE_FILES`），如有缺失模板，在健康报告的“缺失能力”表中列出并建议执行迁移补齐。同时检查 `ai/outputs/.templates/manifest-template.md` 是否存在。

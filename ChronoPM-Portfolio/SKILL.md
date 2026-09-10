@@ -1,8 +1,8 @@
 ---
 name: chrono-pm-portfolio
-version: 3.26.0
+version: 3.27.0
 schema_version: 0.7.0
-workspace_schema: 0.16.0
+workspace_schema: 0.17.0
 updated_at: 2026-09-10
 description: ChronoPM-Project 的伴生技能，须同时安装。只做多个项目的只读归集与分发。触发：项目集、组合、跨项目、各项目进度、汇总周报、集周报、跨项目风险、门禁、挂载、分到各项目、混报、无表头进度表、整体盈亏、合同去重、术语索引、健康巡检、汇总计划、集层技能缺口、ChronoPM-Portfolio、ChronoPM-Project。记日报、待办、xlsx 入库、初始化项目请安装并调用 ChronoPM-Project。本包工人不手搓成员项目正文。
 ---
@@ -15,7 +15,7 @@ description: ChronoPM-Project 的伴生技能，须同时安装。只做多个�
 仅 **viewer**：本包工人不手搓 `projects/*/ai` 正文；自己的可写范围仍仅 `ai/portfolio/**`。成员写入只允许经 01 §2.2 调用 ChronoPM-Project 写过程，`--project-root` 指向该成员。
 材料投喂默认识别并落 `portfolio/reports/ingest/{batch}/`（原件+抽出行）与集层日志，禁止停在摘要、禁止问要不要落库。高置信低/中风险同会话手递。细则 01 §2.1 / §2.2。
 高风险或未决归属走内部能力 **V-9**（白话拍板，确认后仍走 §2.2，不换窗口）。**对外只说人话**，禁止对用户展示「建议更新清单」六字。
-工作区三态只看当前根，禁止向上翻父目录。集根：投喂走 §2.1→§2.2（含 xlsx/csv，不论有无表头），查询走 V-2～V-14，工人不手搓成员正文；未加载 ChronoPM-Project 时提示市场安装或启用后再手递。成员根（当前根直接有 `ai/todos/` 且非集根）：本包不做集层 ingest、不建联邦骨架，日常录入交 ChronoPM-Project。纯单项目且意图为记日报/待办/入库、未说项目集/跨项目/分到各项目：不走 §2.1，提示用 ChronoPM-Project。用户明确初始化项目集/挂载/收编：仍走本包 §5 联邦骨架，不削弱现有能力。
+工作区三态只看当前根，禁止向上翻父目录。集根：投喂走 §2.1→§2.2（含 xlsx/csv，不论有无表头），查询走 V-2～V-15，工人不手搓成员正文；未加载 ChronoPM-Project 时提示市场安装或启用后再手递。成员根（当前根直接有 `ai/todos/` 且非集根）：本包不做集层 ingest、不建联邦骨架，日常录入交 ChronoPM-Project。纯单项目且意图为记日报/待办/入库、未说项目集/跨项目/分到各项目：不走 §2.1，提示用 ChronoPM-Project。用户明确初始化项目集/挂载/收编：仍走本包 §5 联邦骨架，不削弱现有能力。
 
 ## 3. 联邦工作区
 ```
@@ -51,7 +51,7 @@ description: ChronoPM-Project 的伴生技能，须同时安装。只做多个�
 
 联邦骨架缺失时：按 `assets/templates/project-index-template.md` 创建 `portfolio/context/project-index.md` 与空 `projects/`，询问集经理后登记，不扫描即当正式成员。
 
-## 6. 能力 V-1～V-14
+## 6. 能力 V-1～V-15
 | # | 能力 | 触发 | 实时读 | 输出 |
 |---|---|---|---|---|
 | V-1 | 成员登记 + 动态感知 | 进入工作区/查询前 | `projects/` + project-index | 候选收编/失效清理提示 |
@@ -67,6 +67,7 @@ description: ChronoPM-Project 的伴生技能，须同时安装。只做多个�
 | V-11 | 跨项目共享文件拆分 | 「拆了这份文件」「分到各项目」 | 源文件 + 各项目索引 | 分析+归属建议；分法已定则 CALL P-SPLIT；永不代写 |
 | V-12 | 术语指针索引 | 收编成功 / 「刷新术语索引」/ 集层查词 | 各项目 `context/domain-glossary.md` 表格行 | `portfolio/context/glossary-index.md`（只存指针，不存全文） |
 | V-13 | 时间窗计划归集 | 「归纳各项目X日前的计划」「汇总计划」「国庆各项目计划」 | 各项目正常 PLAN 头+§2 门禁+正常 WP 时间盒 | 项目×WP 切面（6 列）；不按计划名；不落事实源 |
+| V-15 | 范围聚合 | 「各项目哪些不上线」「跨项目批次范围」 | 各成员 `registers/scope-register.md` 行 | 复合键表；缺表挂牌；不落数据源 |
 | V-14 | 混报拆分 + 弱结构投喂 | 「这份日报分到各项目」/ 无表头进度表 / 跨项目清单 | project-index、花名册、进行中 index；点名才开 C(P)；**禁翻历史日待办全文与旧分发稿**；+1 只读锚点日 | 分发稿 + ingest 原件；高置信 CALL §2.2；永不代写 |
 
 **最小读取集**：V-1～V-14 一切聚合只读索引/摘要行（project-index、status 摘要、登记册表格行、词库表格行、PLAN 头与 §3 行），不读全文。全文仅集经理点名某项目细节时才读。各成员若有 `.state.json`，结论附 as-of（`facts_fingerprint` 短码）。禁止 `portfolio/cache/` 当查询数据源。**V-14 拆分另见 02 §12 硬闸：禁止历史日待办全文与旧分发稿。**
