@@ -77,6 +77,24 @@ def _section(text: str, title: str) -> str:
     return ""
 
 
+def _subsection(block: str, title: str) -> str:
+    heads = list(re.finditer(r"^###\s+(.+)$", block, re.M))
+    for i, h in enumerate(heads):
+        if h.group(1).strip().startswith(title):
+            start = h.end()
+            end = heads[i + 1].start() if i + 1 < len(heads) else len(block)
+            return block[start:end]
+    return ""
+
+
+WP_ID_RE = re.compile(r"^WP-[0-9A-Z-]+$", re.I)
+
+
+def _wp_cell(raw: str) -> str:
+    v = (raw or "").strip()
+    return v if WP_ID_RE.match(v) else "—"
+
+
 def _table_rows(block: str) -> list[list[str]]:
     rows = []
     for line in block.splitlines():
@@ -179,6 +197,15 @@ def parse_wp(path: Path) -> dict:
         for row in rows[1:]:
             if row and row[0] and row[0] not in ("实体或功能点", "功能点"):
                 fps.append(row[0])
+    req_ids = []
+    s2 = _section(text, "2.")
+    for row in _table_rows(s2):
+        if row and re.match(r"^REQ-", row[0]):
+            req_ids.append(row[0])
+    if req and req not in ("—", "-") and re.match(r"^REQ-", req.split()[0]):
+        rid = req.split()[0].split("/")[0]
+        if rid not in req_ids:
+            req_ids.append(rid)
     up = _listish(str(fm.get("related_wps", "")))
     # yaml nested related_wps: try section 2b
     s2b = _section(text, "2b")
@@ -207,6 +234,7 @@ def parse_wp(path: Path) -> dict:
         "end": end,
         "stage": stage,
         "req": req,
+        "req_ids": req_ids,
         "path": f"wps/{path.name}",
         "upstream": up,
         "downstream": down,
@@ -239,6 +267,10 @@ def parse_plans(ai: Path) -> list[dict]:
         rel = fm.get("related_plans") or "—"
         if isinstance(rel, list):
             rel = " / ".join(str(x) for x in rel) or "—"
+        wp_ids = []
+        for row in _table_rows(_section(text, "3.")):
+            if row and re.match(r"^WP-", row[0]):
+                wp_ids.append(row[0])
         out.append({
             "id": fm.get("plan_id") or p.stem,
             "name": title,
@@ -250,6 +282,7 @@ def parse_plans(ai: Path) -> list[dict]:
             "scope_exclude": fm.get("scope_exclude") or "—",
             "related_plans": rel if str(rel).strip() not in ("[]", "") else "—",
             "path": f"plans/{p.name}",
+            "wp_ids": wp_ids,
         })
     return out
 
@@ -552,7 +585,17 @@ def render_brain(wps: list[dict], entities: dict, as_of: str, facts_fp: str, ops
         n += 1
     if n == 0:
         lines.append("（无）")
-    lines += ["", "全文见 `context/active-entities.json` 的 alias_index。", ""]
+    scopes = [e for e in entities.get("entities") or [] if e.get("type") == "scope"]
+    pending = sum(1 for s in scopes if s.get("backfill") == "回填-未确认")
+    lines += [
+        "",
+        "## 范围登记",
+        "",
+        f"行数 {len(scopes)} · 回填-未确认 {pending} · 全文见 `registers/scope-register.md`。",
+        "",
+        "全文见 `context/active-entities.json` 的 alias_index。",
+        "",
+    ]
     return "\n".join(lines) + "\n"
 
 
@@ -603,10 +646,22 @@ def parse_sources(ai: Path) -> list[dict]:
     return out
 
 
+def _todo_core_block(text: str) -> str:
+    sec = _section(text, "1.")
+    sub = _subsection(sec, "1.1")
+    if sub.strip():
+        return sub
+    rows = _table_rows(sec)
+    if rows and any(c in ("WP Ref", "WP") for c in rows[0]):
+        return sec
+    return ""
+
+
 def parse_todos(ai: Path, day: str | None) -> list[dict]:
     if not day:
         return []
     out = []
+    seen: set[str] = set()
     d = ai / "todos" / day
     if not d.is_dir():
         return out
@@ -616,17 +671,73 @@ def parse_todos(ai: Path, day: str | None) -> list[dict]:
             continue
         text = p.read_text(encoding="utf-8")
         owner = _front(text).get("owner") or p.stem
-        for row in _table_rows(_section(text, "1.")):
+        block = _todo_core_block(text)
+        for row in _table_rows(block):
             if len(row) < 3 or row[0] in ("待办编号", "编号"):
                 continue
             tid, title, st = row[0], row[1], row[2]
             if not tid.startswith("TD-"):
                 continue
+            if tid in seen:
+                continue
             if st in closed:
                 continue
-            wp = row[4] if len(row) > 4 else "—"
+            seen.add(tid)
+            wp = _wp_cell(row[4] if len(row) > 4 else "—")
             out.append({"id": tid, "type": "td", "name": title, "status": st, "path": f"todos/{day}/{p.name}", "owner": owner, "wp": wp, "aliases": [title]})
     return out
+
+
+def parse_scope_register(ai: Path) -> list[dict]:
+    path = ai / "registers" / "scope-register.md"
+    if not path.is_file():
+        return []
+    out = []
+    for row in _table_rows(path.read_text(encoding="utf-8")):
+        if len(row) < 5 or row[0] in ("SR 编号", "编号"):
+            continue
+        if not re.match(r"^SR-", row[0]):
+            continue
+        def cell(i, default="—"):
+            return row[i].strip() if len(row) > i and row[i].strip() else default
+        out.append({
+            "id": row[0],
+            "type": "scope",
+            "name": cell(1),
+            "object_type": cell(2),
+            "batch": cell(3),
+            "include": cell(4),
+            "exclude_reason": cell(5),
+            "wp": _wp_cell(cell(6)),
+            "req": cell(7),
+            "plan": cell(8),
+            "evidence": cell(9),
+            "backfill": cell(10, "确认"),
+            "path": "registers/scope-register.md",
+            "aliases": [row[0], cell(1)],
+        })
+    return out
+
+
+def render_register_index(scopes: list[dict]) -> str:
+    open_n = len(scopes)
+    pending = sum(1 for s in scopes if s.get("backfill") == "回填-未确认")
+    lines = [
+        "---",
+        "doc_type: register-index",
+        "derived: true",
+        "---",
+        "",
+        "# 登记表索引",
+        "",
+        "> 加速器。存在性以 `registers/*.md` 文件为准。",
+        "",
+        "| 类型 | 路径 | 行数 | 回填-未确认 |",
+        "|---|---|---|---|",
+        _md_row(["scope-register", "registers/scope-register.md", str(open_n), str(pending)]),
+        "",
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def parse_register(path: Path, typ: str) -> list[dict]:
@@ -718,6 +829,8 @@ def collect_facts(ai: Path, today: str) -> dict[str, str]:
         "requirements/sources/_index.md",
         "context/domain-glossary.md",
         "logs/ops/_index.md",
+        "registers/scope-register.md",
+        "registers/_index.md",
     ):
         p = ai / rel
         if p.is_file():
@@ -787,7 +900,7 @@ def _successor_id(w: dict, by_id: dict, seen: set | None = None) -> str:
     return nxt["id"]
 
 
-def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: list[dict], people_abbr: dict, gloss_alias: dict, corrections: list, facts_fp: str, as_of: str, srcs: list[dict] | None = None) -> dict:
+def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: list[dict], people_abbr: dict, gloss_alias: dict, corrections: list, facts_fp: str, as_of: str, srcs: list[dict] | None = None, plans: list[dict] | None = None, scopes: list[dict] | None = None, req_pairs: list[tuple[str, str]] | None = None) -> dict:
     entities = []
     alias_index = dict(gloss_alias)
     by_id = {w["id"]: w for w in wps}
@@ -819,6 +932,48 @@ def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: 
             _put_alias(alias_index, a, ptr)
     for abbr, name in people_abbr.items():
         _put_alias(alias_index, abbr, {"id": name, "type": "person"})
+    relations = []
+    for pl in plans or []:
+        if pl.get("status") == "废弃":
+            continue
+        rec = {"id": pl["id"], "type": "plan", "name": pl.get("name") or pl["id"], "status": pl.get("status") or "正常", "path": pl.get("path") or "", "aliases": [pl["id"]]}
+        entities.append(rec)
+        _put_alias(alias_index, pl["id"], {"id": pl["id"], "type": "plan"})
+        for wid in pl.get("wp_ids") or []:
+            relations.append({"from": pl["id"], "to": wid, "type": "contains", "src": f"{pl.get('path')}#3"})
+    for title, eid in req_pairs or []:
+        entities.append({"id": eid, "type": "req", "name": title, "status": "登记", "path": "requirements/requirement-register.md", "aliases": [title, eid]})
+    for w in wps:
+        for rid in w.get("req_ids") or []:
+            relations.append({"from": w["id"], "to": rid, "type": "implements", "src": f"{w['path']}#2"})
+        for u in w.get("upstream") or []:
+            if u.startswith("WP-"):
+                relations.append({"from": w["id"], "to": u, "type": "upstream", "src": f"{w['path']}#related_wps"})
+        for dwn in w.get("downstream") or []:
+            if dwn.startswith("WP-"):
+                relations.append({"from": w["id"], "to": dwn, "type": "downstream", "src": f"{w['path']}#related_wps"})
+        if w.get("plan_ref") and w["plan_ref"] not in ("—", "-"):
+            for pid in re.findall(r"PLAN-[0-9A-Z-]+", w["plan_ref"]):
+                relations.append({"from": pid, "to": w["id"], "type": "contains", "src": f"{w['path']}#plan_ref"})
+    for e in tds:
+        wp = e.get("wp") or ""
+        if WP_ID_RE.match(wp):
+            relations.append({"from": e["id"], "to": wp, "type": "binds", "src": e.get("path") or ""})
+    for s in scopes or []:
+        entities.append(s)
+        _put_alias(alias_index, s["id"], {"id": s["id"], "type": "scope"})
+        if WP_ID_RE.match(s.get("wp") or ""):
+            relations.append({"from": s["id"], "to": s["wp"], "type": "scoped_to", "src": s.get("path") or "registers/scope-register.md"})
+        if s.get("plan") and str(s["plan"]).startswith("PLAN-"):
+            relations.append({"from": s["id"], "to": s["plan"].split()[0], "type": "scoped_to", "src": s.get("path") or "registers/scope-register.md"})
+    seen_rel = set()
+    uniq = []
+    for r in relations:
+        key = (r["from"], r["to"], r["type"])
+        if key in seen_rel:
+            continue
+        seen_rel.add(key)
+        uniq.append(r)
     return {
         "as_of": as_of,
         "facts_fingerprint": facts_fp,
@@ -828,6 +983,7 @@ def build_entities(wps: list[dict], tds: list[dict], risks: list[dict], people: 
         "entities": entities,
         "alias_index": alias_index,
         "term_corrections": corrections,
+        "relations": uniq,
     }
 
 
@@ -922,9 +1078,15 @@ def run(root: Path, flags: argparse.Namespace) -> int:
     issues = parse_register(ai / "issues" / "issue-register.md", "issue")
     gloss_alias, corrections = parse_glossary(ai / "context" / "domain-glossary.md")
     srcs = parse_sources(ai)
-    entities = build_entities(wps, tds, risks + issues, people, abbr, gloss_alias, corrections, facts_fp, as_of, srcs)
+    plans = parse_plans(ai)
+    scopes = parse_scope_register(ai)
+    req_pairs = parse_req_titles(ai)
+    entities = build_entities(
+        wps, tds, risks + issues, people, abbr, gloss_alias, corrections, facts_fp, as_of, srcs,
+        plans=plans, scopes=scopes, req_pairs=req_pairs,
+    )
     put_title_aliases(entities["alias_index"], parse_decision_titles(ai), "decision", "decisions/decision-log.md")
-    put_title_aliases(entities["alias_index"], parse_req_titles(ai), "req", "requirements/requirement-register.md")
+    put_title_aliases(entities["alias_index"], req_pairs, "req", "requirements/requirement-register.md")
     entities["alias_count"] = len(entities["alias_index"])
     ops_rows = parse_ops_index(ai)
 
@@ -938,8 +1100,10 @@ def run(root: Path, flags: argparse.Namespace) -> int:
         if want_index:
             _atomic_write(ai / "wps" / "_index.md", render_index(wps, spec))
             views["wp_index"] = {"as_of": as_of, "view_fingerprint": _sha(render_index(wps, spec)), "status": "ok"}
-            plans = parse_plans(ai)
             _atomic_write(ai / "plans" / "_index.md", render_plan_index(plans, spec))
+            if (ai / "registers").is_dir() or scopes:
+                (ai / "registers").mkdir(parents=True, exist_ok=True)
+                _atomic_write(ai / "registers" / "_index.md", render_register_index(scopes))
             views["plan_index"] = {"as_of": as_of, "view_fingerprint": _sha(render_plan_index(plans, spec)), "status": "ok"}
         if want_chart:
             body = render_chart(wps)

@@ -144,6 +144,75 @@ def _check_plan_section4(plans, wps):
     return bucket_msgs
 
 
+SCOPE_KW = re.compile(r"上线|批次|窗口|纳入|排除")
+INCLUDE_OK = {"是", "否", "待裁定", "纳入"}
+
+
+def _check_d44(ai: Path, wps: dict, plans: list) -> list[str]:
+    """D44：范围表 vs WP/PLAN 关键词。写入路径自查；纯查询禁止为此全扫。"""
+    msgs = []
+    scope_path = ai / "registers" / "scope-register.md"
+    sr_wps = set()
+    if scope_path.is_file():
+        for cells in _table_rows(scope_path.read_text(encoding="utf-8")):
+            if not cells or not cells[0].startswith("SR-"):
+                continue
+            if len(cells) > 4 and cells[4] not in INCLUDE_OK:
+                msgs.append(f"D44 {cells[0]} 纳入列非法 {cells[4]!r}")
+            if len(cells) > 6 and re.match(r"^WP-", cells[6] or ""):
+                sr_wps.add(cells[6])
+    for wpid, (fp, t, fm) in wps.items():
+        if (fm.get("effect") or "正常") == "废弃":
+            continue
+        if not SCOPE_KW.search(t) and "功能点" not in t:
+            continue
+        if not scope_path.is_file():
+            if SCOPE_KW.search(t):
+                msgs.append(f"D44 {wpid} 含范围关键词但无 scope-register")
+        elif wpid not in sr_wps and SCOPE_KW.search(t):
+            msgs.append(f"D44 {wpid} 含范围关键词但登记表无对应行")
+    for pf, pt, pfm in plans:
+        if SCOPE_KW.search(pt) and not scope_path.is_file():
+            pid = pfm.get("plan_id") or pf.stem
+            msgs.append(f"D44 {pid} 含范围关键词但无 scope-register")
+            break
+    return msgs
+
+
+def _check_todo_core_wp(ai: Path) -> list[str]:
+    """待办投影：§1.1 同 TD 去重；WP 列须为 WP-*。"""
+    msgs = []
+    tdir = ai / "todos"
+    if not tdir.exists():
+        return msgs
+    wp_re = re.compile(r"^WP-[0-9A-Z-]+$", re.I)
+    for md in tdir.glob("*/*.md"):
+        if md.name.startswith("_") or "inbox" in str(md):
+            continue
+        body = md.read_text(encoding="utf-8")
+        sec = _section(body, "1.")
+        core = ""
+        m = re.search(r"^###\s*1\.1\b.*$", sec, re.M)
+        if m:
+            start = m.end()
+            nxt = re.search(r"^###\s+", sec[start:], re.M)
+            core = sec[start: start + nxt.start()] if nxt else sec[start:]
+        else:
+            core = sec
+        seen = set()
+        for cells in _table_rows(core):
+            if not cells or not str(cells[0]).startswith("TD-"):
+                continue
+            tid = cells[0]
+            if tid in seen:
+                msgs.append(f"D-TODO-DEDUP {md.name} {tid} §1.1 重复")
+            seen.add(tid)
+            wp = cells[4] if len(cells) > 4 else ""
+            if wp and wp not in ("—", "-", "") and not wp_re.match(wp):
+                msgs.append(f"D-TODO-WP-COL {md.name} {tid} WP列={wp!r} 非 WP-*")
+    return msgs
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--root", required=True)
@@ -287,6 +356,8 @@ def main():
         diffs.extend(wp_struct)
     else:
         unjudged.extend(wp_struct)
+    unjudged.extend(_check_d44(ai, wps, plans))
+    unjudged.extend(_check_todo_core_wp(ai))
     for d in diffs:
         print("DIFF", d)
     for u in unjudged:
