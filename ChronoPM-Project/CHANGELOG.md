@@ -26,6 +26,15 @@ Blueprint Impact: full
 - 领域枚举进包；集层事实源；migrate 按项目路径删 `ai/scripts/`
 - 代更 Grok；写入业务仓
 
+### 收尾补记（2026-09-11，不另起版本）
+- 用户核验通过，**升级可以投入使用**。Grok 安装区**不代更**。业务仓未代迁。
+- 脚本改道（非功能缺口）：AP 曾写独立 `build_scope_register.py`；施工收口为 migrate 0.17.0 步骤（模板驱动建 `registers/`、`if target.exists(): continue` 不覆盖、抽取标「回填-未确认」并按来源/WP/批次去重）+ `chronopm_init` 新仓种子。CR-004 批准范围本就不含独立脚本。
+- 用例分布：相对 AP 计划多拆 REG-102/103、DER-004、EDG-002/003、FED-004、SCR-001；总数仍 24，编号唯一。
+- 存量工作区按 upgrade-to 先 3.26.0 再 3.27.0；`scopeBackfillOpen` 清零（N=0）前该工作区视为升级未完成。
+- AP 已删；audit 17/17；分发包在 Downloads：`ChronoPM-Project-Skill-v3.27.0.zip`（126）+ `ChronoPM-Portfolio-Skill-v3.27.0.zip`（45）
+- 施工收尾核对 `review-20260910-3.27.0.md`：**通过-升级成功**
+- 基线 `baselines/3.27.0/` 已同步本收尾补记（无功能补丁，仅归档）
+
 ---
 
 ## 3.26.0 — 2026-09-10

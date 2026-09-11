@@ -50,3 +50,11 @@ python scripts/migrate_workspace.py --project-root <单项目根>
 ## 验证
 
 阻断：VW-001/002、REG-101、DER-001/002/003、EDG-001、FED-003、MIG-101/102/103、全量 961。audit 退出 0。schema 0.17.0。
+
+## 收尾（2026-09-11）
+
+用户核验通过，可投入使用。Grok 不代更。业务仓未代迁。
+
+migrate 0.17.0：模板驱动建 `registers/`；`if target.exists(): continue` 不覆盖；抽取标「回填-未确认」并按来源/WP/批次去重。新工作区由 `chronopm_init` 建表+种子。AP 曾写的独立 `build_scope_register.py` 未落地，由上述两条路径覆盖。
+
+存量工作区须先 3.26.0 再 3.27.0；`scopeBackfillOpen` 清零（N=0）前该工作区视为升级未完成。
