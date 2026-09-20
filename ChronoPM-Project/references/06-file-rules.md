@@ -317,9 +317,9 @@ author: AI辅助生成
 **语义**：查找加速器，**不是存在性判据**。文件存在性以 `wps/WP-*.md` 为准；索引缺行补行不删除文件；索引有行文件缺失 → 登记 `pm-decisions.md`。plan_ref/状态/关联需求必须与 WP 文件镜像一致（00 号 §8c）。
 ### 7.5 源文档台账索引（v3.6.0）
 
-`requirements/sources/_index.md` 必须包含 7 列：`编号 | 源文档名称 | source_type | 生命周期阶段 | 版本 | 拆解状态 | 产出计数`。
+`requirements/sources/_index.md` 必须包含 7 列：`编号 | 源文档名称 | source_type | 生命周期阶段 | 版本 | 拆解状态 | 产出计数`。禁止加第 8 列。页状态读 `_digest.md` 头或 `.state.json.source_digest_status`。
 
-**语义**：查找加速器。存在性以 `requirements/sources/*/meta.md` 为准；缺行补行。禁止再新建 `{type}-source/`。明细见各目录 ledger，本表不双写。
+**语义**：查找加速器。存在性以 `requirements/sources/*/meta.md` 为准；缺行补行。禁止再新建 `{type}-source/`。明细见各目录 ledger，本表不双写。`_digest.md` 是派生主题页，禁止当价款/工期/范围唯一证据。
 
 ### 7.6 计划索引（v3.26.0）
 

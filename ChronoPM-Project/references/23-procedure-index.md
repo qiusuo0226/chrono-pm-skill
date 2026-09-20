@@ -12,7 +12,7 @@
 | P-VIEWS | 派生重建 | 00 P-VIEWS；`refresh_views.py` | 版本检查后 | 有 Python 则脚本；无则 AUTO | brain/json/.state/index/图/PLAN 投影 | 手改派生；查询现场写临时脚本；brain 写待拍板 |
 | P-INGEST-DELTA | 增量投喂 | 10 + journal 模板 | P-VIEWS 可选 | **必须 CALL P-RESOLVE** | `logs/journal/` 追加 + 事实文件 | 改历史 J；全库扫；进展句建 WP |
 | P-RESOLVE | 活表对齐 | 00 P-RESOLVE | active-entities | term 两跳 + 开办/注销收口 | 不写文件 | 跳过 term 猜 WP；全库语义扫 |
-| P-CORRECT | 纠偏 | 00 P-CORRECT | 用户发起 | 写事实或词库 §2 后 P-VIEWS | WP/TD/风险/词库 + journal kind=correction | 只改 brain/json；进八块；AI 自检当已确认 |
+| P-CORRECT | 纠偏 | 00 P-CORRECT | 用户发起 | 写事实或词库 §2 后 P-VIEWS；**改该源 atoms/facts 必须同轮重编 `_digest.md`** | WP/TD/风险/词库 + journal kind=correction；源切片则加 digest | 只改 brain/json；只改 digest 当纠偏；改切片未编页；进八块；AI 自检当已确认 |
 | P-WF8 | 待办创建 | 00 §9 WF-8 | P-CARRY | 先算 C(P)；P-WF8-DEDUP → P-WF8-SPLIT? → P-WF8-CARD → P-BOX | inbox→`todos/{date}/{owner}.md` | 问「要不要建待办」；无 WP 落核心表；直写个人文件；日报回写 3c |
 | P-WF8-DEDUP | 查重 | 00 WF-8 查重步 | — | — | 不新建同主题 | 不查重就建第二条 |
 | P-WF8-SPLIT | 多 WP 拆 | 00 归属④ | — | 每条 P-WF8-CARD | 多条待办 | 一条待办多个 WP Ref |
@@ -22,7 +22,7 @@
 | P-PLAN-SYNC | 计划→WP | 00 §4b | — | — | WP 时间盒+计划投影 | 灌 todos |
 | P-CARRY | 结转 | 22 | — | 有 Python 则先本 Skill 包 `scripts/carryover_step0.py --root <项目根>`（禁止在 ai/ 或业务 cwd 找）；再 P-CARRY-WPREF（脚本已高置信回填则跳过） | 当日文件 | 改编号、改历史行；exit 0 后手搓全员；`FAIL:ROSTER_EMPTY` 仍手搓 |
 | P-CARRY-WPREF | 结转 WP Ref | 22 §5 | — | P-WF8-CARD | 仅空值高置信回填 | 猜填；改已有合法归属；无 WP 结转到今天核心表 |
-| P-SPLIT | 源文档拆解 | `source-split-skill/references/split-rules.md` | 指纹查重 | 07 REQ 上提（不落待办）；能抽则抽佐证图 | `requirements/sources/{编号}/` 六件套 + 可选 figures/ | 用 outputs HTML 替代；二次拆解；会议转写/纪要当源文档；源图写入 artifacts/；原型截图写入 figures/ |
+| P-SPLIT | 源文档拆解 | `source-split-skill/references/split-rules.md` | 指纹查重 | 07 REQ 上提（不落待办）；能抽则抽佐证图；**协调者收尾编译** `_digest.md`（加载 digest-schemas） | `requirements/sources/{编号}/` 六件套 + 可选 figures/ | 用 outputs HTML 替代；二次拆解；会议转写/纪要当源文档；源图写入 artifacts/；原型截图写入 figures/；手改 digest 当纠偏；digest 当价款唯一证据；`[[wikilink]]`；主题页进 outputs/ |
 | P-DOC-INGEST | 拆文件分发 | 10 源文档信号 **或** §1.0 总闸通过且未命中约定类的可读文件 + SKILL 路由 | 读 project-brief | 会议转写/纪要/例会导出 → WF-3，**禁止 CALL P-SPLIT**；其余 **必须 CALL P-SPLIT**（无条款走薄源）；若还要报告再 P-OUTPUT | sources/ 或 meetings/ | 只出报告不入库；会议误进 sources；因「不在 L2 表」反问 |
 | P-REQ-DECOMP | 需求拆解 | 07 §3 | — | — | 需求清单 | 落待办；与 P-SPLIT 混淆 |
 | P-REQ-WP | REQ↔WP | 07 | — | — | 登记册工作包列 / WP §2 | 需求正文抄进 WP |

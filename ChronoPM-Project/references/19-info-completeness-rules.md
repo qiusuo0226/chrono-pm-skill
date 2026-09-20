@@ -147,7 +147,7 @@ python scripts/verify_todo_continuity.py --root <项目根>
 
 ### 3.3b 源文档拆解台账（v3.7.0，存在性非强制）
 
-已建 `sources/{编号}/` 时：台账缺行补行；分片目录须有 `_index.md`；parse-log 缺失作提示不阻断。
+已建 `sources/{编号}/` 时：台账缺行补行；分片目录须有 `_index.md`；parse-log 缺失作提示不阻断。存量 `_digest.md` 无 `doc_type: source-digest` **不判死**（旧摘要合法）。
 
 ### 3.3c 范围登记表（v3.27.0）
 

@@ -862,11 +862,11 @@ YAML：`effect: 正常|废弃`（缺省=正常）；废弃必填 `superseded_by`
 
 ### P-VIEWS / P-RESOLVE / P-CORRECT（v3.21.0）
 
-**P-VIEWS**：写事实成功后、进入工作区后，有 Python 则跑 `refresh_views.py --all`。无 Python 则视图 AUTO 兜底。缺 `.state.json` = 全部 stale。查询准入只比 `facts_fingerprint`；写盘时 facts 或 journal 任一变化都重建。写 `registers/scope-register.md` / WP§3 / PLAN 范围字段后必须 P-VIEWS。`active-entities.relations` 是派生，禁止手改（同底线 17）。
+**P-VIEWS**：写事实成功后、进入工作区后，有 Python 则跑 `refresh_views.py --all`。无 Python 则视图 AUTO 兜底。缺 `.state.json` = 全部 stale。查询准入 **brain** 只比 `facts_fingerprint`。源文档主题页过期读独立字段 `source_digest_status`，**禁止**把 atoms/facts 并入 facts 指纹、禁止因此重建 brain。写盘时 facts 或 journal 任一变化都重建视图；仅 digest 状态变则只补写该字段。写 `registers/scope-register.md` / WP§3 / PLAN 范围字段后必须 P-VIEWS。`active-entities.relations` 是派生，禁止手改（同底线 17）。
 
 **P-RESOLVE**：对齐只查 `active-entities.json`。类型序：精确编号 → wp/td → term 第二跳（canonical + 开办/变更/注销收口）→ person（仅指人）。禁止跳过 term 猜 WP，禁止全库语义扫。
 
-**P-CORRECT**：仅用户发起的纠正视为已确认，写 WP/TD/风险留痕或词库 §2，不进八块。AI 自检冲突仍进 `pm-decisions`。禁止只改 brain/json。
+**P-CORRECT**：仅用户发起的纠正视为已确认，写 WP/TD/风险留痕或词库 §2，不进八块。若改该源 atoms/facts，**同轮必须重编** `_digest.md`，否则本轮失败。禁止只改 brain/json/`_digest`。AI 自检冲突仍进 `pm-decisions`。
 
 ### WF-8 待办创建与归属排布（所有任务创建入口的统一前置规则）
 
