@@ -19,6 +19,12 @@ Blueprint Impact: metadata
 - 19 §3.3b：`missing_page` 提示不阻断
 - Module 92 增 SW-017
 
+### 收尾补记（2026-09-20，不另起版本）
+- 用户指示收尾。**升级可以投入使用。** Grok 安装区**不代更**。业务仓未代迁。schema 仍 0.17.0。
+- 3.30.0 单源主题页 + 3.30.1 原件指纹补丁一并收口。audit 17/17。回归 **997**。
+- 分发包：`ChronoPM-Project-Skill-v3.30.1.zip`（132）+ `ChronoPM-Portfolio-Skill-v3.30.1.zip`（46）
+- 基线 `baselines/3.30.1/`。AP 已删。
+
 ---
 
 ## 3.30.0 — 2026-09-20
@@ -40,6 +46,9 @@ Blueprint Impact: full
 
 ### 不做
 - `ai/wiki/` 目录；升 schema；migrate；第 8 列；atoms 并入 facts 指纹；脚本重编页；Obsidian wikilink；集层编页
+
+### 收尾补记（2026-09-20）
+- 本版由 3.30.1 收口投入使用（原件指纹补丁）。不另打 `v3.30.0-close`。
 
 ---
 
