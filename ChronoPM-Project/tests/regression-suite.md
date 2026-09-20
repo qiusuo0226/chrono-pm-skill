@@ -1565,6 +1565,29 @@
 | FIG-004 | 外链原型未拆源 | 仍指针，不强制入库；点2 压缩截图仍可进 artifacts/ | regression |
 | FIG-005 | 源抽出图 vs 原型截图 | 源图禁止写入 artifacts/；原型截图禁止写入 figures/ | negative |
 
+## 92. 单源主题页（v3.30.0 CR-20260920-001）
+
+施工只认合计 **996**（980+16）。禁止沿用 980。阻断：SW-001、SW-003、SW-004、SW-005、SW-009、SW-012、SW-015。FIG/ING/SD/RN 预期不变。
+
+| Case ID | Input | Expected | Type |
+|---|---|---|---|
+| SW-001 | 投喂已登记 contract 并拆完 | 有 `_digest.md`；`doc_type: source-digest`；栏目按 contractual；条款有 ATOM 链；有 slice_fingerprint | positive |
+| SW-002 | 「这份合同讲什么」 | 先读主题页，不先全读 atoms | positive |
+| SW-003 | atoms 已改、页头切片指纹未更新 | `source_digest_status=stale`；声明过期，不把旧页当结论 | negative |
+| SW-004 | weak_ingest / 薄源 | 薄页无条款，不编造价款栏 | negative |
+| SW-005 | 页内 `[[wikilink]]` | 失败 | negative |
+| SW-006 | technical/design_spec 页 | 声明不进范围判定 | positive |
+| SW-007 | 「把待办 wiki 化」 | 不走编成页；不把 todos 编成主题页 | negative |
+| SW-008 | 未登记类型 | 不静默归类；generic 页+待登记 | regression |
+| SW-009 | 「把 SRC-x 编成页」且已有 atoms | 不重拆；只写 digest | positive |
+| SW-010 | 无 atoms 就编成页 | 先拆，不空编 | negative |
+| SW-011 | 共享副本二编 | 禁止；沿用首拆；local_only 不入共享页 | regression |
+| SW-012 | 纠偏只改 digest | 失败；须改 atoms | negative |
+| SW-013 | 存量无 frontmatter 的 digest | 查询可读；不健康失败 | regression |
+| SW-014 | 会议转写 | 仍 WF-3 不编标准文档页 | regression |
+| SW-015 | P-CORRECT 改了 atoms 未重编 digest | 本轮失败，不得只标过期后继续 | negative |
+| SW-016 | 同轮投喂追加使 atoms/facts 增量 | 同轮重编 digest，否则 stale | positive |
+
 ## 回归用例统计
 
 | 模块 | 用例数 | 正向 | 回归 |
@@ -1660,4 +1683,5 @@
 | 对外拍板禁止技能黑话 (89) | 3 | 1 | 2 |
 | 投喂一次做完 (90) | 11 | 6 | 5 |
 | 源文档抽出图佐证 (91) | 5 | 2 | 3 |
-| **合计** | **980** | **568** | **412** |
+| 单源主题页 (92) | 16 | 5 | 11 |
+| **合计** | **996** | **573** | **423** |
