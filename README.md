@@ -10,24 +10,13 @@ ChronoPM 是一套装进 AI 助手的项目管理方法论：你照常说话—�
 
 ## 仓库地址
 
-- GitHub：[qiusuo0226/chrono-pm-skill](https://github.com/qiusuo0226/chrono-pm-skill)
-- Gitee：[qiusuo0226/chrono-pm-skill](https://gitee.com/qiusuo0226/chrono-pm-skill)
+- 内网仓库：`http://192.168.5.15/presales/pmskill/be/pmskill.git`
 
 ## 安装
 
-```bash
-npx skills add qiusuo0226/chrono-pm-skill
-```
+把 `ChronoPM-Project/`（需要跨项目汇总就再加 `ChronoPM-Portfolio/`）复制到助手的技能目录。不要复制整个仓库根目录。装好后，工作区指到**项目文件夹**，说「帮我初始化项目工作区」。
 
-会装上 **ChronoPM-Project**（单项目录入）和 **ChronoPM-Portfolio**（跨项目只读归集）。只要单项目：
-
-```bash
-npx skills add qiusuo0226/chrono-pm-skill -s chrono-pm-project
-```
-
-或把 `ChronoPM-Project/`（需要跨项目汇总就再加 `ChronoPM-Portfolio/`）复制到助手的技能目录。不要复制整个仓库根目录。装好后，工作区指到**项目文件夹**，说「帮我初始化项目工作区」。
-
-[![skills.sh](https://skills.sh/b/qiusuo0226/chrono-pm-skill)](https://skills.sh/qiusuo0226/chrono-pm-skill)
+装上的包：**ChronoPM-Project**（单项目录入）和 **ChronoPM-Portfolio**（跨项目只读归集）。
 
 ## 为什么需要它
 
@@ -76,7 +65,7 @@ ChronoPM 把这三件事一起解决：**事实写在文件里，AI 守着文件
 
 ## 快速开始
 
-1. 安装：`npx skills add qiusuo0226/chrono-pm-skill`（只要单项目可加 `-s chrono-pm-project`）；或把 `ChronoPM-Project/`（需要跨项目汇总就再加 `ChronoPM-Portfolio/`）复制到助手的技能目录。不要复制整个仓库根目录。
+1. 安装：把 `ChronoPM-Project/`（需要跨项目汇总就再加 `ChronoPM-Portfolio/`）复制到助手的技能目录。不要复制整个仓库根目录。
 2. 对 AI 说：「帮我初始化项目工作区」。
 3. 之后像跟助手说话一样，把材料丢给它。
 

@@ -10,24 +10,13 @@ ChronoPM is a project-management methodology packaged as an AI skill: talk the w
 
 ## Repository
 
-- GitHub: [qiusuo0226/chrono-pm-skill](https://github.com/qiusuo0226/chrono-pm-skill)
-- Gitee: [qiusuo0226/chrono-pm-skill](https://gitee.com/qiusuo0226/chrono-pm-skill)
+- Intranet repo: `http://192.168.5.15/presales/pmskill/be/pmskill.git`
 
 ## Install
 
-```bash
-npx skills add qiusuo0226/chrono-pm-skill
-```
+Copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root. Then point the workspace at the **project folder** and say: "Initialize my project workspace."
 
-This installs **ChronoPM-Project** (single-project writes) and **ChronoPM-Portfolio** (read-only cross-project rollups). Project only:
-
-```bash
-npx skills add qiusuo0226/chrono-pm-skill -s chrono-pm-project
-```
-
-Or copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root. Then point the workspace at the **project folder** and say: "Initialize my project workspace."
-
-[![skills.sh](https://skills.sh/b/qiusuo0226/chrono-pm-skill)](https://skills.sh/qiusuo0226/chrono-pm-skill)
+This installs **ChronoPM-Project** (single-project writes) and **ChronoPM-Portfolio** (read-only cross-project rollups).
 
 ## Why you need it
 
@@ -75,7 +64,7 @@ The full surface of day-to-day management is covered: requirements and change tr
 
 ## Getting started
 
-1. Install: `npx skills add qiusuo0226/chrono-pm-skill` (add `-s chrono-pm-project` for Project only); or copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
+1. Install: copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
 2. Tell the AI: "Initialize my project workspace."
 3. From then on, feed it materials the way you already work.
 
