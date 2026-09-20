@@ -1,8 +1,8 @@
 ---
 name: chrono-pm-project
-version: 3.29.0
+version: 3.30.0
 schema_version: 0.17.0
-updated_at: 2026-09-13
+updated_at: 2026-09-20
 description: 给项目经理的单项目 AI 项目管理技能。把日报、待办、工作包、计划、合同、风险、会议纪要写进本项目 ai 目录。触发：项目管理、项目、单项目、初始化项目、工作包、WP、计划、看计划、排计划、倒排、排期、阶段、里程碑、门禁、结转、派活、待办、任务、进度、需求、变更、范围、合同、合同登记、风险、问题、决策、会议、会议纪要、纪要、拆文件、源文档、工时、能耗、人员、花名册、人员进出、进度表、xlsx、csv、投喂、粘贴、入库、归档、更新、补全、回填、评审、验收、成本、预算、复盘、历史计划、完整性巡检、词库、偏好、画图、责任链图、记日报、日报、出周报、周报、ChronoPM、ChronoPM-Project、ChronoPM-Portfolio。项目集、组合、跨项目汇总请安装并调用 ChronoPM-Portfolio。本包只写本项目。
 ---
 # ChronoPM-Project — 项目管理（日报/待办/合同）
@@ -204,7 +204,7 @@ python "scripts/init_workspace.py" --project-root <根目录> --mode single --pr
 ### 版本控制文件
 | 文件 | 用途 |
 |------|------|
-| `VERSION` | Skill 包版本号（当前 3.29.0） |
+| `VERSION` | Skill 包版本号（当前 3.30.0） |
 | `skill.json` | Skill 元数据（版本、模式、依赖；skill schemaVersion 与 supportedWorkspaceSchema 分离） |
 | `CHANGELOG.md` | 版本变更历史和升级说明 |
 | SKILL.md front matter | AI 可读的版本字段 |

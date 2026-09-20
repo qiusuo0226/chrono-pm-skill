@@ -4,6 +4,28 @@
 
 ---
 
+## 3.30.0 — 2026-09-20
+
+> 发布归档：Minor / capability_change + contract_change。标准文档拆完后 `_digest.md` 编成单源主题页；查询过期读 `.state.json.source_digest_status`；`refresh_views.py` 只检测不重编。workspace schema **0.17.0** 不变。双包同号。施工只认回归 **996**。无工作区迁移。
+
+Blueprint Impact: full
+
+### Added
+- `source-split-skill/references/digest-schemas.md`：6 类栏目 + 5 特化
+- Module 92（SW-001～016）
+- `refresh_views.py --print-slice-fp`；`.state.json.source_digest_status`
+
+### Changed
+- `_digest.md` 从摘要改为按类型栏目的主题页；协调者收尾编译
+- 05 源文档行读过期字段；00 P-CORRECT 改切片须同轮重编
+- SKILL.md 底线 17 禁手改 `_digest`
+- 10 号「编成页」仅已拆源
+
+### 不做
+- `ai/wiki/` 目录；升 schema；migrate；第 8 列；atoms 并入 facts 指纹；脚本重编页；Obsidian wikilink；集层编页
+
+---
+
 ## 3.29.0 — 2026-09-13
 
 > 发布归档：Minor / capability_change + contract_change。投喂一次做完（底线 20；投喂路径不问绑包，口述仍问）；源文档抽出佐证图落到该源 `figures/`，不与原型截图混放。workspace schema **0.17.0** 不变。双包同号。施工只认回归 **980**。无工作区迁移。

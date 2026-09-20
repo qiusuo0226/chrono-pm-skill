@@ -1,9 +1,9 @@
 ---
 name: chrono-pm-portfolio
-version: 3.29.0
+version: 3.30.0
 schema_version: 0.7.0
 workspace_schema: 0.17.0
-updated_at: 2026-09-13
+updated_at: 2026-09-20
 description: ChronoPM-Project 的伴生技能，须同时安装。只做多个项目的只读归集与分发。触发：项目集、组合、跨项目、各项目进度、汇总周报、集周报、跨项目风险、门禁、挂载、分到各项目、混报、无表头进度表、整体盈亏、合同去重、术语索引、健康巡检、汇总计划、集层技能缺口、ChronoPM-Portfolio、ChronoPM-Project。记日报、待办、xlsx 入库、初始化项目请安装并调用 ChronoPM-Project。本包工人不手搓成员项目正文。
 ---
 # ChronoPM-Portfolio — 跨项目归集（须先装 Project）

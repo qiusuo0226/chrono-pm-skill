@@ -20,10 +20,10 @@
 | 属性 | 值 |
 |---|---|
 | Skill 名称 | ChronoPM — Markdown 驱动的 AI 项目管理技能 |
-| 当前版本 | 3.29.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
+| 当前版本 | 3.30.0（ChronoPM-Project + ChronoPM-Portfolio 共用版本线；版本单一事实源为 `scripts/_version.py`） |
 | Workspace Schema | 详见 `scripts/_version.py`（WORKSPACE_SCHEMA_VERSION） |
 | 创建日期 | 2026-08-09 |
-| 最后更新 | 2026-09-13（v3.29.0：投喂一次做完 + 源文档抽出图）；2026-09-11（v3.28.0：对外拍板禁止技能黑话）；2026-09-10（v3.27.0 / 3.26.0）；更早见 CHANGELOG |
+| 最后更新 | 2026-09-20（v3.30.0：单源主题页）；2026-09-13（v3.29.0：投喂一次做完 + 源文档抽出图）；更早见 CHANGELOG |
 | 维护方式 | 随 Skill 版本同步更新（详见 §13 Update Policy） |
 | 入口文件 | `SKILL.md` |
 | 元数据 | `skill.json` |
@@ -121,6 +121,12 @@ ChronoPM 建立在三层信任模型之上：
 **决策**：查询类请求先读 `context/brain.md`（facts 指纹一致时）再打开 1～3 个事实文件；无 brain 则退回待办/`_index` 定向读取。禁止默认创建临时脚本全量扫描。`refresh_views.py` 是打包脚本，不是临时脚本。
 
 **理由**：知识量超过单轮可读上限。压缩快照 + 活实体表让 AI 只消费增量。
+
+### AD-11. 单源主题页（v3.30.0）
+
+**决策**：标准源文档拆完后编译 `_digest.md` 为按 `source_category` 栏目的单源主题页。过期检测由 `refresh_views.py` 写入 `.state.json.source_digest_status`（独立于 `facts_fingerprint`）。脚本只检测、不重编页。纠偏改切片须同轮重编页。不新建 `wiki/` 目录，不升 schema。
+
+**否决方案**：新建 `ai/wiki/`；把切片并入 facts 指纹；脚本自动重写 digest；`_index` 加第 8 列。
 
 ### AD-10. 百科叠层（v3.21.0）
 
@@ -598,6 +604,7 @@ ChronoPM 建立在三层信任模型之上：
 | 3.26.0 | 相关性总闸+薄源；plans/_index 加速器+YAML 锚点+D43；查询缺 index 不边查边建；schema 保持 0.16.0；Module 84+85（总计 937） | CR-20260910-001～002 / upgrade-to-3.26.0.md |
 | 3.27.0 | 范围登记表+entities.relations+05推导失败门；parse_todos只读§1.1去重；migrate 0.17.0回填清零；Portfolio V-15；schema 0.16.0→0.17.0；Module 86–88（总计 961） | CR-20260910-003～005 / upgrade-to-3.27.0.md |
 | 3.28.0 | 对外拍板禁止技能黑话：底线19分段+五句自检；00拆段补词典；reply-rules对错例；待办编号除外；schema 保持 0.17.0；Module 89（总计 964） | CR-20260911-001 / upgrade-to-3.28.0.md |
+| 3.30.0 | 单源主题页（_digest 栏目页 + source_digest_status 过期检测）；schema 保持 0.17.0；Module 92（总计 996） | CR-20260920-001 / upgrade-to-3.30.0.md |
 | 3.29.0 | 投喂一次做完（底线20；投喂不问绑包、口述仍问）+ 源文档抽出图 figures/；schema 保持 0.17.0；Module 90+91（总计 980） | CR-20260913-001～002 / upgrade-to-3.29.0.md |
 
 ---
