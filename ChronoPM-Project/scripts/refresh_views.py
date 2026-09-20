@@ -867,6 +867,89 @@ def aggregate_fp(m: dict[str, str]) -> str:
     return _sha(blob)
 
 
+def iter_slice_files(src_dir: Path) -> list[Path]:
+    files: list[Path] = []
+    for name in ("atoms.md", "facts.md"):
+        p = src_dir / name
+        if p.is_file():
+            files.append(p)
+    for sub in ("atoms", "facts"):
+        d = src_dir / sub
+        if not d.is_dir():
+            continue
+        for p in sorted(d.glob("**/*")):
+            if not p.is_file() or p.suffix.lower() != ".md":
+                continue
+            rel = p.relative_to(src_dir).as_posix()
+            if rel == "facts/local_only.md" or rel.startswith("facts/local_only/"):
+                continue
+            if p.name.startswith("."):
+                continue
+            files.append(p)
+    return files
+
+
+def compute_slice_fp(src_dir: Path) -> str:
+    m: dict[str, str] = {}
+    for p in iter_slice_files(src_dir):
+        rel = p.relative_to(src_dir).as_posix()
+        m[rel] = _file_sha(p)
+    return aggregate_fp(m)
+
+
+def compute_slice_fp_fallback(src_dir: Path) -> str:
+    parts = []
+    for p in iter_slice_files(src_dir):
+        rel = p.relative_to(src_dir).as_posix()
+        st = p.stat()
+        parts.append(f"{rel}:{st.st_size}:{int(st.st_mtime)}")
+    return "|".join(parts)
+
+
+def collect_source_digest_status(ai: Path) -> dict:
+    out: dict = {"as_of": date.today().isoformat(), "algo": "sha256-aggregate_fp", "sources": {}}
+    root = ai / "requirements" / "sources"
+    if not root.is_dir():
+        return out
+    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+        sid = d.name
+        digest = d / "_digest.md"
+        rec: dict = {"id": sid, "path": f"requirements/sources/{d.name}/_digest.md"}
+        if not digest.is_file():
+            rec["status"] = "missing_page"
+            out["sources"][sid] = rec
+            continue
+        try:
+            text = digest.read_text(encoding="utf-8")
+        except OSError:
+            rec["status"] = "missing_page"
+            out["sources"][sid] = rec
+            continue
+        fm = _front(text)
+        live = compute_slice_fp(d)
+        header = (fm.get("slice_fingerprint") or "").strip()
+        if (fm.get("doc_type") or "").strip() != "source-digest":
+            rec["status"] = "old_digest"
+            out["sources"][sid] = rec
+            continue
+        sid = (fm.get("source_id") or sid).strip() or d.name
+        rec["id"] = sid
+        rec["slice_fingerprint"] = live
+        if re.fullmatch(r"[0-9a-f]{64}", header):
+            match = header == live
+        elif header:
+            match = header == compute_slice_fp_fallback(d)
+        else:
+            match = False
+        rec["status"] = "ok" if match else "stale"
+        if rec["status"] == "stale":
+            rec["reason"] = "slice"
+        out["sources"][sid] = rec
+        if d.name != sid:
+            out["sources"][d.name] = rec
+    return out
+
+
 def load_state(ai: Path) -> dict:
     p = ai / ".state.json"
     if not p.is_file():
@@ -1051,6 +1134,7 @@ def run(root: Path, flags: argparse.Namespace) -> int:
     journal = collect_journal(ai)
     facts_fp = aggregate_fp(facts)
     journal_fp = aggregate_fp(journal)
+    digest_status = collect_source_digest_status(ai)
     prev = load_state(ai)
     if (
         not flags.force
@@ -1058,7 +1142,12 @@ def run(root: Path, flags: argparse.Namespace) -> int:
         and prev.get("journal_fingerprint") == journal_fp
         and flags.all
     ):
-        print("fingerprints unchanged; skip write")
+        if prev.get("source_digest_status") != digest_status:
+            prev["source_digest_status"] = digest_status
+            _atomic_write(ai / ".state.json", json.dumps(prev, ensure_ascii=False, indent=2) + "\n")
+            print("source_digest_status updated; skip views")
+        else:
+            print("fingerprints unchanged; skip write")
         return 0
 
     wps_dir = ai / "wps"
@@ -1132,6 +1221,7 @@ def run(root: Path, flags: argparse.Namespace) -> int:
         "facts": facts,
         "journal": journal,
         "views": views,
+        "source_digest_status": digest_status,
     }
     _atomic_write(ai / ".state.json", json.dumps(state, ensure_ascii=False, indent=2) + "\n")
     print("refresh_views ok", ai)
@@ -1149,7 +1239,19 @@ def main(argv=None) -> int:
     ap.add_argument("--check-spec", action="store_true")
     ap.add_argument("--check-spec-only", action="store_true")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--print-slice-fp", action="store_true")
+    ap.add_argument("--source-dir", type=Path)
     flags = ap.parse_args(argv)
+    if flags.print_slice_fp:
+        if flags.source_dir is None:
+            print("need --source-dir", file=sys.stderr)
+            return 2
+        src = flags.source_dir
+        if not src.is_dir():
+            print(f"not a directory: {src}", file=sys.stderr)
+            return 2
+        print(compute_slice_fp(src))
+        return 0
     if flags.check_spec or flags.check_spec_only:
         flags.check_spec_only = True
         return check_spec(_load_spec())
