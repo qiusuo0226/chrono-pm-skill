@@ -34,12 +34,12 @@ coverage: 本项目
 | shared_from | — / {首次拆解项目} |
 | local_only | false（副本项目专属 facts 标 true，不回流） |
 
-## _digest（AI 专用索引，L2）
+## _digest（单源主题页，L2）
 
-> 读本段即可理解全文语义，不读原文。单次加载预算 ≤400 行（沿用 RI-003）。
-
-- 全文摘要：
-- 章节导航：
+> 独立文件 `_digest.md`。`doc_type: source-digest`。按 `digest-schemas.md` 栏目编写。条款链 ATOM。派生，禁止当价款/范围唯一证据。
+>
+> frontmatter 必填：`source_id` / `source_type` / `source_category` / `authority` / `source_fingerprint` / `slice_fingerprint` / `compiled_at` / `digest_schema`。
+> 软顶 200 行；超 400 行降级为要点+完整切片索引（算交付）。存量无该头的旧摘要合法。
 
 ## atoms.md（需求类 ATOM）
 

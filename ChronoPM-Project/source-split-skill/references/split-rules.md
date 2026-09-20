@@ -1,14 +1,16 @@
 # 源文档拆解规则（能力目录正文）
 
-由 P-DOC-INGEST / P-SPLIT 加载本文件（SKILL.md「源文档拆解」行）。禁止未加载本文件就声称已拆解入库。需求/工作包绑定见 Project `07-requirement-rules.md`。
+由 P-DOC-INGEST / P-SPLIT 加载本文件（SKILL.md「源文档拆解」行）。禁止未加载本文件就声称已拆解入库。需求/工作包绑定见 Project `07-requirement-rules.md`。编译主题页必须**同轮加载** `source-split-skill/references/digest-schemas.md`。产物禁止进 `outputs/`。禁止 `[[wikilink]]`。
 
 **不是本文件**：会议转写、会议纪要、例会录音稿、腾讯/视频会议导出 → 走 Project WF-3 / `02-meeting-rules.md`。仅当用户明示「把这份会议拆进 `sources/` / 当需求源文档」才加载本文件。
 
-**工人只写** `requirements/sources/{编号}/atoms/part-NN-*.md`（或 facts 分片）。ledger、`sources/_index.md`、parse-log 收尾由协调者写。禁止工人写 `_index`。
+**工人只写** `requirements/sources/{编号}/atoms/part-NN-*.md`（或 facts 分片）与抽出图。ledger、`_digest.md`、`sources/_index.md`、parse-log 收尾由协调者写。禁止工人写 `_index` 与 `_digest.md`。
 
 拆解只产需求清单条目（默认未确认），**不落待办**。
 
-**薄源（v3.26.0）**：总闸泛化材料（链接表、梳理表等无需求条款）仍建 `sources/{编号}/`：meta、_digest、facts（或空表）、ledger、parse-log、atoms 显式「本源无需求条款」。**禁止**写入 `requirement-register`。digest 写清「无 REQ」。同指纹不二次拆。
+**薄源（v3.26.0）**：总闸泛化材料（链接表、梳理表等无需求条款）仍建 `sources/{编号}/`：meta、_digest、facts（或空表）、ledger、parse-log、atoms 显式「本源无需求条款」。**禁止**写入 `requirement-register`。digest 写清「无 REQ」，禁止编造栏目事实。同指纹不二次拆。
+
+**主题页收尾（v3.30.0）**：协调者按 digest-schemas 写 `_digest.md`。超 400 行收口为要点+完整切片索引 = 降级成功、算交付。仅完全未产出页才失败；失败不回滚已写 atoms/ledger/REQ，回执「页未编成，查询直走 atoms」。有 Python 时用 `--print-slice-fp` 写入 `slice_fingerprint`。`weak_ingest` 薄页无条款。
 
 过程日志：每步结束立刻写 `logs/ops/` 一行（模型/token/耗时；无接口写「未知」）。字段抽空记表 B。
 
@@ -47,7 +49,7 @@ SRC-NNN **不得**作跨项目互认键。
 
 #### 目录与加载
 
-`requirements/sources/{编号}/`：meta.md、_digest.md、atoms.md（或 `atoms/` 分片）、facts.md（或 `facts/`）、ledger.md、parse-log.md、可选 `original.*`、可选 `figures/`（抽出佐证图，懒建）。查询先读 `sources/_index.md` → `_digest.md` → 取证才读 atoms/facts。存在性以 `sources/*/meta.md` 为准。
+`requirements/sources/{编号}/`：meta.md、_digest.md、atoms.md（或 `atoms/` 分片）、facts.md（或 `facts/`）、ledger.md、parse-log.md、可选 `original.*`、可选 `figures/`（抽出佐证图，懒建）。查询先读 `sources/_index.md` → `_digest.md`（过期则声明后读 atoms）。存在性以 `sources/*/meta.md` 为准。`_digest.md` 是派生主题页，禁止当价款/范围唯一证据。
 
 #### 抽出佐证图（v3.29.0）
 
