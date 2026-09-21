@@ -25,7 +25,9 @@ Blueprint Impact: metadata-only
 
 ### 收尾补记（2026-09-21，不另起版本）
 - 用户指示收尾。**升级可以投入使用。** Grok 安装区**不代更**。业务仓未代迁。schema 仍 0.17.0。
-- audit 17/17。回归 **1011**。tag `v3.30.2`。AP 已删。基线 `baselines/3.30.2/`。
+- audit 17/17。回归 **1011**。tag `v3.30.2` / `v3.30.2-close`。AP 已删。基线 `baselines/3.30.2/`。
+- 分发包在 Downloads：`ChronoPM-Project-Skill-v3.30.2.zip`（134）+ `ChronoPM-Portfolio-Skill-v3.30.2.zip`（46）
+- README×2 发布产物已改为 v3.30.2
 - 业务仓存量：装包后各成员根跑 `compile_source_digests.py --root <成员根>`，过了再盖该工作区戳。
 
 ---

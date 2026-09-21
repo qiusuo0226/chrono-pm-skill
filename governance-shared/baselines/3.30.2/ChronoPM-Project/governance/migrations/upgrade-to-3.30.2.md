@@ -73,4 +73,4 @@ audit 17/17 通过。脚本用例 ok。Grok 不代更。schema 仍 0.17.0。AP �
 
 ## 收尾补记（2026-09-21）
 
-用户指示收尾。升级可以投入使用。Grok 安装区不代更。业务仓未代迁。基线已同步本补记，无功能补丁。成员根存量回填需装包后自行 `compile_source_digests.py --root <成员根>`。
+用户指示收尾。升级可以投入使用。Grok 安装区不代更。业务仓未代迁。基线已同步本补记，无功能补丁。成员根存量回填需装包后自行 `compile_source_digests.py --root <成员根>`。分发包在 Downloads：`ChronoPM-Project-Skill-v3.30.2.zip`（134）+ `ChronoPM-Portfolio-Skill-v3.30.2.zip`（46）。README 发布产物已改为 v3.30.2。

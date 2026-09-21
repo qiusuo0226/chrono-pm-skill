@@ -16,6 +16,7 @@ Blueprint Impact: metadata-only
 
 ### 收尾补记（2026-09-21，不另起版本）
 - 用户指示收尾。锁步可投入使用。Grok 安装区不代更。集层不编页。业务仓未代迁。
+- 分发包：`ChronoPM-Portfolio-Skill-v3.30.2.zip`（46）
 
 ---
 

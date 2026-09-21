@@ -102,7 +102,7 @@ ChronoPM Skill/
 | 文档模板 | 40 个 |
 | 回归用例 | 1011 个 |
 
-发布产物：`ChronoPM-Project-Skill-v3.18.0.zip` + `ChronoPM-Portfolio-Skill-v3.18.0.zip`。
+发布产物：`ChronoPM-Project-Skill-v3.30.2.zip`（134）+ `ChronoPM-Portfolio-Skill-v3.30.2.zip`（46）。
 
 回归测试 | 1011 个用例。回归测试套件（1011 个用例）。
 

@@ -101,7 +101,7 @@ ChronoPM Skill/
 | Document templates | 40 |
 | Regression cases | 1011 |
 
-Release artifacts: `ChronoPM-Project-Skill-v3.18.0.zip` + `ChronoPM-Portfolio-Skill-v3.18.0.zip`.
+Release artifacts: `ChronoPM-Project-Skill-v3.30.2.zip` (134) + `ChronoPM-Portfolio-Skill-v3.30.2.zip` (46).
 
 Regression tests | 1011 cases. Regression test suite (1011 cases).
 
