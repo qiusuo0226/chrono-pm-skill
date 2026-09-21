@@ -23,6 +23,11 @@ Blueprint Impact: metadata-only
 ### 不做
 - 升 schema；日常 refresh 重写页；跨源 Wiki；代更 Grok；本轮写入业务仓
 
+### 收尾补记（2026-09-21，不另起版本）
+- 用户指示收尾。**升级可以投入使用。** Grok 安装区**不代更**。业务仓未代迁。schema 仍 0.17.0。
+- audit 17/17。回归 **1011**。tag `v3.30.2`。AP 已删。基线 `baselines/3.30.2/`。
+- 业务仓存量：装包后各成员根跑 `compile_source_digests.py --root <成员根>`，过了再盖该工作区戳。
+
 ---
 
 ## 3.30.1 — 2026-09-20
