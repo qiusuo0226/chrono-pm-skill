@@ -1,4 +1,4 @@
-# ChronoPM v3.30.2 — 会管项目的 AI 副手
+# ChronoPM v3.30.3 — 会管项目的 AI 副手
 
 **你负责判断，它负责记、算、盯。项目的一切事实写在 Markdown 里，跟着项目走。**
 
@@ -88,7 +88,7 @@ ChronoPM Skill/
 
 ## 工程质量
 
-- **1011 个回归用例**，确保每次更新不破坏已有行为；
+- **1028 个回归用例**，确保每次更新不破坏已有行为；
 - **双层版本控制**：Skill 版本与工作区数据结构（schema）独立演进，升级时自动检测兼容性并给出迁移指引；
 - **治理内建**：变更请求、影响分析、发布审计是仓库里的正式流程，而非口头约定。
 
@@ -96,15 +96,15 @@ ChronoPM Skill/
 
 | 项目 | 值 |
 |---|---|
-| Skill 版本 | 3.30.2 |
+| Skill 版本 | 3.30.3 |
 | 工作区 Schema | 0.17.0 |
 | 规则文件 | 24 份 |
 | 文档模板 | 40 个 |
-| 回归用例 | 1011 个 |
+| 回归用例 | 1028 个 |
 
-发布产物：`ChronoPM-Project-Skill-v3.30.2.zip`（134）+ `ChronoPM-Portfolio-Skill-v3.30.2.zip`（46）。
+发布产物：`ChronoPM-Project-Skill-v3.30.3.zip`（136）+ `ChronoPM-Portfolio-Skill-v3.30.3.zip`（46）。
 
-回归测试 | 1011 个用例。回归测试套件（1011 个用例）。
+回归测试 | 1028 个用例。回归测试套件（1028 个用例）。
 
 升级日志：[ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 
