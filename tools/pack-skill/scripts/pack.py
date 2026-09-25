@@ -12,10 +12,7 @@ Naming convention: {BrandName}-Skill-v{version}.zip
   - BrandName: extracted from skill.json displayName (text before first — or ()
   - version: from VERSION file or skill.json version field
 
-v3.0.0 (G-3) dual-pack: when skill-root contains a ChronoPM-Portfolio/
-companion package (has its own SKILL.md), pack.py emits a second zip for it
-(ChronoPM-Portfolio-Skill-v{version}.zip). The main package excludes the
-companion directory (exclusion model in pack.ps1, single source of truth).
+v4.0.0：只打 ChronoPM-Project 一个包。项目集在包内 portfolio-skill/。
 
 Usage:
     python pack.py --skill-root <path>
@@ -89,7 +86,7 @@ def read_brand_name(root: Path) -> str:
 def find_repo_root(skill_root: Path) -> Path:
     """Locate the git/dev repo root that holds tools/pack-skill/scripts/pack.ps1.
 
-    CR-G: skill-root is ChronoPM-Project/ or ChronoPM-Portfolio/; pack.ps1 stays at repo root.
+    Skill root is ChronoPM-Project/; pack.ps1 stays at repo root.
     """
     cur = skill_root.resolve()
     for _ in range(5):
@@ -99,18 +96,6 @@ def find_repo_root(skill_root: Path) -> Path:
             break
         cur = cur.parent
     return skill_root.resolve()
-
-
-def find_companion(skill_root: Path) -> Optional[Path]:
-    """Companion ChronoPM-Portfolio next to ChronoPM-Project, or nested (pre-CR-G)."""
-    skill_root = skill_root.resolve()
-    sibling = skill_root.parent / "ChronoPM-Portfolio"
-    if skill_root.name == "ChronoPM-Project" and (sibling / "SKILL.md").is_file():
-        return sibling
-    nested = skill_root / "ChronoPM-Portfolio"
-    if (nested / "SKILL.md").is_file():
-        return nested
-    return None
 
 
 def parse_intentional_exclusions(ps1_text: str) -> list:
@@ -148,8 +133,7 @@ def pack_exclusions(ps1_root: Path) -> dict:
 
     Parses $excludeDirs, $excludeFiles, $excludeFilePaths, $includeExceptions.
     Same approach as audit_release.py pack_exclusions() — single source of truth.
-    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1
-    (for the companion package this is the parent repo root, not the package dir).
+    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1.
     """
     ps1_path = ps1_root / "tools" / "pack-skill" / "scripts" / "pack.ps1"
     if not ps1_path.is_file():
@@ -217,8 +201,7 @@ def pack_one(skill_root: Path, ps1_root: Path, output_dir: Path,
              extra_excludes: list, dry_run: bool) -> int:
     """Pack a single Skill project into its distribution zip.
 
-    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1;
-    for the companion package it is the parent repo root.
+    ps1_root is the repo root holding tools/pack-skill/scripts/pack.ps1.
     """
     # Validate
     skill_md = skill_root / "SKILL.md"
@@ -317,12 +300,6 @@ def main() -> int:
     if rc != 0:
         return rc
 
-    # v3.0.0 (G-3) / v3.1.1 (CR-G): auto-detect ChronoPM-Portfolio companion
-    companion = find_companion(skill_root)
-    if companion is not None:
-        print()
-        print(">> Companion package detected: ChronoPM-Portfolio — packing second zip")
-        rc = pack_one(companion, repo_root, output_dir, extra_excludes, args.dry_run)
     return rc
 
 

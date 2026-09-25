@@ -11,9 +11,7 @@
     Cross-platform reference implementation.
     Actual packaging on this machine uses pack.py (PowerShell execution policy restricted).
 
-    v3.0.0（G-3）双包：仓库根打 Project 包时排除 ChronoPM-Portfolio/；
-    Portfolio 包用 -SkillRoot <repo>/ChronoPM-Portfolio 单独打第二包。
-    pack.py 在仓库根运行时自动依次打两包。
+    v4.0.0：只打 ChronoPM-Project。项目集在包内 portfolio-skill/。
 
 .PARAMETER SkillRoot
     Path to the Skill project root (where SKILL.md lives). Required.
@@ -115,9 +113,8 @@ $excludeDirs = @(
     "governance",
     "tests",
     "tools",
-    # v3.1.1（CR-G）：打包根已是 ChronoPM-Project/ 或 ChronoPM-Portfolio/，
-    # 下列名称用于防误把兄弟目录/共享目录打进包
-    "ChronoPM-Portfolio",
+    # 4.0.0：只打当前 Skill 根。下列名称防止路径里出现兄弟包或共享目录。
+    # portfolio-skill/、query-skill/ 在包内，不得列入本数组。
     "ChronoPM-Project",
     "governance-shared"
 )

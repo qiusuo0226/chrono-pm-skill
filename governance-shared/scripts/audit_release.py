@@ -26,8 +26,8 @@
    11. 命名漂移守门：仓库根目录无 chrono-pm-*.zip 类漂移命名产物
    12. 统计类断言（v2.1.0 需求十一/D-20）：规则文件数/模板数自动统计，
        比对 README×2 与 BLUEPRINT §1 中标注的数字
-   13. 双包一致性（v3.0.0 G-2）：ChronoPM-Portfolio 伴生包版本/命名/模式
-       与主包一致 + 基线含双包快照
+   13. 单包（v4.0.0）：仓库根不得有 ChronoPM-Portfolio/SKILL.md；
+       基线只要求 ChronoPM-Project 树
    14. 升级残留（阻断）：baselines/{v} 仍留 upgrade-plan-v{v}.md → FAIL；
        高于当前 VERSION 且无基线的在研 AP 至多 1；更低版本无基线 FAIL
    15. 模拟 pack：不得含 tests/**、SKILL_BLUEPRINT.md、16-skill-governance、
@@ -48,7 +48,6 @@ from pathlib import Path
 # __file__ = <repo>/governance-shared/scripts/audit_release.py → repo root
 ROOT = Path(__file__).resolve().parent.parent.parent
 PROJECT = ROOT / "ChronoPM-Project"
-PORTFOLIO = ROOT / "ChronoPM-Portfolio"
 SHARED = ROOT / "governance-shared"
 
 FAILURES = []
@@ -368,41 +367,17 @@ def main() -> int:
         "; ".join(stat_bad) or f"规则={n_rules}, 模板={n_templates} 全部一致",
     )
 
-    # 13. 双包一致性（v3.0.0 G-2：双包版本一致 + 双基线 + 双包命名）
-    pkg = PORTFOLIO
-    dual_bad = []
-    if not pkg.is_dir():
-        dual_bad.append("ChronoPM-Portfolio/ 目录缺失")
-    else:
-        pv_file = pkg / "VERSION"
-        pv = pv_file.read_text(encoding="utf-8").strip() if pv_file.is_file() else "<缺失>"
-        if pv != version:
-            dual_bad.append(f"Portfolio VERSION={pv}")
-        pj_file = pkg / "skill.json"
-        if pj_file.is_file():
-            pj = json.loads(read(pj_file))
-            if pj.get("name") != "chrono-pm-portfolio":
-                dual_bad.append(f"Portfolio name={pj.get('name')}")
-            if str(pj.get("version")) != version:
-                dual_bad.append(f"Portfolio skill.json version={pj.get('version')}")
-            if pj.get("modes") != ["viewer"]:
-                dual_bad.append(f"Portfolio modes={pj.get('modes')}")
-        else:
-            dual_bad.append("Portfolio skill.json 缺失")
-        if not (pkg / "SKILL.md").is_file():
-            dual_bad.append("Portfolio SKILL.md 缺失")
-    dual_baseline = SHARED / "baselines" / version / "ChronoPM-Portfolio"
-    if not dual_baseline.is_dir():
-        dual_bad.append(f"baselines/{version}/ChronoPM-Portfolio/ 双基线缺失")
-    # 3.1.1+ 双子树：baselines/{v}/ChronoPM-Project/（3.1.0 及更早冻结快照不要求）
+    # 13. 单包（v4.0.0）。基线在发布收尾时才要求存在；在研版本只禁止独立 Portfolio 入口。
+    single_bad = []
+    if (ROOT / "ChronoPM-Portfolio" / "SKILL.md").is_file():
+        single_bad.append("根上仍有 ChronoPM-Portfolio/SKILL.md")
     proj_baseline = SHARED / "baselines" / version / "ChronoPM-Project"
-    parts = [int(x) for x in version.split(".")[:3]]
-    if parts >= [3, 1, 1] and not proj_baseline.is_dir():
-        dual_bad.append(f"baselines/{version}/ChronoPM-Project/ 双子树缺失")
+    if proj_baseline.is_dir() and (SHARED / "baselines" / version / "ChronoPM-Portfolio").is_dir():
+        single_bad.append(f"baselines/{version}/ 仍含 ChronoPM-Portfolio 树")
     check(
-        "13. 双包一致性（版本/命名/viewer/双基线）",
-        not dual_bad,
-        "; ".join(dual_bad) or f"双包均 {version}，命名/模式/双基线齐备",
+        "13. 单包（无独立 Portfolio 入口）",
+        not single_bad,
+        "; ".join(single_bad) or f"单包 {version}",
     )
 
     # 14. 升级残留（阻断）：有基线仍留该版 AP → FAIL；在研 AP 至多 1

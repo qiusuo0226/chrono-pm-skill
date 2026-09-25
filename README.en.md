@@ -1,10 +1,10 @@
-# ChronoPM v3.30.3 — An AI Sidekick That Actually Manages Projects
+# ChronoPM v4.0.0 — An AI Sidekick That Actually Manages Projects
 
 **You make the calls. It remembers, computes, and watches. Every project fact lives in Markdown — and stays with the project.**
 
 ChronoPM is a project-management methodology packaged as an AI skill: talk the way you already do — paste a daily report, share meeting minutes, ask about progress — and it files the facts into a clean set of Markdown files. Anything that matters takes effect only after you nod. People leave, AI tools change; the project's memory stays in the folder.
 
-> **Two packs:** day-to-day entry with **ChronoPM-Project** (single project — every write happens here); cross-project progress / risk / contract / weekly rollups with **ChronoPM-Portfolio** (read-only — it never writes member projects).
+> **One skill:** day-to-day entry and cross-project read-only rollups both live in **ChronoPM-Project**. Portfolio rules are the in-package `portfolio-skill/` folder. The rollup never hand-writes member projects.
 >
 > **Python:** init / migrate / verify scripts need Python **≥3.9** (3.10+ recommended). Daily todos and queries do not.
 
@@ -14,9 +14,9 @@ ChronoPM is a project-management methodology packaged as an AI skill: talk the w
 
 ## Install
 
-Copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root. Then point the workspace at the **project folder** and say: "Initialize my project workspace."
+Copy `ChronoPM-Project/` into your AI tool's skill directory. Do not copy the whole repo root. Then point the workspace at the **project folder** and say: "Initialize my project workspace."
 
-This installs **ChronoPM-Project** (single-project writes) and **ChronoPM-Portfolio** (read-only cross-project rollups).
+This installs **ChronoPM-Project** only. Cross-project rollups are the in-package `portfolio-skill/`.
 
 ## Why you need it
 
@@ -55,7 +55,7 @@ Index: [examples/](examples/) (20 pieces; follow the reading order there)
 | "Is this requirement backed by the contract?" | Walks contract → bid → clause and answers with an evidence chain |
 | "How did this week go?" | Aggregates the weekly report from live todos — every number traceable |
 | "We launch next month — plan backwards" | Derives the plan from milestones, flagging the critical path and resource conflicts |
-| "How's the whole portfolio?" | Switch to ChronoPM-Portfolio for a read-only rollup across projects |
+| "How's the whole portfolio?" | Stay in ChronoPM-Project; portfolio-skill rolls projects up read-only |
 | "Who is still unassigned on this plan?" | Opens the plan's node sub-rows; empty slots show as unassigned |
 | "Roll up each project's plan before 7 Oct" | Matches by date window, not plan name |
 | "The skill can't do this — file it as an upgrade need" | Writes a skill-gap note under `ai/outputs/`, not the requirement register |
@@ -64,7 +64,7 @@ The full surface of day-to-day management is covered: requirements and change tr
 
 ## Getting started
 
-1. Install: copy `ChronoPM-Project/` (and `ChronoPM-Portfolio/` if you need cross-project rollups) into your AI tool's skill directory. Do not copy the whole repo root.
+1. Install: copy `ChronoPM-Project/` into your AI tool's skill directory. Do not copy the whole repo root.
 2. Tell the AI: "Initialize my project workspace."
 3. From then on, feed it materials the way you already work.
 
@@ -75,8 +75,7 @@ Before release: `python governance-shared/scripts/audit_release.py` must pass.
 
 ```
 ChronoPM Skill/
-├── ChronoPM-Project/     # Single-project skill pack (rules, templates, scripts, regression suite)
-├── ChronoPM-Portfolio/   # Read-only portfolio companion
+├── ChronoPM-Project/     # The only skill pack (includes query-skill and portfolio-skill)
 ├── examples/             # Conversation walkthroughs (init through portfolio, 20 pieces)
 ├── governance-shared/    # Repo-level governance: baselines / CR / impact analysis / release audit (not packed)
 ├── tools/                # Packing tools
@@ -87,7 +86,7 @@ ChronoPM Skill/
 
 ## Engineering quality
 
-- **1028 regression cases** guarding every update against breaking existing behavior;
+- **1041 regression cases** guarding every update against breaking existing behavior;
 - **Two-layer versioning:** the skill version and the workspace schema evolve independently, with compatibility checks and migration guidance on upgrade;
 - **Governance built in:** change requests, impact analysis, and release audits are formal flows in the repo, not verbal agreements.
 
@@ -95,15 +94,15 @@ ChronoPM Skill/
 
 | Item | Value |
 |---|---|
-| Skill version | 3.30.3 |
+| Skill version | 4.0.0 |
 | Workspace schema | 0.17.0 |
 | Rule files | 24 |
 | Document templates | 40 |
-| Regression cases | 1028 |
+| Regression cases | 1041 |
 
-Release artifacts: `ChronoPM-Project-Skill-v3.30.3.zip` (136) + `ChronoPM-Portfolio-Skill-v3.30.3.zip` (46).
+Release artifact: `ChronoPM-Project-Skill-v4.0.0.zip`. No separate Portfolio package.
 
-Regression tests | 1028 cases. Regression test suite (1028 cases).
+Regression tests | 1041 cases. Regression test suite (1041 cases).
 
 Changelog: [ChronoPM-Project/CHANGELOG.md](ChronoPM-Project/CHANGELOG.md)
 
