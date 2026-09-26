@@ -1,6 +1,6 @@
 {
   "name": "chrono-pm-project",
-  "displayName": "ChronoPM-Project — 项目管理（日报/待办/合同）",
+  "displayName": "ChronoPM-Project — 项目管理（日报/待办/计划/风险/周报）",
   "version": "4.0.0",
   "schemaVersion": "0.7.0",
   "supportedWorkspaceSchema": {
@@ -94,7 +94,7 @@
       "description": "待确认变更索引 pending-changes.md + change-log 分层归档 (CR-20260811-002)"
     }
   ],
-  "description": "给项目经理的 AI 项目管理技能。单项目读写，跨项目只读归集都在这一个技能里。项目集规则在 portfolio-skill，查询在 query-skill。",
+  "description": "项目管理：记日报、出周报、跟待办、做风险登记、写会议纪要。工作包、计划、倒排、里程碑、合同和需求也落在你自己的 Markdown 文件夹里。要紧的变更先问过你。跨项目只读归集在本包的 portfolio-skill/，不是单独安装的技能。Project management for daily reports, weekly reports, todos, risk registers, and meeting notes, stored in your own Markdown folder. Material changes wait for your confirmation. Cross-project read-only rollups are the in-package portfolio-skill.",
   "modes": [
     "single"
   ],

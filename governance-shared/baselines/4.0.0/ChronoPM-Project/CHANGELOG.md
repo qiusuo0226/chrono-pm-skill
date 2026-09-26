@@ -20,9 +20,10 @@ Blueprint Impact: full
 ### 不做
 - 升 schema；新建 `ai/wiki/`；口语说法进入范围登记枚举；把所有写入收成脚本；代更 Grok；本轮写入业务仓
 
-### 收尾补记（2026-09-25，不另起版本）
+### 收尾补记（2026-09-26，不另起版本）
 - 用户指示收尾技能包。Grok 安装区不代更。业务仓未代迁：市监集根和三个成员的版本戳仍是 3.30.2，不得称这些工作区已升到 4.0.0。
-- schema 仍 0.17.0。audit 17/17。回归 **1041**。tag `v4.0.0`。基线 `baselines/4.0.0/`，只有 Project 树。
+- 市场描述改为中英对照，埋入项目管理、日报、周报、待办、风险登记、会议纪要。跨项目写成包内 `portfolio-skill/`。去掉「另配 ChronoPM-Portfolio」。
+- schema 仍 0.17.0。audit 17/17。回归 **1041**。tag `v4.0.0` 指向本提交；此前指向 `0e74e3d` 的同名标签已删。基线 `baselines/4.0.0/`，只有 Project 树。
 - 分发包在 Downloads：`ChronoPM-Project-Skill-v4.0.0.zip`（158）。不再另发 Portfolio 包。README 发布产物已是 v4.0.0。
 
 ---

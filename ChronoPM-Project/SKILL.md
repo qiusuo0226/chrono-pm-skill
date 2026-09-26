@@ -3,9 +3,9 @@ name: chrono-pm-project
 version: 4.0.0
 schema_version: 0.17.0
 updated_at: 2026-09-23
-description: 给项目经理的 AI 项目管理技能。单项目读写，跨项目只读归集。触发：项目管理、项目、项目集、组合、跨项目、初始化项目、工作包、WP、计划、看计划、排计划、倒排、排期、阶段、里程碑、门禁、结转、派活、待办、任务、进度、需求、变更、范围、合同、合同登记、风险、问题、决策、会议、会议纪要、纪要、拆文件、源文档、工时、能耗、人员、花名册、人员进出、进度表、xlsx、csv、投喂、粘贴、入库、归档、更新、补全、回填、评审、验收、成本、预算、复盘、历史计划、完整性巡检、词库、偏好、画图、责任链图、记日报、日报、出周报、周报、集周报、ChronoPM、ChronoPM-Project。集层规则在 portfolio-skill，查询规则在 query-skill。
+description: 项目管理：记日报、出周报、跟待办、做风险登记、写会议纪要。工作包、计划、倒排、里程碑、合同和需求写进你自己的 Markdown 文件夹；要紧的变更先问过你。跨项目只读归集在本包的 portfolio-skill/，不是单独安装的技能。Project management for daily reports, weekly reports, todos, risk registers, and meeting notes in your own Markdown folder. Material changes wait for your confirmation. Cross-project read-only rollups are the in-package portfolio-skill. 触发：项目管理、项目、项目集、组合、跨项目、初始化项目、工作包、WP、计划、看计划、排计划、倒排、排期、阶段、里程碑、门禁、结转、派活、待办、任务、进度、需求、变更、范围、合同、合同登记、风险登记、风险、问题、决策、会议、会议纪要、纪要、拆文件、源文档、工时、能耗、人员、花名册、人员进出、进度表、xlsx、csv、投喂、粘贴、入库、归档、更新、补全、回填、评审、验收、成本、预算、复盘、历史计划、完整性巡检、词库、偏好、画图、责任链图、记日报、日报、出周报、周报、集周报、ChronoPM、ChronoPM-Project、daily report、todo、task、work package、plan、schedule、milestone、risk register、risk、issue、meeting notes、weekly report、contract、requirement、portfolio、cross-project。集层规则在 portfolio-skill，查询规则在 query-skill。
 ---
-# ChronoPM-Project — 项目管理（日报/待办/合同）
+# ChronoPM-Project — 项目管理（日报/待办/计划/风险/周报）
 
 ## 1. 概述
 本技能以项目文件夹下的 `ai/` 目录为载体，以 Markdown 为项目记忆，以 AI 为副手，以人工确认为最终控制点。
