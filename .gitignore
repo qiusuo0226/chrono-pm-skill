@@ -2,11 +2,13 @@
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
 
 # IDE
 .idea/
 .vscode/
 .qoder-plugin/
+.qoder/
 
 # OS files
 Thumbs.db
